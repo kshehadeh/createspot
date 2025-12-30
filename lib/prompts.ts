@@ -1,0 +1,25 @@
+import { prisma } from "./prisma";
+
+export async function getCurrentPrompt() {
+  const now = new Date();
+  return prisma.prompt.findFirst({
+    where: {
+      weekStart: { lte: now },
+      weekEnd: { gte: now },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getPromptSubmissions(promptId: string, limit?: number) {
+  return prisma.submission.findMany({
+    where: { promptId },
+    include: {
+      user: {
+        select: { id: true, name: true, image: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+}
