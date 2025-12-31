@@ -1,6 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+const s3Client = new S3Client({
+  region: "auto",
+  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+});
+
+async function deleteImageFromR2(imageUrl: string): Promise<void> {
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  if (!publicUrl || !imageUrl.startsWith(publicUrl)) return;
+
+  const key = imageUrl.replace(`${publicUrl}/`, "");
+  try {
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME,
+        Key: key,
+      }),
+    );
+  } catch (error) {
+    console.error("Failed to delete image from R2:", error);
+  }
+}
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -63,6 +90,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Check for existing submission to handle image deletion
+  const existingSubmission = await prisma.submission.findUnique({
+    where: {
+      userId_promptId_wordIndex: {
+        userId: session.user.id,
+        promptId,
+        wordIndex,
+      },
+    },
+  });
+
+  // Delete old image from R2 if it's being replaced or removed
+  if (
+    existingSubmission?.imageUrl &&
+    existingSubmission.imageUrl !== imageUrl
+  ) {
+    await deleteImageFromR2(existingSubmission.imageUrl);
+  }
+
   // Upsert submission (create or update)
   const submission = await prisma.submission.upsert({
     where: {
@@ -117,6 +163,11 @@ export async function DELETE(request: NextRequest) {
       { error: "Submission not found or unauthorized" },
       { status: 404 },
     );
+  }
+
+  // Delete image from R2 if it exists
+  if (submission.imageUrl) {
+    await deleteImageFromR2(submission.imageUrl);
   }
 
   await prisma.submission.delete({

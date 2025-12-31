@@ -23,8 +23,7 @@ export function NavigationLinks({
   };
 
   const linkClassName = (path: string) => {
-    const baseClasses =
-      "text-sm transition-colors dark:hover:text-white";
+    const baseClasses = "text-sm transition-colors dark:hover:text-white";
     const activeClasses = isActive(path)
       ? "text-zinc-900 font-medium dark:text-white"
       : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400";
@@ -50,4 +49,3 @@ export function NavigationLinks({
     </nav>
   );
 }
-

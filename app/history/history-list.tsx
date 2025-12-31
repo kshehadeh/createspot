@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { formatDateRangeUTC } from "@/lib/date-utils";
+import { TextThumbnail } from "@/components/text-thumbnail";
+import { SubmissionLightbox } from "@/components/submission-lightbox";
 
 interface Submission {
   id: string;
@@ -30,11 +32,13 @@ interface SelectedSubmission {
 interface HistoryListProps {
   initialItems: PromptWithSubmissions[];
   initialHasMore: boolean;
+  userId?: string;
 }
 
 export function HistoryList({
   initialItems,
   initialHasMore,
+  userId,
 }: HistoryListProps) {
   const [items, setItems] = useState<PromptWithSubmissions[]>(initialItems);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -46,7 +50,12 @@ export function HistoryList({
 
     setLoading(true);
     try {
-      const response = await fetch(`/api/history?skip=${items.length}&take=10`);
+      const params = new URLSearchParams({
+        skip: items.length.toString(),
+        take: "10",
+      });
+      if (userId) params.set("userId", userId);
+      const response = await fetch(`/api/history?${params}`);
       if (!response.ok) throw new Error("Failed to load");
 
       const data = await response.json();
@@ -124,13 +133,10 @@ export function HistoryList({
                           />
                         </div>
                       ) : submission.text ? (
-                        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-100 p-2 dark:bg-zinc-800">
-                          <p className="line-clamp-3 text-[8px] leading-tight text-zinc-600 dark:text-zinc-400">
-                            {submission.text
-                              .replace(/<[^>]*>/g, "")
-                              .slice(0, 100)}
-                          </p>
-                        </div>
+                        <TextThumbnail
+                          text={submission.text}
+                          className="h-16 w-16 shrink-0 rounded-lg"
+                        />
                       ) : null}
                       <div className="min-w-0 text-center md:text-left">
                         <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
@@ -164,64 +170,11 @@ export function HistoryList({
       )}
 
       {selected && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="relative max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setSelected(null)}
-              className="absolute right-4 top-4 rounded-full p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
-            >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-
-            <p className="mb-2 text-sm font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-              {selected.word}
-            </p>
-
-            {selected.submission.title && (
-              <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-white">
-                {selected.submission.title}
-              </h2>
-            )}
-
-            {selected.submission.imageUrl && (
-              <div className="relative mb-4 aspect-video w-full overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                <Image
-                  src={selected.submission.imageUrl}
-                  alt={selected.submission.title || selected.word}
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 672px) 100vw, 672px"
-                />
-              </div>
-            )}
-
-            {selected.submission.text && (
-              <div
-                className="prose prose-zinc max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: selected.submission.text }}
-              />
-            )}
-          </div>
-        </div>
+        <SubmissionLightbox
+          submission={selected.submission}
+          word={selected.word}
+          onClose={() => setSelected(null)}
+        />
       )}
     </div>
   );

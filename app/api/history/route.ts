@@ -12,12 +12,13 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const skip = parseInt(searchParams.get("skip") || "0", 10);
   const take = parseInt(searchParams.get("take") || "10", 10);
+  const userId = searchParams.get("userId") || session.user.id;
 
   const prompts = await prisma.prompt.findMany({
     where: {
       submissions: {
         some: {
-          userId: session.user.id,
+          userId,
         },
       },
     },
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     include: {
       submissions: {
         where: {
-          userId: session.user.id,
+          userId,
         },
         orderBy: { wordIndex: "asc" },
       },

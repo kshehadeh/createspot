@@ -94,4 +94,3 @@ export function UserDropdown({ name, image }: UserDropdownProps) {
     </div>
   );
 }
-

@@ -28,10 +28,7 @@ export function Header({ title, user }: HeaderProps) {
   // Close menu when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
     }
@@ -272,11 +269,7 @@ function MobileNavigationLinks({
 }
 
 // Mobile User Actions Component
-function MobileUserActions({
-  onActionClick,
-}: {
-  onActionClick: () => void;
-}) {
+function MobileUserActions({ onActionClick }: { onActionClick: () => void }) {
   const handleLogout = () => {
     signOut();
     onActionClick();

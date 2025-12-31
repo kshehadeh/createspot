@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Submission } from "@/app/generated/prisma/client";
+import { RichTextEditor } from "@/components/rich-text-editor";
+import { TextThumbnail } from "@/components/text-thumbnail";
 
 interface SubmissionSlotsProps {
   promptId: string;
@@ -128,7 +130,7 @@ export function SubmissionSlots({
 
               {submission ? (
                 <div className="space-y-4">
-                  {submission.imageUrl && (
+                  {submission.imageUrl ? (
                     <div className="aspect-square overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -137,17 +139,16 @@ export function SubmissionSlots({
                         className="h-full w-full object-cover"
                       />
                     </div>
-                  )}
+                  ) : submission.text ? (
+                    <TextThumbnail
+                      text={submission.text}
+                      className="aspect-square rounded-lg"
+                    />
+                  ) : null}
                   {submission.title && (
                     <p className="font-medium text-zinc-900 dark:text-white">
                       {submission.title}
                     </p>
-                  )}
-                  {submission.text && (
-                    <div
-                      className="prose prose-sm dark:prose-invert max-h-32 overflow-y-auto text-zinc-600 dark:text-zinc-400"
-                      dangerouslySetInnerHTML={{ __html: submission.text }}
-                    />
                   )}
                   <button
                     onClick={() => openSlot(wordIndex)}
@@ -224,10 +225,32 @@ export function SubmissionSlots({
               </div>
             )}
 
+            <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+              Submit an image, text, or both. At least one is required.
+            </p>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
+                <label
+                  htmlFor="title"
+                  className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                >
+                  Title (optional)
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, title: e.target.value }))
+                  }
+                  className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                />
+              </div>
+
+              <div>
                 <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  Image
+                  Image (optional)
                 </label>
                 {formData.imageUrl ? (
                   <div className="relative">
@@ -291,38 +314,15 @@ export function SubmissionSlots({
               </div>
 
               <div>
-                <label
-                  htmlFor="title"
-                  className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                >
-                  Title (optional)
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, title: e.target.value }))
-                  }
-                  className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="text"
-                  className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                >
+                <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   Text (optional)
                 </label>
-                <textarea
-                  id="text"
+                <RichTextEditor
                   value={formData.text}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, text: e.target.value }))
+                  onChange={(text) =>
+                    setFormData((prev) => ({ ...prev, text }))
                   }
-                  rows={4}
-                  className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                  placeholder="Write your submission..."
                 />
               </div>
 

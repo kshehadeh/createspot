@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { TextThumbnail } from "@/components/text-thumbnail";
+import { SubmissionLightbox } from "@/components/submission-lightbox";
 
 interface Submission {
   id: string;
@@ -23,6 +26,8 @@ interface GalleryGridProps {
 
 export function GalleryGrid({ submissions, words }: GalleryGridProps) {
   const [filter, setFilter] = useState<number | null>(null);
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<Submission | null>(null);
 
   const filteredSubmissions = filter
     ? submissions.filter((s) => s.wordIndex === filter)
@@ -71,18 +76,41 @@ export function GalleryGrid({ submissions, words }: GalleryGridProps) {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
               whileHover={{ y: -4 }}
-              className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+              className="cursor-pointer overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+              onClick={() => setSelectedSubmission(submission)}
             >
-              {submission.imageUrl && (
-                <div className="aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+              {submission.imageUrl ? (
+                <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={submission.imageUrl}
                     alt={submission.title || "Submission"}
                     className="h-full w-full object-cover"
                   />
+                  {submission.text && (
+                    <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">
+                      <svg
+                        className="h-4 w-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 6h16M4 12h16M4 18h7"
+                        />
+                      </svg>
+                    </div>
+                  )}
                 </div>
-              )}
+              ) : submission.text ? (
+                <TextThumbnail
+                  text={submission.text}
+                  className="aspect-square"
+                />
+              ) : null}
               <div className="p-4">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
@@ -94,13 +122,11 @@ export function GalleryGrid({ submissions, words }: GalleryGridProps) {
                     {submission.title}
                   </h3>
                 )}
-                {submission.text && (
-                  <div
-                    className="prose prose-sm dark:prose-invert line-clamp-3 text-zinc-600 dark:text-zinc-400"
-                    dangerouslySetInnerHTML={{ __html: submission.text }}
-                  />
-                )}
-                <div className="mt-4 flex items-center gap-2">
+                <Link
+                  href={`/profile/${submission.user.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="mt-4 flex items-center gap-2 transition-opacity hover:opacity-80"
+                >
                   {submission.user.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -115,10 +141,10 @@ export function GalleryGrid({ submissions, words }: GalleryGridProps) {
                       </span>
                     </div>
                   )}
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                  <span className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
                     {submission.user.name || "Anonymous"}
                   </span>
-                </div>
+                </Link>
               </div>
             </motion.div>
           ))}
@@ -133,6 +159,14 @@ export function GalleryGrid({ submissions, words }: GalleryGridProps) {
         >
           No submissions for this word yet.
         </motion.p>
+      )}
+
+      {selectedSubmission && (
+        <SubmissionLightbox
+          submission={selectedSubmission}
+          word={words[selectedSubmission.wordIndex - 1]}
+          onClose={() => setSelectedSubmission(null)}
+        />
       )}
     </div>
   );
