@@ -1,31 +1,325 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { Prompt } from "@/app/generated/prisma/client";
+import { formatDateRangeUTC } from "@/lib/date-utils";
+import { ConfirmModal } from "@/components/confirm-modal";
 
-interface PromptFormProps {
-  prompt: Prompt | null;
+const dictionaryCache = new Map<string, boolean>();
+
+async function isValidWord(word: string): Promise<boolean> {
+  const trimmed = word.trim().toLowerCase();
+  if (!trimmed || trimmed.length < 2) return true;
+  
+  if (dictionaryCache.has(trimmed)) {
+    return dictionaryCache.get(trimmed)!;
+  }
+  
+  try {
+    const response = await fetch(`/api/words/validate?word=${encodeURIComponent(trimmed)}`);
+    if (!response.ok) return true;
+    const data = await response.json();
+    const isValid = data.valid === true;
+    dictionaryCache.set(trimmed, isValid);
+    return isValid;
+  } catch {
+    return true;
+  }
 }
 
-export function PromptForm({ prompt }: PromptFormProps) {
+async function getRandomWord(): Promise<string | null> {
+  try {
+    const response = await fetch("/api/words/random");
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.word || null;
+  } catch {
+    return null;
+  }
+}
+
+type PromptWithSubmissionCount = Prompt & { _count: { submissions: number } };
+
+interface PromptFormProps {
+  prompts: PromptWithSubmissionCount[];
+  externalSelectedPromptId?: string | null;
+  onSelectionHandled?: () => void;
+  onModeChange?: (mode: "create" | "edit", promptId?: string) => void;
+}
+
+function getMondayUTC(date: Date): Date {
+  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const day = d.getUTCDay();
+  const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1);
+  d.setUTCDate(diff);
+  return d;
+}
+
+function getSundayUTC(monday: Date): Date {
+  const d = new Date(monday);
+  d.setUTCDate(d.getUTCDate() + 6);
+  return d;
+}
+
+function formatWeekFromMondayUTC(monday: Date): string {
+  const sunday = getSundayUTC(monday);
+  return formatDateRangeUTC(monday, sunday);
+}
+
+function getWeekKey(monday: Date): string {
+  return monday.toISOString().split("T")[0];
+}
+
+function getRecentlyUsedWords(prompts: PromptWithSubmissionCount[]): Map<string, Date> {
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  
+  const wordMap = new Map<string, Date>();
+  
+  for (const prompt of prompts) {
+    const promptDate = new Date(prompt.weekStart);
+    if (promptDate >= oneYearAgo) {
+      const words = [prompt.word1, prompt.word2, prompt.word3];
+      for (const word of words) {
+        const lowerWord = word.toLowerCase();
+        const existingDate = wordMap.get(lowerWord);
+        if (!existingDate || promptDate > existingDate) {
+          wordMap.set(lowerWord, promptDate);
+        }
+      }
+    }
+  }
+  
+  return wordMap;
+}
+
+export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandled, onModeChange }: PromptFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<"create" | "edit">("create");
+  const [selectedPromptId, setSelectedPromptId] = useState<string>("");
 
-  const [word1, setWord1] = useState(prompt?.word1 || "");
-  const [word2, setWord2] = useState(prompt?.word2 || "");
-  const [word3, setWord3] = useState(prompt?.word3 || "");
-  const [weekStart, setWeekStart] = useState(
-    prompt?.weekStart
-      ? new Date(prompt.weekStart).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0]
-  );
-  const [weekEnd, setWeekEnd] = useState(
-    prompt?.weekEnd
-      ? new Date(prompt.weekEnd).toISOString().split("T")[0]
-      : ""
-  );
+  const selectedPrompt = prompts.find((p) => p.id === selectedPromptId);
+  const hasSubmissions = selectedPrompt ? selectedPrompt._count.submissions > 0 : false;
+
+  const [word1, setWord1] = useState("");
+  const [word2, setWord2] = useState("");
+  const [word3, setWord3] = useState("");
+  const [selectedWeek, setSelectedWeek] = useState("");
+
+  const [word1Invalid, setWord1Invalid] = useState(false);
+  const [word2Invalid, setWord2Invalid] = useState(false);
+  const [word3Invalid, setWord3Invalid] = useState(false);
+  const [checkingWords, setCheckingWords] = useState<Set<number>>(new Set());
+  const [loadingRandomWord, setLoadingRandomWord] = useState<Set<number>>(new Set());
+
+  const debounceTimers = useRef<{ [key: number]: NodeJS.Timeout }>({});
+
+  const checkWord = useCallback(async (word: string, wordIndex: number, setInvalid: (v: boolean) => void) => {
+    if (debounceTimers.current[wordIndex]) {
+      clearTimeout(debounceTimers.current[wordIndex]);
+    }
+
+    if (!word.trim() || mode !== "create") {
+      setInvalid(false);
+      setCheckingWords(prev => {
+        const next = new Set(prev);
+        next.delete(wordIndex);
+        return next;
+      });
+      return;
+    }
+
+    setCheckingWords(prev => new Set(prev).add(wordIndex));
+
+    debounceTimers.current[wordIndex] = setTimeout(async () => {
+      const valid = await isValidWord(word);
+      setInvalid(!valid);
+      setCheckingWords(prev => {
+        const next = new Set(prev);
+        next.delete(wordIndex);
+        return next;
+      });
+    }, 500);
+  }, [mode]);
+
+  useEffect(() => {
+    checkWord(word1, 1, setWord1Invalid);
+  }, [word1, checkWord]);
+
+  useEffect(() => {
+    checkWord(word2, 2, setWord2Invalid);
+  }, [word2, checkWord]);
+
+  useEffect(() => {
+    checkWord(word3, 3, setWord3Invalid);
+  }, [word3, checkWord]);
+
+  useEffect(() => {
+    if (externalSelectedPromptId) {
+      const prompt = prompts.find((p) => p.id === externalSelectedPromptId);
+      if (prompt && prompt._count.submissions === 0) {
+        setMode("edit");
+        setSelectedPromptId(externalSelectedPromptId);
+        setWord1(prompt.word1);
+        setWord2(prompt.word2);
+        setWord3(prompt.word3);
+        setSelectedWeek(getWeekKey(getMondayUTC(new Date(prompt.weekStart))));
+        setError(null);
+      }
+      onSelectionHandled?.();
+    }
+  }, [externalSelectedPromptId, prompts, onSelectionHandled, onModeChange]);
+
+  const takenWeekKeys = useMemo(() => {
+    return new Set(prompts.map((p) => getWeekKey(getMondayUTC(new Date(p.weekStart)))));
+  }, [prompts]);
+
+  const recentlyUsedWords = useMemo(() => {
+    return getRecentlyUsedWords(prompts);
+  }, [prompts]);
+
+  function getRecentlyUsedWarning(word: string): string | null {
+    if (!word.trim() || mode !== "create") return null;
+    const lastUsed = recentlyUsedWords.get(word.toLowerCase().trim());
+    if (lastUsed) {
+      const monthsAgo = Math.floor((Date.now() - lastUsed.getTime()) / (1000 * 60 * 60 * 24 * 30));
+      if (monthsAgo < 1) {
+        return `"${word}" was used less than a month ago`;
+      }
+      return `"${word}" was used ${monthsAgo} month${monthsAgo === 1 ? "" : "s"} ago`;
+    }
+    return null;
+  }
+
+  const word1RecentWarning = getRecentlyUsedWarning(word1);
+  const word2RecentWarning = getRecentlyUsedWarning(word2);
+  const word3RecentWarning = getRecentlyUsedWarning(word3);
+
+  const word1DictWarning = word1Invalid && mode === "create" ? `"${word1}" may not be a valid dictionary word` : null;
+  const word2DictWarning = word2Invalid && mode === "create" ? `"${word2}" may not be a valid dictionary word` : null;
+  const word3DictWarning = word3Invalid && mode === "create" ? `"${word3}" may not be a valid dictionary word` : null;
+
+  const word1Warning = word1RecentWarning || word1DictWarning;
+  const word2Warning = word2RecentWarning || word2DictWarning;
+  const word3Warning = word3RecentWarning || word3DictWarning;
+
+  const word1Checking = checkingWords.has(1);
+  const word2Checking = checkingWords.has(2);
+  const word3Checking = checkingWords.has(3);
+
+  async function fillRandomWord(wordIndex: number, setWord: (word: string) => void) {
+    setLoadingRandomWord(prev => new Set(prev).add(wordIndex));
+    try {
+      const word = await getRandomWord();
+      if (word) {
+        setWord(word);
+      }
+    } finally {
+      setLoadingRandomWord(prev => {
+        const next = new Set(prev);
+        next.delete(wordIndex);
+        return next;
+      });
+    }
+  }
+
+  const availableWeeks = useMemo(() => {
+    const weeks: { key: string; label: string; monday: Date }[] = [];
+    const today = new Date();
+    const currentMonday = getMondayUTC(today);
+
+    for (let i = 0; i < 8; i++) {
+      const monday = new Date(currentMonday);
+      monday.setDate(monday.getDate() + i * 7);
+      const key = getWeekKey(monday);
+      if (!takenWeekKeys.has(key)) {
+        weeks.push({ key, label: formatWeekFromMondayUTC(monday), monday });
+      }
+    }
+    return weeks;
+  }, [takenWeekKeys]);
+
+  const editablePrompts = prompts.filter((p) => p._count.submissions === 0);
+
+  function handleModeChange(newMode: "create" | "edit") {
+    setMode(newMode);
+    setError(null);
+    if (newMode === "create") {
+      setSelectedPromptId("");
+      setWord1("");
+      setWord2("");
+      setWord3("");
+      setSelectedWeek(availableWeeks[0]?.key || "");
+      onModeChange?.("create");
+    } else {
+      const firstEditable = editablePrompts[0];
+      if (firstEditable) {
+        setSelectedPromptId(firstEditable.id);
+        setWord1(firstEditable.word1);
+        setWord2(firstEditable.word2);
+        setWord3(firstEditable.word3);
+        setSelectedWeek(getWeekKey(getMondayUTC(new Date(firstEditable.weekStart))));
+        onModeChange?.("edit", firstEditable.id);
+      }
+    }
+  }
+
+  function handlePromptSelect(promptId: string) {
+    setSelectedPromptId(promptId);
+    const prompt = prompts.find((p) => p.id === promptId);
+    if (prompt) {
+      setWord1(prompt.word1);
+      setWord2(prompt.word2);
+      setWord3(prompt.word3);
+      setSelectedWeek(getWeekKey(getMondayUTC(new Date(prompt.weekStart))));
+      onModeChange?.("edit", promptId);
+    }
+  }
+
+  function handleDeleteClick() {
+    if (!selectedPromptId || hasSubmissions) return;
+    setShowDeleteConfirm(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!selectedPromptId) return;
+
+    setIsDeleting(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/prompts?id=${selectedPromptId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete prompt");
+      }
+
+      setShowDeleteConfirm(false);
+      setSelectedPromptId("");
+      setWord1("");
+      setWord2("");
+      setWord3("");
+      setMode("create");
+      onModeChange?.("create");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  function handleCancelDelete() {
+    setShowDeleteConfirm(false);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,10 +327,27 @@ export function PromptForm({ prompt }: PromptFormProps) {
     setError(null);
 
     try {
-      const method = prompt ? "PUT" : "POST";
-      const body = prompt
-        ? { id: prompt.id, word1, word2, word3, weekStart, weekEnd }
-        : { word1, word2, word3, weekStart, weekEnd };
+      const method = mode === "edit" ? "PUT" : "POST";
+      let body;
+
+      if (mode === "edit") {
+        body = {
+          id: selectedPromptId,
+          word1,
+          word2,
+          word3,
+        };
+      } else {
+        const weekMonday = new Date(selectedWeek);
+        const weekSunday = getSundayUTC(weekMonday);
+        body = {
+          word1,
+          word2,
+          word3,
+          weekStart: weekMonday.toISOString(),
+          weekEnd: weekSunday.toISOString(),
+        };
+      }
 
       const response = await fetch("/api/prompts", {
         method,
@@ -50,6 +361,12 @@ export function PromptForm({ prompt }: PromptFormProps) {
       }
 
       router.refresh();
+      if (mode === "create") {
+        setWord1("");
+        setWord2("");
+        setWord3("");
+        setSelectedWeek("");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -58,105 +375,307 @@ export function PromptForm({ prompt }: PromptFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-          {error}
+    <div className="space-y-6">
+      <div className="flex gap-4">
+        <button
+          type="button"
+          onClick={() => handleModeChange("create")}
+          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            mode === "create"
+              ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+              : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          }`}
+        >
+          Create New Prompt
+        </button>
+        <button
+          type="button"
+          onClick={() => handleModeChange("edit")}
+          disabled={editablePrompts.length === 0}
+          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+            mode === "edit"
+              ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+              : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          }`}
+        >
+          Edit Existing Prompt
+        </button>
+      </div>
+
+      {mode === "edit" && editablePrompts.length > 0 && (
+        <div>
+          <label
+            htmlFor="promptSelect"
+            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Select Prompt to Edit
+          </label>
+          <select
+            id="promptSelect"
+            value={selectedPromptId}
+            onChange={(e) => handlePromptSelect(e.target.value)}
+            className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+          >
+            {editablePrompts.map((prompt) => (
+              <option key={prompt.id} value={prompt.id}>
+                {prompt.word1} / {prompt.word2} / {prompt.word3} (
+                {formatDateRangeUTC(new Date(prompt.weekStart), new Date(prompt.weekEnd))})
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            Only prompts without submissions can be edited
+          </p>
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div>
-          <label
-            htmlFor="word1"
-            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Word 1
-          </label>
-          <input
-            type="text"
-            id="word1"
-            value={word1}
-            onChange={(e) => setWord1(e.target.value)}
-            required
-            className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-          />
+      {mode === "edit" && editablePrompts.length === 0 && (
+        <div className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+          All existing prompts have submissions and cannot be edited.
         </div>
-        <div>
-          <label
-            htmlFor="word2"
-            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Word 2
-          </label>
-          <input
-            type="text"
-            id="word2"
-            value={word2}
-            onChange={(e) => setWord2(e.target.value)}
-            required
-            className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="word3"
-            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Word 3
-          </label>
-          <input
-            type="text"
-            id="word3"
-            value={word3}
-            onChange={(e) => setWord3(e.target.value)}
-            required
-            className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-          />
-        </div>
-      </div>
+      )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="weekStart"
-            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Week Start
-          </label>
-          <input
-            type="date"
-            id="weekStart"
-            value={weekStart}
-            onChange={(e) => setWeekStart(e.target.value)}
-            required
-            className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="weekEnd"
-            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Week End (optional, defaults to +7 days)
-          </label>
-          <input
-            type="date"
-            id="weekEnd"
-            value={weekEnd}
-            onChange={(e) => setWeekEnd(e.target.value)}
-            className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-          />
-        </div>
-      </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+            {error}
+          </div>
+        )}
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
-        {isLoading ? "Saving..." : prompt ? "Update Prompt" : "Create Prompt"}
-      </button>
-    </form>
+        {hasSubmissions && mode === "edit" && (
+          <div className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+            This prompt has submissions and cannot be modified.
+          </div>
+        )}
+
+        {mode === "create" ? (
+          <div>
+            <label
+              htmlFor="weekSelect"
+              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Week (Monday - Sunday)
+            </label>
+            <select
+              id="weekSelect"
+              value={selectedWeek}
+              onChange={(e) => setSelectedWeek(e.target.value)}
+              required
+              disabled={availableWeeks.length === 0}
+              className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            >
+              <option value="">Select a week...</option>
+              {availableWeeks.map((week) => (
+                <option key={week.key} value={week.key}>
+                  {week.label}
+                </option>
+              ))}
+            </select>
+            {availableWeeks.length === 0 && (
+              <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                All upcoming weeks already have prompts assigned
+              </p>
+            )}
+          </div>
+        ) : selectedPrompt ? (
+          <div>
+            <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Week
+            </label>
+            <p className="rounded-lg border border-zinc-200 bg-zinc-100 px-4 py-2 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+              {formatDateRangeUTC(new Date(selectedPrompt.weekStart), new Date(selectedPrompt.weekEnd))}
+            </p>
+          </div>
+        ) : null}
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <label
+              htmlFor="word1"
+              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Word 1
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                id="word1"
+                value={word1}
+                onChange={(e) => setWord1(e.target.value)}
+                required
+                disabled={hasSubmissions}
+                className={`w-full rounded-lg border bg-white px-4 py-2 pr-10 text-zinc-900 focus:outline-none focus:ring-1 disabled:opacity-50 dark:bg-zinc-800 dark:text-white ${
+                  word1Warning
+                    ? "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                    : "border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700"
+                }`}
+              />
+              {mode === "create" && !hasSubmissions && (
+                <button
+                  type="button"
+                  onClick={() => fillRandomWord(1, setWord1)}
+                  disabled={loadingRandomWord.has(1)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  title="Fill with random word"
+                >
+                  {loadingRandomWord.has(1) ? (
+                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  )}
+                </button>
+              )}
+            </div>
+            <p className="mt-1 h-4 text-xs">
+              {word1Checking ? (
+                <span className="text-zinc-500 dark:text-zinc-400">Checking...</span>
+              ) : word1Warning ? (
+                <span className="text-amber-600 dark:text-amber-400">{word1Warning}</span>
+              ) : null}
+            </p>
+          </div>
+          <div>
+            <label
+              htmlFor="word2"
+              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Word 2
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                id="word2"
+                value={word2}
+                onChange={(e) => setWord2(e.target.value)}
+                required
+                disabled={hasSubmissions}
+                className={`w-full rounded-lg border bg-white px-4 py-2 pr-10 text-zinc-900 focus:outline-none focus:ring-1 disabled:opacity-50 dark:bg-zinc-800 dark:text-white ${
+                  word2Warning
+                    ? "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                    : "border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700"
+                }`}
+              />
+              {mode === "create" && !hasSubmissions && (
+                <button
+                  type="button"
+                  onClick={() => fillRandomWord(2, setWord2)}
+                  disabled={loadingRandomWord.has(2)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  title="Fill with random word"
+                >
+                  {loadingRandomWord.has(2) ? (
+                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  )}
+                </button>
+              )}
+            </div>
+            <p className="mt-1 h-4 text-xs">
+              {word2Checking ? (
+                <span className="text-zinc-500 dark:text-zinc-400">Checking...</span>
+              ) : word2Warning ? (
+                <span className="text-amber-600 dark:text-amber-400">{word2Warning}</span>
+              ) : null}
+            </p>
+          </div>
+          <div>
+            <label
+              htmlFor="word3"
+              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Word 3
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                id="word3"
+                value={word3}
+                onChange={(e) => setWord3(e.target.value)}
+                required
+                disabled={hasSubmissions}
+                className={`w-full rounded-lg border bg-white px-4 py-2 pr-10 text-zinc-900 focus:outline-none focus:ring-1 disabled:opacity-50 dark:bg-zinc-800 dark:text-white ${
+                  word3Warning
+                    ? "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                    : "border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700"
+                }`}
+              />
+              {mode === "create" && !hasSubmissions && (
+                <button
+                  type="button"
+                  onClick={() => fillRandomWord(3, setWord3)}
+                  disabled={loadingRandomWord.has(3)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  title="Fill with random word"
+                >
+                  {loadingRandomWord.has(3) ? (
+                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  )}
+                </button>
+              )}
+            </div>
+            <p className="mt-1 h-4 text-xs">
+              {word3Checking ? (
+                <span className="text-zinc-500 dark:text-zinc-400">Checking...</span>
+              ) : word3Warning ? (
+                <span className="text-amber-600 dark:text-amber-400">{word3Warning}</span>
+              ) : null}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            disabled={isLoading || isDeleting || hasSubmissions || (mode === "create" && availableWeeks.length === 0)}
+            className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+          >
+            {isLoading ? "Saving..." : mode === "edit" ? "Update Prompt" : "Create Prompt"}
+          </button>
+          {mode === "edit" && selectedPromptId && !hasSubmissions && (
+            <button
+              type="button"
+              onClick={handleDeleteClick}
+              disabled={isLoading || isDeleting}
+              className="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+            >
+              {isDeleting ? "Deleting..." : "Delete Prompt"}
+            </button>
+          )}
+        </div>
+      </form>
+
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        title="Delete Prompt"
+        message={
+          selectedPrompt
+            ? `Are you sure you want to delete the prompt "${selectedPrompt.word1} / ${selectedPrompt.word2} / ${selectedPrompt.word3}"? This action cannot be undone.`
+            : "Are you sure you want to delete this prompt?"
+        }
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isLoading={isDeleting}
+      />
+    </div>
   );
 }

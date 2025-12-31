@@ -1,12 +1,16 @@
 import { signIn } from "@/lib/auth";
+import { Logo } from "@/components/logo";
 
 export default function SignInPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg dark:bg-zinc-900">
-        <h1 className="mb-6 text-center text-2xl font-bold text-zinc-900 dark:text-white">
-          Sign in to Wonder Weekly
-        </h1>
+        <div className="mb-6 flex items-center justify-center gap-2 text-zinc-900 dark:text-white">
+          <Logo className="h-6 w-10" />
+          <h1 className="text-2xl font-normal">
+            Sign in to Prompts
+          </h1>
+        </div>
         <p className="mb-8 text-center text-zinc-600 dark:text-zinc-400">
           Join our creative community and share your interpretations of the weekly prompts.
         </p>

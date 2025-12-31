@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wonder Weekly",
+  title: "Prompts",
   description: "A weekly creative prompt community by iWonder Designs",
 };
 

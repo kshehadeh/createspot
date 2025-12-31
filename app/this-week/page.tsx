@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
+import { Header } from "@/components/header";
 import { GalleryGrid } from "./gallery-grid";
 
 export const dynamic = "force-dynamic";
@@ -29,17 +30,14 @@ export default async function ThisWeekPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800 sm:px-12">
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-white">
-          This Week&apos;s Gallery
-        </h1>
+      <Header title="Gallery">
         <Link
           href="/"
           className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
         >
           Back to Home
         </Link>
-      </header>
+      </Header>
 
       <main className="mx-auto max-w-6xl px-6 py-12">
         <section className="mb-12 text-center">

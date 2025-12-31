@@ -1,13 +1,14 @@
 {
-  "name": "prompt",
+  "name": "prompts",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "postinstall": "prisma generate"
+    "lint": "oxlint",
+    "download-words": "bun scripts/download-words.ts",
+    "postinstall": "prisma generate && bun scripts/download-words.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -29,8 +30,8 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "oxlint": "^1.36.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

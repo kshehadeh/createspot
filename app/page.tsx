@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
 import { SignInButton } from "@/components/auth-button";
+import { Header } from "@/components/header";
 import {
   AnimatedHero,
   AnimatedCta,
@@ -18,37 +19,32 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-black">
-      <header className="flex items-center justify-between px-6 py-4 sm:px-12">
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-white">
-          Wonder Weekly
-        </h1>
-        <nav className="flex items-center gap-4">
-          <Link
-            href="/this-week"
-            className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-          >
-            Gallery
-          </Link>
-          {session ? (
-            <>
+      <Header>
+        <Link
+          href="/this-week"
+          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        >
+          Gallery
+        </Link>
+        {session ? (
+          <>
+            <Link
+              href="/play"
+              className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            >
+              Play
+            </Link>
+            {session.user.isAdmin && (
               <Link
-                href="/play"
+                href="/admin"
                 className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
               >
-                Play
+                Admin
               </Link>
-              {session.user.isAdmin && (
-                <Link
-                  href="/admin"
-                  className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                >
-                  Admin
-                </Link>
-              )}
-            </>
-          ) : null}
-        </nav>
-      </header>
+            )}
+          </>
+        ) : null}
+      </Header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
         {prompt ? (
@@ -63,7 +59,7 @@ export default async function Home() {
         ) : (
           <section className="text-center">
             <h2 className="mb-4 text-3xl font-bold text-zinc-900 dark:text-white">
-              Welcome to Wonder Weekly
+              Welcome to Prompts
             </h2>
             <p className="mb-8 text-zinc-600 dark:text-zinc-400">
               No prompt available this week. Check back soon!

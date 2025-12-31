@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt } from "@/lib/prompts";
 import { prisma } from "@/lib/prisma";
+import { Header } from "@/components/header";
 import { SubmissionSlots } from "./submission-slots";
 
 export const dynamic = "force-dynamic";
@@ -52,17 +53,14 @@ export default async function PlayPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800 sm:px-12">
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-white">
-          Play
-        </h1>
+      <Header title="Play">
         <Link
           href="/"
           className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
         >
           Back to Home
         </Link>
-      </header>
+      </Header>
 
       <main className="mx-auto max-w-4xl px-6 py-12">
         <section className="mb-12 text-center">

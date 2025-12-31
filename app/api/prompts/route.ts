@@ -67,6 +67,26 @@ export async function PUT(request: NextRequest) {
     );
   }
 
+  const existingPrompt = await prisma.prompt.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: { submissions: true },
+      },
+    },
+  });
+
+  if (!existingPrompt) {
+    return NextResponse.json({ error: "Prompt not found" }, { status: 404 });
+  }
+
+  if (existingPrompt._count.submissions > 0) {
+    return NextResponse.json(
+      { error: "Cannot edit a prompt that has submissions" },
+      { status: 400 }
+    );
+  }
+
   const updateData: Record<string, unknown> = {};
   if (word1) updateData.word1 = word1;
   if (word2) updateData.word2 = word2;
@@ -80,4 +100,48 @@ export async function PUT(request: NextRequest) {
   });
 
   return NextResponse.json({ prompt });
+}
+
+export async function DELETE(request: NextRequest) {
+  const session = await auth();
+
+  if (!session?.user?.isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "Prompt ID is required" },
+      { status: 400 }
+    );
+  }
+
+  const existingPrompt = await prisma.prompt.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: { submissions: true },
+      },
+    },
+  });
+
+  if (!existingPrompt) {
+    return NextResponse.json({ error: "Prompt not found" }, { status: 404 });
+  }
+
+  if (existingPrompt._count.submissions > 0) {
+    return NextResponse.json(
+      { error: "Cannot delete a prompt that has submissions" },
+      { status: 400 }
+    );
+  }
+
+  await prisma.prompt.delete({
+    where: { id },
+  });
+
+  return NextResponse.json({ success: true });
 }
