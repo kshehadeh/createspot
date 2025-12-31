@@ -34,7 +34,7 @@ export function AnimatedHero({ words }: AnimatedHeroProps) {
               scale: 1.05,
               transition: { duration: 0.2 },
             }}
-            className="text-4xl font-bold text-zinc-900 dark:text-white sm:text-6xl"
+            className={`inline-block text-4xl font-bold leading-[1.3] text-zinc-900 dark:text-white sm:text-6xl sm:leading-[1.3] rainbow-shimmer-${index + 1}`}
           >
             {word}
           </motion.span>

@@ -32,14 +32,7 @@ export default async function ThisWeekPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Gallery" user={session?.user}>
-        <Link
-          href="/"
-          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-        >
-          Back to Home
-        </Link>
-      </Header>
+      <Header title="Gallery" user={session?.user} />
 
       <main className="mx-auto max-w-6xl px-6 py-12">
         <section className="mb-12 text-center">
@@ -50,7 +43,7 @@ export default async function ThisWeekPage() {
             {[prompt.word1, prompt.word2, prompt.word3].map((word, index) => (
               <span
                 key={index}
-                className="text-3xl font-bold text-zinc-900 dark:text-white sm:text-5xl"
+                className={`inline-block text-3xl font-bold leading-[1.3] text-zinc-900 dark:text-white sm:text-5xl sm:leading-[1.3] rainbow-shimmer-${index + 1}`}
               >
                 {word}
               </span>

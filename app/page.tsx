@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
 import { SignInButton } from "@/components/auth-button";
@@ -19,38 +18,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-black">
-      <Header user={session?.user}>
-        <Link
-          href="/this-week"
-          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-        >
-          Gallery
-        </Link>
-        {session ? (
-          <>
-            <Link
-              href="/play"
-              className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-            >
-              Play
-            </Link>
-            <Link
-              href="/history"
-              className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-            >
-              History
-            </Link>
-            {session.user.isAdmin && (
-              <Link
-                href="/admin"
-                className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-              >
-                Admin
-              </Link>
-            )}
-          </>
-        ) : null}
-      </Header>
+      <Header user={session?.user} />
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
         {prompt ? (

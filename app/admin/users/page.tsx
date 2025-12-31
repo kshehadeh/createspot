@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
 import { Header } from "@/components/header";
 import { UsersList } from "./users-list";
 
@@ -32,20 +31,7 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Users" user={session.user}>
-        <Link
-          href="/admin"
-          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-        >
-          Back to Admin
-        </Link>
-        <Link
-          href="/"
-          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-        >
-          Home
-        </Link>
-      </Header>
+      <Header title="Users" user={session.user} />
 
       <main className="mx-auto max-w-4xl px-6 py-12">
         <section>

@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/header";
@@ -39,20 +38,7 @@ export default async function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="History" user={session.user}>
-        <Link
-          href="/play"
-          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-        >
-          Play
-        </Link>
-        <Link
-          href="/"
-          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-        >
-          Home
-        </Link>
-      </Header>
+      <Header title="History" user={session.user} />
 
       <main className="mx-auto max-w-5xl px-6 py-12">
         <h1 className="mb-8 text-2xl font-semibold text-zinc-900 dark:text-white">

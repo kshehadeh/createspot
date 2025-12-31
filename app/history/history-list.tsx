@@ -85,8 +85,8 @@ export function HistoryList({
           {index > 0 && (
             <div className="border-t border-zinc-200 dark:border-zinc-800" />
           )}
-          <div className="flex items-center gap-6 py-6">
-            <div className="w-48 shrink-0">
+          <div className="flex flex-col gap-6 py-6 md:flex-row md:items-center">
+            <div className="w-full shrink-0 md:w-48">
               <p className="text-sm font-medium text-zinc-900 dark:text-white">
                 {formatDateRangeUTC(
                   new Date(prompt.weekStart),
@@ -111,10 +111,10 @@ export function HistoryList({
                     <button
                       type="button"
                       onClick={() => setSelected({ submission, word })}
-                      className="flex items-center gap-3 rounded-lg p-1 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      className="flex flex-col items-center gap-2 rounded-lg p-1 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 md:flex-row md:gap-3"
                     >
                       {submission.imageUrl ? (
-                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800 md:h-16 md:w-16">
                           <Image
                             src={submission.imageUrl}
                             alt={submission.title || word}
@@ -132,7 +132,7 @@ export function HistoryList({
                           </p>
                         </div>
                       ) : null}
-                      <div className="min-w-0 text-left">
+                      <div className="min-w-0 text-center md:text-left">
                         <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
                           {word}
                         </p>
