@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   if (!word1 || !word2 || !word3 || !weekStart) {
     return NextResponse.json(
       { error: "Missing required fields" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest) {
   if (!id) {
     return NextResponse.json(
       { error: "Prompt ID is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -83,7 +83,7 @@ export async function PUT(request: NextRequest) {
   if (existingPrompt._count.submissions > 0) {
     return NextResponse.json(
       { error: "Cannot edit a prompt that has submissions" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -115,7 +115,7 @@ export async function DELETE(request: NextRequest) {
   if (!id) {
     return NextResponse.json(
       { error: "Prompt ID is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -135,7 +135,7 @@ export async function DELETE(request: NextRequest) {
   if (existingPrompt._count.submissions > 0) {
     return NextResponse.json(
       { error: "Cannot delete a prompt that has submissions" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

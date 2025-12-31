@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   if (!promptId) {
     return NextResponse.json(
       { error: "Prompt ID is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -39,10 +39,10 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { promptId, wordIndex, title, imageUrl, text } = body;
 
-  if (!promptId || !wordIndex || (wordIndex < 1 || wordIndex > 3)) {
+  if (!promptId || !wordIndex || wordIndex < 1 || wordIndex > 3) {
     return NextResponse.json(
       { error: "Invalid prompt ID or word index" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
   if (now < prompt.weekStart || now > prompt.weekEnd) {
     return NextResponse.json(
       { error: "This prompt is no longer active" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -103,7 +103,7 @@ export async function DELETE(request: NextRequest) {
   if (!submissionId) {
     return NextResponse.json(
       { error: "Submission ID is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -115,7 +115,7 @@ export async function DELETE(request: NextRequest) {
   if (!submission || submission.userId !== session.user.id) {
     return NextResponse.json(
       { error: "Submission not found or unauthorized" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 

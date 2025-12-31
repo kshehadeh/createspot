@@ -81,7 +81,10 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
               const isLoading = loadingUserId === user.id;
 
               return (
-                <tr key={user.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                <tr
+                  key={user.id}
+                  className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {user.image ? (
@@ -94,7 +97,9 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
                       ) : (
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
                           <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                            {user.name?.charAt(0) || user.email?.charAt(0) || "?"}
+                            {user.name?.charAt(0) ||
+                              user.email?.charAt(0) ||
+                              "?"}
                           </span>
                         </div>
                       )}

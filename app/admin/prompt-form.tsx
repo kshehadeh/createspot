@@ -11,13 +11,15 @@ const dictionaryCache = new Map<string, boolean>();
 async function isValidWord(word: string): Promise<boolean> {
   const trimmed = word.trim().toLowerCase();
   if (!trimmed || trimmed.length < 2) return true;
-  
+
   if (dictionaryCache.has(trimmed)) {
     return dictionaryCache.get(trimmed)!;
   }
-  
+
   try {
-    const response = await fetch(`/api/words/validate?word=${encodeURIComponent(trimmed)}`);
+    const response = await fetch(
+      `/api/words/validate?word=${encodeURIComponent(trimmed)}`,
+    );
     if (!response.ok) return true;
     const data = await response.json();
     const isValid = data.valid === true;
@@ -49,7 +51,9 @@ interface PromptFormProps {
 }
 
 function getMondayUTC(date: Date): Date {
-  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const d = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
   const day = d.getUTCDay();
   const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1);
   d.setUTCDate(diff);
@@ -71,12 +75,14 @@ function getWeekKey(monday: Date): string {
   return monday.toISOString().split("T")[0];
 }
 
-function getRecentlyUsedWords(prompts: PromptWithSubmissionCount[]): Map<string, Date> {
+function getRecentlyUsedWords(
+  prompts: PromptWithSubmissionCount[],
+): Map<string, Date> {
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-  
+
   const wordMap = new Map<string, Date>();
-  
+
   for (const prompt of prompts) {
     const promptDate = new Date(prompt.weekStart);
     if (promptDate >= oneYearAgo) {
@@ -90,11 +96,16 @@ function getRecentlyUsedWords(prompts: PromptWithSubmissionCount[]): Map<string,
       }
     }
   }
-  
+
   return wordMap;
 }
 
-export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandled, onModeChange }: PromptFormProps) {
+export function PromptForm({
+  prompts,
+  externalSelectedPromptId,
+  onSelectionHandled,
+  onModeChange,
+}: PromptFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -104,7 +115,9 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
   const [selectedPromptId, setSelectedPromptId] = useState<string>("");
 
   const selectedPrompt = prompts.find((p) => p.id === selectedPromptId);
-  const hasSubmissions = selectedPrompt ? selectedPrompt._count.submissions > 0 : false;
+  const hasSubmissions = selectedPrompt
+    ? selectedPrompt._count.submissions > 0
+    : false;
 
   const [word1, setWord1] = useState("");
   const [word2, setWord2] = useState("");
@@ -115,37 +128,46 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
   const [word2Invalid, setWord2Invalid] = useState(false);
   const [word3Invalid, setWord3Invalid] = useState(false);
   const [checkingWords, setCheckingWords] = useState<Set<number>>(new Set());
-  const [loadingRandomWord, setLoadingRandomWord] = useState<Set<number>>(new Set());
+  const [loadingRandomWord, setLoadingRandomWord] = useState<Set<number>>(
+    new Set(),
+  );
 
   const debounceTimers = useRef<{ [key: number]: NodeJS.Timeout }>({});
 
-  const checkWord = useCallback(async (word: string, wordIndex: number, setInvalid: (v: boolean) => void) => {
-    if (debounceTimers.current[wordIndex]) {
-      clearTimeout(debounceTimers.current[wordIndex]);
-    }
+  const checkWord = useCallback(
+    async (
+      word: string,
+      wordIndex: number,
+      setInvalid: (v: boolean) => void,
+    ) => {
+      if (debounceTimers.current[wordIndex]) {
+        clearTimeout(debounceTimers.current[wordIndex]);
+      }
 
-    if (!word.trim() || mode !== "create") {
-      setInvalid(false);
-      setCheckingWords(prev => {
-        const next = new Set(prev);
-        next.delete(wordIndex);
-        return next;
-      });
-      return;
-    }
+      if (!word.trim() || mode !== "create") {
+        setInvalid(false);
+        setCheckingWords((prev) => {
+          const next = new Set(prev);
+          next.delete(wordIndex);
+          return next;
+        });
+        return;
+      }
 
-    setCheckingWords(prev => new Set(prev).add(wordIndex));
+      setCheckingWords((prev) => new Set(prev).add(wordIndex));
 
-    debounceTimers.current[wordIndex] = setTimeout(async () => {
-      const valid = await isValidWord(word);
-      setInvalid(!valid);
-      setCheckingWords(prev => {
-        const next = new Set(prev);
-        next.delete(wordIndex);
-        return next;
-      });
-    }, 500);
-  }, [mode]);
+      debounceTimers.current[wordIndex] = setTimeout(async () => {
+        const valid = await isValidWord(word);
+        setInvalid(!valid);
+        setCheckingWords((prev) => {
+          const next = new Set(prev);
+          next.delete(wordIndex);
+          return next;
+        });
+      }, 500);
+    },
+    [mode],
+  );
 
   useEffect(() => {
     checkWord(word1, 1, setWord1Invalid);
@@ -176,7 +198,9 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
   }, [externalSelectedPromptId, prompts, onSelectionHandled, onModeChange]);
 
   const takenWeekKeys = useMemo(() => {
-    return new Set(prompts.map((p) => getWeekKey(getMondayUTC(new Date(p.weekStart)))));
+    return new Set(
+      prompts.map((p) => getWeekKey(getMondayUTC(new Date(p.weekStart)))),
+    );
   }, [prompts]);
 
   const recentlyUsedWords = useMemo(() => {
@@ -187,7 +211,9 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
     if (!word.trim() || mode !== "create") return null;
     const lastUsed = recentlyUsedWords.get(word.toLowerCase().trim());
     if (lastUsed) {
-      const monthsAgo = Math.floor((Date.now() - lastUsed.getTime()) / (1000 * 60 * 60 * 24 * 30));
+      const monthsAgo = Math.floor(
+        (Date.now() - lastUsed.getTime()) / (1000 * 60 * 60 * 24 * 30),
+      );
       if (monthsAgo < 1) {
         return `"${word}" was used less than a month ago`;
       }
@@ -200,9 +226,18 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
   const word2RecentWarning = getRecentlyUsedWarning(word2);
   const word3RecentWarning = getRecentlyUsedWarning(word3);
 
-  const word1DictWarning = word1Invalid && mode === "create" ? `"${word1}" may not be a valid dictionary word` : null;
-  const word2DictWarning = word2Invalid && mode === "create" ? `"${word2}" may not be a valid dictionary word` : null;
-  const word3DictWarning = word3Invalid && mode === "create" ? `"${word3}" may not be a valid dictionary word` : null;
+  const word1DictWarning =
+    word1Invalid && mode === "create"
+      ? `"${word1}" may not be a valid dictionary word`
+      : null;
+  const word2DictWarning =
+    word2Invalid && mode === "create"
+      ? `"${word2}" may not be a valid dictionary word`
+      : null;
+  const word3DictWarning =
+    word3Invalid && mode === "create"
+      ? `"${word3}" may not be a valid dictionary word`
+      : null;
 
   const word1Warning = word1RecentWarning || word1DictWarning;
   const word2Warning = word2RecentWarning || word2DictWarning;
@@ -212,15 +247,18 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
   const word2Checking = checkingWords.has(2);
   const word3Checking = checkingWords.has(3);
 
-  async function fillRandomWord(wordIndex: number, setWord: (word: string) => void) {
-    setLoadingRandomWord(prev => new Set(prev).add(wordIndex));
+  async function fillRandomWord(
+    wordIndex: number,
+    setWord: (word: string) => void,
+  ) {
+    setLoadingRandomWord((prev) => new Set(prev).add(wordIndex));
     try {
       const word = await getRandomWord();
       if (word) {
         setWord(word);
       }
     } finally {
-      setLoadingRandomWord(prev => {
+      setLoadingRandomWord((prev) => {
         const next = new Set(prev);
         next.delete(wordIndex);
         return next;
@@ -263,7 +301,9 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
         setWord1(firstEditable.word1);
         setWord2(firstEditable.word2);
         setWord3(firstEditable.word3);
-        setSelectedWeek(getWeekKey(getMondayUTC(new Date(firstEditable.weekStart))));
+        setSelectedWeek(
+          getWeekKey(getMondayUTC(new Date(firstEditable.weekStart))),
+        );
         onModeChange?.("edit", firstEditable.id);
       }
     }
@@ -419,7 +459,11 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
             {editablePrompts.map((prompt) => (
               <option key={prompt.id} value={prompt.id}>
                 {prompt.word1} / {prompt.word2} / {prompt.word3} (
-                {formatDateRangeUTC(new Date(prompt.weekStart), new Date(prompt.weekEnd))})
+                {formatDateRangeUTC(
+                  new Date(prompt.weekStart),
+                  new Date(prompt.weekEnd),
+                )}
+                )
               </option>
             ))}
           </select>
@@ -483,7 +527,10 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
               Week
             </label>
             <p className="rounded-lg border border-zinc-200 bg-zinc-100 px-4 py-2 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
-              {formatDateRangeUTC(new Date(selectedPrompt.weekStart), new Date(selectedPrompt.weekEnd))}
+              {formatDateRangeUTC(
+                new Date(selectedPrompt.weekStart),
+                new Date(selectedPrompt.weekEnd),
+              )}
             </p>
           </div>
         ) : null}
@@ -519,13 +566,38 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
                   title="Fill with random word"
                 >
                   {loadingRandomWord.has(1) ? (
-                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    <svg
+                      className="h-4 w-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                   ) : (
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                   )}
                 </button>
@@ -533,9 +605,13 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
             </div>
             <p className="mt-1 h-4 text-xs">
               {word1Checking ? (
-                <span className="text-zinc-500 dark:text-zinc-400">Checking...</span>
+                <span className="text-zinc-500 dark:text-zinc-400">
+                  Checking...
+                </span>
               ) : word1Warning ? (
-                <span className="text-amber-600 dark:text-amber-400">{word1Warning}</span>
+                <span className="text-amber-600 dark:text-amber-400">
+                  {word1Warning}
+                </span>
               ) : null}
             </p>
           </div>
@@ -569,13 +645,38 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
                   title="Fill with random word"
                 >
                   {loadingRandomWord.has(2) ? (
-                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    <svg
+                      className="h-4 w-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                   ) : (
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                   )}
                 </button>
@@ -583,9 +684,13 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
             </div>
             <p className="mt-1 h-4 text-xs">
               {word2Checking ? (
-                <span className="text-zinc-500 dark:text-zinc-400">Checking...</span>
+                <span className="text-zinc-500 dark:text-zinc-400">
+                  Checking...
+                </span>
               ) : word2Warning ? (
-                <span className="text-amber-600 dark:text-amber-400">{word2Warning}</span>
+                <span className="text-amber-600 dark:text-amber-400">
+                  {word2Warning}
+                </span>
               ) : null}
             </p>
           </div>
@@ -619,13 +724,38 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
                   title="Fill with random word"
                 >
                   {loadingRandomWord.has(3) ? (
-                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    <svg
+                      className="h-4 w-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                   ) : (
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                   )}
                 </button>
@@ -633,9 +763,13 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
             </div>
             <p className="mt-1 h-4 text-xs">
               {word3Checking ? (
-                <span className="text-zinc-500 dark:text-zinc-400">Checking...</span>
+                <span className="text-zinc-500 dark:text-zinc-400">
+                  Checking...
+                </span>
               ) : word3Warning ? (
-                <span className="text-amber-600 dark:text-amber-400">{word3Warning}</span>
+                <span className="text-amber-600 dark:text-amber-400">
+                  {word3Warning}
+                </span>
               ) : null}
             </p>
           </div>
@@ -644,10 +778,19 @@ export function PromptForm({ prompts, externalSelectedPromptId, onSelectionHandl
         <div className="flex gap-4">
           <button
             type="submit"
-            disabled={isLoading || isDeleting || hasSubmissions || (mode === "create" && availableWeeks.length === 0)}
+            disabled={
+              isLoading ||
+              isDeleting ||
+              hasSubmissions ||
+              (mode === "create" && availableWeeks.length === 0)
+            }
             className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
-            {isLoading ? "Saving..." : mode === "edit" ? "Update Prompt" : "Create Prompt"}
+            {isLoading
+              ? "Saving..."
+              : mode === "edit"
+                ? "Update Prompt"
+                : "Create Prompt"}
           </button>
           {mode === "edit" && selectedPromptId && !hasSubmissions && (
             <button

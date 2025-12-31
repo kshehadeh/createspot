@@ -14,7 +14,11 @@ interface PromptSidebarProps {
   editingPromptId: string | null;
 }
 
-export function PromptSidebar({ prompts, onEditPrompt, editingPromptId }: PromptSidebarProps) {
+export function PromptSidebar({
+  prompts,
+  onEditPrompt,
+  editingPromptId,
+}: PromptSidebarProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -62,7 +66,7 @@ export function PromptSidebar({ prompts, onEditPrompt, editingPromptId }: Prompt
       {prompts.map((prompt) => {
         const isEditing = editingPromptId === prompt.id;
         const canEdit = prompt._count.submissions === 0;
-        
+
         return (
           <div
             key={prompt.id}
@@ -86,11 +90,15 @@ export function PromptSidebar({ prompts, onEditPrompt, editingPromptId }: Prompt
               </span>
             </div>
             <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
-              {formatDateRangeUTC(new Date(prompt.weekStart), new Date(prompt.weekEnd))}
+              {formatDateRangeUTC(
+                new Date(prompt.weekStart),
+                new Date(prompt.weekEnd),
+              )}
             </p>
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                {prompt._count.submissions} submission{prompt._count.submissions !== 1 ? "s" : ""}
+                {prompt._count.submissions} submission
+                {prompt._count.submissions !== 1 ? "s" : ""}
               </span>
               {canEdit && (
                 <div className="flex items-center gap-1">

@@ -32,7 +32,7 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Users">
+      <Header title="Users" user={session.user}>
         <Link
           href="/admin"
           className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"

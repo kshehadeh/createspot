@@ -48,12 +48,12 @@ export default async function PlayPage() {
       acc[sub.wordIndex] = sub;
       return acc;
     },
-    {} as Record<number, (typeof submissions)[0]>
+    {} as Record<number, (typeof submissions)[0]>,
   );
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Play">
+      <Header title="Play" user={session.user}>
         <Link
           href="/"
           className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"

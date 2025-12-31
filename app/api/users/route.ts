@@ -37,7 +37,7 @@ export async function PATCH(request: NextRequest) {
   if (!userId || typeof isAdmin !== "boolean") {
     return NextResponse.json(
       { error: "User ID and isAdmin status are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -45,7 +45,7 @@ export async function PATCH(request: NextRequest) {
   if (userId === session.user.id) {
     return NextResponse.json(
       { error: "You cannot change your own admin status" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

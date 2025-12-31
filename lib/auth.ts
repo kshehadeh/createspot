@@ -4,7 +4,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
 
 const isProduction = process.env.NODE_ENV === "production";
-const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith("https://") ?? isProduction;
+const useSecureCookies =
+  process.env.NEXTAUTH_URL?.startsWith("https://") ?? isProduction;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),

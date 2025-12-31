@@ -7,12 +7,11 @@ export default function SignInPage() {
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg dark:bg-zinc-900">
         <div className="mb-6 flex items-center justify-center gap-2 text-zinc-900 dark:text-white">
           <Logo className="h-6 w-10" />
-          <h1 className="text-2xl font-normal">
-            Sign in to Prompts
-          </h1>
+          <h1 className="text-2xl font-normal">Sign in to Prompts</h1>
         </div>
         <p className="mb-8 text-center text-zinc-600 dark:text-zinc-400">
-          Join our creative community and share your interpretations of the weekly prompts.
+          Join our creative community and share your interpretations of the
+          weekly prompts.
         </p>
         <form
           action={async () => {

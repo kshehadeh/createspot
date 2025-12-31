@@ -18,13 +18,14 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
 
   const filteredPrompts = useMemo(() => {
     const now = new Date();
-    const sorted = [...prompts].sort((a, b) => 
-      new Date(a.weekStart).getTime() - new Date(b.weekStart).getTime()
+    const sorted = [...prompts].sort(
+      (a, b) =>
+        new Date(a.weekStart).getTime() - new Date(b.weekStart).getTime(),
     );
-    
+
     const pastPrompts: PromptWithSubmissionCount[] = [];
     const futurePrompts: PromptWithSubmissionCount[] = [];
-    
+
     for (const prompt of sorted) {
       if (new Date(prompt.weekEnd) < now) {
         pastPrompts.push(prompt);
@@ -32,10 +33,10 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
         futurePrompts.push(prompt);
       }
     }
-    
+
     const recentPast = pastPrompts.slice(-5);
     const upcomingFuture = futurePrompts.slice(0, 5);
-    
+
     return [...recentPast, ...upcomingFuture];
   }, [prompts]);
 
@@ -60,19 +61,17 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
 
   return (
     <div className="flex gap-8">
-      <section 
-        id="prompt-form-section" 
+      <section
+        id="prompt-form-section"
         className={`flex-1 rounded-3xl p-8 ${
-          showHighlight 
-            ? "animate-glow-pulse" 
-            : ""
+          showHighlight ? "animate-glow-pulse" : ""
         }`}
       >
         <h2 className="mb-6 text-2xl font-semibold text-zinc-900 dark:text-white">
           Manage Prompts
         </h2>
-        <PromptForm 
-          prompts={prompts} 
+        <PromptForm
+          prompts={prompts}
           externalSelectedPromptId={selectedPromptId}
           onSelectionHandled={handleSelectionHandled}
           onModeChange={handleFormModeChange}
@@ -84,8 +83,8 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
           <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">
             Recent & Upcoming
           </h2>
-          <PromptSidebar 
-            prompts={filteredPrompts} 
+          <PromptSidebar
+            prompts={filteredPrompts}
             onEditPrompt={handleEditPrompt}
             editingPromptId={editingPromptId}
           />

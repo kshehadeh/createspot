@@ -57,10 +57,7 @@ export function AnimatedCta({ isLoggedIn }: AnimatedCtaProps) {
       className="mb-12"
     >
       {isLoggedIn ? (
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Link
             href="/play"
             className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
@@ -145,9 +142,9 @@ export function AnimatedHowItWorks() {
         How it works
       </h2>
       <p className="text-zinc-600 dark:text-zinc-400">
-        Each week, we share three words. Pick one (or more!) and create
-        something inspired by it - an image, a piece of writing, or both. Share
-        your interpretation and see how others bring the same words to life.
+        Each week, we share three words. Pick one (or more!) and create a photo
+        inspired by it. Share your photo and see how others bring the same words
+        to life.
       </p>
     </motion.section>
   );

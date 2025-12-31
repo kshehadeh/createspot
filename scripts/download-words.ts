@@ -27,7 +27,7 @@ async function downloadWords(): Promise<void> {
 
     // Filter to reasonable words (2-15 chars, only letters)
     const words = lines.filter(
-      (word) => word.length >= 2 && word.length <= 15 && /^[a-z]+$/.test(word)
+      (word) => word.length >= 2 && word.length <= 15 && /^[a-z]+$/.test(word),
     );
 
     // Remove duplicates
@@ -47,7 +47,7 @@ async function downloadWords(): Promise<void> {
   } catch (error) {
     console.error(
       "Error downloading word list:",
-      error instanceof Error ? error.message : error
+      error instanceof Error ? error.message : error,
     );
 
     // If file doesn't exist, create an empty one so the app doesn't break

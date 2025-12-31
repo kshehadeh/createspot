@@ -19,7 +19,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-black">
-      <Header>
+      <Header user={session?.user}>
         <Link
           href="/this-week"
           className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
@@ -33,6 +33,12 @@ export default async function Home() {
               className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             >
               Play
+            </Link>
+            <Link
+              href="/history"
+              className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            >
+              History
             </Link>
             {session.user.isAdmin && (
               <Link

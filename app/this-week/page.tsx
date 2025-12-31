@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { auth } from "@/lib/auth";
 import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
 import { Header } from "@/components/header";
 import { GalleryGrid } from "./gallery-grid";
@@ -6,6 +7,7 @@ import { GalleryGrid } from "./gallery-grid";
 export const dynamic = "force-dynamic";
 
 export default async function ThisWeekPage() {
+  const session = await auth();
   const prompt = await getCurrentPrompt();
   const submissions = prompt ? await getPromptSubmissions(prompt.id) : [];
 
@@ -30,7 +32,7 @@ export default async function ThisWeekPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Gallery">
+      <Header title="Gallery" user={session?.user}>
         <Link
           href="/"
           className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
