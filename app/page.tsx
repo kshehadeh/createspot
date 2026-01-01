@@ -19,7 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const baseMetadata: Metadata = {
     title: "Prompts",
-    description: "A weekly creative prompt community by iWonder Designs",
+    description:
+      "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
   };
 
   if (mostRecentSubmission?.imageUrl) {
@@ -27,7 +28,8 @@ export async function generateMetadata(): Promise<Metadata> {
       ...baseMetadata,
       openGraph: {
         title: "Prompts",
-        description: "A weekly creative prompt community by iWonder Designs",
+        description:
+          "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
         images: [
           {
             url: mostRecentSubmission.imageUrl,
@@ -40,7 +42,8 @@ export async function generateMetadata(): Promise<Metadata> {
       twitter: {
         card: "summary_large_image",
         title: "Prompts",
-        description: "A weekly creative prompt community by iWonder Designs",
+        description:
+          "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
         images: [mostRecentSubmission.imageUrl],
       },
     };

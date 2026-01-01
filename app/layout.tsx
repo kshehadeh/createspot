@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Prompts",
-  description: "A weekly creative prompt community by iWonder Designs",
+  description:
+    "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
 };
 
 export default function RootLayout({

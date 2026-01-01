@@ -295,7 +295,8 @@ export function SubmissionSlots({
             )}
 
             <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
-              Submit an image, text, or both. At least one is required.
+              Submit a photo, artwork, text, or any combination. At least one
+              is required.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -319,7 +320,7 @@ export function SubmissionSlots({
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  Image (optional)
+                  Image/Artwork (optional)
                 </label>
                 {formData.imageUrl ? (
                   <div className="relative">
@@ -369,7 +370,9 @@ export function SubmissionSlots({
                       />
                     </svg>
                     <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                      {isUploading ? "Uploading..." : "Click to upload image"}
+                      {isUploading
+                        ? "Uploading..."
+                        : "Click to upload photo or artwork"}
                     </span>
                     <input
                       type="file"

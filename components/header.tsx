@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, startTransition } from "react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Logo } from "./logo";
@@ -49,7 +49,9 @@ export function Header({ title, user }: HeaderProps) {
 
   // Close menu on route change
   useEffect(() => {
-    setIsMenuOpen(false);
+    startTransition(() => {
+      setIsMenuOpen(false);
+    });
   }, [pathname]);
 
   return (

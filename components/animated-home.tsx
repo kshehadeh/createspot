@@ -189,9 +189,9 @@ export function AnimatedHowItWorks() {
         How it works
       </h2>
       <p className="text-zinc-600 dark:text-zinc-400">
-        Each week, we share three words. Pick one (or more!) and create a photo
-        inspired by it. Share your photo and see how others bring the same words
-        to life.
+        Each week, we share three words. Pick one (or more!) and create a photo,
+        artwork, or text inspired by it. Share your creation and see how others
+        bring the same words to life.
       </p>
     </motion.section>
   );
