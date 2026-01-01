@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
 import { SignInButton } from "@/components/auth-button";
@@ -10,6 +11,43 @@ import {
 } from "@/components/animated-home";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prompt = await getCurrentPrompt();
+  const submissions = prompt ? await getPromptSubmissions(prompt.id, 1) : [];
+  const mostRecentSubmission = submissions[0];
+
+  const baseMetadata: Metadata = {
+    title: "Prompts",
+    description: "A weekly creative prompt community by iWonder Designs",
+  };
+
+  if (mostRecentSubmission?.imageUrl) {
+    return {
+      ...baseMetadata,
+      openGraph: {
+        title: "Prompts",
+        description: "A weekly creative prompt community by iWonder Designs",
+        images: [
+          {
+            url: mostRecentSubmission.imageUrl,
+            width: 1200,
+            height: 630,
+            alt: mostRecentSubmission.title || "Latest submission",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Prompts",
+        description: "A weekly creative prompt community by iWonder Designs",
+        images: [mostRecentSubmission.imageUrl],
+      },
+    };
+  }
+
+  return baseMetadata;
+}
 
 export default async function Home() {
   const session = await auth();
