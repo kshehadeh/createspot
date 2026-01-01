@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Submission } from "@/app/generated/prisma/client";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
+import { ConfirmModal } from "@/components/confirm-modal";
 
 interface SubmissionSlotsProps {
   promptId: string;
@@ -22,6 +23,8 @@ export function SubmissionSlots({
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
 
   const [formData, setFormData] = useState<{
     title: string;
@@ -108,11 +111,49 @@ export function SubmissionSlots({
     }
   }
 
+  async function handleClearAll() {
+    setIsClearing(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/submissions?promptId=${promptId}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to clear submissions");
+      }
+
+      setShowClearModal(false);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to clear submissions");
+    } finally {
+      setIsClearing(false);
+    }
+  }
+
+  const hasAnySubmissions = Object.keys(existingSubmissions).length > 0;
+
   return (
     <div className="space-y-6">
-      <h2 className="text-center text-lg font-medium text-zinc-900 dark:text-white">
-        Your submissions
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-medium text-zinc-900 dark:text-white">
+          Your submissions
+        </h2>
+        {hasAnySubmissions && (
+          <button
+            onClick={() => setShowClearModal(true)}
+            className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+          >
+            Clear
+          </button>
+        )}
+      </div>
 
       <div className="grid gap-6 sm:grid-cols-3">
         {words.map((word, index) => {
@@ -346,6 +387,17 @@ export function SubmissionSlots({
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showClearModal}
+        title="Clear All Submissions"
+        message="Are you sure you want to clear all submissions for this week? This will permanently delete all your text, titles, and images. This action cannot be undone."
+        confirmLabel="Clear All"
+        cancelLabel="Cancel"
+        onConfirm={handleClearAll}
+        onCancel={() => setShowClearModal(false)}
+        isLoading={isClearing}
+      />
     </div>
   );
 }

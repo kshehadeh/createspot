@@ -145,10 +145,40 @@ export async function DELETE(request: NextRequest) {
 
   const searchParams = request.nextUrl.searchParams;
   const submissionId = searchParams.get("id");
+  const promptId = searchParams.get("promptId");
 
+  // If promptId is provided, clear all submissions for that prompt
+  if (promptId) {
+    // Get all submissions for this user and prompt
+    const submissions = await prisma.submission.findMany({
+      where: {
+        userId: session.user.id,
+        promptId,
+      },
+    });
+
+    // Delete all images from R2
+    for (const submission of submissions) {
+      if (submission.imageUrl) {
+        await deleteImageFromR2(submission.imageUrl);
+      }
+    }
+
+    // Delete all submissions
+    await prisma.submission.deleteMany({
+      where: {
+        userId: session.user.id,
+        promptId,
+      },
+    });
+
+    return NextResponse.json({ success: true });
+  }
+
+  // Otherwise, delete a single submission by ID
   if (!submissionId) {
     return NextResponse.json(
-      { error: "Submission ID is required" },
+      { error: "Submission ID or Prompt ID is required" },
       { status: 400 },
     );
   }
