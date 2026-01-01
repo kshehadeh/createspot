@@ -53,6 +53,34 @@ export function SubmissionSlots({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Client-side validation before upload
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    const ALLOWED_TYPES = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ];
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setError(
+        "Invalid file type. Please choose a JPEG, PNG, WebP, or GIF image.",
+      );
+      // Reset the file input
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      setError(
+        `File is too large (${fileSizeMB} MB). Maximum file size is 10 MB. Please choose a smaller image.`,
+      );
+      // Reset the file input
+      e.target.value = "";
+      return;
+    }
+
     setIsUploading(true);
     setError(null);
 

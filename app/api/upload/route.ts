@@ -38,8 +38,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (file.size > MAX_FILE_SIZE) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
       return NextResponse.json(
-        { error: "File too large. Maximum size is 10MB" },
+        {
+          error: `File is too large (${fileSizeMB} MB). Maximum file size is 10 MB. Please choose a smaller image.`,
+        },
         { status: 400 },
       );
     }
