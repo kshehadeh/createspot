@@ -18,6 +18,18 @@ export const metadata: Metadata = {
   title: "Prompts",
   description:
     "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+  openGraph: {
+    title: "Prompts",
+    description:
+      "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Prompts",
+    description:
+      "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+  },
 };
 
 export default function RootLayout({

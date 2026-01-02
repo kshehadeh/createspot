@@ -13,43 +13,23 @@ import {
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const prompt = await getCurrentPrompt();
-  const submissions = prompt ? await getPromptSubmissions(prompt.id, 1) : [];
-  const mostRecentSubmission = submissions[0];
-
-  const baseMetadata: Metadata = {
+  return {
     title: "Prompts",
     description:
       "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+    openGraph: {
+      title: "Prompts",
+      description:
+        "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Prompts",
+      description:
+        "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+    },
   };
-
-  if (mostRecentSubmission?.imageUrl) {
-    return {
-      ...baseMetadata,
-      openGraph: {
-        title: "Prompts",
-        description:
-          "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
-        images: [
-          {
-            url: mostRecentSubmission.imageUrl,
-            width: 1200,
-            height: 630,
-            alt: mostRecentSubmission.title || "Latest submission",
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "Prompts",
-        description:
-          "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
-        images: [mostRecentSubmission.imageUrl],
-      },
-    };
-  }
-
-  return baseMetadata;
 }
 
 export default async function Home() {
