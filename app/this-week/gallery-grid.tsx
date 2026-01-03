@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
@@ -80,6 +81,8 @@ function GalleryContent({
   selectedSubmission: Submission | null;
   setSelectedSubmission: (submission: Submission | null) => void;
 }) {
+  const router = useRouter();
+
   return (
     <div>
       <div className="mb-8 flex flex-wrap justify-center gap-2">
@@ -124,7 +127,7 @@ function GalleryContent({
               transition={{ duration: 0.3 }}
               whileHover={{ y: -4 }}
               className="cursor-pointer overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
-              onClick={() => setSelectedSubmission(submission)}
+              onClick={() => router.push(`/s/${submission.id}`)}
             >
               {submission.imageUrl ? (
                 <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">

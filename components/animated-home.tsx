@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { SignInButton } from "./auth-button";
 import { SubmissionLightbox } from "./submission-lightbox";
 import { TextThumbnail } from "./text-thumbnail";
@@ -131,6 +132,7 @@ function AnimatedGalleryContent({
 }) {
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
+  const router = useRouter();
 
   return (
     <>
@@ -147,7 +149,7 @@ function AnimatedGalleryContent({
           {submissions.map((submission, index) => (
             <motion.div
               key={submission.id}
-              onClick={() => setSelectedSubmission(submission)}
+              onClick={() => router.push(`/s/${submission.id}`)}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -164,7 +166,7 @@ function AnimatedGalleryContent({
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  setSelectedSubmission(submission);
+                  router.push(`/s/${submission.id}`);
                 }
               }}
               aria-label={`View submission: ${submission.title || "Untitled"}`}
