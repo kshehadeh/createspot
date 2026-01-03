@@ -1,9 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Prompt } from "@/app/generated/prisma/client";
-import { formatDateRangeUTC } from "@/lib/date-utils";
+import {
+  formatDateRangeUTC,
+  daysBetween,
+  isCurrentPrompt,
+} from "@/lib/date-utils";
 import { ConfirmModal } from "@/components/confirm-modal";
 
 type PromptWithSubmissionCount = Prompt & { _count: { submissions: number } };
@@ -61,11 +65,45 @@ export function PromptSidebar({
 
   const promptToDelete = prompts.find((p) => p.id === confirmDeleteId);
 
+  const { currentPrompt, nextPrompt } = useMemo(() => {
+    const now = new Date();
+    let current: PromptWithSubmissionCount | null = null;
+    let next: PromptWithSubmissionCount | null = null;
+
+    for (const prompt of prompts) {
+      const weekStart = new Date(prompt.weekStart);
+      const weekEnd = new Date(prompt.weekEnd);
+
+      if (isCurrentPrompt(weekStart, weekEnd)) {
+        current = prompt;
+      } else if (weekStart > now && (!next || weekStart < new Date(next.weekStart))) {
+        next = prompt;
+      }
+    }
+
+    return { currentPrompt: current, nextPrompt: next };
+  }, [prompts]);
+
   return (
     <div className="space-y-2">
       {prompts.map((prompt) => {
         const isEditing = editingPromptId === prompt.id;
         const canEdit = prompt._count.submissions === 0;
+        const weekStart = new Date(prompt.weekStart);
+        const weekEnd = new Date(prompt.weekEnd);
+        const isCurrent = currentPrompt?.id === prompt.id;
+        const isNext = nextPrompt?.id === prompt.id;
+
+        let daysInfo: string | null = null;
+        if (isCurrent) {
+          const now = new Date();
+          const daysRemaining = daysBetween(now, weekEnd);
+          daysInfo = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""} remaining`;
+        } else if (isNext) {
+          const now = new Date();
+          const daysUntil = daysBetween(now, weekStart);
+          daysInfo = `${daysUntil} day${daysUntil !== 1 ? "s" : ""} until next`;
+        }
 
         return (
           <div
@@ -90,11 +128,13 @@ export function PromptSidebar({
               </span>
             </div>
             <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
-              {formatDateRangeUTC(
-                new Date(prompt.weekStart),
-                new Date(prompt.weekEnd),
-              )}
+              {formatDateRangeUTC(weekStart, weekEnd)}
             </p>
+            {daysInfo && (
+              <p className="mb-2 text-xs font-medium text-blue-600 dark:text-blue-400">
+                {daysInfo}
+              </p>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-400 dark:text-zinc-500">
                 {prompt._count.submissions} submission
