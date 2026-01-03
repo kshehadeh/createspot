@@ -5,6 +5,8 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
+import { FavoriteButton } from "@/components/favorite-button";
+import { FavoritesProvider } from "@/components/favorites-provider";
 
 interface Submission {
   id: string;
@@ -17,14 +19,22 @@ interface Submission {
     name: string | null;
     image: string | null;
   };
+  _count: {
+    favorites: number;
+  };
 }
 
 interface GalleryGridProps {
   submissions: Submission[];
   words: string[];
+  isLoggedIn: boolean;
 }
 
-export function GalleryGrid({ submissions, words }: GalleryGridProps) {
+export function GalleryGrid({
+  submissions,
+  words,
+  isLoggedIn,
+}: GalleryGridProps) {
   const [filter, setFilter] = useState<number | null>(null);
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
@@ -33,6 +43,43 @@ export function GalleryGrid({ submissions, words }: GalleryGridProps) {
     ? submissions.filter((s) => s.wordIndex === filter)
     : submissions;
 
+  const submissionIds = submissions.map((s) => s.id);
+
+  return (
+    <FavoritesProvider
+      isLoggedIn={isLoggedIn}
+      initialSubmissionIds={submissionIds}
+    >
+      <GalleryContent
+        words={words}
+        isLoggedIn={isLoggedIn}
+        filter={filter}
+        setFilter={setFilter}
+        filteredSubmissions={filteredSubmissions}
+        selectedSubmission={selectedSubmission}
+        setSelectedSubmission={setSelectedSubmission}
+      />
+    </FavoritesProvider>
+  );
+}
+
+function GalleryContent({
+  words,
+  isLoggedIn,
+  filter,
+  setFilter,
+  filteredSubmissions,
+  selectedSubmission,
+  setSelectedSubmission,
+}: {
+  words: string[];
+  isLoggedIn: boolean;
+  filter: number | null;
+  setFilter: (filter: number | null) => void;
+  filteredSubmissions: Submission[];
+  selectedSubmission: Submission | null;
+  setSelectedSubmission: (submission: Submission | null) => void;
+}) {
   return (
     <div>
       <div className="mb-8 flex flex-wrap justify-center gap-2">
@@ -87,6 +134,13 @@ export function GalleryGrid({ submissions, words }: GalleryGridProps) {
                     alt={submission.title || "Submission"}
                     className="h-full w-full object-cover"
                   />
+                  {isLoggedIn && (
+                    <FavoriteButton
+                      submissionId={submission.id}
+                      size="sm"
+                      className="absolute top-2 right-2"
+                    />
+                  )}
                   {submission.text && (
                     <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">
                       <svg
@@ -106,10 +160,19 @@ export function GalleryGrid({ submissions, words }: GalleryGridProps) {
                   )}
                 </div>
               ) : submission.text ? (
-                <TextThumbnail
-                  text={submission.text}
-                  className="aspect-square"
-                />
+                <div className="relative">
+                  <TextThumbnail
+                    text={submission.text}
+                    className="aspect-square"
+                  />
+                  {isLoggedIn && (
+                    <FavoriteButton
+                      submissionId={submission.id}
+                      size="sm"
+                      className="absolute top-2 right-2"
+                    />
+                  )}
+                </div>
               ) : null}
               <div className="p-4">
                 <div className="mb-2 flex items-center justify-between">

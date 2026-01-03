@@ -51,6 +51,7 @@ export default async function Home() {
               <AnimatedGallery
                 submissions={submissions}
                 words={[prompt.word1, prompt.word2, prompt.word3]}
+                isLoggedIn={!!session}
               />
             )}
           </>

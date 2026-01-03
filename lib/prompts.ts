@@ -18,6 +18,9 @@ export async function getPromptSubmissions(promptId: string, limit?: number) {
       user: {
         select: { id: true, name: true, image: true },
       },
+      _count: {
+        select: { favorites: true },
+      },
     },
     orderBy: { createdAt: "desc" },
     take: limit,

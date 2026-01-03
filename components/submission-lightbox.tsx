@@ -12,6 +12,9 @@ interface LightboxSubmission {
     name: string | null;
     image: string | null;
   };
+  _count?: {
+    favorites: number;
+  };
 }
 
 interface SubmissionLightboxProps {
@@ -29,6 +32,10 @@ export function SubmissionLightbox({
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const hasBoth = hasImage && hasText;
+
+  // Get favorite count - handle both _count and direct favoriteCount
+  const favoriteCount =
+    submission._count?.favorites ?? (submission as any).favoriteCount ?? 0;
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -132,6 +139,23 @@ export function SubmissionLightbox({
                 <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
                   {word}
                 </span>
+                {favoriteCount > 0 && (
+                  <div className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                    <svg
+                      className="h-4 w-4 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                      />
+                    </svg>
+                    <span>{favoriteCount}</span>
+                  </div>
+                )}
               </div>
               {submission.title && (
                 <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-white">
@@ -176,6 +200,23 @@ export function SubmissionLightbox({
               </span>
               {submission.title && (
                 <span className="text-white">{submission.title}</span>
+              )}
+              {favoriteCount > 0 && (
+                <div className="flex items-center gap-1.5 text-white">
+                  <svg
+                    className="h-4 w-4 text-red-400"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                  <span className="text-sm">{favoriteCount}</span>
+                </div>
               )}
               {submission.user && (
                 <>

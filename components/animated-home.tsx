@@ -6,6 +6,8 @@ import Link from "next/link";
 import { SignInButton } from "./auth-button";
 import { SubmissionLightbox } from "./submission-lightbox";
 import { TextThumbnail } from "./text-thumbnail";
+import { FavoriteButton } from "./favorite-button";
+import { FavoritesProvider } from "./favorites-provider";
 
 interface AnimatedHeroProps {
   words: string[];
@@ -86,14 +88,47 @@ interface Submission {
     name: string | null;
     image: string | null;
   };
+  _count: {
+    favorites: number;
+  };
 }
 
 interface AnimatedGalleryProps {
   submissions: Submission[];
   words: string[];
+  isLoggedIn: boolean;
 }
 
-export function AnimatedGallery({ submissions, words }: AnimatedGalleryProps) {
+export function AnimatedGallery({
+  submissions,
+  words,
+  isLoggedIn,
+}: AnimatedGalleryProps) {
+  const submissionIds = submissions.map((s) => s.id);
+
+  return (
+    <FavoritesProvider
+      isLoggedIn={isLoggedIn}
+      initialSubmissionIds={submissionIds}
+    >
+      <AnimatedGalleryContent
+        submissions={submissions}
+        words={words}
+        isLoggedIn={isLoggedIn}
+      />
+    </FavoritesProvider>
+  );
+}
+
+function AnimatedGalleryContent({
+  submissions,
+  words,
+  isLoggedIn,
+}: {
+  submissions: Submission[];
+  words: string[];
+  isLoggedIn: boolean;
+}) {
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
 
@@ -110,9 +145,8 @@ export function AnimatedGallery({ submissions, words }: AnimatedGalleryProps) {
         </h3>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {submissions.map((submission, index) => (
-            <motion.button
+            <motion.div
               key={submission.id}
-              type="button"
               onClick={() => setSelectedSubmission(submission)}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -124,7 +158,16 @@ export function AnimatedGallery({ submissions, words }: AnimatedGalleryProps) {
                 scale: 1.03,
                 transition: { duration: 0.2 },
               }}
-              className="relative aspect-square overflow-hidden rounded-lg bg-zinc-200 dark:bg-zinc-800"
+              className="relative aspect-square overflow-hidden rounded-lg bg-zinc-200 dark:bg-zinc-800 cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedSubmission(submission);
+                }
+              }}
+              aria-label={`View submission: ${submission.title || "Untitled"}`}
             >
               {submission.imageUrl ? (
                 <>
@@ -134,6 +177,13 @@ export function AnimatedGallery({ submissions, words }: AnimatedGalleryProps) {
                     alt={submission.title || "Submission"}
                     className="h-full w-full object-cover"
                   />
+                  {isLoggedIn && (
+                    <FavoriteButton
+                      submissionId={submission.id}
+                      size="sm"
+                      className="absolute top-2 right-2"
+                    />
+                  )}
                   {submission.text && (
                     <div className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-md bg-black/60 backdrop-blur-sm">
                       <svg
@@ -153,10 +203,19 @@ export function AnimatedGallery({ submissions, words }: AnimatedGalleryProps) {
                   )}
                 </>
               ) : submission.text ? (
-                <TextThumbnail
-                  text={submission.text}
-                  className="h-full w-full"
-                />
+                <div className="relative h-full w-full">
+                  <TextThumbnail
+                    text={submission.text}
+                    className="h-full w-full"
+                  />
+                  {isLoggedIn && (
+                    <FavoriteButton
+                      submissionId={submission.id}
+                      size="sm"
+                      className="absolute top-2 right-2"
+                    />
+                  )}
+                </div>
               ) : (
                 <div className="flex h-full items-center justify-center p-4">
                   <p className="line-clamp-4 text-sm text-zinc-600 dark:text-zinc-400">
@@ -164,7 +223,7 @@ export function AnimatedGallery({ submissions, words }: AnimatedGalleryProps) {
                   </p>
                 </div>
               )}
-            </motion.button>
+            </motion.div>
           ))}
         </div>
       </motion.section>

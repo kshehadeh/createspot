@@ -90,6 +90,13 @@ export function UserDropdown({ name, image }: UserDropdownProps) {
             >
               Edit Profile
             </Link>
+            <Link
+              href="/favorites"
+              onClick={() => setIsOpen(false)}
+              className="block w-full px-4 py-2 text-left text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700"
+            >
+              Favorites
+            </Link>
             <button
               onClick={handleLogout}
               className="w-full px-4 py-2 text-left text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700"

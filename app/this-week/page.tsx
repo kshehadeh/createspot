@@ -55,6 +55,7 @@ export default async function ThisWeekPage() {
           <GalleryGrid
             submissions={submissions}
             words={[prompt.word1, prompt.word2, prompt.word3]}
+            isLoggedIn={!!session?.user}
           />
         ) : (
           <div className="text-center">
