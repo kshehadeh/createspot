@@ -12,14 +12,3 @@ export function SignInButton() {
     </button>
   );
 }
-
-export function SignOutButton() {
-  return (
-    <button
-      onClick={() => signOut()}
-      className="rounded-full border border-zinc-300 px-5 py-2.5 text-sm font-medium transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-    >
-      Sign out
-    </button>
-  );
-}

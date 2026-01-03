@@ -42,8 +42,3 @@ export function getRandomWord(): string | null {
   const randomIndex = Math.floor(Math.random() * array.length);
   return array[randomIndex];
 }
-
-export function getWordCount(): number {
-  const { array } = loadWords();
-  return array.length;
-}
