@@ -48,32 +48,6 @@ import { prisma } from "@/lib/prisma";
 const users = await prisma.user.findMany();
 ```
 
-**Pool Configuration:**
-
-The connection pool is configured with the following defaults (configurable via environment variables):
-
-- `max`: Maximum number of clients in the pool (default: 10)
-- `min`: Minimum number of clients in the pool (default: 2)
-- `connectionTimeoutMillis`: Time to wait for a connection (default: 5000ms)
-- `idleTimeoutMillis`: Close idle clients after this time (default: 30000ms)
-- `maxLifetimeSeconds`: Maximum time a client can remain in the pool (default: 3600s)
-
-**Environment Variables:**
-
-You can configure the pool size using these optional environment variables:
-
-```
-DATABASE_POOL_MAX=10  # Maximum connections per pool instance
-DATABASE_POOL_MIN=2   # Minimum connections per pool instance
-```
-
-**Important Notes:**
-
-- In serverless environments (like Vercel), each function instance gets its own pool
-- Keep `DATABASE_POOL_MAX` small (5-10) to avoid exhausting database connections
-- The pool is cached globally within each process to reuse connections across requests
-- If you're using a connection pooler (like PgBouncer), you may need to adjust these values
-
 ## Schema Overview
 
 ### Models
@@ -123,14 +97,8 @@ User submissions for prompts or standalone portfolio items.
 | isPortfolio | Boolean | Whether to show in portfolio section (default: false) |
 | tags | String[] | Array of tags for portfolio items (default: []) |
 | category | String? | Category (e.g., "Photography", "Writing", "Digital Art") |
-| shareStatus | ShareStatus | Visibility control: PRIVATE, PROFILE, or PUBLIC (default: PUBLIC) |
 | createdAt | DateTime | Creation timestamp |
 | updatedAt | DateTime | Last update timestamp |
-
-**ShareStatus Enum Values:**
-- `PRIVATE` - Only visible to the owner
-- `PROFILE` - Visible on the user's profile page
-- `PUBLIC` - Visible everywhere (galleries, profile pages, etc.)
 
 **Unique constraint:** One submission per user per prompt per word (`userId + promptId + wordIndex`).  
 **Note:** `promptId` and `wordIndex` are nullable to support portfolio-only items that aren't tied to prompts.
@@ -140,12 +108,6 @@ User submissions for prompts or standalone portfolio items.
 - Portfolio items can exist without a `promptId` (standalone creative work)
 - Portfolio items can be linked to prompts later (by setting `promptId` and `wordIndex`)
 - Prompt submissions can be added to portfolio (by setting `isPortfolio: true`)
-
-**Share Status Behavior:**
-- Prompt submissions are automatically set to `PUBLIC` (cannot be changed)
-- Portfolio-only items can have any share status (PRIVATE, PROFILE, or PUBLIC)
-- When linking a portfolio item to a prompt, share status is automatically set to `PUBLIC`
-- Existing submissions without a share status default to `PUBLIC`
 
 #### Favorite
 User favorites/bookmarks for submissions.
@@ -604,16 +566,10 @@ Create portfolio-only items (no prompt association):
   text: "<p>Description</p>",
   isPortfolio: true,
   tags: ["photography", "nature"],
-  category: "Photography",
-  shareStatus: "PUBLIC"  // or "PROFILE" or "PRIVATE"
+  category: "Photography"
   // No promptId or wordIndex
 }
 ```
-
-**Share Status Options:**
-- `"PRIVATE"` - Only visible to you
-- `"PROFILE"` - Visible on your profile page
-- `"PUBLIC"` - Visible everywhere (default)
 
 ### Linking Portfolio Items to Prompts
 
@@ -626,8 +582,6 @@ Link an existing portfolio item to a prompt:
   wordIndex: 1  // 1, 2, or 3
 }
 ```
-
-**Note:** When linking to a prompt, `shareStatus` is automatically set to `PUBLIC`.
 
 ### Adding Prompt Submissions to Portfolio
 
@@ -665,15 +619,6 @@ const { submissions } = await response.json();
 | `isPortfolio` | Whether to show in portfolio section | `true` |
 | `tags` | Array of tags for categorization | `["landscape", "nature"]` |
 | `category` | Primary category | `"Photography"` |
-| `shareStatus` | Visibility control | `"PUBLIC"`, `"PROFILE"`, or `"PRIVATE"` |
-
-## Querying with Share Status
-
-When querying portfolio items, share status filtering is applied automatically:
-
-- **Owner viewing their own items**: See all items (PRIVATE, PROFILE, PUBLIC)
-- **Others viewing a profile**: See only PROFILE and PUBLIC items
-- **Gallery views**: See only PUBLIC items
 
 **Available Categories:**
 - Photography
