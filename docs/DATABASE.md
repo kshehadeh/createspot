@@ -48,6 +48,32 @@ import { prisma } from "@/lib/prisma";
 const users = await prisma.user.findMany();
 ```
 
+**Pool Configuration:**
+
+The connection pool is configured with the following defaults (configurable via environment variables):
+
+- `max`: Maximum number of clients in the pool (default: 10)
+- `min`: Minimum number of clients in the pool (default: 2)
+- `connectionTimeoutMillis`: Time to wait for a connection (default: 5000ms)
+- `idleTimeoutMillis`: Close idle clients after this time (default: 30000ms)
+- `maxLifetimeSeconds`: Maximum time a client can remain in the pool (default: 3600s)
+
+**Environment Variables:**
+
+You can configure the pool size using these optional environment variables:
+
+```
+DATABASE_POOL_MAX=10  # Maximum connections per pool instance
+DATABASE_POOL_MIN=2   # Minimum connections per pool instance
+```
+
+**Important Notes:**
+
+- In serverless environments (like Vercel), each function instance gets its own pool
+- Keep `DATABASE_POOL_MAX` small (5-10) to avoid exhausting database connections
+- The pool is cached globally within each process to reuse connections across requests
+- If you're using a connection pooler (like PgBouncer), you may need to adjust these values
+
 ## Schema Overview
 
 ### Models

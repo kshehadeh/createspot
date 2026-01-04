@@ -236,6 +236,8 @@ Required variables (see `.env.example`):
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
+| `DATABASE_POOL_MAX` | Maximum connections per pool (optional, default: 10) |
+| `DATABASE_POOL_MIN` | Minimum connections per pool (optional, default: 2) |
 | `NEXTAUTH_URL` | App URL (http://localhost:3000 for dev) |
 | `NEXTAUTH_SECRET` | Random secret for NextAuth |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID |
