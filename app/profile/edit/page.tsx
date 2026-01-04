@@ -45,6 +45,15 @@ export default async function ProfileEditPage() {
     take: 100,
   });
 
+  // Fetch portfolio items separately for the portfolio manager
+  const portfolioItems = await prisma.submission.findMany({
+    where: {
+      userId: session.user.id,
+      isPortfolio: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
   if (!user) {
     redirect("/");
   }
@@ -90,6 +99,7 @@ export default async function ProfileEditPage() {
         </div>
 
         <ProfileEditForm
+          userId={user.id}
           initialBio={user.bio || ""}
           initialInstagram={user.instagram || ""}
           initialTwitter={user.twitter || ""}
@@ -102,11 +112,25 @@ export default async function ProfileEditPage() {
             imageUrl: s.imageUrl,
             text: s.text,
             wordIndex: s.wordIndex,
-            prompt: {
-              word1: s.prompt.word1,
-              word2: s.prompt.word2,
-              word3: s.prompt.word3,
-            },
+            isPortfolio: s.isPortfolio,
+            tags: s.tags,
+            category: s.category,
+            prompt: s.prompt
+              ? {
+                  word1: s.prompt.word1,
+                  word2: s.prompt.word2,
+                  word3: s.prompt.word3,
+                }
+              : null,
+          }))}
+          portfolioItems={portfolioItems.map((p) => ({
+            id: p.id,
+            title: p.title,
+            imageUrl: p.imageUrl,
+            text: p.text,
+            tags: p.tags,
+            category: p.category,
+            promptId: p.promptId,
           }))}
         />
       </main>

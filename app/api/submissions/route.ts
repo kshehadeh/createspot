@@ -38,7 +38,36 @@ export async function GET(request: NextRequest) {
 
   const searchParams = request.nextUrl.searchParams;
   const promptId = searchParams.get("promptId");
+  const portfolio = searchParams.get("portfolio");
+  const userId = searchParams.get("userId");
 
+  // Portfolio items query
+  if (portfolio === "true") {
+    const targetUserId = userId || session.user.id;
+    const submissions = await prisma.submission.findMany({
+      where: {
+        userId: targetUserId,
+        isPortfolio: true,
+      },
+      orderBy: { createdAt: "desc" },
+      include: {
+        prompt: {
+          select: {
+            word1: true,
+            word2: true,
+            word3: true,
+          },
+        },
+        _count: {
+          select: { favorites: true },
+        },
+      },
+    });
+
+    return NextResponse.json({ submissions });
+  }
+
+  // Prompt-specific query (original behavior)
   if (!promptId) {
     return NextResponse.json(
       { error: "Prompt ID is required" },
@@ -64,8 +93,45 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { promptId, wordIndex, title, imageUrl, text } = body;
+  const {
+    promptId,
+    wordIndex,
+    title,
+    imageUrl,
+    text,
+    isPortfolio,
+    tags,
+    category,
+  } = body;
 
+  // Portfolio-only item (no prompt association)
+  if (!promptId && isPortfolio) {
+    // Validate that we have at least some content
+    if (!imageUrl && !text) {
+      return NextResponse.json(
+        { error: "Portfolio item must have an image or text" },
+        { status: 400 },
+      );
+    }
+
+    const submission = await prisma.submission.create({
+      data: {
+        userId: session.user.id,
+        promptId: null,
+        wordIndex: null,
+        title: title || null,
+        imageUrl: imageUrl || null,
+        text: text || null,
+        isPortfolio: true,
+        tags: tags || [],
+        category: category || null,
+      },
+    });
+
+    return NextResponse.json({ submission });
+  }
+
+  // Prompt submission (original behavior with optional portfolio flag)
   if (!promptId || !wordIndex || wordIndex < 1 || wordIndex > 3) {
     return NextResponse.json(
       { error: "Invalid prompt ID or word index" },
@@ -122,6 +188,9 @@ export async function POST(request: NextRequest) {
       title,
       imageUrl,
       text,
+      isPortfolio: isPortfolio ?? existingSubmission?.isPortfolio ?? false,
+      tags: tags ?? existingSubmission?.tags ?? [],
+      category: category ?? existingSubmission?.category ?? null,
     },
     create: {
       userId: session.user.id,
@@ -130,6 +199,9 @@ export async function POST(request: NextRequest) {
       title,
       imageUrl,
       text,
+      isPortfolio: isPortfolio ?? false,
+      tags: tags ?? [],
+      category: category ?? null,
     },
   });
 

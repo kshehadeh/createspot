@@ -11,7 +11,7 @@ import { FavoritesProvider } from "@/components/favorites-provider";
 
 interface Submission {
   id: string;
-  wordIndex: number;
+  wordIndex: number | null;
   title: string | null;
   imageUrl: string | null;
   text: string | null;
@@ -179,9 +179,11 @@ function GalleryContent({
               ) : null}
               <div className="p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-                    {words[submission.wordIndex - 1]}
-                  </span>
+                  {submission.wordIndex && (
+                    <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                      {words[submission.wordIndex - 1]}
+                    </span>
+                  )}
                 </div>
                 {submission.title && (
                   <h3 className="mb-2 font-medium text-zinc-900 dark:text-white">
@@ -230,7 +232,7 @@ function GalleryContent({
       {selectedSubmission && (
         <SubmissionLightbox
           submission={selectedSubmission}
-          word={words[selectedSubmission.wordIndex - 1]}
+          word={selectedSubmission.wordIndex ? words[selectedSubmission.wordIndex - 1] : ""}
           onClose={() => setSelectedSubmission(null)}
         />
       )}

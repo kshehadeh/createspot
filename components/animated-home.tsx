@@ -80,7 +80,7 @@ export function AnimatedCta({ isLoggedIn }: AnimatedCtaProps) {
 
 interface Submission {
   id: string;
-  wordIndex: number;
+  wordIndex: number | null;
   title: string | null;
   imageUrl: string | null;
   text: string | null;
@@ -179,9 +179,11 @@ function AnimatedGalleryContent({
                     alt={submission.title || "Submission"}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                    {words[submission.wordIndex - 1]}
-                  </div>
+                  {submission.wordIndex && (
+                    <div className="absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                      {words[submission.wordIndex - 1]}
+                    </div>
+                  )}
                   {isLoggedIn && (
                     <FavoriteButton
                       submissionId={submission.id}
@@ -213,9 +215,11 @@ function AnimatedGalleryContent({
                     text={submission.text}
                     className="h-full w-full"
                   />
-                  <div className="absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                    {words[submission.wordIndex - 1]}
-                  </div>
+                  {submission.wordIndex && (
+                    <div className="absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                      {words[submission.wordIndex - 1]}
+                    </div>
+                  )}
                   {isLoggedIn && (
                     <FavoriteButton
                       submissionId={submission.id}
@@ -229,9 +233,11 @@ function AnimatedGalleryContent({
                   <p className="line-clamp-4 text-sm text-zinc-600 dark:text-zinc-400">
                     {submission.title || "Untitled"}
                   </p>
-                  <div className="absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                    {words[submission.wordIndex - 1]}
-                  </div>
+                  {submission.wordIndex && (
+                    <div className="absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                      {words[submission.wordIndex - 1]}
+                    </div>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -242,7 +248,7 @@ function AnimatedGalleryContent({
       {selectedSubmission && (
         <SubmissionLightbox
           submission={selectedSubmission}
-          word={words[selectedSubmission.wordIndex - 1]}
+          word={selectedSubmission.wordIndex ? words[selectedSubmission.wordIndex - 1] : ""}
           onClose={() => setSelectedSubmission(null)}
         />
       )}

@@ -84,8 +84,11 @@ export default async function OpenGraphImage({ params }: RouteParams) {
     );
   }
 
-  const word = [submission.prompt.word1, submission.prompt.word2, submission.prompt.word3][submission.wordIndex - 1];
-  const title = submission.title || `Submission for "${word}"`;
+  const hasPrompt = !!submission.prompt && !!submission.wordIndex;
+  const word = hasPrompt 
+    ? [submission.prompt!.word1, submission.prompt!.word2, submission.prompt!.word3][submission.wordIndex! - 1]
+    : "Portfolio";
+  const title = submission.title || (hasPrompt ? `Submission for "${word}"` : "Portfolio Piece");
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const creatorName = submission.user.name || "Anonymous";
@@ -183,7 +186,9 @@ export default async function OpenGraphImage({ params }: RouteParams) {
 
   // Text-only version
   const textPreview = hasText ? getFirstSentences(submission.text!, 300) : "";
-  const promptWords = `${submission.prompt.word1} • ${submission.prompt.word2} • ${submission.prompt.word3}`;
+  const promptWords = hasPrompt
+    ? `${submission.prompt!.word1} • ${submission.prompt!.word2} • ${submission.prompt!.word3}`
+    : "Portfolio";
   
   // Debug: log what we have
   console.log("OG Image - hasImage:", hasImage, "hasText:", hasText, "textPreview:", textPreview?.slice(0, 50));

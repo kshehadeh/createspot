@@ -47,11 +47,3 @@ export const { handlers, signIn,  auth } = NextAuth({
     signIn: "/auth/signin",
   },
 });
-
-async function checkIsAdmin(userId: string): Promise<boolean> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { isAdmin: true },
-  });
-  return user?.isAdmin ?? false;
-}

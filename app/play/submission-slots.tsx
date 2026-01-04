@@ -7,16 +7,26 @@ import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { ConfirmModal } from "@/components/confirm-modal";
 
+interface PortfolioItem {
+  id: string;
+  title: string | null;
+  imageUrl: string | null;
+  text: string | null;
+  category: string | null;
+}
+
 interface SubmissionSlotsProps {
   promptId: string;
   words: string[];
   existingSubmissions: Record<number, Submission>;
+  portfolioItems: PortfolioItem[];
 }
 
 export function SubmissionSlots({
   promptId,
   words,
   existingSubmissions,
+  portfolioItems,
 }: SubmissionSlotsProps) {
   const router = useRouter();
   const [activeSlot, setActiveSlot] = useState<number | null>(null);
@@ -25,6 +35,7 @@ export function SubmissionSlots({
   const [error, setError] = useState<string | null>(null);
   const [showClearModal, setShowClearModal] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [showPortfolioSelector, setShowPortfolioSelector] = useState(false);
 
   const [formData, setFormData] = useState<{
     title: string;
@@ -35,6 +46,11 @@ export function SubmissionSlots({
   // Track original image URL (from existing submission) and newly uploaded URLs
   const [originalImageUrl, setOriginalImageUrl] = useState<string>("");
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+
+  // Track if using a portfolio item
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(
+    null
+  );
 
   // Helper to delete an image from R2
   async function deleteImage(imageUrl: string) {
@@ -54,7 +70,7 @@ export function SubmissionSlots({
   // Clean up all uploaded images that weren't saved
   async function cleanupUploadedImages(savedImageUrl?: string) {
     const imagesToDelete = uploadedImages.filter(
-      (url) => url !== savedImageUrl && url !== originalImageUrl,
+      (url) => url !== savedImageUrl && url !== originalImageUrl
     );
     await Promise.all(imagesToDelete.map(deleteImage));
     setUploadedImages([]);
@@ -72,6 +88,8 @@ export function SubmissionSlots({
     setUploadedImages([]);
     setActiveSlot(wordIndex);
     setError(null);
+    setSelectedPortfolioId(null);
+    setShowPortfolioSelector(false);
   }
 
   async function closeSlot() {
@@ -81,6 +99,18 @@ export function SubmissionSlots({
     setFormData({ title: "", text: "", imageUrl: "" });
     setOriginalImageUrl("");
     setError(null);
+    setSelectedPortfolioId(null);
+    setShowPortfolioSelector(false);
+  }
+
+  function selectPortfolioItem(item: PortfolioItem) {
+    setSelectedPortfolioId(item.id);
+    setFormData({
+      title: item.title || "",
+      text: item.text || "",
+      imageUrl: item.imageUrl || "",
+    });
+    setShowPortfolioSelector(false);
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -98,7 +128,7 @@ export function SubmissionSlots({
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       setError(
-        "Invalid file type. Please choose a JPEG, PNG, WebP, or GIF image.",
+        "Invalid file type. Please choose a JPEG, PNG, WebP, or GIF image."
       );
       // Reset the file input
       e.target.value = "";
@@ -108,7 +138,7 @@ export function SubmissionSlots({
     if (file.size > MAX_FILE_SIZE) {
       const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
       setError(
-        `File is too large (${fileSizeMB} MB). Maximum file size is 10 MB. Please choose a smaller image.`,
+        `File is too large (${fileSizeMB} MB). Maximum file size is 10 MB. Please choose a smaller image.`
       );
       // Reset the file input
       e.target.value = "";
@@ -149,17 +179,19 @@ export function SubmissionSlots({
         // Check for CORS errors specifically
         if (uploadResponse.status === 0 || uploadResponse.status === 403) {
           throw new Error(
-            "CORS error: Please configure CORS on your R2 bucket to allow uploads from this origin. See docs/DATABASE.md for instructions.",
+            "CORS error: Please configure CORS on your R2 bucket to allow uploads from this origin. See docs/DATABASE.md for instructions."
           );
         }
         throw new Error(
-          `Upload to storage failed: ${uploadResponse.status} ${uploadResponse.statusText}`,
+          `Upload to storage failed: ${uploadResponse.status} ${uploadResponse.statusText}`
         );
       }
 
       // Track this upload for potential cleanup
       setUploadedImages((prev) => [...prev, publicUrl]);
       setFormData((prev) => ({ ...prev, imageUrl: publicUrl }));
+      // Clear portfolio selection since user is uploading new content
+      setSelectedPortfolioId(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -175,33 +207,55 @@ export function SubmissionSlots({
     setError(null);
 
     try {
-      const response = await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          promptId,
-          wordIndex: activeSlot,
-          ...formData,
-        }),
-      });
+      // If using a portfolio item, link it to the prompt
+      if (selectedPortfolioId) {
+        const response = await fetch(
+          `/api/submissions/${selectedPortfolioId}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              promptId,
+              wordIndex: activeSlot,
+            }),
+          }
+        );
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to save");
-      }
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Failed to link portfolio item");
+        }
+      } else {
+        // Regular submission flow
+        const response = await fetch("/api/submissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            promptId,
+            wordIndex: activeSlot,
+            ...formData,
+          }),
+        });
 
-      // Clean up any replaced images (keep only the saved one)
-      await cleanupUploadedImages(formData.imageUrl);
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Failed to save");
+        }
 
-      // If the user replaced the original image with a new one, delete the old one
-      if (originalImageUrl && originalImageUrl !== formData.imageUrl) {
-        await deleteImage(originalImageUrl);
+        // Clean up any replaced images (keep only the saved one)
+        await cleanupUploadedImages(formData.imageUrl);
+
+        // If the user replaced the original image with a new one, delete the old one
+        if (originalImageUrl && originalImageUrl !== formData.imageUrl) {
+          await deleteImage(originalImageUrl);
+        }
       }
 
       setActiveSlot(null);
       setFormData({ title: "", text: "", imageUrl: "" });
       setOriginalImageUrl("");
       setError(null);
+      setSelectedPortfolioId(null);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
@@ -228,7 +282,7 @@ export function SubmissionSlots({
       router.refresh();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to clear submissions",
+        err instanceof Error ? err.message : "Failed to clear submissions"
       );
     } finally {
       setIsClearing(false);
@@ -328,7 +382,7 @@ export function SubmissionSlots({
           onClick={closeSlot}
         >
           <div
-            className="my-auto w-full max-w-lg rounded-xl bg-white p-6 dark:bg-zinc-900 max-h-[calc(100vh-2rem)] overflow-y-auto"
+            className="my-auto max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 dark:bg-zinc-900"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-6 flex items-center justify-between">
@@ -364,6 +418,108 @@ export function SubmissionSlots({
               </div>
             )}
 
+            {/* Portfolio Selector */}
+            {portfolioItems.length > 0 &&
+              !existingSubmissions[activeSlot] &&
+              !selectedPortfolioId && (
+                <div className="mb-6">
+                  {showPortfolioSelector ? (
+                    <div className="rounded-lg border border-zinc-200 dark:border-zinc-700">
+                      <div className="flex items-center justify-between border-b border-zinc-200 p-3 dark:border-zinc-700">
+                        <span className="text-sm font-medium text-zinc-900 dark:text-white">
+                          Select from Portfolio
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setShowPortfolioSelector(false)}
+                          className="text-xs text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <div className="max-h-48 overflow-y-auto p-2">
+                        {portfolioItems.map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => selectPortfolioItem(item)}
+                            className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                          >
+                            {item.imageUrl ? (
+                              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={item.imageUrl}
+                                  alt={item.title || "Portfolio item"}
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                            ) : item.text ? (
+                              <TextThumbnail
+                                text={item.text}
+                                className="h-10 w-10 shrink-0 rounded-lg"
+                              />
+                            ) : (
+                              <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">
+                                {item.title || "Untitled"}
+                              </p>
+                              {item.category && (
+                                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                  {item.category}
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowPortfolioSelector(true)}
+                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 py-3 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                        />
+                      </svg>
+                      Use from Portfolio ({portfolioItems.length} items)
+                    </button>
+                  )}
+                </div>
+              )}
+
+            {/* Selected Portfolio Item Indicator */}
+            {selectedPortfolioId && (
+              <div className="mb-4 flex items-center justify-between rounded-lg border border-emerald-300 bg-emerald-50 p-3 dark:border-emerald-700 dark:bg-emerald-900/20">
+                <span className="text-sm text-emerald-700 dark:text-emerald-400">
+                  Using portfolio item
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedPortfolioId(null);
+                    setFormData({ title: "", text: "", imageUrl: "" });
+                  }}
+                  className="text-xs text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                >
+                  Clear
+                </button>
+              </div>
+            )}
+
             <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
               Submit a photo, artwork, text, or any combination. At least one is
               required.
@@ -381,9 +537,10 @@ export function SubmissionSlots({
                   type="text"
                   id="title"
                   value={formData.title}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, title: e.target.value }))
-                  }
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, title: e.target.value }));
+                    if (selectedPortfolioId) setSelectedPortfolioId(null);
+                  }}
                   className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                 />
               </div>
@@ -402,35 +559,37 @@ export function SubmissionSlots({
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        const currentUrl = formData.imageUrl;
-                        setFormData((prev) => ({ ...prev, imageUrl: "" }));
-                        // If this is a newly uploaded image (not the original), delete it
-                        if (currentUrl && currentUrl !== originalImageUrl) {
-                          await deleteImage(currentUrl);
-                          setUploadedImages((prev) =>
-                            prev.filter((url) => url !== currentUrl),
-                          );
-                        }
-                      }}
-                      className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
-                    >
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                    {!selectedPortfolioId && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const currentUrl = formData.imageUrl;
+                          setFormData((prev) => ({ ...prev, imageUrl: "" }));
+                          // If this is a newly uploaded image (not the original), delete it
+                          if (currentUrl && currentUrl !== originalImageUrl) {
+                            await deleteImage(currentUrl);
+                            setUploadedImages((prev) =>
+                              prev.filter((url) => url !== currentUrl)
+                            );
+                          }
+                        }}
+                        className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 py-8 transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600">
@@ -469,9 +628,10 @@ export function SubmissionSlots({
                 </label>
                 <RichTextEditor
                   value={formData.text}
-                  onChange={(text) =>
-                    setFormData((prev) => ({ ...prev, text }))
-                  }
+                  onChange={(text) => {
+                    setFormData((prev) => ({ ...prev, text }));
+                    if (selectedPortfolioId) setSelectedPortfolioId(null);
+                  }}
                   placeholder="Write your submission..."
                 />
               </div>
@@ -486,7 +646,10 @@ export function SubmissionSlots({
                 </button>
                 <button
                   type="submit"
-                  disabled={isSaving || (!formData.imageUrl && !formData.text)}
+                  disabled={
+                    isSaving ||
+                    (!formData.imageUrl && !formData.text && !selectedPortfolioId)
+                  }
                   className="flex-1 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
                 >
                   {isSaving ? "Saving..." : "Save"}

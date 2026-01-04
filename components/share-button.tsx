@@ -11,7 +11,6 @@ interface ShareButtonProps {
 
 export function ShareButton({
   submissionId,
-  title,
   className = "",
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
@@ -19,8 +18,6 @@ export function ShareButton({
   const shareUrl = typeof window !== "undefined"
     ? `${window.location.origin}/s/${submissionId}`
     : "";
-
-  const shareTitle = title || "Check out this submission";
 
   async function handleShare() {
     // Try Web Share API first (mobile-friendly)

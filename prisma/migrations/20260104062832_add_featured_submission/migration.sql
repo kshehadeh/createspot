@@ -6,5 +6,3 @@ CREATE UNIQUE INDEX "User_featuredSubmissionId_key" ON "User"("featuredSubmissio
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_featuredSubmissionId_fkey" FOREIGN KEY ("featuredSubmissionId") REFERENCES "Submission"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
-

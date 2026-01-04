@@ -60,11 +60,15 @@ export async function generateMetadata({
     };
   }
 
-  const word = [submission.prompt.word1, submission.prompt.word2, submission.prompt.word3][submission.wordIndex - 1];
-  const title = submission.title || `Submission for "${word}"`;
+  const word = submission.prompt && submission.wordIndex
+    ? [submission.prompt.word1, submission.prompt.word2, submission.prompt.word3][submission.wordIndex - 1]
+    : null;
+  const title = submission.title || (word ? `Submission for "${word}"` : "Portfolio Piece");
   const description = submission.text
     ? submission.text.replace(/<[^>]*>/g, "").slice(0, 160)
-    : `View this submission for the prompt: ${submission.prompt.word1}, ${submission.prompt.word2}, ${submission.prompt.word3}`;
+    : submission.prompt
+      ? `View this submission for the prompt: ${submission.prompt.word1}, ${submission.prompt.word2}, ${submission.prompt.word3}`
+      : "View this portfolio piece";
 
   // Generate absolute OG image URL - Next.js will automatically use opengraph-image.tsx
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";

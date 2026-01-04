@@ -12,7 +12,7 @@ interface Favorite {
   id: string;
   submission: {
     id: string;
-    wordIndex: number;
+    wordIndex: number | null;
     title: string | null;
     imageUrl: string | null;
     text: string | null;
@@ -25,7 +25,7 @@ interface Favorite {
       word1: string;
       word2: string;
       word3: string;
-    };
+    } | null;
   };
 }
 
@@ -49,6 +49,7 @@ function FavoritesGridContent({ favorites }: FavoritesGridProps) {
   >(null);
 
   const getWord = (submission: Favorite["submission"]) => {
+    if (!submission.prompt || !submission.wordIndex) return "";
     const words = [
       submission.prompt.word1,
       submission.prompt.word2,

@@ -15,7 +15,7 @@ interface SubmissionDetailProps {
     title: string | null;
     imageUrl: string | null;
     text: string | null;
-    wordIndex: number;
+    wordIndex: number | null;
     user: {
       id: string;
       name: string | null;
@@ -31,7 +31,7 @@ interface SubmissionDetailProps {
       word1: string;
       word2: string;
       word3: string;
-    };
+    } | null;
     _count: {
       favorites: number;
     };
@@ -47,7 +47,7 @@ export function SubmissionDetail({
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const hasBoth = hasImage && hasText;
-  const word = [submission.prompt.word1, submission.prompt.word2, submission.prompt.word3][submission.wordIndex - 1];
+  const hasPrompt = !!submission.prompt && !!submission.wordIndex;
 
   return (
     <FavoritesProvider
@@ -59,23 +59,29 @@ export function SubmissionDetail({
         <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
           <div className="mx-auto max-w-7xl px-6 py-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              {/* Prompt words */}
+              {/* Prompt words or portfolio label */}
               <div className="flex flex-wrap items-center gap-3">
-                {[submission.prompt.word1, submission.prompt.word2, submission.prompt.word3].map((promptWord, index) => {
-                  const isActive = index + 1 === submission.wordIndex;
-                  return (
-                    <span
-                      key={index}
-                      className={`inline-block text-xl font-bold leading-[1.3] sm:text-2xl ${
-                        isActive
-                          ? `rainbow-shimmer-${index + 1} text-zinc-900 dark:text-white`
-                          : "text-zinc-400 dark:text-zinc-600"
-                      }`}
-                    >
-                      {promptWord}
-                    </span>
-                  );
-                })}
+                {hasPrompt ? (
+                  [submission.prompt!.word1, submission.prompt!.word2, submission.prompt!.word3].map((promptWord, index) => {
+                    const isActive = index + 1 === submission.wordIndex;
+                    return (
+                      <span
+                        key={index}
+                        className={`inline-block text-xl font-bold leading-[1.3] sm:text-2xl ${
+                          isActive
+                            ? `rainbow-shimmer-${index + 1} text-zinc-900 dark:text-white`
+                            : "text-zinc-400 dark:text-zinc-600"
+                        }`}
+                      >
+                        {promptWord}
+                      </span>
+                    );
+                  })
+                ) : (
+                  <span className="inline-block text-xl font-bold leading-[1.3] text-zinc-900 dark:text-white sm:text-2xl">
+                    Portfolio Piece
+                  </span>
+                )}
               </div>
 
               {/* Actions */}

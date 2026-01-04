@@ -8,7 +8,7 @@ import { SubmissionLightbox } from "@/components/submission-lightbox";
 
 interface Submission {
   id: string;
-  wordIndex: number;
+  wordIndex: number | null;
   title: string | null;
   imageUrl: string | null;
   text: string | null;
@@ -108,7 +108,7 @@ export function HistoryList({
             </div>
             <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden">
               {prompt.submissions.map((submission, subIndex) => {
-                const word = getWordForIndex(prompt, submission.wordIndex);
+                const word = submission.wordIndex ? getWordForIndex(prompt, submission.wordIndex) : "";
                 return (
                   <div
                     key={submission.id}

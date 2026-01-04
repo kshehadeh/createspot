@@ -45,11 +45,25 @@ export default async function PlayPage() {
 
   const submissionsMap = submissions.reduce(
     (acc, sub) => {
-      acc[sub.wordIndex] = sub;
+      if (sub.wordIndex !== null) {
+        acc[sub.wordIndex] = sub;
+      }
       return acc;
     },
     {} as Record<number, (typeof submissions)[0]>,
   );
+
+  // Fetch portfolio items that are NOT already linked to a prompt
+  // (so they can be used for this prompt)
+  const portfolioItems = await prisma.submission.findMany({
+    where: {
+      userId: session.user.id,
+      isPortfolio: true,
+      promptId: null, // Only portfolio-only items
+    },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -76,6 +90,13 @@ export default async function PlayPage() {
           promptId={prompt.id}
           words={[prompt.word1, prompt.word2, prompt.word3]}
           existingSubmissions={submissionsMap}
+          portfolioItems={portfolioItems.map((p) => ({
+            id: p.id,
+            title: p.title,
+            imageUrl: p.imageUrl,
+            text: p.text,
+            category: p.category,
+          }))}
         />
       </main>
     </div>
