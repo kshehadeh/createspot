@@ -1,8 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { TextThumbnail } from "@/components/text-thumbnail";
+
+interface SubmissionOption {
+  id: string;
+  title: string | null;
+  imageUrl: string | null;
+  text: string | null;
+  wordIndex: number;
+  prompt: {
+    word1: string;
+    word2: string;
+    word3: string;
+  };
+}
 
 interface ProfileEditFormProps {
   initialBio: string;
@@ -10,6 +24,8 @@ interface ProfileEditFormProps {
   initialTwitter: string;
   initialLinkedin: string;
   initialWebsite: string;
+  initialFeaturedSubmissionId: string;
+  submissions: SubmissionOption[];
 }
 
 export function ProfileEditForm({
@@ -18,6 +34,8 @@ export function ProfileEditForm({
   initialTwitter,
   initialLinkedin,
   initialWebsite,
+  initialFeaturedSubmissionId,
+  submissions,
 }: ProfileEditFormProps) {
   const router = useRouter();
   const [bio, setBio] = useState(initialBio);
@@ -25,8 +43,32 @@ export function ProfileEditForm({
   const [twitter, setTwitter] = useState(initialTwitter);
   const [linkedin, setLinkedin] = useState(initialLinkedin);
   const [website, setWebsite] = useState(initialWebsite);
+  const [featuredSubmissionId, setFeaturedSubmissionId] = useState(
+    initialFeaturedSubmissionId
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +85,7 @@ export function ProfileEditForm({
           twitter: twitter || null,
           linkedin: linkedin || null,
           website: website || null,
+          featuredSubmissionId: featuredSubmissionId || null,
         }),
       });
 
@@ -76,6 +119,178 @@ export function ProfileEditForm({
           onChange={setBio}
           placeholder="Tell us about yourself..."
         />
+      </div>
+
+      <div>
+        <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
+          Featured Piece
+        </label>
+        <p className="mb-3 text-xs text-zinc-500 dark:text-zinc-400">
+          Select a submission to feature on your profile
+        </p>
+        {submissions.length > 0 ? (
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex w-full items-center justify-between rounded-lg border border-zinc-300 bg-white px-4 py-3 text-left transition-colors focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:focus:border-zinc-500"
+              aria-expanded={isDropdownOpen}
+              aria-haspopup="listbox"
+            >
+              {(() => {
+                const selected = submissions.find(
+                  (s) => s.id === featuredSubmissionId
+                );
+                if (!selected) {
+                  return (
+                    <span className="text-zinc-500 dark:text-zinc-400">
+                      None
+                    </span>
+                  );
+                }
+                const word = [
+                  selected.prompt.word1,
+                  selected.prompt.word2,
+                  selected.prompt.word3,
+                ][selected.wordIndex - 1];
+                return (
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    {selected.imageUrl ? (
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={selected.imageUrl}
+                          alt={selected.title || word}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : selected.text ? (
+                      <TextThumbnail
+                        text={selected.text}
+                        className="h-10 w-10 shrink-0 rounded-lg"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                          {word}
+                        </span>
+                      </div>
+                      {selected.title && (
+                        <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">
+                          {selected.title}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+              <svg
+                className={`h-5 w-5 shrink-0 text-zinc-500 transition-transform dark:text-zinc-400 ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute z-50 mt-2 max-h-96 w-full overflow-y-auto rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                <div className="py-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFeaturedSubmissionId("");
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left transition-colors ${
+                      featuredSubmissionId === ""
+                        ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-white"
+                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                    }`}
+                  >
+                    <span className="text-sm font-medium">None</span>
+                  </button>
+                  {submissions.map((submission) => {
+                    const word = [
+                      submission.prompt.word1,
+                      submission.prompt.word2,
+                      submission.prompt.word3,
+                    ][submission.wordIndex - 1];
+                    const isSelected = featuredSubmissionId === submission.id;
+                    return (
+                      <button
+                        key={submission.id}
+                        type="button"
+                        onClick={() => {
+                          setFeaturedSubmissionId(submission.id);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full px-4 py-3 text-left transition-colors ${
+                          isSelected
+                            ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-white"
+                            : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {submission.imageUrl ? (
+                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={submission.imageUrl}
+                                alt={submission.title || word}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                          ) : submission.text ? (
+                            <TextThumbnail
+                              text={submission.text}
+                              className="h-12 w-12 shrink-0 rounded-lg"
+                            />
+                          ) : (
+                            <div className="h-12 w-12 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                                {word}
+                              </span>
+                              {isSelected && (
+                                <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                                  (Featured)
+                                </span>
+                              )}
+                            </div>
+                            {submission.title && (
+                              <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">
+                                {submission.title}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            No submissions yet. Create a submission to feature it on your
+            profile.
+          </p>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/header";
 import { HistoryList } from "@/app/history/history-list";
 import { SocialLinks } from "./social-links";
+import { ExpandableImage } from "@/components/expandable-image";
+import { ExpandableText } from "@/components/expandable-text";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +29,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       twitter: true,
       linkedin: true,
       website: true,
+      featuredSubmissionId: true,
     },
   });
 
@@ -65,6 +68,22 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const hasSocialLinks =
     user.instagram || user.twitter || user.linkedin || user.website;
+
+  // Fetch featured submission if set
+  const featuredSubmission = user.featuredSubmissionId
+    ? await prisma.submission.findUnique({
+        where: { id: user.featuredSubmissionId },
+        include: {
+          prompt: {
+            select: {
+              word1: true,
+              word2: true,
+              word3: true,
+            },
+          },
+        },
+      })
+    : null;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -123,6 +142,104 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             />
           )}
         </div>
+
+        {featuredSubmission && (
+          <div className="mb-12">
+            <h2 className="mb-6 text-2xl font-semibold text-zinc-900 dark:text-white">
+              Featured
+            </h2>
+            {(() => {
+              const hasImage = !!featuredSubmission.imageUrl;
+              const hasText = !!featuredSubmission.text;
+              const hasBoth = hasImage && hasText;
+              const word = [
+                featuredSubmission.prompt.word1,
+                featuredSubmission.prompt.word2,
+                featuredSubmission.prompt.word3,
+              ][featuredSubmission.wordIndex - 1];
+
+              return (
+                <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+                  <div
+                    className={`${
+                      hasBoth ? "md:grid md:grid-cols-3 md:gap-8" : ""
+                    }`}
+                  >
+                    {/* Image section */}
+                    {hasImage && (
+                      <div
+                        className={`${hasBoth ? "md:col-span-2" : "w-full"} ${
+                          hasBoth ? "mb-6 md:mb-0" : ""
+                        }`}
+                      >
+                        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                          <ExpandableImage
+                            imageUrl={featuredSubmission.imageUrl!}
+                            alt={featuredSubmission.title || word}
+                            className="min-h-[300px]"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Text section */}
+                    {hasText && (
+                      <div className={hasBoth ? "md:col-span-1" : "w-full"}>
+                        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
+                          {featuredSubmission.title && (
+                            <h3 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-white">
+                              {featuredSubmission.title}
+                            </h3>
+                          )}
+                          <ExpandableText
+                            text={featuredSubmission.text!}
+                            title={featuredSubmission.title}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Link to full submission */}
+                  <div className="mt-6 flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                        Prompt:
+                      </span>
+                      <div className="flex gap-2">
+                        {[
+                          featuredSubmission.prompt.word1,
+                          featuredSubmission.prompt.word2,
+                          featuredSubmission.prompt.word3,
+                        ].map((promptWord, index) => {
+                          const isActive = index + 1 === featuredSubmission.wordIndex;
+                          return (
+                            <span
+                              key={index}
+                              className={`text-sm font-medium ${
+                                isActive
+                                  ? "text-zinc-900 dark:text-white"
+                                  : "text-zinc-400 dark:text-zinc-600"
+                              }`}
+                            >
+                              {promptWord}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <Link
+                      href={`/s/${featuredSubmission.id}`}
+                      className="text-sm font-medium text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                    >
+                      View full submission →
+                    </Link>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
 
         {initialItems.length > 0 ? (
           <HistoryList
