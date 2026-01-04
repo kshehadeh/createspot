@@ -314,7 +314,7 @@ export default async function OpenGraphImage({ params }: RouteParams) {
               fontWeight: "600",
             }}
           >
-            Prompts
+            Create Spot
           </div>
         </div>
       </div>

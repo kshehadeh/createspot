@@ -63,7 +63,7 @@ export default function OpenGraphImage() {
           letterSpacing: "-0.02em",
         }}
       >
-        Prompts
+        Create Spot
       </div>
 
       {/* Description */}
@@ -76,8 +76,8 @@ export default function OpenGraphImage() {
           lineHeight: "1.4",
         }}
       >
-        A weekly creative prompt community. Share photos, artwork, and text
-        inspired by three-word prompts.
+        A creative community for artists and writers to share their work, build
+        portfolios, and participate in weekly creative prompts.
       </div>
     </div>,
     {
