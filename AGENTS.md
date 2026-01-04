@@ -4,15 +4,15 @@ This document provides essential information for AI agents and developers workin
 
 ## Project Overview
 
-**Prompts** is a creative portfolio and prompt community app where:
-- Admins publish weekly three-word prompts
-- Users submit photos/text inspired by prompt words
-- Users showcase their creative work in personal portfolios
+**Create Spot** is a creative community platform for artists and writers where:
+- Artists showcase their creative work in personal portfolios
+- Users participate in weekly three-word creative prompts
 - Artists and writers can display analytics and track engagement
+- Community discovers and favorites creative work
 
 **Key Features:**
-- Weekly creative prompts with three words
-- Portfolio system for showcasing independent creative work
+- Artist portfolios for showcasing independent creative work
+- Weekly creative prompts with three words (under `/prompt` path)
 - Cross-linking between portfolio items and prompt submissions
 - Profile analytics (views, favorites, engagement)
 - View tracking for profiles and submissions
@@ -62,14 +62,16 @@ app/                    # Next.js App Router pages and API routes
 │   └── ...
 ├── admin/             # Admin dashboard (prompts, users)
 ├── favorites/         # User favorites page
-├── history/           # User's past submissions
-├── play/              # User submission interface (with portfolio linking)
+├── prompt/            # Weekly prompt game (moved from root)
+│   ├── this-week/     # Gallery view for current prompt
+│   ├── play/          # User submission interface (with portfolio linking)
+│   └── history/       # User's past prompt submissions
 ├── profile/           # User profile pages
 │   ├── [userId]/      # Public profile view
 │   └── edit/          # Profile editing with portfolio management
 ├── s/                 # Submission detail pages
 │   └── [id]/          # Individual submission view
-└── this-week/         # Gallery view
+└── page.tsx           # Homepage featuring artists and portfolios
 
 components/            # Shared React components
 ├── portfolio-grid.tsx        # Portfolio item grid display

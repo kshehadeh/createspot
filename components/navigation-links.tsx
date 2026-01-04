@@ -32,15 +32,15 @@ export function NavigationLinks({
 
   return (
     <nav className="flex items-center gap-4">
-      <Link href="/this-week" className={linkClassName("/this-week")}>
-        Gallery
+      <Link href="/prompt" className={linkClassName("/prompt")}>
+        Prompts
       </Link>
       {isAuthenticated && (
         <>
-          <Link href="/play" className={linkClassName("/play")}>
+          <Link href="/prompt/play" className={linkClassName("/prompt/play")}>
             Play
           </Link>
-          <Link href="/history" className={linkClassName("/history")}>
+          <Link href="/prompt/history" className={linkClassName("/prompt/history")}>
             History
           </Link>
         </>

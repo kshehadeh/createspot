@@ -15,20 +15,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Prompts",
+  title: "Create Spot",
   description:
-    "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+    "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
   openGraph: {
-    title: "Prompts",
+    title: "Create Spot",
     description:
-      "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+      "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Prompts",
+    title: "Create Spot",
     description:
-      "A weekly creative prompt community. Share photos, artwork, and text inspired by three-word prompts.",
+      "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
   },
 };
 

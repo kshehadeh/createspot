@@ -63,7 +63,7 @@ export function Header({ title, user }: HeaderProps) {
             className="flex items-center gap-2 text-zinc-900 dark:text-white"
           >
             <Logo className="h-6 w-10" />
-            <span className="text-xl font-normal">Prompts</span>
+            <span className="text-xl font-normal">Create Spot</span>
           </Link>
           {title && (
             <>
@@ -221,24 +221,24 @@ function MobileNavigationLinks({
   return (
     <>
       <Link
-        href="/this-week"
-        className={linkClassName("/this-week")}
+        href="/prompt"
+        className={linkClassName("/prompt")}
         onClick={onLinkClick}
       >
-        Gallery
+        Prompts
       </Link>
       {isAuthenticated && (
         <>
           <Link
-            href="/play"
-            className={linkClassName("/play")}
+            href="/prompt/play"
+            className={linkClassName("/prompt/play")}
             onClick={onLinkClick}
           >
             Play
           </Link>
           <Link
-            href="/history"
-            className={linkClassName("/history")}
+            href="/prompt/history"
+            className={linkClassName("/prompt/history")}
             onClick={onLinkClick}
           >
             History

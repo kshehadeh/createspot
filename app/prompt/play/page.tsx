@@ -1,15 +1,21 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
+import { getCurrentPrompt } from "@/lib/prompts";
+import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/header";
-import { GalleryGrid } from "./gallery-grid";
+import { SubmissionSlots } from "./submission-slots";
 
 export const dynamic = "force-dynamic";
 
-export default async function ThisWeekPage() {
+export default async function PlayPage() {
   const session = await auth();
+
+  if (!session?.user) {
+    redirect("/auth/signin");
+  }
+
   const prompt = await getCurrentPrompt();
-  const submissions = prompt ? await getPromptSubmissions(prompt.id) : [];
 
   if (!prompt) {
     return (
@@ -30,11 +36,40 @@ export default async function ThisWeekPage() {
     );
   }
 
+  const submissions = await prisma.submission.findMany({
+    where: {
+      userId: session.user.id,
+      promptId: prompt.id,
+    },
+  });
+
+  const submissionsMap = submissions.reduce(
+    (acc, sub) => {
+      if (sub.wordIndex !== null) {
+        acc[sub.wordIndex] = sub;
+      }
+      return acc;
+    },
+    {} as Record<number, (typeof submissions)[0]>,
+  );
+
+  // Fetch portfolio items that are NOT already linked to a prompt
+  // (so they can be used for this prompt)
+  const portfolioItems = await prisma.submission.findMany({
+    where: {
+      userId: session.user.id,
+      isPortfolio: true,
+      promptId: null, // Only portfolio-only items
+    },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Gallery" user={session?.user} />
+      <Header title="Play" user={session.user} />
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
+      <main className="mx-auto max-w-4xl px-6 py-12">
         <section className="mb-12 text-center">
           <p className="mb-4 text-sm uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
             This week&apos;s prompt
@@ -51,26 +86,20 @@ export default async function ThisWeekPage() {
           </div>
         </section>
 
-        {submissions.length > 0 ? (
-          <GalleryGrid
-            submissions={submissions}
-            words={[prompt.word1, prompt.word2, prompt.word3]}
-            isLoggedIn={!!session?.user}
-          />
-        ) : (
-          <div className="text-center">
-            <p className="text-zinc-600 dark:text-zinc-400">
-              No submissions yet. Be the first to share your interpretation!
-            </p>
-            <Link
-              href="/play"
-              className="mt-4 inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
-              Create a submission
-            </Link>
-          </div>
-        )}
+        <SubmissionSlots
+          promptId={prompt.id}
+          words={[prompt.word1, prompt.word2, prompt.word3]}
+          existingSubmissions={submissionsMap}
+          portfolioItems={portfolioItems.map((p) => ({
+            id: p.id,
+            title: p.title,
+            imageUrl: p.imageUrl,
+            text: p.text,
+            category: p.category,
+          }))}
+        />
       </main>
     </div>
   );
 }
+

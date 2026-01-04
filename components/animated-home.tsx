@@ -65,7 +65,7 @@ export function AnimatedCta({ isLoggedIn }: AnimatedCtaProps) {
       {isLoggedIn ? (
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Link
-            href="/play"
+            href="/prompt/play"
             className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             Play this week

@@ -57,10 +57,10 @@ export default async function FavoritesPage() {
               You haven&apos;t favorited any submissions yet.
             </p>
             <Link
-              href="/this-week"
+              href="/prompt"
               className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
             >
-              Browse Gallery
+              Explore Prompts
             </Link>
           </div>
         )}

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/header";
-import { HistoryList } from "@/app/history/history-list";
+import { HistoryList } from "@/app/prompt/history/history-list";
 import { SocialLinks } from "./social-links";
 import { ExpandableImage } from "@/components/expandable-image";
 import { ExpandableText } from "@/components/expandable-text";
@@ -358,7 +358,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                   Add Portfolio Item
                 </Link>
                 <Link
-                  href="/play"
+                  href="/prompt/play"
                   className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                 >
                   Submit to Prompt
