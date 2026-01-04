@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/header";
 import { SignInButton } from "@/components/auth-button";
+import { ConstellationSphere } from "@/components/constellation-sphere";
 
 export const dynamic = "force-dynamic";
 
@@ -29,46 +30,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Get featured artists - users with portfolio items or featured submissions
-async function getFeaturedArtists() {
-  const artists = await prisma.user.findMany({
-    where: {
-      OR: [
-        { featuredSubmissionId: { not: null } },
-        {
-          submissions: {
-            some: {
-              isPortfolio: true,
-              shareStatus: "PUBLIC",
-            },
-          },
-        },
-      ],
-    },
-    include: {
-      featuredSubmission: true,
-      submissions: {
-        where: {
-          shareStatus: "PUBLIC",
-          OR: [{ imageUrl: { not: null } }, { text: { not: null } }],
-        },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-      },
-      _count: {
-        select: {
-          submissions: {
-            where: { shareStatus: "PUBLIC" },
-          },
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 6,
-  });
-
-  return artists;
-}
-
 // Get recent public work
 async function getRecentWork() {
   return prisma.submission.findMany({
@@ -86,11 +47,56 @@ async function getRecentWork() {
   });
 }
 
+// Get public submissions for the hero constellation
+async function getConstellationWork() {
+  const submissions = await prisma.submission.findMany({
+    where: {
+      shareStatus: "PUBLIC",
+      OR: [{ imageUrl: { not: null } }, { text: { not: null } }],
+    },
+    select: {
+      id: true,
+      imageUrl: true,
+      text: true,
+      title: true,
+      wordIndex: true,
+      prompt: {
+        select: {
+          word1: true,
+          word2: true,
+          word3: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 18,
+  });
+
+  return submissions.map((submission) => {
+    const promptWord =
+      submission.prompt && typeof submission.wordIndex === "number"
+        ? [
+            submission.prompt.word1,
+            submission.prompt.word2,
+            submission.prompt.word3,
+          ][submission.wordIndex - 1] ?? null
+        : null;
+
+    return {
+      id: submission.id,
+      imageUrl: submission.imageUrl,
+      text: submission.text,
+      title: submission.title,
+      promptWord,
+    };
+  });
+}
+
 export default async function Home() {
   const session = await auth();
-  const [featuredArtists, recentWork] = await Promise.all([
-    getFeaturedArtists(),
+  const [recentWork, constellationWork] = await Promise.all([
     getRecentWork(),
+    getConstellationWork(),
   ]);
 
   return (
@@ -145,86 +151,23 @@ export default async function Home() {
         </section>
 
         {/* Featured Artists Section */}
-        {featuredArtists.length > 0 && (
+        {constellationWork.length > 0 && (
           <section className="px-6 py-16">
-            <div className="mx-auto max-w-6xl">
-              <div className="mb-10 flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">
-                    Featured Artists
-                  </h2>
-                  <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-                    Discover talented creators in our community
-                  </p>
-                </div>
+            <div className="mx-auto flex max-w-6xl flex-col gap-10">
+              <div className="text-center">
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-600">
+                  Public Constellation
+                </p>
+                <h2 className="mt-3 text-3xl font-bold text-zinc-900 dark:text-white sm:text-4xl">
+                  Orbit the art of our community
+                </h2>
+                <p className="mx-auto mt-4 max-w-2xl text-base text-zinc-600 dark:text-zinc-400">
+                  Drag to spin through public submissions. Each star is a
+                  story, floating at a different distance from the creative
+                  center.
+                </p>
               </div>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {featuredArtists.map((artist) => {
-                  const previewImage =
-                    artist.featuredSubmission?.imageUrl ||
-                    artist.submissions[0]?.imageUrl;
-                  return (
-                    <Link
-                      key={artist.id}
-                      href={`/profile/${artist.id}`}
-                      className="group relative overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-all hover:border-zinc-300 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
-                    >
-                      <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900">
-                        {previewImage ? (
-                          <Image
-                            src={previewImage}
-                            alt={artist.name || "Artist"}
-                            fill
-                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center">
-                            <svg
-                              className="h-16 w-16 text-zinc-300 dark:text-zinc-700"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1}
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <div className="flex items-center gap-3">
-                          {artist.image ? (
-                            <Image
-                              src={artist.image}
-                              alt={artist.name || "Artist"}
-                              width={40}
-                              height={40}
-                              className="rounded-full"
-                            />
-                          ) : (
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
-                              {artist.name?.charAt(0).toUpperCase() || "?"}
-                            </div>
-                          )}
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate font-medium text-zinc-900 dark:text-white">
-                              {artist.name || "Anonymous"}
-                            </p>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                              {artist._count.submissions} works
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+              <ConstellationSphere items={constellationWork} />
             </div>
           </section>
         )}

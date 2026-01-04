@@ -93,19 +93,20 @@ export function PortfolioItemForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
+          fileType: file.type,
+          fileSize: file.size,
         }),
       });
 
       if (!presignResponse.ok) {
-        throw new Error("Failed to get upload URL");
+        const data = await presignResponse.json().catch(() => null);
+        throw new Error(data?.error || "Failed to get upload URL");
       }
 
-      const { uploadUrl, publicUrl } = await presignResponse.json();
+      const { presignedUrl, publicUrl } = await presignResponse.json();
 
       // Upload to R2
-      const uploadResponse = await fetch(uploadUrl, {
+      const uploadResponse = await fetch(presignedUrl, {
         method: "PUT",
         headers: { "Content-Type": file.type },
         body: file,
@@ -116,8 +117,12 @@ export function PortfolioItemForm({
       }
 
       setImageUrl(publicUrl);
-    } catch {
-      setError("Failed to upload image. Please try again.");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to upload image. Please try again.",
+      );
     } finally {
       setUploading(false);
     }
