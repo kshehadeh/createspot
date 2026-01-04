@@ -232,7 +232,11 @@ function GalleryContent({
       {selectedSubmission && (
         <SubmissionLightbox
           submission={selectedSubmission}
-          word={selectedSubmission.wordIndex ? words[selectedSubmission.wordIndex - 1] : ""}
+          word={
+            selectedSubmission.wordIndex
+              ? words[selectedSubmission.wordIndex - 1]
+              : ""
+          }
           onClose={() => setSelectedSubmission(null)}
         />
       )}

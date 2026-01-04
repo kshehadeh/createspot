@@ -13,7 +13,10 @@ export async function getCurrentPrompt() {
 
 export async function getPromptSubmissions(promptId: string, limit?: number) {
   return prisma.submission.findMany({
-    where: { promptId },
+    where: {
+      promptId,
+      shareStatus: "PUBLIC", // Only show public submissions in galleries
+    },
     include: {
       user: {
         select: { id: true, name: true, image: true },

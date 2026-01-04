@@ -43,11 +43,17 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const isOwnProfile = session?.user?.id === user.id;
   const isLoggedIn = !!session?.user;
 
+  // Build share status filter based on ownership
+  const shareStatusFilter = isOwnProfile
+    ? {} // Owner sees all their items
+    : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }; // Others see PROFILE and PUBLIC only
+
   // Fetch portfolio items
   const portfolioItems = await prisma.submission.findMany({
     where: {
       userId: user.id,
       isPortfolio: true,
+      ...shareStatusFilter,
     },
     orderBy: { createdAt: "desc" },
     include: {
@@ -70,6 +76,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       submissions: {
         some: {
           userId: user.id,
+          ...shareStatusFilter,
         },
       },
     },
@@ -79,6 +86,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       submissions: {
         where: {
           userId: user.id,
+          ...shareStatusFilter,
         },
         orderBy: { wordIndex: "asc" },
       },
@@ -96,7 +104,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     user.instagram || user.twitter || user.linkedin || user.website;
 
   // Fetch featured submission if set
-  const featuredSubmission = user.featuredSubmissionId
+  const featuredSubmissionRaw = user.featuredSubmissionId
     ? await prisma.submission.findUnique({
         where: { id: user.featuredSubmissionId },
         include: {
@@ -110,6 +118,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         },
       })
     : null;
+
+  // Only show featured submission if share status allows it
+  const featuredSubmission =
+    featuredSubmissionRaw &&
+    (isOwnProfile ||
+      featuredSubmissionRaw.shareStatus === "PROFILE" ||
+      featuredSubmissionRaw.shareStatus === "PUBLIC")
+      ? featuredSubmissionRaw
+      : null;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -238,35 +255,36 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
                   {/* Link to full submission */}
                   <div className="mt-6 flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
-                    {featuredSubmission.prompt && featuredSubmission.wordIndex && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                          Prompt:
-                        </span>
-                        <div className="flex gap-2">
-                          {[
-                            featuredSubmission.prompt.word1,
-                            featuredSubmission.prompt.word2,
-                            featuredSubmission.prompt.word3,
-                          ].map((promptWord, index) => {
-                            const isActive =
-                              index + 1 === featuredSubmission.wordIndex;
-                            return (
-                              <span
-                                key={index}
-                                className={`text-sm font-medium ${
-                                  isActive
-                                    ? "text-zinc-900 dark:text-white"
-                                    : "text-zinc-400 dark:text-zinc-600"
-                                }`}
-                              >
-                                {promptWord}
-                              </span>
-                            );
-                          })}
+                    {featuredSubmission.prompt &&
+                      featuredSubmission.wordIndex && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                            Prompt:
+                          </span>
+                          <div className="flex gap-2">
+                            {[
+                              featuredSubmission.prompt.word1,
+                              featuredSubmission.prompt.word2,
+                              featuredSubmission.prompt.word3,
+                            ].map((promptWord, index) => {
+                              const isActive =
+                                index + 1 === featuredSubmission.wordIndex;
+                              return (
+                                <span
+                                  key={index}
+                                  className={`text-sm font-medium ${
+                                    isActive
+                                      ? "text-zinc-900 dark:text-white"
+                                      : "text-zinc-400 dark:text-zinc-600"
+                                  }`}
+                                >
+                                  {promptWord}
+                                </span>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                     {!featuredSubmission.prompt && <div />}
                     <Link
                       href={`/s/${featuredSubmission.id}`}

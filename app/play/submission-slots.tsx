@@ -49,7 +49,7 @@ export function SubmissionSlots({
 
   // Track if using a portfolio item
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(
-    null
+    null,
   );
 
   // Helper to delete an image from R2
@@ -70,7 +70,7 @@ export function SubmissionSlots({
   // Clean up all uploaded images that weren't saved
   async function cleanupUploadedImages(savedImageUrl?: string) {
     const imagesToDelete = uploadedImages.filter(
-      (url) => url !== savedImageUrl && url !== originalImageUrl
+      (url) => url !== savedImageUrl && url !== originalImageUrl,
     );
     await Promise.all(imagesToDelete.map(deleteImage));
     setUploadedImages([]);
@@ -128,7 +128,7 @@ export function SubmissionSlots({
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       setError(
-        "Invalid file type. Please choose a JPEG, PNG, WebP, or GIF image."
+        "Invalid file type. Please choose a JPEG, PNG, WebP, or GIF image.",
       );
       // Reset the file input
       e.target.value = "";
@@ -138,7 +138,7 @@ export function SubmissionSlots({
     if (file.size > MAX_FILE_SIZE) {
       const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
       setError(
-        `File is too large (${fileSizeMB} MB). Maximum file size is 10 MB. Please choose a smaller image.`
+        `File is too large (${fileSizeMB} MB). Maximum file size is 10 MB. Please choose a smaller image.`,
       );
       // Reset the file input
       e.target.value = "";
@@ -179,11 +179,11 @@ export function SubmissionSlots({
         // Check for CORS errors specifically
         if (uploadResponse.status === 0 || uploadResponse.status === 403) {
           throw new Error(
-            "CORS error: Please configure CORS on your R2 bucket to allow uploads from this origin. See docs/DATABASE.md for instructions."
+            "CORS error: Please configure CORS on your R2 bucket to allow uploads from this origin. See docs/DATABASE.md for instructions.",
           );
         }
         throw new Error(
-          `Upload to storage failed: ${uploadResponse.status} ${uploadResponse.statusText}`
+          `Upload to storage failed: ${uploadResponse.status} ${uploadResponse.statusText}`,
         );
       }
 
@@ -218,7 +218,7 @@ export function SubmissionSlots({
               promptId,
               wordIndex: activeSlot,
             }),
-          }
+          },
         );
 
         if (!response.ok) {
@@ -282,7 +282,7 @@ export function SubmissionSlots({
       router.refresh();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to clear submissions"
+        err instanceof Error ? err.message : "Failed to clear submissions",
       );
     } finally {
       setIsClearing(false);
@@ -569,7 +569,7 @@ export function SubmissionSlots({
                           if (currentUrl && currentUrl !== originalImageUrl) {
                             await deleteImage(currentUrl);
                             setUploadedImages((prev) =>
-                              prev.filter((url) => url !== currentUrl)
+                              prev.filter((url) => url !== currentUrl),
                             );
                           }
                         }}
@@ -648,7 +648,9 @@ export function SubmissionSlots({
                   type="submit"
                   disabled={
                     isSaving ||
-                    (!formData.imageUrl && !formData.text && !selectedPortfolioId)
+                    (!formData.imageUrl &&
+                      !formData.text &&
+                      !selectedPortfolioId)
                   }
                   className="flex-1 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
                 >

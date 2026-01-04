@@ -15,9 +15,10 @@ export function ShareButton({
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/s/${submissionId}`
-    : "";
+  const shareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/s/${submissionId}`
+      : "";
 
   async function handleShare() {
     // Try Web Share API first (mobile-friendly)
@@ -95,4 +96,3 @@ export function ShareButton({
     </motion.button>
   );
 }
-

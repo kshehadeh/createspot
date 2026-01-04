@@ -45,7 +45,9 @@ export function PortfolioGrid({
 
   // Get unique categories
   const categories = Array.from(
-    new Set(items.filter((item) => item.category).map((item) => item.category!))
+    new Set(
+      items.filter((item) => item.category).map((item) => item.category!),
+    ),
   );
 
   const filteredItems = categoryFilter
@@ -194,9 +196,11 @@ function PortfolioGridContent({
                   {showPromptBadge && item.promptId && item.prompt && (
                     <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
                       {item.wordIndex
-                        ? [item.prompt.word1, item.prompt.word2, item.prompt.word3][
-                            item.wordIndex - 1
-                          ]
+                        ? [
+                            item.prompt.word1,
+                            item.prompt.word2,
+                            item.prompt.word3,
+                          ][item.wordIndex - 1]
                         : "Prompt"}
                     </span>
                   )}
@@ -253,4 +257,3 @@ function PortfolioGridContent({
     </div>
   );
 }
-

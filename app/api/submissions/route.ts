@@ -44,10 +44,18 @@ export async function GET(request: NextRequest) {
   // Portfolio items query
   if (portfolio === "true") {
     const targetUserId = userId || session.user.id;
+    const isOwnProfile = targetUserId === session.user.id;
+
+    // Build share status filter based on ownership
+    const shareStatusFilter = isOwnProfile
+      ? {} // Owner sees all their items
+      : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }; // Others see PROFILE and PUBLIC only
+
     const submissions = await prisma.submission.findMany({
       where: {
         userId: targetUserId,
         isPortfolio: true,
+        ...shareStatusFilter,
       },
       orderBy: { createdAt: "desc" },
       include: {
@@ -102,6 +110,7 @@ export async function POST(request: NextRequest) {
     isPortfolio,
     tags,
     category,
+    shareStatus,
   } = body;
 
   // Portfolio-only item (no prompt association)
@@ -114,6 +123,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate shareStatus if provided
+    const validShareStatuses = ["PRIVATE", "PROFILE", "PUBLIC"];
+    const finalShareStatus =
+      shareStatus && validShareStatuses.includes(shareStatus)
+        ? shareStatus
+        : "PUBLIC";
+
     const submission = await prisma.submission.create({
       data: {
         userId: session.user.id,
@@ -125,6 +141,7 @@ export async function POST(request: NextRequest) {
         isPortfolio: true,
         tags: tags || [],
         category: category || null,
+        shareStatus: finalShareStatus,
       },
     });
 
@@ -176,6 +193,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Upsert submission (create or update)
+  // Prompt submissions are always PUBLIC
   const submission = await prisma.submission.upsert({
     where: {
       userId_promptId_wordIndex: {
@@ -191,6 +209,7 @@ export async function POST(request: NextRequest) {
       isPortfolio: isPortfolio ?? existingSubmission?.isPortfolio ?? false,
       tags: tags ?? existingSubmission?.tags ?? [],
       category: category ?? existingSubmission?.category ?? null,
+      shareStatus: "PUBLIC", // Prompt submissions are always public
     },
     create: {
       userId: session.user.id,
@@ -202,6 +221,7 @@ export async function POST(request: NextRequest) {
       isPortfolio: isPortfolio ?? false,
       tags: tags ?? [],
       category: category ?? null,
+      shareStatus: "PUBLIC", // Prompt submissions are always public
     },
   });
 

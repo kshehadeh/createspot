@@ -108,7 +108,9 @@ export function HistoryList({
             </div>
             <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden">
               {prompt.submissions.map((submission, subIndex) => {
-                const word = submission.wordIndex ? getWordForIndex(prompt, submission.wordIndex) : "";
+                const word = submission.wordIndex
+                  ? getWordForIndex(prompt, submission.wordIndex)
+                  : "";
                 return (
                   <div
                     key={submission.id}

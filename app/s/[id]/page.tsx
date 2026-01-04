@@ -60,10 +60,16 @@ export async function generateMetadata({
     };
   }
 
-  const word = submission.prompt && submission.wordIndex
-    ? [submission.prompt.word1, submission.prompt.word2, submission.prompt.word3][submission.wordIndex - 1]
-    : null;
-  const title = submission.title || (word ? `Submission for "${word}"` : "Portfolio Piece");
+  const word =
+    submission.prompt && submission.wordIndex
+      ? [
+          submission.prompt.word1,
+          submission.prompt.word2,
+          submission.prompt.word3,
+        ][submission.wordIndex - 1]
+      : null;
+  const title =
+    submission.title || (word ? `Submission for "${word}"` : "Portfolio Piece");
   const description = submission.text
     ? submission.text.replace(/<[^>]*>/g, "").slice(0, 160)
     : submission.prompt
@@ -102,6 +108,15 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
     notFound();
   }
 
+  // Check share status visibility
+  // PRIVATE submissions are only visible to the owner
+  if (submission.shareStatus === "PRIVATE") {
+    if (!session?.user || session.user.id !== submission.userId) {
+      notFound();
+    }
+  }
+  // PROFILE and PUBLIC are visible to everyone
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       <Header title="Submission" user={session?.user} />
@@ -109,4 +124,3 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
     </div>
   );
 }
-

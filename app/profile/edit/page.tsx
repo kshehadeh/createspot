@@ -131,6 +131,7 @@ export default async function ProfileEditPage() {
             tags: p.tags,
             category: p.category,
             promptId: p.promptId,
+            shareStatus: p.shareStatus,
           }))}
         />
       </main>

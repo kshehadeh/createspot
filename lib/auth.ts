@@ -7,7 +7,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const useSecureCookies =
   process.env.NEXTAUTH_URL?.startsWith("https://") ?? isProduction;
 
-export const { handlers, signIn,  auth } = NextAuth({
+export const { handlers, signIn, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
   providers: [

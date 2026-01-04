@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   const startDate = new Date(weekStart);
   // Ensure start is at 00:00:00.000
   startDate.setUTCHours(0, 0, 0, 0);
-  
+
   const endDate = weekEnd
     ? new Date(weekEnd)
     : new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);

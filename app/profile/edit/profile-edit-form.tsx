@@ -31,6 +31,7 @@ interface PortfolioItem {
   tags: string[];
   category: string | null;
   promptId: string | null;
+  shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
 }
 
 interface ProfileEditFormProps {
@@ -66,7 +67,7 @@ export function ProfileEditForm({
   const [linkedin, setLinkedin] = useState(initialLinkedin);
   const [website, setWebsite] = useState(initialWebsite);
   const [featuredSubmissionId, setFeaturedSubmissionId] = useState(
-    initialFeaturedSubmissionId
+    initialFeaturedSubmissionId,
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,15 +75,19 @@ export function ProfileEditForm({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Portfolio state
-  const [portfolioItems, setPortfolioItems] =
-    useState<PortfolioItem[]>(initialPortfolioItems);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(
+    initialPortfolioItems,
+  );
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
 
   // Check for hash to auto-switch to portfolio tab
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash === "#portfolio") {
+    if (
+      typeof window !== "undefined" &&
+      window.location.hash === "#portfolio"
+    ) {
       setActiveTab("portfolio");
     }
   }, []);
@@ -157,7 +162,7 @@ export function ProfileEditForm({
 
   const handleTogglePortfolio = async (
     submission: SubmissionOption,
-    addToPortfolio: boolean
+    addToPortfolio: boolean,
   ) => {
     try {
       const response = await fetch(`/api/submissions/${submission.id}`, {
@@ -279,7 +284,7 @@ export function ProfileEditForm({
                 >
                   {(() => {
                     const selected = submissions.find(
-                      (s) => s.id === featuredSubmissionId
+                      (s) => s.id === featuredSubmissionId,
                     );
                     if (!selected) {
                       return (

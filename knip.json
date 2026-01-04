@@ -4,10 +4,6 @@
     "interface": true,
     "type": true
   },
-  "ignore": [
-    "postcss.config.mjs"
-  ],
-  "tags": [
-    "-lintignore"
-  ]
+  "ignore": ["postcss.config.mjs"],
+  "tags": ["-lintignore"]
 }

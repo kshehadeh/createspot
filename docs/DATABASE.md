@@ -62,6 +62,12 @@ Core user model integrated with NextAuth.js.
 | name | String? | Display name |
 | image | String? | Profile image URL |
 | isAdmin | Boolean | Admin flag (default: false) |
+| bio | String? | User bio (HTML formatted) |
+| instagram | String? | Instagram username |
+| twitter | String? | Twitter/X username |
+| linkedin | String? | LinkedIn username |
+| website | String? | Personal website URL |
+| featuredSubmissionId | String? | ID of featured submission for profile |
 | createdAt | DateTime | Creation timestamp |
 | updatedAt | DateTime | Last update timestamp |
 
@@ -77,19 +83,89 @@ Weekly creative prompts with three words.
 | createdByUserId | String | Admin who created the prompt |
 
 #### Submission
-User submissions for a prompt word.
+User submissions for prompts or standalone portfolio items.
 
 | Field | Type | Description |
 |-------|------|-------------|
 | id | String | CUID primary key |
 | userId | String | Submitting user |
-| promptId | String | Associated prompt |
-| wordIndex | Int | Which word (1, 2, or 3) |
+| promptId | String? | Associated prompt (nullable for portfolio-only items) |
+| wordIndex | Int? | Which word (1, 2, or 3) - nullable for portfolio-only items |
 | title | String? | Submission title |
 | imageUrl | String? | Uploaded image URL |
 | text | String? | Sanitized HTML content |
+| isPortfolio | Boolean | Whether to show in portfolio section (default: false) |
+| tags | String[] | Array of tags for portfolio items (default: []) |
+| category | String? | Category (e.g., "Photography", "Writing", "Digital Art") |
+| shareStatus | ShareStatus | Visibility control: PRIVATE, PROFILE, or PUBLIC (default: PUBLIC) |
+| createdAt | DateTime | Creation timestamp |
+| updatedAt | DateTime | Last update timestamp |
 
-**Unique constraint:** One submission per user per prompt per word (`userId + promptId + wordIndex`).
+**ShareStatus Enum Values:**
+- `PRIVATE` - Only visible to the owner
+- `PROFILE` - Visible on the user's profile page
+- `PUBLIC` - Visible everywhere (galleries, profile pages, etc.)
+
+**Unique constraint:** One submission per user per prompt per word (`userId + promptId + wordIndex`).  
+**Note:** `promptId` and `wordIndex` are nullable to support portfolio-only items that aren't tied to prompts.
+
+**Portfolio Features:**
+- Submissions can be marked as portfolio items (`isPortfolio: true`)
+- Portfolio items can exist without a `promptId` (standalone creative work)
+- Portfolio items can be linked to prompts later (by setting `promptId` and `wordIndex`)
+- Prompt submissions can be added to portfolio (by setting `isPortfolio: true`)
+
+**Share Status Behavior:**
+- Prompt submissions are automatically set to `PUBLIC` (cannot be changed)
+- Portfolio-only items can have any share status (PRIVATE, PROFILE, or PUBLIC)
+- When linking a portfolio item to a prompt, share status is automatically set to `PUBLIC`
+- Existing submissions without a share status default to `PUBLIC`
+
+#### Favorite
+User favorites/bookmarks for submissions.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | String | CUID primary key |
+| userId | String | User who favorited |
+| submissionId | String | Favorited submission |
+| createdAt | DateTime | When favorited |
+
+**Unique constraint:** One favorite per user per submission (`userId + submissionId`).
+
+#### ProfileView
+Tracks unique profile page views for analytics.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | String | CUID primary key |
+| profileUserId | String | Profile being viewed |
+| viewerUserId | String? | Logged-in viewer (nullable for anonymous) |
+| viewerIpHash | String | Hashed IP address for anonymous tracking |
+| viewedAt | DateTime | View timestamp |
+
+**Unique constraints:**
+- One view per logged-in user per profile (`profileUserId + viewerUserId`)
+- One view per IP hash per profile (`profileUserId + viewerIpHash`)
+
+**Privacy:** IP addresses are hashed using SHA-256 before storage.
+
+#### SubmissionView
+Tracks unique submission views for analytics.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | String | CUID primary key |
+| submissionId | String | Submission being viewed |
+| viewerUserId | String? | Logged-in viewer (nullable for anonymous) |
+| viewerIpHash | String | Hashed IP address for anonymous tracking |
+| viewedAt | DateTime | View timestamp |
+
+**Unique constraints:**
+- One view per logged-in user per submission (`submissionId + viewerUserId`)
+- One view per IP hash per submission (`submissionId + viewerIpHash`)
+
+**Privacy:** IP addresses are hashed using SHA-256 before storage.
 
 #### NextAuth Models
 - `Account` - OAuth provider accounts
@@ -476,3 +552,195 @@ Images are served directly from R2's public URL:
 The `R2_PUBLIC_URL` should point to either:
 - R2's public bucket URL
 - A CDN/Cloudflare Workers URL for caching
+
+---
+
+# Portfolio System
+
+## Overview
+
+The portfolio system allows users to showcase their creative work beyond prompt submissions. Portfolio items can be:
+- **Standalone**: Created independently without a prompt association
+- **Linked to prompts**: Portfolio items can be used as prompt submissions
+- **Converted from prompts**: Prompt submissions can be added to portfolio
+
+## Portfolio Item Creation
+
+### Standalone Portfolio Items
+
+Create portfolio-only items (no prompt association):
+
+```typescript
+// POST /api/submissions
+{
+  title: "My Artwork",
+  imageUrl: "https://...",
+  text: "<p>Description</p>",
+  isPortfolio: true,
+  tags: ["photography", "nature"],
+  category: "Photography",
+  shareStatus: "PUBLIC"  // or "PROFILE" or "PRIVATE"
+  // No promptId or wordIndex
+}
+```
+
+**Share Status Options:**
+- `"PRIVATE"` - Only visible to you
+- `"PROFILE"` - Visible on your profile page
+- `"PUBLIC"` - Visible everywhere (default)
+
+### Linking Portfolio Items to Prompts
+
+Link an existing portfolio item to a prompt:
+
+```typescript
+// PUT /api/submissions/{id}
+{
+  promptId: "prompt_123",
+  wordIndex: 1  // 1, 2, or 3
+}
+```
+
+**Note:** When linking to a prompt, `shareStatus` is automatically set to `PUBLIC`.
+
+### Adding Prompt Submissions to Portfolio
+
+Mark a prompt submission as a portfolio item:
+
+```typescript
+// PUT /api/submissions/{id}
+{
+  isPortfolio: true,
+  tags: ["landscape"],
+  category: "Photography"
+}
+```
+
+## Querying Portfolio Items
+
+### Get User's Portfolio
+
+```typescript
+// GET /api/submissions?portfolio=true&userId={userId}
+const response = await fetch(`/api/submissions?portfolio=true&userId=${userId}`);
+const { submissions } = await response.json();
+```
+
+### Portfolio vs Prompt Submissions
+
+- **Portfolio items**: `isPortfolio: true` (may or may not have `promptId`)
+- **Prompt submissions**: `promptId !== null` (may or may not be in portfolio)
+- **Both**: Items that are both portfolio items AND prompt submissions
+
+## Portfolio Fields
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| `isPortfolio` | Whether to show in portfolio section | `true` |
+| `tags` | Array of tags for categorization | `["landscape", "nature"]` |
+| `category` | Primary category | `"Photography"` |
+| `shareStatus` | Visibility control | `"PUBLIC"`, `"PROFILE"`, or `"PRIVATE"` |
+
+## Querying with Share Status
+
+When querying portfolio items, share status filtering is applied automatically:
+
+- **Owner viewing their own items**: See all items (PRIVATE, PROFILE, PUBLIC)
+- **Others viewing a profile**: See only PROFILE and PUBLIC items
+- **Gallery views**: See only PUBLIC items
+
+**Available Categories:**
+- Photography
+- Writing
+- Digital Art
+- Illustration
+- Mixed Media
+- Design
+- Other
+
+---
+
+# Analytics System
+
+## Overview
+
+The analytics system tracks profile views and submission views to provide users with insights into their work's visibility.
+
+## View Tracking
+
+### Profile Views
+
+Tracks unique visitors to user profile pages:
+
+```typescript
+// POST /api/profile/view
+{
+  profileUserId: "user_123"
+}
+```
+
+**Tracking Logic:**
+- Logged-in users: Tracked by `viewerUserId` (one view per user)
+- Anonymous users: Tracked by hashed IP address (one view per IP)
+- Self-views: Not tracked (users viewing their own profile)
+
+### Submission Views
+
+Tracks unique views of individual submissions:
+
+```typescript
+// POST /api/submissions/{id}/view
+// No body required - submission ID from URL
+```
+
+**Tracking Logic:**
+- Logged-in users: Tracked by `viewerUserId` (one view per user)
+- Anonymous users: Tracked by hashed IP address (one view per IP)
+- Self-views: Not tracked (users viewing their own submissions)
+
+## Analytics API
+
+### Get Profile Analytics
+
+```typescript
+// GET /api/profile/analytics?userId={userId}
+const response = await fetch(`/api/profile/analytics?userId=${userId}`);
+const { analytics } = await response.json();
+
+// Returns:
+{
+  uniqueVisitors: number,      // Unique profile views
+  totalFavorites: number,      // Total favorites on all submissions
+  totalViews: number,           // Total views on all submissions
+  submissionCount: number,     // Count of prompt submissions
+  portfolioCount: number,      // Count of portfolio items
+  totalWorkCount: number       // Total submissions (all types)
+}
+```
+
+**Authorization:** Users can only view their own analytics.
+
+## Privacy Considerations
+
+1. **IP Hashing**: IP addresses are hashed using SHA-256 before storage
+2. **No Personal Data**: Only hashed IPs and user IDs are stored
+3. **Self-View Exclusion**: Users viewing their own content don't generate views
+4. **Unique Tracking**: Each user/IP combination counts as one view
+
+## Database Models
+
+### ProfileView
+
+Stores unique profile page views:
+- `profileUserId`: Profile being viewed
+- `viewerUserId`: Logged-in viewer (nullable)
+- `viewerIpHash`: Hashed IP for anonymous tracking
+- Unique constraints prevent duplicate views
+
+### SubmissionView
+
+Stores unique submission views:
+- `submissionId`: Submission being viewed
+- `viewerUserId`: Logged-in viewer (nullable)
+- `viewerIpHash`: Hashed IP for anonymous tracking
+- Unique constraints prevent duplicate views

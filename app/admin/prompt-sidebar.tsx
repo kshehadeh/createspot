@@ -76,7 +76,10 @@ export function PromptSidebar({
 
       if (isCurrentPrompt(weekStart, weekEnd)) {
         current = prompt;
-      } else if (weekStart > now && (!next || weekStart < new Date(next.weekStart))) {
+      } else if (
+        weekStart > now &&
+        (!next || weekStart < new Date(next.weekStart))
+      ) {
         next = prompt;
       }
     }

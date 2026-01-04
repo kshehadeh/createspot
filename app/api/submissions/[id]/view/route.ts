@@ -29,7 +29,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   // Check if submission exists
   const submission = await prisma.submission.findUnique({
     where: { id: submissionId },
-    select: { userId: true },
+    select: { userId: true, shareStatus: true },
   });
 
   if (!submission) {
@@ -43,6 +43,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   const viewerUserId = session?.user?.id || null;
   const clientIp = getClientIp(request);
   const viewerIpHash = hashIp(clientIp);
+
+  // Check share status visibility
+  // PRIVATE submissions can only be viewed by the owner
+  if (submission.shareStatus === "PRIVATE") {
+    if (!viewerUserId || viewerUserId !== submission.userId) {
+      return NextResponse.json(
+        { error: "Submission not found" },
+        { status: 404 },
+      );
+    }
+  }
 
   // Don't track views on own submissions
   if (viewerUserId === submission.userId) {
@@ -95,4 +106,3 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true, tracked: false });
   }
 }
-

@@ -14,6 +14,24 @@ const CATEGORIES = [
   "Other",
 ];
 
+const SHARE_STATUS_OPTIONS = [
+  {
+    value: "PUBLIC",
+    label: "Public",
+    description: "Visible everywhere (galleries, profile pages, etc.)",
+  },
+  {
+    value: "PROFILE",
+    label: "Profile Only",
+    description: "Only visible on your profile page",
+  },
+  {
+    value: "PRIVATE",
+    label: "Private",
+    description: "Only visible to you",
+  },
+];
+
 interface PortfolioItemFormProps {
   mode: "create" | "edit";
   initialData?: {
@@ -23,6 +41,7 @@ interface PortfolioItemFormProps {
     text: string | null;
     tags: string[];
     category: string | null;
+    shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   };
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -41,9 +60,12 @@ export function PortfolioItemForm({
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || "");
   const [text, setText] = useState(initialData?.text || "");
   const [tagsInput, setTagsInput] = useState(
-    initialData?.tags?.join(", ") || ""
+    initialData?.tags?.join(", ") || "",
   );
   const [category, setCategory] = useState(initialData?.category || "");
+  const [shareStatus, setShareStatus] = useState<
+    "PRIVATE" | "PROFILE" | "PUBLIC"
+  >(initialData?.shareStatus || "PUBLIC");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -147,6 +169,7 @@ export function PortfolioItemForm({
             isPortfolio: true,
             tags,
             category: category || null,
+            shareStatus,
           }),
         });
 
@@ -163,6 +186,7 @@ export function PortfolioItemForm({
             text: text || null,
             tags,
             category: category || null,
+            shareStatus,
           }),
         });
 
@@ -345,6 +369,45 @@ export function PortfolioItemForm({
         </p>
       </div>
 
+      <div>
+        <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
+          Visibility
+        </label>
+        <div className="space-y-2">
+          {SHARE_STATUS_OPTIONS.map((option) => (
+            <label
+              key={option.value}
+              className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                shareStatus === option.value
+                  ? "border-zinc-900 bg-zinc-50 dark:border-zinc-300 dark:bg-zinc-800"
+                  : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600"
+              }`}
+            >
+              <input
+                type="radio"
+                name="shareStatus"
+                value={option.value}
+                checked={shareStatus === option.value}
+                onChange={(e) =>
+                  setShareStatus(
+                    e.target.value as "PRIVATE" | "PROFILE" | "PUBLIC",
+                  )
+                }
+                className="mt-0.5"
+              />
+              <div>
+                <div className="text-sm font-medium text-zinc-900 dark:text-white">
+                  {option.label}
+                </div>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {option.description}
+                </div>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
       <div className="flex gap-3">
         <button
           type="submit"
@@ -370,4 +433,3 @@ export function PortfolioItemForm({
     </form>
   );
 }
-

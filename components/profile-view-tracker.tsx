@@ -32,4 +32,3 @@ export function ProfileViewTracker({ profileUserId }: ProfileViewTrackerProps) {
   // This component doesn't render anything
   return null;
 }
-

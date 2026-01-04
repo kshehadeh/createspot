@@ -62,7 +62,11 @@ export function SubmissionDetail({
               {/* Prompt words or portfolio label */}
               <div className="flex flex-wrap items-center gap-3">
                 {hasPrompt ? (
-                  [submission.prompt!.word1, submission.prompt!.word2, submission.prompt!.word3].map((promptWord, index) => {
+                  [
+                    submission.prompt!.word1,
+                    submission.prompt!.word2,
+                    submission.prompt!.word3,
+                  ].map((promptWord, index) => {
                     const isActive = index + 1 === submission.wordIndex;
                     return (
                       <span
@@ -91,10 +95,7 @@ export function SubmissionDetail({
                   title={submission.title}
                 />
                 {isLoggedIn && (
-                  <FavoriteButton
-                    submissionId={submission.id}
-                    size="md"
-                  />
+                  <FavoriteButton submissionId={submission.id} size="md" />
                 )}
                 {submission._count.favorites > 0 && (
                   <div className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
@@ -147,7 +148,9 @@ export function SubmissionDetail({
           )}
 
           {/* Content layout */}
-          <div className={`mb-12 ${hasBoth ? "md:grid md:grid-cols-3 md:gap-8" : ""}`}>
+          <div
+            className={`mb-12 ${hasBoth ? "md:grid md:grid-cols-3 md:gap-8" : ""}`}
+          >
             {/* Image section */}
             {hasImage && (
               <div
@@ -238,4 +241,3 @@ export function SubmissionDetail({
     </FavoritesProvider>
   );
 }
-

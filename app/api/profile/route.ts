@@ -34,7 +34,8 @@ export async function PUT(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { bio, instagram, twitter, linkedin, website, featuredSubmissionId } = body;
+  const { bio, instagram, twitter, linkedin, website, featuredSubmissionId } =
+    body;
 
   // Validate that featuredSubmissionId belongs to the user if provided
   if (featuredSubmissionId) {
@@ -46,7 +47,7 @@ export async function PUT(request: NextRequest) {
     if (!submission || submission.userId !== session.user.id) {
       return NextResponse.json(
         { error: "Invalid featured submission" },
-        { status: 400 }
+        { status: 400 },
       );
     }
   }

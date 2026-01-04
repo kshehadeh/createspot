@@ -18,18 +18,36 @@ app/
 ├── page.tsx            # Home page
 ├── globals.css         # Global styles & theme tokens
 ├── admin/              # Admin pages (prompt management, users)
+├── api/                # API routes
 ├── auth/               # Authentication pages
+├── favorites/          # User favorites page
 ├── history/            # User submission history
 ├── play/               # Submission creation
-├── this-week/          # Gallery view
-└── api/                # API routes
+├── profile/            # User profile pages
+│   ├── [userId]/       # Public profile view
+│   └── edit/           # Profile editing
+├── s/                  # Submission detail pages
+│   └── [id]/           # Individual submission view
+└── this-week/          # Gallery view
 
 components/
-├── animated-home.tsx   # Animated landing page components
-├── auth-button.tsx     # Sign in/out buttons
-├── confirm-modal.tsx   # Reusable confirmation dialog
-├── header.tsx          # App header with navigation
-└── logo.tsx            # SVG logo component
+├── animated-home.tsx        # Animated landing page components
+├── auth-button.tsx          # Sign in/out buttons
+├── confirm-modal.tsx        # Reusable confirmation dialog
+├── expandable-image.tsx     # Image viewer with expand functionality
+├── expandable-text.tsx      # Text viewer with expand functionality
+├── favorite-button.tsx      # Favorite/unfavorite button
+├── favorites-provider.tsx   # Context provider for favorites state
+├── header.tsx               # App header with navigation
+├── logo.tsx                 # SVG logo component
+├── portfolio-grid.tsx       # Grid display for portfolio items
+├── portfolio-item-form.tsx  # Form for creating/editing portfolio items
+├── profile-analytics.tsx    # Analytics display component
+├── profile-view-tracker.tsx # Client component for tracking profile views
+├── rich-text-editor.tsx     # TipTap-based rich text editor
+├── share-button.tsx         # Share submission button
+├── submission-lightbox.tsx  # Full-screen submission viewer
+└── text-thumbnail.tsx       # Text preview thumbnail
 ```
 
 ## Theme System
@@ -424,6 +442,182 @@ const router = useRouter();
 router.refresh();
 ```
 
+## Portfolio Components
+
+### PortfolioGrid
+
+Displays a grid of portfolio items with category filtering:
+
+```tsx
+import { PortfolioGrid } from "@/components/portfolio-grid";
+
+<PortfolioGrid
+  items={portfolioItems}
+  isLoggedIn={!!session}
+  isOwnProfile={isOwnProfile}
+  showPromptBadge={true}
+/>
+```
+
+**Props:**
+- `items`: Array of portfolio items with `id`, `title`, `imageUrl`, `text`, `tags`, `category`, etc.
+- `isLoggedIn`: Whether user is authenticated (for favorite buttons)
+- `isOwnProfile`: Whether viewing own profile (for empty state)
+- `showPromptBadge`: Whether to show prompt badges on items linked to prompts
+
+**Features:**
+- Category filtering (if items have categories)
+- Responsive grid layout (2 cols mobile, 3 cols desktop)
+- Favorite button integration
+- Click to view full submission
+
+### PortfolioItemForm
+
+Form for creating or editing portfolio items:
+
+```tsx
+import { PortfolioItemForm } from "@/components/portfolio-item-form";
+
+<PortfolioItemForm
+  mode="create"  // or "edit"
+  initialData={existingItem}  // For edit mode
+  onSuccess={() => router.refresh()}
+  onCancel={() => setShowForm(false)}
+/>
+```
+
+**Features:**
+- Image upload with preview
+- Rich text editor for descriptions
+- Category selection
+- Tag input (comma-separated)
+- Title field (optional)
+- Share status selector (visibility control)
+
+**Share Status Options:**
+- **Public** (default) - Visible everywhere (galleries, profile pages, etc.)
+- **Profile Only** - Only visible on your profile page
+- **Private** - Only visible to you
+
+The share status selector is displayed as radio buttons with descriptions for each option.
+
+### ProfileAnalytics
+
+Displays analytics for profile owners:
+
+```tsx
+import { ProfileAnalytics } from "@/components/profile-analytics";
+
+<ProfileAnalytics userId={user.id} />
+```
+
+**Displays:**
+- Profile Views (unique visitors)
+- Total Favorites (across all submissions)
+- Work Views (total submission views)
+- Total Works (all submissions count)
+
+**Note:** Only visible to profile owner.
+
+### ProfileViewTracker
+
+Client component that tracks profile views:
+
+```tsx
+import { ProfileViewTracker } from "@/components/profile-view-tracker";
+
+<ProfileViewTracker profileUserId={user.id} />
+```
+
+**Behavior:**
+- Automatically tracks view on mount
+- Only tracks for non-owners
+- Uses hashed IP for anonymous users
+- Silently fails if tracking unavailable
+
+## Profile Pages
+
+### Public Profile (`/profile/[userId]`)
+
+Displays user's public portfolio and prompt submissions:
+
+**Sections:**
+1. **Header**: Avatar, name, bio, social links
+2. **Analytics** (own profile only): Profile views, favorites, work views
+3. **Featured Submission**: Highlighted work (if set)
+4. **Portfolio**: Grid of portfolio items
+5. **Prompt Submissions**: History of prompt submissions
+
+### Profile Edit (`/profile/edit`)
+
+Two-tab interface for managing profile:
+
+**Profile Tab:**
+- Bio editor (rich text)
+- Social links (Instagram, Twitter, LinkedIn, Website)
+- Featured submission selector
+
+**Portfolio Tab:**
+- Add new portfolio items
+- Edit existing portfolio items
+- Delete portfolio items
+- Add prompt submissions to portfolio
+
+## Portfolio Patterns
+
+### Creating Portfolio Items
+
+```tsx
+const response = await fetch("/api/submissions", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    title: "My Artwork",
+    imageUrl: uploadedUrl,
+    text: "<p>Description</p>",
+    isPortfolio: true,
+    tags: ["photography", "nature"],
+    category: "Photography",
+    shareStatus: "PUBLIC"  // or "PROFILE" or "PRIVATE"
+  }),
+});
+```
+
+**Share Status Values:**
+- `"PUBLIC"` - Visible everywhere (galleries, profile pages, etc.)
+- `"PROFILE"` - Only visible on your profile page
+- `"PRIVATE"` - Only visible to you
+
+### Linking Portfolio to Prompt
+
+```tsx
+// On Play page - use existing portfolio item
+const response = await fetch(`/api/submissions/${portfolioItemId}`, {
+  method: "PUT",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    promptId: currentPrompt.id,
+    wordIndex: 1  // 1, 2, or 3
+  }),
+});
+```
+
+**Note:** When linking a portfolio item to a prompt, the share status is automatically set to `PUBLIC`.
+
+### Adding Prompt Submission to Portfolio
+
+```tsx
+const response = await fetch(`/api/submissions/${submissionId}`, {
+  method: "PUT",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    isPortfolio: true,
+    tags: ["landscape"],
+    category: "Photography"
+  }),
+});
+```
+
 ## Best Practices
 
 1. **Prefer Server Components** for data fetching and static content
@@ -433,3 +627,5 @@ router.refresh();
 5. **Use Tailwind's dark: variant** consistently for dark mode
 6. **Follow the zinc color scale** for consistent neutral colors
 7. **Use motion sparingly** - entrance animations and hover states only
+8. **Track views client-side** - Use `ProfileViewTracker` for non-blocking analytics
+9. **Handle nullable fields** - Portfolio items may not have `promptId` or `wordIndex`

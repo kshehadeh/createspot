@@ -9,7 +9,10 @@ interface RouteParams {
 }
 
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim();
 }
 
 function getFirstSentences(text: string, maxLength: number = 200): string {
@@ -85,10 +88,16 @@ export default async function OpenGraphImage({ params }: RouteParams) {
   }
 
   const hasPrompt = !!submission.prompt && !!submission.wordIndex;
-  const word = hasPrompt 
-    ? [submission.prompt!.word1, submission.prompt!.word2, submission.prompt!.word3][submission.wordIndex! - 1]
+  const word = hasPrompt
+    ? [
+        submission.prompt!.word1,
+        submission.prompt!.word2,
+        submission.prompt!.word3,
+      ][submission.wordIndex! - 1]
     : "Portfolio";
-  const title = submission.title || (hasPrompt ? `Submission for "${word}"` : "Portfolio Piece");
+  const title =
+    submission.title ||
+    (hasPrompt ? `Submission for "${word}"` : "Portfolio Piece");
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const creatorName = submission.user.name || "Anonymous";
@@ -101,7 +110,8 @@ export default async function OpenGraphImage({ params }: RouteParams) {
       if (imageResponse.ok) {
         const arrayBuffer = await imageResponse.arrayBuffer();
         const base64 = Buffer.from(arrayBuffer).toString("base64");
-        const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+        const contentType =
+          imageResponse.headers.get("content-type") || "image/jpeg";
         const imageDataUrl = `data:${contentType};base64,${base64}`;
 
         return new ImageResponse(
@@ -132,7 +142,8 @@ export default async function OpenGraphImage({ params }: RouteParams) {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
                 padding: "60px 80px 80px",
                 display: "flex",
                 flexDirection: "column",
@@ -171,7 +182,9 @@ export default async function OpenGraphImage({ params }: RouteParams) {
                 >
                   {word}
                 </span>
-                <span style={{ display: "flex", fontSize: "28px" }}>by {creatorName}</span>
+                <span style={{ display: "flex", fontSize: "28px" }}>
+                  by {creatorName}
+                </span>
               </div>
             </div>
           </div>,
@@ -189,9 +202,16 @@ export default async function OpenGraphImage({ params }: RouteParams) {
   const promptWords = hasPrompt
     ? `${submission.prompt!.word1} • ${submission.prompt!.word2} • ${submission.prompt!.word3}`
     : "Portfolio";
-  
+
   // Debug: log what we have
-  console.log("OG Image - hasImage:", hasImage, "hasText:", hasText, "textPreview:", textPreview?.slice(0, 50));
+  console.log(
+    "OG Image - hasImage:",
+    hasImage,
+    "hasText:",
+    hasText,
+    "textPreview:",
+    textPreview?.slice(0, 50),
+  );
 
   return new ImageResponse(
     <div
@@ -329,4 +349,3 @@ export default async function OpenGraphImage({ params }: RouteParams) {
     { ...size },
   );
 }
-

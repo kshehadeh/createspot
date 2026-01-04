@@ -35,6 +35,7 @@ interface RouteParams {
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
+  const session = await auth();
 
   const submission = await prisma.submission.findUnique({
     where: { id },
@@ -76,6 +77,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     );
   }
 
+  // Check share status visibility
+  // PRIVATE submissions are only visible to the owner
+  if (submission.shareStatus === "PRIVATE") {
+    if (!session?.user || session.user.id !== submission.userId) {
+      return NextResponse.json(
+        { error: "Submission not found" },
+        { status: 404 },
+      );
+    }
+  }
+  // PROFILE and PUBLIC are visible to everyone
+
   return NextResponse.json({ submission });
 }
 
@@ -114,6 +127,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     category,
     promptId,
     wordIndex,
+    shareStatus,
   } = body;
 
   // If linking to a prompt, validate it
@@ -167,6 +181,18 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   if (category !== undefined) updateData.category = category;
   if (promptId !== undefined) updateData.promptId = promptId;
   if (wordIndex !== undefined) updateData.wordIndex = wordIndex;
+
+  // Handle shareStatus - if linking to a prompt, force PUBLIC
+  if (promptId !== undefined && promptId !== null) {
+    // Linking to a prompt makes it PUBLIC
+    updateData.shareStatus = "PUBLIC";
+  } else if (shareStatus !== undefined) {
+    // Validate shareStatus if provided
+    const validShareStatuses = ["PRIVATE", "PROFILE", "PUBLIC"];
+    if (validShareStatuses.includes(shareStatus)) {
+      updateData.shareStatus = shareStatus;
+    }
+  }
 
   const submission = await prisma.submission.update({
     where: { id },
