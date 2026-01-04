@@ -222,6 +222,18 @@ function MobileNavigationLinks({
     <>
       <div className="mb-2">
         <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          Explore
+        </div>
+        <Link
+          href="/exhibition"
+          className={linkClassName("/exhibition")}
+          onClick={onLinkClick}
+        >
+          Exhibition
+        </Link>
+      </div>
+      <div className="mb-2">
+        <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           Prompts
         </div>
         <Link
