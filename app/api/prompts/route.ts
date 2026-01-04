@@ -32,9 +32,14 @@ export async function POST(request: NextRequest) {
   }
 
   const startDate = new Date(weekStart);
+  // Ensure start is at 00:00:00.000
+  startDate.setUTCHours(0, 0, 0, 0);
+  
   const endDate = weekEnd
     ? new Date(weekEnd)
     : new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+  // Ensure end is at 23:59:59.999
+  endDate.setUTCHours(23, 59, 59, 999);
 
   const prompt = await prisma.prompt.create({
     data: {
@@ -91,8 +96,16 @@ export async function PUT(request: NextRequest) {
   if (word1) updateData.word1 = word1;
   if (word2) updateData.word2 = word2;
   if (word3) updateData.word3 = word3;
-  if (weekStart) updateData.weekStart = new Date(weekStart);
-  if (weekEnd) updateData.weekEnd = new Date(weekEnd);
+  if (weekStart) {
+    const startDate = new Date(weekStart);
+    startDate.setUTCHours(0, 0, 0, 0);
+    updateData.weekStart = startDate;
+  }
+  if (weekEnd) {
+    const endDate = new Date(weekEnd);
+    endDate.setUTCHours(23, 59, 59, 999);
+    updateData.weekEnd = endDate;
+  }
 
   const prompt = await prisma.prompt.update({
     where: { id },

@@ -57,12 +57,16 @@ function getMondayUTC(date: Date): Date {
   const day = d.getUTCDay();
   const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1);
   d.setUTCDate(diff);
+  // Set to start of day (00:00:00.000)
+  d.setUTCHours(0, 0, 0, 0);
   return d;
 }
 
 function getSundayUTC(monday: Date): Date {
   const d = new Date(monday);
   d.setUTCDate(d.getUTCDate() + 6);
+  // Set to end of day (23:59:59.999)
+  d.setUTCHours(23, 59, 59, 999);
   return d;
 }
 
