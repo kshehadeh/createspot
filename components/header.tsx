@@ -220,31 +220,36 @@ function MobileNavigationLinks({
 
   return (
     <>
-      <Link
-        href="/prompt"
-        className={linkClassName("/prompt")}
-        onClick={onLinkClick}
-      >
-        Prompts
-      </Link>
-      {isAuthenticated && (
-        <>
-          <Link
-            href="/prompt/play"
-            className={linkClassName("/prompt/play")}
-            onClick={onLinkClick}
-          >
-            Play
-          </Link>
-          <Link
-            href="/prompt/history"
-            className={linkClassName("/prompt/history")}
-            onClick={onLinkClick}
-          >
-            History
-          </Link>
-        </>
-      )}
+      <div className="mb-2">
+        <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          Prompts
+        </div>
+        <Link
+          href="/prompt"
+          className={linkClassName("/prompt")}
+          onClick={onLinkClick}
+        >
+          Prompts
+        </Link>
+        {isAuthenticated && (
+          <>
+            <Link
+              href="/prompt/play"
+              className={linkClassName("/prompt/play")}
+              onClick={onLinkClick}
+            >
+              Play
+            </Link>
+            <Link
+              href="/prompt/history"
+              className={linkClassName("/prompt/history")}
+              onClick={onLinkClick}
+            >
+              History
+            </Link>
+          </>
+        )}
+      </div>
       {isAdmin && (
         <div className="mt-2">
           <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">

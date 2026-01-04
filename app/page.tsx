@@ -123,7 +123,7 @@ export default async function Home() {
                     Build Your Portfolio
                   </Link>
                   <Link
-                    href="/prompt/play"
+                    href="/prompt"
                     className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 bg-white px-8 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
                   >
                     Play Weekly Prompts
