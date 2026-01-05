@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
-import { getExhibitionFacets, getExhibitionSubmissions } from "@/lib/exhibition";
+import {
+  getExhibitionFacets,
+  getExhibitionSubmissions,
+} from "@/lib/exhibition";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 import { Header } from "@/components/header";
 import { ExhibitionFilters } from "../exhibition-filters";
@@ -43,17 +46,16 @@ export default async function GalleryExhibitionPage({
   const tag = rawTag?.trim() || "";
   const query = rawQuery?.trim() || "";
 
-  const [{ submissions, hasMore }, { categories, tags }] =
-    await Promise.all([
-      getExhibitionSubmissions({
-        category,
-        tag,
-        query,
-        skip: 0,
-        take: EXHIBITION_PAGE_SIZE,
-      }),
-      getExhibitionFacets(),
-    ]);
+  const [{ submissions, hasMore }, { categories, tags }] = await Promise.all([
+    getExhibitionSubmissions({
+      category,
+      tag,
+      query,
+      skip: 0,
+      take: EXHIBITION_PAGE_SIZE,
+    }),
+    getExhibitionFacets(),
+  ]);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -111,4 +113,3 @@ export default async function GalleryExhibitionPage({
     </div>
   );
 }
-

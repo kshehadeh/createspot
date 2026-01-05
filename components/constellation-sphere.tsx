@@ -242,7 +242,9 @@ export function ConstellationSphere({
                     captionText ? "justify-between" : "justify-end"
                   }`}
                 >
-                  {captionText ? <span className="truncate">{captionText}</span> : null}
+                  {captionText ? (
+                    <span className="truncate">{captionText}</span>
+                  ) : null}
                   <span className="text-amber-500">View</span>
                 </div>
               </Link>

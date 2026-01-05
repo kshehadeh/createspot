@@ -116,4 +116,3 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
     </div>
   );
 }
-

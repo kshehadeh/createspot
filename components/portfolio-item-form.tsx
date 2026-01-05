@@ -409,7 +409,11 @@ export function PortfolioItemForm({
                 } else if (trimmed) {
                   setTagInput("");
                 }
-              } else if (e.key === "Backspace" && e.currentTarget.value === "" && tags.length > 0) {
+              } else if (
+                e.key === "Backspace" &&
+                e.currentTarget.value === "" &&
+                tags.length > 0
+              ) {
                 setTags(tags.slice(0, -1));
               }
             }}

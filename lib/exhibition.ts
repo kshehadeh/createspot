@@ -98,9 +98,9 @@ export async function getExhibitionFacets() {
     .filter((value): value is string => Boolean(value))
     .sort((a, b) => a.localeCompare(b));
 
-  const tags = Array.from(
-    new Set(tagRows.flatMap((row) => row.tags)),
-  ).sort((a, b) => a.localeCompare(b));
+  const tags = Array.from(new Set(tagRows.flatMap((row) => row.tags))).sort(
+    (a, b) => a.localeCompare(b),
+  );
 
   return { categories, tags };
 }

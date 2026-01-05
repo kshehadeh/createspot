@@ -329,7 +329,9 @@ export default async function ProfilePage({
           )}
 
           {/* Gallery Section - Main Content Area */}
-          <div className={featuredSubmission ? "lg:col-span-2" : "lg:col-span-3"}>
+          <div
+            className={featuredSubmission ? "lg:col-span-2" : "lg:col-span-3"}
+          >
             {/* Portfolio Section */}
             {portfolioItems.length > 0 && (
               <div className="mb-12">

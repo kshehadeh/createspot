@@ -46,11 +46,11 @@ async function getConstellationWork() {
   return submissions.map((submission) => {
     const promptWord =
       submission.prompt && typeof submission.wordIndex === "number"
-        ? [
+        ? ([
             submission.prompt.word1,
             submission.prompt.word2,
             submission.prompt.word3,
-          ][submission.wordIndex - 1] ?? null
+          ][submission.wordIndex - 1] ?? null)
         : null;
 
     return {
@@ -124,4 +124,3 @@ export default async function ConstellationExhibitionPage() {
     </div>
   );
 }
-

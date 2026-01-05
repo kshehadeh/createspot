@@ -78,36 +78,36 @@ export default async function Home() {
                 </h1>
                 <p className="mx-auto mb-10 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400 lg:mx-0">
                   Join a vibrant community of artists and writers. Build your
-                  portfolio, share your creative journey, and get inspired by weekly
-                  prompts.
+                  portfolio, share your creative journey, and get inspired by
+                  weekly prompts.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 lg:justify-start">
-              {session ? (
-                <>
-                  <Link
-                    href="/profile/edit"
-                    className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-                  >
-                    Build Your Portfolio
-                  </Link>
-                  <Link
-                    href="/prompt"
-                    className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 bg-white px-8 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
-                  >
-                    Play Weekly Prompts
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <SignInButton />
-                  <Link
-                    href="/prompt/this-week"
-                    className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 bg-white px-8 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
-                  >
-                    Browse Gallery
-                  </Link>
-                </>
-              )}
+                  {session ? (
+                    <>
+                      <Link
+                        href="/profile/edit"
+                        className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+                      >
+                        Build Your Portfolio
+                      </Link>
+                      <Link
+                        href="/prompt"
+                        className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 bg-white px-8 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+                      >
+                        Play Weekly Prompts
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <SignInButton />
+                      <Link
+                        href="/prompt/this-week"
+                        className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 bg-white px-8 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+                      >
+                        Browse Gallery
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -118,7 +118,11 @@ export default async function Home() {
         <section className="px-6 pb-8 pt-0 sm:pb-12 sm:pt-2">
           <div className="mx-auto max-w-5xl text-center">
             <p className="text-2xl leading-relaxed text-zinc-700 dark:text-zinc-300 sm:text-3xl sm:leading-relaxed md:text-4xl md:leading-relaxed lg:text-5xl lg:leading-relaxed">
-            A place for creatives to <strong className="rainbow-sheen">exhibit their work</strong>, find inspiration to <strong className="rainbow-sheen">create more</strong>, and <strong className="rainbow-sheen">support fellow humans</strong>.
+              A place for creatives to{" "}
+              <strong className="rainbow-sheen">exhibit their work</strong>,
+              find inspiration to{" "}
+              <strong className="rainbow-sheen">create more</strong>, and{" "}
+              <strong className="rainbow-sheen">support fellow humans</strong>.
             </p>
           </div>
         </section>

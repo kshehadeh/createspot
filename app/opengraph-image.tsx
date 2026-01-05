@@ -71,7 +71,6 @@ export default function OpenGraphImage() {
       >
         Create Spot
       </div>
-
     </div>,
     {
       ...size,
