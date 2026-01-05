@@ -150,7 +150,7 @@ function GridContent({
     const params = new URLSearchParams(searchParams.toString());
     params.set("tag", tag);
     const next = params.toString();
-    return next ? `/exhibition?${next}` : "/exhibition";
+    return next ? `/exhibition/gallery?${next}` : "/exhibition/gallery";
   };
 
   if (submissions.length === 0) {

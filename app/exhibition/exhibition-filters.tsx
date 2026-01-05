@@ -64,7 +64,7 @@ export function ExhibitionFilters({
     const next = params.toString();
 
     startTransition(() => {
-      router.replace(next ? `/exhibition?${next}` : "/exhibition", {
+      router.replace(next ? `/exhibition/gallery?${next}` : "/exhibition/gallery", {
         scroll: false,
       });
     });

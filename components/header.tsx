@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, startTransition } from "react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Logo } from "./logo";
+import { CreateSpotLogo } from "./create-spot-logo";
 import { UserDropdown } from "./user-dropdown";
 import { NavigationLinks } from "./navigation-links";
 
@@ -62,7 +62,11 @@ export function Header({ title, user }: HeaderProps) {
             href="/"
             className="flex items-center gap-2 text-zinc-900 dark:text-white"
           >
-            <Logo className="h-6 w-10" />
+            <CreateSpotLogo
+              className="h-6 w-auto"
+              base="currentColor"
+              highlight="rgb(161 161 170)"
+            />
             <span className="text-xl font-normal">Create Spot</span>
           </Link>
           {title && (
@@ -225,11 +229,18 @@ function MobileNavigationLinks({
           Explore
         </div>
         <Link
-          href="/exhibition"
-          className={linkClassName("/exhibition")}
+          href="/exhibition/gallery"
+          className={linkClassName("/exhibition/gallery")}
           onClick={onLinkClick}
         >
-          Exhibition
+          Gallery
+        </Link>
+        <Link
+          href="/exhibition/constellation"
+          className={linkClassName("/exhibition/constellation")}
+          onClick={onLinkClick}
+        >
+          Constellation
         </Link>
       </div>
       <div className="mb-2">

@@ -18,7 +18,7 @@ app/
 ├── page.tsx            # Home page
 ├── globals.css         # Global styles & theme tokens
 ├── admin/              # Admin pages (prompt management, users)
-├── api/                # API routes
+a├── api/                # API routes
 ├── auth/               # Authentication pages
 ├── favorites/          # User favorites page
 ├── history/            # User submission history

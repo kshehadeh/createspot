@@ -8,7 +8,7 @@ export interface ExhibitionFilterInput {
   query?: string;
 }
 
-export function buildExhibitionWhere({
+function buildExhibitionWhere({
   category,
   tag,
   query,

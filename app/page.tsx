@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Header } from "@/components/header";
 import { SignInButton } from "@/components/auth-button";
-import { ConstellationSphere } from "@/components/constellation-sphere";
+import { CreateSpotLogo } from "@/components/create-spot-logo";
 
 export const dynamic = "force-dynamic";
 
@@ -47,57 +47,9 @@ async function getRecentWork() {
   });
 }
 
-// Get public submissions for the hero constellation
-async function getConstellationWork() {
-  const submissions = await prisma.submission.findMany({
-    where: {
-      shareStatus: "PUBLIC",
-      OR: [{ imageUrl: { not: null } }, { text: { not: null } }],
-    },
-    select: {
-      id: true,
-      imageUrl: true,
-      text: true,
-      title: true,
-      wordIndex: true,
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 18,
-  });
-
-  return submissions.map((submission) => {
-    const promptWord =
-      submission.prompt && typeof submission.wordIndex === "number"
-        ? [
-            submission.prompt.word1,
-            submission.prompt.word2,
-            submission.prompt.word3,
-          ][submission.wordIndex - 1] ?? null
-        : null;
-
-    return {
-      id: submission.id,
-      imageUrl: submission.imageUrl,
-      text: submission.text,
-      title: submission.title,
-      promptWord,
-    };
-  });
-}
-
 export default async function Home() {
   const session = await auth();
-  const [recentWork, constellationWork] = await Promise.all([
-    getRecentWork(),
-    getConstellationWork(),
-  ]);
+  const recentWork = await getRecentWork();
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-black">
@@ -107,19 +59,29 @@ export default async function Home() {
         {/* Hero Section */}
         <section className="relative overflow-hidden px-6 py-20 sm:py-32">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-rose-50 to-violet-50 dark:from-amber-950/20 dark:via-rose-950/20 dark:to-violet-950/20" />
-          <div className="relative mx-auto max-w-4xl text-center">
-            <h1 className="mb-6 text-5xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-7xl">
-              Where creativity
-              <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
-                finds its home
-              </span>
-            </h1>
-            <p className="mx-auto mb-10 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-              Join a vibrant community of artists and writers. Build your
-              portfolio, share your creative journey, and get inspired by weekly
-              prompts.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
+          <div className="relative mx-auto max-w-4xl">
+            <div className="flex flex-col items-center gap-6 text-center lg:flex-row lg:items-start lg:text-left">
+              <div className="flex-shrink-0 lg:order-2">
+                <CreateSpotLogo
+                  className="h-40 w-auto sm:h-64 lg:h-56"
+                  base="rgb(24 24 27)"
+                  highlight="rgb(161 161 170)"
+                  sheen
+                />
+              </div>
+              <div className="flex-1 lg:order-1">
+                <h1 className="mb-6 text-5xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-7xl">
+                  Where creativity
+                  <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
+                    finds its home
+                  </span>
+                </h1>
+                <p className="mx-auto mb-10 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400 lg:mx-0">
+                  Join a vibrant community of artists and writers. Build your
+                  portfolio, share your creative journey, and get inspired by weekly
+                  prompts.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4 lg:justify-start">
               {session ? (
                 <>
                   <Link
@@ -146,31 +108,20 @@ export default async function Home() {
                   </Link>
                 </>
               )}
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Featured Artists Section */}
-        {constellationWork.length > 0 && (
-          <section className="px-6 py-16">
-            <div className="mx-auto flex max-w-6xl flex-col gap-10">
-              <div className="text-center">
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-600">
-                  Public Constellation
-                </p>
-                <h2 className="mt-3 text-3xl font-bold text-zinc-900 dark:text-white sm:text-4xl">
-                  Orbit the art of our community
-                </h2>
-                <p className="mx-auto mt-4 max-w-2xl text-base text-zinc-600 dark:text-zinc-400">
-                  Drag to spin through public submissions. Each star is a
-                  story, floating at a different distance from the creative
-                  center.
-                </p>
-              </div>
-              <ConstellationSphere items={constellationWork} />
-            </div>
-          </section>
-        )}
+        {/* Mission Statement Section */}
+        <section className="px-6 pb-8 pt-0 sm:pb-12 sm:pt-2">
+          <div className="mx-auto max-w-5xl text-center">
+            <p className="text-2xl leading-relaxed text-zinc-700 dark:text-zinc-300 sm:text-3xl sm:leading-relaxed md:text-4xl md:leading-relaxed lg:text-5xl lg:leading-relaxed">
+            A place for creatives to <strong className="rainbow-sheen">exhibit their work</strong>, find inspiration to <strong className="rainbow-sheen">create more</strong>, and <strong className="rainbow-sheen">support fellow humans</strong>.
+            </p>
+          </div>
+        </section>
 
         {/* Recent Work Section */}
         {recentWork.length > 0 && (
