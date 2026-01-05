@@ -200,8 +200,13 @@ function GridContent({
                       alt={submission.title || "Submission"}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
+                    {isLoggedIn && (
+                      <div className="absolute right-2 top-2" onClick={(event) => event.stopPropagation()}>
+                        <FavoriteButton submissionId={submission.id} size="sm" />
+                      </div>
+                    )}
                     {submission.text && (
-                      <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">
+                      <div className="absolute left-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">
                         <svg
                           className="h-4 w-4 text-white"
                           fill="none"
@@ -217,6 +222,30 @@ function GridContent({
                         </svg>
                       </div>
                     )}
+                    <Link
+                      href={`/profile/${submission.user.id}`}
+                      onClick={(event) => event.stopPropagation()}
+                      className="absolute bottom-2 right-2 flex items-center gap-2 rounded-lg bg-black/60 px-2 py-1.5 backdrop-blur-sm transition-opacity hover:opacity-80"
+                    >
+                      {submission.user.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={submission.user.image}
+                          alt={submission.user.name || "User"}
+                          className="h-6 w-6 rounded-full"
+                        />
+                      ) : (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
+                          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                            {submission.user.name?.charAt(0).toUpperCase() ||
+                              "?"}
+                          </span>
+                        </div>
+                      )}
+                      <span className="text-xs font-medium text-white">
+                        {submission.user.name || "Anonymous"}
+                      </span>
+                    </Link>
                   </div>
                 ) : submission.text ? (
                   <div className="relative">
@@ -224,10 +253,39 @@ function GridContent({
                       text={submission.text}
                       className="aspect-square"
                     />
+                    {isLoggedIn && (
+                      <div className="absolute right-2 top-2" onClick={(event) => event.stopPropagation()}>
+                        <FavoriteButton submissionId={submission.id} size="sm" />
+                      </div>
+                    )}
+                    <Link
+                      href={`/profile/${submission.user.id}`}
+                      onClick={(event) => event.stopPropagation()}
+                      className="absolute bottom-2 right-2 flex items-center gap-2 rounded-lg bg-black/60 px-2 py-1.5 backdrop-blur-sm transition-opacity hover:opacity-80"
+                    >
+                      {submission.user.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={submission.user.image}
+                          alt={submission.user.name || "User"}
+                          className="h-6 w-6 rounded-full"
+                        />
+                      ) : (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
+                          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                            {submission.user.name?.charAt(0).toUpperCase() ||
+                              "?"}
+                          </span>
+                        </div>
+                      )}
+                      <span className="text-xs font-medium text-white">
+                        {submission.user.name || "Anonymous"}
+                      </span>
+                    </Link>
                   </div>
                 ) : null}
 
-                <div className="space-y-3 p-4">
+                <div className="space-y-2 p-3">
                   <div className="flex flex-wrap items-center gap-2">
                     {submission.category && (
                       <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
@@ -267,43 +325,6 @@ function GridContent({
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between pt-1">
-                    <Link
-                      href={`/profile/${submission.user.id}`}
-                      onClick={(event) => event.stopPropagation()}
-                      className="flex items-center gap-2 transition hover:opacity-80"
-                    >
-                      {submission.user.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={submission.user.image}
-                          alt={submission.user.name || "User"}
-                          className="h-8 w-8 rounded-full"
-                        />
-                      ) : (
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
-                          <span className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
-                            {submission.user.name?.charAt(0).toUpperCase() ||
-                              "?"}
-                          </span>
-                        </div>
-                      )}
-                      <div>
-                        <div className="text-sm font-medium text-zinc-900 dark:text-white">
-                          {submission.user.name || "Anonymous"}
-                        </div>
-                        <div className="text-xs text-zinc-500 dark:text-zinc-500">
-                          {promptWord ? "Prompt response" : "Portfolio"}
-                        </div>
-                      </div>
-                    </Link>
-
-                    {isLoggedIn && (
-                      <div onClick={(event) => event.stopPropagation()}>
-                        <FavoriteButton submissionId={submission.id} size="sm" />
-                      </div>
-                    )}
-                  </div>
                 </div>
               </motion.article>
             );
