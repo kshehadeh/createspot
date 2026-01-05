@@ -15,11 +15,22 @@ export const dynamic = "force-dynamic";
 
 interface ProfilePageProps {
   params: Promise<{ userId: string }>;
+  searchParams: Promise<{ view?: string | string[] }>;
 }
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
+export default async function ProfilePage({
+  params,
+  searchParams,
+}: ProfilePageProps) {
   const { userId } = await params;
+  const paramsSearch = await searchParams;
   const session = await auth();
+
+  // Check if public view is requested
+  const viewParam = Array.isArray(paramsSearch.view)
+    ? paramsSearch.view[0]
+    : paramsSearch.view;
+  const isPublicViewRequested = viewParam === "public";
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -43,10 +54,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const isOwnProfile = session?.user?.id === user.id;
   const isLoggedIn = !!session?.user;
 
-  // Build share status filter based on ownership
-  const shareStatusFilter = isOwnProfile
-    ? {} // Owner sees all their items
-    : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }; // Others see PROFILE and PUBLIC only
+  // When viewing own profile with ?view=public, show public view
+  const isPublicView = isOwnProfile && isPublicViewRequested;
+  const effectiveIsOwnProfile = isOwnProfile && !isPublicView;
+
+  // Build share status filter based on ownership and view mode
+  const shareStatusFilter = effectiveIsOwnProfile
+    ? {} // Owner sees all their items in private view
+    : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }; // Public view shows PROFILE and PUBLIC only
 
   // Fetch portfolio items
   const portfolioItems = await prisma.submission.findMany({
@@ -96,8 +111,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const hasMore = prompts.length > 10;
   const initialItems = hasMore ? prompts.slice(0, 10) : prompts;
 
+  // Count submissions - filter by share status in public view
   const submissionCount = await prisma.submission.count({
-    where: { userId: user.id },
+    where: {
+      userId: user.id,
+      ...(effectiveIsOwnProfile
+        ? {}
+        : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }),
+    },
   });
 
   const hasSocialLinks =
@@ -122,7 +143,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   // Only show featured submission if share status allows it
   const featuredSubmission =
     featuredSubmissionRaw &&
-    (isOwnProfile ||
+    (effectiveIsOwnProfile ||
       featuredSubmissionRaw.shareStatus === "PROFILE" ||
       featuredSubmissionRaw.shareStatus === "PUBLIC")
       ? featuredSubmissionRaw
@@ -132,8 +153,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       <Header title="Profile" user={session?.user} />
 
-      {/* Track profile view for non-owners */}
-      {!isOwnProfile && <ProfileViewTracker profileUserId={user.id} />}
+      {/* Track profile view for non-owners (not in public view mode) */}
+      {!effectiveIsOwnProfile && <ProfileViewTracker profileUserId={user.id} />}
 
       <main className="mx-auto max-w-5xl px-6 py-12">
         <div className="mb-8">
@@ -162,14 +183,32 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 </p>
               </div>
             </div>
-            {isOwnProfile && (
-              <Link
-                href="/profile/edit"
-                className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-              >
-                Edit Profile
-              </Link>
-            )}
+            <div className="flex items-center gap-2">
+              {isOwnProfile && !isPublicView && (
+                <Link
+                  href={`/profile/${user.id}?view=public`}
+                  className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                >
+                  View as Public
+                </Link>
+              )}
+              {isOwnProfile && isPublicView && (
+                <Link
+                  href={`/profile/${user.id}`}
+                  className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                >
+                  View as Owner
+                </Link>
+              )}
+              {effectiveIsOwnProfile && (
+                <Link
+                  href="/profile/edit"
+                  className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                >
+                  Edit Profile
+                </Link>
+              )}
+            </div>
           </div>
 
           {user.bio && (
@@ -189,47 +228,39 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           )}
         </div>
 
-        {/* Analytics - only visible to profile owner */}
-        {isOwnProfile && <ProfileAnalytics userId={user.id} />}
+        {/* Analytics - only visible to profile owner in private view */}
+        {effectiveIsOwnProfile && <ProfileAnalytics userId={user.id} />}
 
-        {/* Featured Submission */}
-        {featuredSubmission && (
-          <div className="mb-12">
-            <h2 className="mb-6 text-2xl font-semibold text-zinc-900 dark:text-white">
-              Featured
-            </h2>
-            {(() => {
-              const hasImage = !!featuredSubmission.imageUrl;
-              const hasText = !!featuredSubmission.text;
-              const hasBoth = hasImage && hasText;
-              const word =
-                featuredSubmission.prompt && featuredSubmission.wordIndex
-                  ? [
-                      featuredSubmission.prompt.word1,
-                      featuredSubmission.prompt.word2,
-                      featuredSubmission.prompt.word3,
-                    ][featuredSubmission.wordIndex - 1]
-                  : null;
+        {/* Main content area: Featured on left, Gallery on right */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {/* Featured Submission - Left Sidebar */}
+          {featuredSubmission && (
+            <div className="lg:col-span-1">
+              <h2 className="mb-6 text-2xl font-semibold text-zinc-900 dark:text-white">
+                Featured
+              </h2>
+              {(() => {
+                const hasImage = !!featuredSubmission.imageUrl;
+                const hasText = !!featuredSubmission.text;
+                const word =
+                  featuredSubmission.prompt && featuredSubmission.wordIndex
+                    ? [
+                        featuredSubmission.prompt.word1,
+                        featuredSubmission.prompt.word2,
+                        featuredSubmission.prompt.word3,
+                      ][featuredSubmission.wordIndex - 1]
+                    : null;
 
-              return (
-                <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-                  <div
-                    className={`${
-                      hasBoth ? "md:grid md:grid-cols-3 md:gap-8" : ""
-                    }`}
-                  >
+                return (
+                  <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
                     {/* Image section */}
                     {hasImage && (
-                      <div
-                        className={`${hasBoth ? "md:col-span-2" : "w-full"} ${
-                          hasBoth ? "mb-6 md:mb-0" : ""
-                        }`}
-                      >
+                      <div className="mb-4">
                         <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
                           <ExpandableImage
                             imageUrl={featuredSubmission.imageUrl!}
                             alt={featuredSubmission.title || word || "Featured"}
-                            className="min-h-[300px]"
+                            className="min-h-[200px]"
                           />
                         </div>
                       </div>
@@ -237,10 +268,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
                     {/* Text section */}
                     {hasText && (
-                      <div className={hasBoth ? "md:col-span-1" : "w-full"}>
-                        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
+                      <div className="mb-4">
+                        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
                           {featuredSubmission.title && (
-                            <h3 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-white">
+                            <h3 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">
                               {featuredSubmission.title}
                             </h3>
                           )}
@@ -251,122 +282,124 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                         </div>
                       </div>
                     )}
-                  </div>
 
-                  {/* Link to full submission */}
-                  <div className="mt-6 flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
-                    {featuredSubmission.prompt &&
-                      featuredSubmission.wordIndex && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                            Prompt:
-                          </span>
-                          <div className="flex gap-2">
-                            {[
-                              featuredSubmission.prompt.word1,
-                              featuredSubmission.prompt.word2,
-                              featuredSubmission.prompt.word3,
-                            ].map((promptWord, index) => {
-                              const isActive =
-                                index + 1 === featuredSubmission.wordIndex;
-                              return (
-                                <span
-                                  key={index}
-                                  className={`text-sm font-medium ${
-                                    isActive
-                                      ? "text-zinc-900 dark:text-white"
-                                      : "text-zinc-400 dark:text-zinc-600"
-                                  }`}
-                                >
-                                  {promptWord}
-                                </span>
-                              );
-                            })}
+                    {/* Link to full submission */}
+                    <div className="flex flex-col gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+                      {featuredSubmission.prompt &&
+                        featuredSubmission.wordIndex && (
+                          <div className="flex flex-col gap-2">
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                              Prompt:
+                            </span>
+                            <div className="flex flex-wrap gap-2">
+                              {[
+                                featuredSubmission.prompt.word1,
+                                featuredSubmission.prompt.word2,
+                                featuredSubmission.prompt.word3,
+                              ].map((promptWord, index) => {
+                                const isActive =
+                                  index + 1 === featuredSubmission.wordIndex;
+                                return (
+                                  <span
+                                    key={index}
+                                    className={`text-sm font-medium ${
+                                      isActive
+                                        ? "text-zinc-900 dark:text-white"
+                                        : "text-zinc-400 dark:text-zinc-600"
+                                    }`}
+                                  >
+                                    {promptWord}
+                                  </span>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    {!featuredSubmission.prompt && <div />}
+                        )}
+                      <Link
+                        href={`/s/${featuredSubmission.id}`}
+                        className="text-sm font-medium text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                      >
+                        View full submission →
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Gallery Section - Main Content Area */}
+          <div className={featuredSubmission ? "lg:col-span-2" : "lg:col-span-3"}>
+            {/* Portfolio Section */}
+            {portfolioItems.length > 0 && (
+              <div className="mb-12">
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">
+                    Portfolio
+                  </h2>
+                  {effectiveIsOwnProfile && (
                     <Link
-                      href={`/s/${featuredSubmission.id}`}
-                      className="text-sm font-medium text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                      href="/profile/edit#portfolio"
+                      className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
                     >
-                      View full submission →
+                      Manage Portfolio →
+                    </Link>
+                  )}
+                </div>
+                <PortfolioGrid
+                  items={portfolioItems}
+                  isLoggedIn={isLoggedIn}
+                  isOwnProfile={effectiveIsOwnProfile}
+                />
+              </div>
+            )}
+
+            {/* Prompt Submissions Section */}
+            {initialItems.length > 0 && (
+              <div>
+                <h2 className="mb-6 text-2xl font-semibold text-zinc-900 dark:text-white">
+                  Prompt Submissions
+                </h2>
+                <HistoryList
+                  initialItems={initialItems.map((p) => ({
+                    ...p,
+                    weekStart: p.weekStart.toISOString(),
+                    weekEnd: p.weekEnd.toISOString(),
+                  }))}
+                  initialHasMore={hasMore}
+                  userId={user.id}
+                />
+              </div>
+            )}
+
+            {/* Empty state */}
+            {portfolioItems.length === 0 && initialItems.length === 0 && (
+              <div className="rounded-lg border border-dashed border-zinc-300 py-12 text-center dark:border-zinc-700">
+                <p className="text-zinc-500 dark:text-zinc-400">
+                  {effectiveIsOwnProfile
+                    ? "You haven't added any work yet. Start by adding portfolio items or submitting to prompts."
+                    : "No work to display yet."}
+                </p>
+                {effectiveIsOwnProfile && (
+                  <div className="mt-4 flex justify-center gap-3">
+                    <Link
+                      href="/profile/edit#portfolio"
+                      className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+                    >
+                      Add Portfolio Item
+                    </Link>
+                    <Link
+                      href="/prompt/play"
+                      className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                    >
+                      Submit to Prompt
                     </Link>
                   </div>
-                </div>
-              );
-            })()}
-          </div>
-        )}
-
-        {/* Portfolio Section */}
-        {portfolioItems.length > 0 && (
-          <div className="mb-12">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">
-                Portfolio
-              </h2>
-              {isOwnProfile && (
-                <Link
-                  href="/profile/edit#portfolio"
-                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-                >
-                  Manage Portfolio →
-                </Link>
-              )}
-            </div>
-            <PortfolioGrid
-              items={portfolioItems}
-              isLoggedIn={isLoggedIn}
-              isOwnProfile={isOwnProfile}
-            />
-          </div>
-        )}
-
-        {/* Prompt Submissions Section */}
-        {initialItems.length > 0 && (
-          <div>
-            <h2 className="mb-6 text-2xl font-semibold text-zinc-900 dark:text-white">
-              Prompt Submissions
-            </h2>
-            <HistoryList
-              initialItems={initialItems.map((p) => ({
-                ...p,
-                weekStart: p.weekStart.toISOString(),
-                weekEnd: p.weekEnd.toISOString(),
-              }))}
-              initialHasMore={hasMore}
-              userId={user.id}
-            />
-          </div>
-        )}
-
-        {/* Empty state */}
-        {portfolioItems.length === 0 && initialItems.length === 0 && (
-          <div className="rounded-lg border border-dashed border-zinc-300 py-12 text-center dark:border-zinc-700">
-            <p className="text-zinc-500 dark:text-zinc-400">
-              {isOwnProfile
-                ? "You haven't added any work yet. Start by adding portfolio items or submitting to prompts."
-                : "No work to display yet."}
-            </p>
-            {isOwnProfile && (
-              <div className="mt-4 flex justify-center gap-3">
-                <Link
-                  href="/profile/edit#portfolio"
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-                >
-                  Add Portfolio Item
-                </Link>
-                <Link
-                  href="/prompt/play"
-                  className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-                >
-                  Submit to Prompt
-                </Link>
+                )}
               </div>
             )}
           </div>
-        )}
+        </div>
       </main>
     </div>
   );
