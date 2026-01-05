@@ -3,7 +3,8 @@
   "ignoreExportsUsedInFile": {
     "interface": true,
     "type": true
-  },
+  },  
   "ignore": ["postcss.config.mjs"],
+  "ignoreBinaries": [],
   "tags": ["-lintignore"]
 }

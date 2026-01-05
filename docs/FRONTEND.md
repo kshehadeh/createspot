@@ -18,20 +18,23 @@ app/
 ├── page.tsx            # Home page
 ├── globals.css         # Global styles & theme tokens
 ├── admin/              # Admin pages (prompt management, users)
-a├── api/                # API routes
+├── api/                # API routes
 ├── auth/               # Authentication pages
+├── exhibition/         # Exhibition pages
+│   ├── gallery/        # Gallery view
+│   └── constellation/  # Constellation view
 ├── favorites/          # User favorites page
-├── history/            # User submission history
-├── play/               # Submission creation
+├── prompt/             # Prompt-related pages
+│   ├── history/        # User submission history
+│   ├── play/           # Submission creation
+│   └── this-week/      # Gallery view
 ├── profile/            # User profile pages
 │   ├── [userId]/       # Public profile view
 │   └── edit/           # Profile editing
-├── s/                  # Submission detail pages
-│   └── [id]/           # Individual submission view
-└── this-week/          # Gallery view
+└── s/                  # Submission detail pages
+    └── [id]/           # Individual submission view
 
 components/
-├── animated-home.tsx        # Animated landing page components
 ├── auth-button.tsx          # Sign in/out buttons
 ├── confirm-modal.tsx        # Reusable confirmation dialog
 ├── expandable-image.tsx     # Image viewer with expand functionality
@@ -142,10 +145,10 @@ export default async function Home() {
   return <ClientComponent data={data} />;
 }
 
-// Client Component - components/animated-home.tsx
+// Client Component - components/example.tsx
 "use client";
 import { motion } from "framer-motion";
-export function AnimatedHero() { ... }
+export function ExampleComponent() { ... }
 ```
 
 ### Layout Pattern
@@ -200,8 +203,8 @@ import { Header } from "@/components/header";
   title="Play"           // Optional breadcrumb
   user={session?.user}   // Shows avatar if logged in
 >
-  <Link href="/gallery">Gallery</Link>
-  <Link href="/play">Play</Link>
+  <Link href="/exhibition/gallery">Gallery</Link>
+  <Link href="/prompt/play">Play</Link>
 </Header>
 ```
 

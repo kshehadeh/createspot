@@ -242,6 +242,13 @@ function MobileNavigationLinks({
         >
           Constellation
         </Link>
+        <Link
+          href="/about"
+          className={linkClassName("/about")}
+          onClick={onLinkClick}
+        >
+          About
+        </Link>
       </div>
       <div className="mb-2">
         <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
