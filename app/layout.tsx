@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "Create Spot",
   description:
     "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
+  icons: {
+    icon: "/icon",
+    apple: "/apple-icon",
+  },
   openGraph: {
     title: "Create Spot",
     description:

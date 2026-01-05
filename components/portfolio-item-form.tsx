@@ -59,9 +59,9 @@ export function PortfolioItemForm({
   const [title, setTitle] = useState(initialData?.title || "");
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || "");
   const [text, setText] = useState(initialData?.text || "");
-  const [tagsInput, setTagsInput] = useState(
-    initialData?.tags?.join(", ") || "",
-  );
+  const [tags, setTags] = useState<string[]>(initialData?.tags || []);
+  const [tagInput, setTagInput] = useState("");
+  const tagInputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState(initialData?.category || "");
   const [shareStatus, setShareStatus] = useState<
     "PRIVATE" | "PROFILE" | "PUBLIC"
@@ -158,8 +158,7 @@ export function PortfolioItemForm({
     setError(null);
 
     try {
-      const tags = tagsInput
-        .split(",")
+      const trimmedTags = tags
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
 
@@ -172,7 +171,7 @@ export function PortfolioItemForm({
             imageUrl: imageUrl || null,
             text: text || null,
             isPortfolio: true,
-            tags,
+            tags: trimmedTags,
             category: category || null,
             shareStatus,
           }),
@@ -189,7 +188,7 @@ export function PortfolioItemForm({
             title: title || null,
             imageUrl: imageUrl || null,
             text: text || null,
-            tags,
+            tags: trimmedTags,
             category: category || null,
             shareStatus,
           }),
@@ -362,15 +361,64 @@ export function PortfolioItemForm({
         <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
           Tags
         </label>
-        <input
-          type="text"
-          value={tagsInput}
-          onChange={(e) => setTagsInput(e.target.value)}
-          placeholder="landscape, nature, minimal (comma-separated)"
-          className="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-zinc-500"
-        />
+        <div className="flex min-h-[42px] flex-wrap items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 focus-within:border-zinc-500 focus-within:outline-none focus-within:ring-1 focus-within:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:focus-within:border-zinc-500">
+          {tags.map((tag, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center gap-1.5 rounded-md bg-zinc-100 px-2.5 py-1 text-sm text-zinc-900 dark:bg-zinc-700 dark:text-white"
+            >
+              {tag}
+              <button
+                type="button"
+                onClick={() => {
+                  setTags(tags.filter((_, i) => i !== index));
+                  tagInputRef.current?.focus();
+                }}
+                className="ml-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-600"
+                aria-label={`Remove ${tag}`}
+              >
+                <svg
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </span>
+          ))}
+          <input
+            ref={tagInputRef}
+            type="text"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                e.preventDefault();
+                const currentValue = e.currentTarget.value;
+                const trimmed = currentValue.trim();
+                if (trimmed && !tags.includes(trimmed)) {
+                  setTags([...tags, trimmed]);
+                  setTagInput("");
+                } else if (trimmed) {
+                  setTagInput("");
+                }
+              } else if (e.key === "Backspace" && e.currentTarget.value === "" && tags.length > 0) {
+                setTags(tags.slice(0, -1));
+              }
+            }}
+            placeholder={tags.length === 0 ? "Type a tag and press space" : ""}
+            className="flex-1 min-w-[120px] border-0 bg-transparent px-0 py-1 text-zinc-900 placeholder:text-zinc-400 focus:outline-none dark:text-white dark:placeholder:text-zinc-500"
+          />
+        </div>
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-          Separate tags with commas
+          Type a tag and press space to add it
         </p>
       </div>
 

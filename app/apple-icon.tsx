@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const size = { width: 32, height: 32 };
+export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
 // CreateSpot logo paths (from create-spot-logo.tsx)
@@ -23,7 +23,7 @@ const highlightPaths = [
   "M 237 125.5 C 237 123.800049 256.599976 117.599976 257.5 119 C 258.199951 120.199951 256.900024 120.900024 248.199951 123.599976 C 240.900024 125.900024 237 126.5 237 125.5 Z",
 ];
 
-export default function Icon() {
+export default function AppleIcon() {
   return new ImageResponse(
     <div
       style={{
@@ -32,12 +32,12 @@ export default function Icon() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "transparent",
+        background: "#000000",
       }}
     >
       <svg
-        width="32"
-        height="32"
+        width="180"
+        height="180"
         viewBox="0 0 729 796"
         style={{
           display: "block",
@@ -45,12 +45,12 @@ export default function Icon() {
       >
         <g>
           {basePaths.map((d, i) => (
-            <path key={`base-${i}`} fill="#000000" stroke="none" d={d} />
+            <path key={`base-${i}`} fill="#ffffff" stroke="none" d={d} />
           ))}
         </g>
         <g>
           {highlightPaths.map((d, i) => (
-            <path key={`highlight-${i}`} fill="#ffffff" stroke="none" d={d} />
+            <path key={`highlight-${i}`} fill="#000000" stroke="none" d={d} />
           ))}
         </g>
       </svg>
@@ -60,3 +60,4 @@ export default function Icon() {
     },
   );
 }
+
