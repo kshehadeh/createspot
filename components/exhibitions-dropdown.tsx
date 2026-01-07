@@ -54,7 +54,7 @@ export function ExhibitionsDropdown() {
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <span>Exhibition</span>
+        <span>Exhibits</span>
         <svg
           className={`h-4 w-4 transition-transform ${
             isOpen ? "rotate-180" : ""

@@ -69,7 +69,31 @@ export default async function PlayPage() {
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       <Header title="Play" user={session.user} />
 
-      <main className="mx-auto max-w-4xl px-6 py-12">
+      <main className="relative mx-auto max-w-4xl px-6 py-12">
+        {/* CTA Button - Upper Right */}
+        <div className="absolute right-6 top-12 z-10">
+          <Link
+            href="/prompt"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-violet-600 text-xl font-semibold text-white shadow-lg transition-all hover:bg-violet-500 hover:shadow-xl dark:bg-violet-500 dark:hover:bg-violet-400 sm:h-auto sm:w-auto sm:gap-2 sm:px-6 sm:py-3 sm:text-base"
+          >
+            <span className="sm:hidden">?</span>
+            <span className="hidden sm:inline">Learn More</span>
+            <svg
+              className="hidden h-5 w-5 sm:block"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </Link>
+        </div>
+
         <section className="mb-12 text-center">
           <p className="mb-4 text-sm uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
             This week&apos;s prompt

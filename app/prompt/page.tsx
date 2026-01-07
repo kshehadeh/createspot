@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt } from "@/lib/prompts";
 import { Header } from "@/components/header";
-import { SignInButton } from "@/components/auth-button";
+import { StyledSignInButton } from "./styled-sign-in-button";
 
 export const dynamic = "force-dynamic";
 
@@ -28,27 +28,10 @@ export default async function PromptsPage() {
       <Header title="Prompts" user={session?.user} />
 
       <main className="mx-auto max-w-4xl px-6 py-12">
-        {/* Hero Section */}
-        <section className="mb-16 text-center">
-          <div className="mb-6 inline-flex items-center justify-center rounded-full bg-violet-100 px-4 py-2 text-sm font-medium text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-            Weekly Creative Challenge
-          </div>
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-5xl">
-            Three Words.
-            <span className="block text-violet-600 dark:text-violet-400">
-              Infinite Possibilities.
-            </span>
-          </h1>
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-            Every week, we share three carefully chosen words. Pick one (or
-            more!) and create something unique — a photo, artwork, poem, or
-            story. See how others interpret the same words and discover new
-            perspectives.
-          </p>
-
-          {/* Current Prompt Preview */}
-          {currentPrompt && (
-            <div className="mb-10 rounded-2xl border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-900">
+        {/* Current Prompt Preview - First thing users see */}
+        {currentPrompt && (
+          <div className="mb-16">
+            <div className="mb-6 rounded-2xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
               <p className="mb-4 text-sm uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
                 This week&apos;s prompt
               </p>
@@ -67,21 +50,40 @@ export default async function PromptsPage() {
                 ))}
               </div>
             </div>
-          )}
 
-          {/* CTA Button */}
-          <div className="flex justify-center">
-            {session ? (
-              <Link
-                href="/prompt/play"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-violet-600 px-8 text-sm font-medium text-white transition-colors hover:bg-violet-500"
-              >
-                Start Creating
-              </Link>
-            ) : (
-              <SignInButton />
-            )}
+            {/* Start Creating Button - Below Prompts */}
+            <div className="flex justify-center">
+              {session ? (
+                <Link
+                  href="/prompt/play"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-violet-600 px-8 text-sm font-medium text-white shadow-lg transition-all hover:bg-violet-500 hover:shadow-xl"
+                >
+                  Start Creating
+                </Link>
+              ) : (
+                <StyledSignInButton />
+              )}
+            </div>
           </div>
+        )}
+
+        {/* Hero Section */}
+        <section className="mb-16 text-center">
+          <div className="mb-6 inline-flex items-center justify-center rounded-full bg-violet-100 px-4 py-2 text-sm font-medium text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+            Weekly Creative Challenge
+          </div>
+          <h1 className="mb-6 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-5xl">
+            Three Words.
+            <span className="block text-violet-600 dark:text-violet-400">
+              Infinite Possibilities.
+            </span>
+          </h1>
+          <p className="mx-auto mb-10 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
+            Every week, we share three carefully chosen words. Pick one (or
+            more!) and create something unique — a photo, artwork, poem, or
+            story. See how others interpret the same words and discover new
+            perspectives.
+          </p>
         </section>
 
         {/* How It Works Section */}

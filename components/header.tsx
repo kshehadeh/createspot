@@ -71,10 +71,58 @@ export function Header({ title, user }: HeaderProps) {
           </Link>
           {title && (
             <>
-              <span className="text-zinc-300 dark:text-zinc-700">/</span>
-              <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                {title}
-              </span>
+              {pathname === "/exhibition/gallery" ? (
+                <>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    Exhibit
+                  </span>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    Gallery
+                  </span>
+                </>
+              ) : pathname === "/exhibition/constellation" ? (
+                <>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    Exhibit
+                  </span>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    Constellation
+                  </span>
+                </>
+              ) : pathname === "/prompt/play" ? (
+                <>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    Prompts
+                  </span>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    Play
+                  </span>
+                </>
+              ) : pathname === "/prompt/history" ? (
+                <>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    Prompts
+                  </span>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    History
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
+                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                    {title}
+                  </span>
+                </>
+              )}
             </>
           )}
         </div>
@@ -254,13 +302,6 @@ function MobileNavigationLinks({
         <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           Prompts
         </div>
-        <Link
-          href="/prompt"
-          className={linkClassName("/prompt")}
-          onClick={onLinkClick}
-        >
-          Prompts
-        </Link>
         {isAuthenticated && (
           <>
             <Link

@@ -110,15 +110,12 @@ export default async function PortfoliosAndSharingPage() {
               <strong className="text-zinc-900 dark:text-white">
                 featured submission
               </strong>{" "}
-              in your profile settings to spotlight a single piece at the top
-              of your profile. Featured work also powers your profile preview
-              image as long as it is set to{" "}
-              <strong className="text-zinc-900 dark:text-white">
-                Profile
-              </strong>{" "}
+              in your profile settings to spotlight a single piece at the top of
+              your profile. Featured work also powers your profile preview image
+              as long as it is set to{" "}
+              <strong className="text-zinc-900 dark:text-white">Profile</strong>{" "}
               or{" "}
-              <strong className="text-zinc-900 dark:text-white">Public</strong>
-              .
+              <strong className="text-zinc-900 dark:text-white">Public</strong>.
             </p>
           </section>
 
@@ -128,12 +125,11 @@ export default async function PortfoliosAndSharingPage() {
             </h2>
             <p className="text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
               Prompt submissions can be added to your portfolio, and portfolio
-              pieces can be linked to prompts. This keeps your weekly inspiration
-              connected to your long-term body of work while maintaining a
-              single, consistent archive.
+              pieces can be linked to prompts. This keeps your weekly
+              inspiration connected to your long-term body of work while
+              maintaining a single, consistent archive.
             </p>
           </section>
-
         </div>
 
         <div className="mt-10 text-center">

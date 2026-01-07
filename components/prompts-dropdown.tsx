@@ -64,7 +64,7 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <span>Prompts</span>
+        <span>Inspire</span>
         <svg
           className={`h-4 w-4 transition-transform ${
             isOpen ? "rotate-180" : ""
@@ -85,13 +85,9 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
       {isOpen && (
         <div className="absolute left-0 top-full z-50 mt-2 w-48 rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
           <div className="py-1">
-            <Link
-              href="/prompt"
-              className={linkClassName("/prompt")}
-              onClick={() => setIsOpen(false)}
-            >
+            <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Prompts
-            </Link>
+            </div>
             {isAuthenticated && (
               <>
                 <Link
