@@ -12,6 +12,8 @@ This document provides essential information for AI agents and developers workin
 - **Auth**: NextAuth.js with Google OAuth
 - **Storage**: Cloudflare R2 for images
 - **Styling**: Tailwind CSS 4
+- **UI Components**: shadcn/ui (Radix UI primitives)
+- **Theme**: next-themes with user-controllable dark/light mode
 
 ## Quick Start
 
@@ -50,6 +52,7 @@ app/                    # Next.js App Router pages and API routes
 └── history/           # User's past submissions
 
 components/            # Shared React components
+├── ui/               # shadcn/ui components (button, dialog, etc.)
 lib/                   # Utilities (auth, prisma, helpers)
 prisma/                # Database schema and migrations
 public/                # Static assets
@@ -155,15 +158,51 @@ export function InteractiveComponent() {
 }
 ```
 
-### Styling
+### Styling & UI Components
 
-- Use Tailwind CSS utility classes
+- **Tailwind CSS 4** - Utility-first styling
+- **shadcn/ui** - Accessible component primitives (Radix UI)
+- **next-themes** - Theme management with user toggle
 - Follow the zinc color palette for consistency
-- Always include dark mode variants with `dark:` prefix
+- Use shadcn components when available (button, dialog, dropdown, etc.)
+
+#### Using shadcn/ui Components
+
+Components are located in `components/ui/`. Import and use them directly:
 
 ```tsx
-<div className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+<Button variant="default" size="lg">Click me</Button>
+<Input type="text" placeholder="Enter text" />
+<Label htmlFor="input-id">Label text</Label>
 ```
+
+#### Theme System
+
+The app uses `next-themes` for theme management. Users can toggle between light/dark/system via the theme toggle in the header.
+
+- Theme is controlled via CSS variables in `app/globals.css`
+- Components automatically adapt to theme via shadcn's CSS variable system
+- Use `dark:` prefix for custom dark mode styles when needed
+
+```tsx
+// Theme-aware component
+<div className="bg-background text-foreground">
+  <Button variant="default">Themed Button</Button>
+</div>
+```
+
+#### Adding New shadcn Components
+
+```bash
+bunx shadcn@latest add <component-name>
+```
+
+This will add the component to `components/ui/` and update necessary dependencies.
 
 ### API Routes
 
@@ -275,10 +314,20 @@ const prompt = await getCurrentPrompt();
 
 ### Add a Shared Component
 
-1. Create in `components/` directory
-2. Use TypeScript interfaces for props
-3. Include dark mode styles
-4. Export from the file
+1. Check if a shadcn/ui component exists first (`components/ui/`)
+2. If not, create in `components/` directory
+3. Use TypeScript interfaces for props
+4. Use shadcn components as building blocks when possible
+5. Theme-aware components will automatically work with the theme system
+6. Export from the file
+
+### Add a New shadcn Component
+
+```bash
+bunx shadcn@latest add <component-name>
+```
+
+Components are installed to `components/ui/` and can be imported directly.
 
 ## Troubleshooting
 

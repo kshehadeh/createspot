@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Header } from "@/components/header";
 import { SubmissionDetail } from "./submission-detail";
 
 export const dynamic = "force-dynamic";
@@ -117,10 +116,5 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
   }
   // PROFILE and PUBLIC are visible to everyone
 
-  return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Submission" user={session?.user} />
-      <SubmissionDetail submission={submission} isLoggedIn={!!session?.user} />
-    </div>
-  );
+  return <SubmissionDetail submission={submission} isLoggedIn={!!session?.user} />;
 }

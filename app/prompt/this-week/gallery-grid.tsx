@@ -240,6 +240,7 @@ function GalleryContent({
               : ""
           }
           onClose={() => setSelectedSubmission(null)}
+          isOpen={!!selectedSubmission}
         />
       )}
     </div>

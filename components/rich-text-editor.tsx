@@ -33,8 +33,8 @@ function ToolbarButton({
       title={title}
       className={`rounded p-1.5 transition-colors ${
         isActive
-          ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-white"
-          : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          ? "bg-accent text-accent-foreground"
+          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
       } disabled:opacity-50`}
     >
       {children}
@@ -67,7 +67,7 @@ function EditorToolbar({
   }, [editor]);
 
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-zinc-200 p-2 dark:border-zinc-700">
+    <div className="flex flex-wrap items-center gap-1 border-b border-border p-2">
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}
         isActive={editor.isActive("bold")}
@@ -98,7 +98,7 @@ function EditorToolbar({
         </svg>
       </ToolbarButton>
 
-      <div className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" />
+      <div className="mx-1 h-5 w-px bg-border" />
 
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -130,7 +130,7 @@ function EditorToolbar({
         </svg>
       </ToolbarButton>
 
-      <div className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" />
+      <div className="mx-1 h-5 w-px bg-border" />
 
       <ToolbarButton
         onClick={setLink}
@@ -220,7 +220,7 @@ export function RichTextEditor({
   }, [isFullscreen]);
 
   const inlineEditor = (
-    <div className="overflow-hidden rounded-lg border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+    <div className="overflow-hidden rounded-lg border border-input bg-background">
       <EditorToolbar
         editor={editor}
         onExpandClick={() => setIsFullscreen(true)}
@@ -235,15 +235,15 @@ export function RichTextEditor({
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-800">
-        <div className="flex items-center justify-between border-b border-zinc-200 p-2 dark:border-zinc-700">
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+      <div className="overflow-hidden rounded-lg border border-input bg-background">
+        <div className="flex items-center justify-between border-b border-border p-2">
+          <span className="text-sm text-muted-foreground">
             Editing in fullscreen...
           </span>
           <button
             type="button"
             onClick={() => setIsFullscreen(true)}
-            className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+            className="text-sm text-primary hover:underline"
           >
             Open Editor
           </button>
@@ -255,17 +255,17 @@ export function RichTextEditor({
         onClick={() => setIsFullscreen(false)}
       >
         <div
-          className="m-4 flex flex-1 flex-col overflow-hidden rounded-xl bg-white dark:bg-zinc-900 md:m-8"
+          className="m-4 flex flex-1 flex-col overflow-hidden rounded-xl bg-background md:m-8"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <h3 className="text-lg font-semibold text-foreground">
               Write your submission
             </h3>
             <button
               type="button"
               onClick={() => setIsFullscreen(false)}
-              className="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
             >
               <svg
                 className="h-5 w-5"
@@ -299,11 +299,11 @@ export function RichTextEditor({
             </div>
           </div>
 
-          <div className="flex justify-end border-t border-zinc-200 px-4 py-3 dark:border-zinc-800">
+          <div className="flex justify-end border-t border-border px-4 py-3">
             <button
               type="button"
               onClick={() => setIsFullscreen(false)}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Done
             </button>

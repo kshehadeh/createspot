@@ -176,6 +176,7 @@ export function HistoryList({
           submission={selected.submission}
           word={selected.word}
           onClose={() => setSelected(null)}
+          isOpen={!!selected}
         />
       )}
     </div>

@@ -2,11 +2,15 @@
 
 This document covers the React component architecture, theming system, and UI patterns used in the application.
 
+> **Note**: This app uses **shadcn/ui** for accessible, theme-aware components. Most UI components are built on shadcn primitives located in `components/ui/`. The theme system uses **next-themes** for user-controllable dark/light mode.
+
 ## Tech Stack
 
 - **Next.js 16** - React framework with App Router
 - **React 19** - UI library
 - **Tailwind CSS 4** - Utility-first CSS framework
+- **shadcn/ui** - Accessible component primitives (Radix UI)
+- **next-themes** - Theme management with user toggle
 - **Framer Motion** - Animation library
 - **NextAuth.js** - Authentication
 
@@ -35,9 +39,21 @@ app/
     └── [id]/           # Individual submission view
 
 components/
+├── ui/                      # shadcn/ui components
+│   ├── button.tsx          # Button component
+│   ├── dialog.tsx          # Dialog/Modal component
+│   ├── dropdown-menu.tsx   # Dropdown menu component
+│   ├── input.tsx          # Input field component
+│   ├── select.tsx         # Select dropdown component
+│   ├── label.tsx          # Form label component
+│   ├── avatar.tsx         # Avatar component
+│   ├── badge.tsx          # Badge component
+│   ├── tabs.tsx           # Tabs component
+│   ├── alert-dialog.tsx   # Alert dialog component
+│   └── ...                # Other shadcn components
 ├── auth-button.tsx          # Sign in/out buttons
-├── confirm-modal.tsx        # Reusable confirmation dialog
-├── expandable-image.tsx     # Image viewer with expand functionality
+├── confirm-modal.tsx        # Reusable confirmation dialog (uses AlertDialog)
+├── expandable-image.tsx     # Image viewer with expand functionality (uses Dialog)
 ├── expandable-text.tsx      # Text viewer with expand functionality
 ├── favorite-button.tsx      # Favorite/unfavorite button
 ├── favorites-provider.tsx   # Context provider for favorites state
@@ -49,72 +65,95 @@ components/
 ├── profile-view-tracker.tsx # Client component for tracking profile views
 ├── rich-text-editor.tsx     # TipTap-based rich text editor
 ├── share-button.tsx         # Share submission button
-├── submission-lightbox.tsx  # Full-screen submission viewer
-└── text-thumbnail.tsx       # Text preview thumbnail
+├── submission-lightbox.tsx  # Full-screen submission viewer (uses Dialog)
+├── theme-provider.tsx        # Theme provider wrapper (next-themes)
+├── theme-toggle.tsx          # Theme toggle button
+└── text-thumbnail.tsx        # Text preview thumbnail
 ```
 
 ## Theme System
 
+The app uses **next-themes** for theme management with user-controllable dark/light mode. Users can toggle themes via the theme toggle button in the header.
+
+### Theme Provider
+
+The root layout wraps the app with `ThemeProvider`:
+
+```tsx
+// app/layout.tsx
+import { ThemeProvider } from "@/components/theme-provider";
+
+<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+  {children}
+</ThemeProvider>
+```
+
 ### CSS Variables
 
-The app uses CSS custom properties for theming, defined in `app/globals.css`:
+The app uses shadcn/ui's CSS variable system for theming, defined in `app/globals.css`:
 
 ```css
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    /* ... more variables */
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    /* ... dark mode variables */
   }
 }
 ```
 
-### Tailwind Theme Tokens
+Variables use HSL format and are applied via `hsl(var(--variable))` in Tailwind.
 
-Theme tokens are exposed to Tailwind via `@theme inline`:
+### Using Theme Variables
 
-```css
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-```
-
-This allows using tokens in Tailwind classes:
+shadcn components automatically use theme variables. You can also use them in custom components:
 
 ```tsx
-<div className="bg-background text-foreground" />
-<button className="bg-foreground text-background" />
-```
+// Theme-aware styling
+<div className="bg-background text-foreground">
+  <Button variant="default">Themed Button</Button>
+</div>
 
-### Color Palette
-
-The app primarily uses Tailwind's `zinc` scale for a neutral, modern look:
-
-| Usage | Light Mode | Dark Mode |
-|-------|------------|-----------|
-| Background | `bg-zinc-50` | `bg-black` |
-| Card/Surface | `bg-white` | `bg-zinc-900` |
-| Border | `border-zinc-200` | `border-zinc-800` |
-| Primary Text | `text-zinc-900` | `text-white` |
-| Secondary Text | `text-zinc-600` | `text-zinc-400` |
-| Muted Text | `text-zinc-500` | `text-zinc-400` |
-
-### Dark Mode
-
-Dark mode is automatic based on system preference (`prefers-color-scheme: dark`). Use Tailwind's `dark:` variant for dark mode styles:
-
-```tsx
+// Custom dark mode styles (when needed)
 <div className="bg-white dark:bg-zinc-900">
   <p className="text-zinc-900 dark:text-white">Content</p>
 </div>
 ```
+
+### Color Palette
+
+The app uses shadcn's zinc-based color system:
+
+| Usage | Light Mode | Dark Mode |
+|-------|------------|-----------|
+| Background | `bg-background` | `bg-background` (auto) |
+| Card/Surface | `bg-card` | `bg-card` (auto) |
+| Border | `border-border` | `border-border` (auto) |
+| Primary Text | `text-foreground` | `text-foreground` (auto) |
+| Secondary Text | `text-muted-foreground` | `text-muted-foreground` (auto) |
+
+### Theme Toggle
+
+Users can toggle themes via the `ThemeToggle` component in the header:
+
+```tsx
+import { ThemeToggle } from "@/components/theme-toggle";
+
+<ThemeToggle />
+```
+
+The toggle cycles between:
+- **Light** - Force light mode
+- **Dark** - Force dark mode  
+- **System** - Follow system preference (default)
 
 ### Typography
 
@@ -155,20 +194,25 @@ export function ExampleComponent() { ... }
 
 The root layout provides:
 1. Font CSS variables
-2. NextAuth `SessionProvider`
-3. Global styles
+2. Theme provider (next-themes)
+3. NextAuth `SessionProvider`
+4. Global styles
 
 ```tsx
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SessionProvider>{children}</SessionProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <SessionProvider>{children}</SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
 ```
+
+Note: `suppressHydrationWarning` is required on the `<html>` tag when using next-themes to prevent hydration warnings.
 
 ### Page Structure
 
@@ -213,9 +257,64 @@ import { Header } from "@/components/header";
 - `children?: ReactNode` - Navigation links
 - `user?: { name?: string; image?: string }` - User info for avatar
 
+### shadcn/ui Components
+
+The app uses shadcn/ui for accessible, theme-aware components. All components are in `components/ui/` and can be imported directly.
+
+#### Common Components
+
+```tsx
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+// Button variants
+<Button variant="default">Default</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+
+// Form inputs
+<Label htmlFor="email">Email</Label>
+<Input id="email" type="email" placeholder="Enter email" />
+
+// Select dropdown
+<Select>
+  <SelectTrigger>
+    <SelectValue placeholder="Select option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">Option 1</SelectItem>
+    <SelectItem value="option2">Option 2</SelectItem>
+  </SelectContent>
+</Select>
+
+// Dialog/Modal
+<Dialog>
+  <DialogTrigger>Open</DialogTrigger>
+  <DialogContent>
+    <p>Dialog content</p>
+  </DialogContent>
+</Dialog>
+```
+
+#### Adding New shadcn Components
+
+```bash
+bunx shadcn@latest add <component-name>
+```
+
+This installs the component to `components/ui/` with all necessary dependencies.
+
 ### ConfirmModal
 
-Accessible confirmation dialog with keyboard support (Escape to close).
+Accessible confirmation dialog built on shadcn's AlertDialog.
 
 ```tsx
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -233,20 +332,35 @@ import { ConfirmModal } from "@/components/confirm-modal";
 ```
 
 **Features:**
-- Backdrop blur overlay
+- Built on shadcn AlertDialog
+- Theme-aware styling
 - Focus trap
 - Escape key handling
 - Loading state
 
 ### Auth Buttons
 
-Pre-styled authentication buttons using NextAuth.
+Pre-styled authentication buttons using NextAuth and shadcn Button.
 
 ```tsx
-import { SignInButton, SignOutButton } from "@/components/auth-button";
+import { SignInButton } from "@/components/auth-button";
 
-<SignInButton />  // "Sign in with Google"
-<SignOutButton /> // "Sign out"
+<SignInButton />  // "Sign in with Google" - uses shadcn Button
+```
+
+### Migrated Components
+
+Several components have been migrated to use shadcn/ui primitives:
+
+- **ConfirmModal** → Uses `AlertDialog`
+- **UserDropdown** → Uses `DropdownMenu` + `Avatar`
+- **AdminDropdown, ExhibitionsDropdown, PromptsDropdown** → Use `DropdownMenu`
+- **ExpandableImage** → Uses `Dialog`
+- **SubmissionLightbox** → Uses `Dialog` + `Tabs` + `Badge` + `Avatar`
+- **AuthButton** → Uses `Button`
+- **Form components** → Use `Input`, `Select`, `Label`, `Button`
+
+All migrated components maintain backward compatibility with their original prop interfaces.
 ```
 
 ## Animation Patterns
@@ -305,39 +419,72 @@ Usage:
 
 ## Form Patterns
 
-### Controlled Inputs
+### Using shadcn Form Components
 
-Forms use React state for controlled inputs:
+Forms should use shadcn/ui components for consistent, accessible, theme-aware styling:
 
 ```tsx
-const [formData, setFormData] = useState({ title: "", text: "" });
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-<input
+const [formData, setFormData] = useState({ title: "", category: "" });
+
+// Text input with label
+<Label htmlFor="title">Title</Label>
+<Input
+  id="title"
   value={formData.title}
   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-  className="w-full rounded-lg border border-zinc-300 px-4 py-2 ..."
+/>
+
+// Select dropdown
+<Label htmlFor="category">Category</Label>
+<Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
+  <SelectTrigger id="category">
+    <SelectValue placeholder="Select category" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="art">Art</SelectItem>
+    <SelectItem value="writing">Writing</SelectItem>
+  </SelectContent>
+</Select>
+
+// Buttons
+<Button type="submit" variant="default">Submit</Button>
+<Button type="button" variant="outline">Cancel</Button>
+<Button type="button" variant="destructive">Delete</Button>
+```
+
+### Controlled Inputs
+
+Forms use React state for controlled inputs. shadcn components work seamlessly with controlled inputs:
+
+```tsx
+const [email, setEmail] = useState("");
+
+<Input
+  type="email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  placeholder="Enter email"
 />
 ```
 
-### Form Styling
+### Form Validation Styling
 
-Consistent form element styles:
+For validation states, use conditional classes with shadcn components:
 
 ```tsx
-// Text input
-<input className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 
-  text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 
-  focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" />
+import { cn } from "@/lib/utils";
 
-// Primary button
-<button className="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium 
-  text-white hover:bg-zinc-700 disabled:opacity-50 
-  dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200" />
-
-// Secondary button
-<button className="rounded-lg border border-zinc-300 px-4 py-2.5 text-sm 
-  font-medium text-zinc-700 hover:bg-zinc-50 
-  dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800" />
+<Input
+  className={cn(
+    "w-full",
+    hasError && "border-destructive focus:border-destructive focus:ring-destructive"
+  )}
+/>
 ```
 
 ### Loading States

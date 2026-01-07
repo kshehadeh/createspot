@@ -8,6 +8,7 @@ import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { SocialLinks } from "@/app/profile/[userId]/social-links";
 import { FavoritesProvider } from "@/components/favorites-provider";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface SubmissionDetailProps {
   submission: {
@@ -54,9 +55,9 @@ export function SubmissionDetail({
       isLoggedIn={isLoggedIn}
       initialSubmissionIds={[submission.id]}
     >
-      <div className="min-h-screen bg-zinc-50 dark:bg-black">
+      <div className="min-h-screen bg-background">
         {/* Header with prompt and actions */}
-        <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <Card className="rounded-none border-x-0 border-t-0">
           <div className="mx-auto max-w-7xl px-6 py-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               {/* Prompt words or portfolio label */}
@@ -73,8 +74,8 @@ export function SubmissionDetail({
                         key={index}
                         className={`inline-block text-xl font-bold leading-[1.3] sm:text-2xl ${
                           isActive
-                            ? `rainbow-shimmer-${index + 1} text-zinc-900 dark:text-white`
-                            : "text-zinc-400 dark:text-zinc-600"
+                            ? `rainbow-shimmer-${index + 1} text-foreground`
+                            : "text-muted-foreground"
                         }`}
                       >
                         {promptWord}
@@ -82,7 +83,7 @@ export function SubmissionDetail({
                     );
                   })
                 ) : (
-                  <span className="inline-block text-xl font-bold leading-[1.3] text-zinc-900 dark:text-white sm:text-2xl">
+                  <span className="inline-block text-xl font-bold leading-[1.3] text-foreground sm:text-2xl">
                     Portfolio Piece
                   </span>
                 )}
@@ -98,7 +99,7 @@ export function SubmissionDetail({
                   <FavoriteButton submissionId={submission.id} size="md" />
                 )}
                 {submission._count.favorites > 0 && (
-                  <div className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                     <svg
                       className="h-5 w-5 text-red-500"
                       fill="currentColor"
@@ -117,7 +118,7 @@ export function SubmissionDetail({
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Main content */}
         <main className="mx-auto max-w-7xl px-6 py-6">
@@ -128,8 +129,8 @@ export function SubmissionDetail({
                 onClick={() => setMobileView("image")}
                 className={`flex-1 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                   mobileView === "image"
-                    ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                    : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
                 Image
@@ -138,8 +139,8 @@ export function SubmissionDetail({
                 onClick={() => setMobileView("text")}
                 className={`flex-1 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                   mobileView === "text"
-                    ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                    : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
                 Text
@@ -158,13 +159,15 @@ export function SubmissionDetail({
                   hasBoth && mobileView === "text" ? "hidden md:block" : ""
                 }`}
               >
-                <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-                  <ExpandableImage
-                    imageUrl={submission.imageUrl!}
-                    alt={submission.title || "Submission"}
-                    className="min-h-[400px]"
-                  />
-                </div>
+                <Card className="rounded-xl">
+                  <CardContent className="p-4">
+                    <ExpandableImage
+                      imageUrl={submission.imageUrl!}
+                      alt={submission.title || "Submission"}
+                      className="min-h-[400px]"
+                    />
+                  </CardContent>
+                </Card>
               </div>
             )}
 
@@ -175,23 +178,26 @@ export function SubmissionDetail({
                   hasBoth && mobileView === "image" ? "hidden md:block" : ""
                 }`}
               >
-                <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-                  {submission.title && (
-                    <h1 className="mb-4 text-2xl font-semibold text-zinc-900 dark:text-white">
-                      {submission.title}
-                    </h1>
-                  )}
-                  <ExpandableText
-                    text={submission.text!}
-                    title={submission.title}
-                  />
-                </div>
+                <Card className="rounded-xl">
+                  <CardContent className="p-6">
+                    {submission.title && (
+                      <h1 className="mb-4 text-2xl font-semibold text-foreground">
+                        {submission.title}
+                      </h1>
+                    )}
+                    <ExpandableText
+                      text={submission.text!}
+                      title={submission.title}
+                    />
+                  </CardContent>
+                </Card>
               </div>
             )}
           </div>
 
           {/* Creator profile section */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <Card className="rounded-xl">
+            <CardContent className="p-6">
             <div className="mb-4 flex items-center gap-4">
               {submission.user.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -201,8 +207,8 @@ export function SubmissionDetail({
                   className="h-16 w-16 rounded-full"
                 />
               ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
-                  <span className="text-2xl font-medium text-zinc-600 dark:text-zinc-400">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                  <span className="text-2xl font-medium text-muted-foreground">
                     {submission.user.name?.charAt(0) || "?"}
                   </span>
                 </div>
@@ -210,7 +216,7 @@ export function SubmissionDetail({
               <div className="flex-1">
                 <Link
                   href={`/profile/${submission.user.id}`}
-                  className="text-xl font-semibold text-zinc-900 transition-colors hover:text-zinc-700 dark:text-white dark:hover:text-zinc-300"
+                  className="text-xl font-semibold text-foreground transition-colors hover:text-foreground/80"
                 >
                   {submission.user.name || "Anonymous"}
                 </Link>
@@ -219,7 +225,7 @@ export function SubmissionDetail({
 
             {submission.user.bio && (
               <div
-                className="prose prose-sm dark:prose-invert mb-4 max-w-none text-zinc-700 dark:text-zinc-300"
+                className="prose prose-sm dark:prose-invert mb-4 max-w-none text-muted-foreground"
                 dangerouslySetInnerHTML={{ __html: submission.user.bio }}
               />
             )}
@@ -235,7 +241,8 @@ export function SubmissionDetail({
                 website={submission.user.website}
               />
             )}
-          </div>
+            </CardContent>
+          </Card>
         </main>
       </div>
     </FavoritesProvider>

@@ -1,15 +1,17 @@
 import { signIn } from "@/lib/auth";
 import { Logo } from "@/components/logo";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg dark:bg-zinc-900">
-        <div className="mb-6 flex items-center justify-center gap-2 text-zinc-900 dark:text-white">
+    <div className="flex flex-1 items-center justify-center px-6 py-12">
+      <Card className="w-full max-w-md rounded-xl shadow-lg">
+        <CardContent className="p-8">
+        <div className="mb-6 flex items-center justify-center gap-2 text-foreground">
           <Logo className="h-6 w-10" />
           <h1 className="text-2xl font-normal">Sign in to Prompts</h1>
         </div>
-        <p className="mb-8 text-center text-zinc-600 dark:text-zinc-400">
+        <p className="mb-8 text-center text-muted-foreground">
           Join our creative community and share your interpretations of the
           weekly prompts.
         </p>
@@ -21,7 +23,7 @@ export default function SignInPage() {
         >
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-3 rounded-lg bg-white px-4 py-3 text-sm font-medium text-zinc-900 shadow-md ring-1 ring-zinc-200 transition-all hover:bg-zinc-50 hover:shadow-lg dark:bg-zinc-800 dark:text-white dark:ring-zinc-700 dark:hover:bg-zinc-700"
+            className="flex w-full items-center justify-center gap-3 rounded-lg bg-card px-4 py-3 text-sm font-medium text-foreground shadow-md ring-1 ring-border transition-all hover:bg-accent hover:shadow-lg"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -44,7 +46,8 @@ export default function SignInPage() {
             Continue with Google
           </button>
         </form>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

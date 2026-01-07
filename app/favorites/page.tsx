@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Header } from "@/components/header";
+import { PageLayout } from "@/components/page-layout";
 import { FavoritesGrid } from "./favorites-grid";
 
 export const dynamic = "force-dynamic";
@@ -36,35 +36,31 @@ export default async function FavoritesPage() {
   const favorites = await getFavorites(session.user.id);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Favorites" user={session.user} />
+    <PageLayout>
+      <section className="mb-12 text-center">
+        <h1 className="mb-4 text-3xl font-bold text-foreground">
+          Your Favorites
+        </h1>
+        <p className="text-muted-foreground">
+          Submissions you&apos;ve saved for later
+        </p>
+      </section>
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        <section className="mb-12 text-center">
-          <h1 className="mb-4 text-3xl font-bold text-zinc-900 dark:text-white">
-            Your Favorites
-          </h1>
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Submissions you&apos;ve saved for later
+      {favorites.length > 0 ? (
+        <FavoritesGrid favorites={favorites} />
+      ) : (
+        <div className="text-center">
+          <p className="mb-4 text-muted-foreground">
+            You haven&apos;t favorited any submissions yet.
           </p>
-        </section>
-
-        {favorites.length > 0 ? (
-          <FavoritesGrid favorites={favorites} />
-        ) : (
-          <div className="text-center">
-            <p className="mb-4 text-zinc-600 dark:text-zinc-400">
-              You haven&apos;t favorited any submissions yet.
-            </p>
-            <Link
-              href="/prompt"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
-              Explore Prompts
-            </Link>
-          </div>
-        )}
-      </main>
-    </div>
+          <Link
+            href="/prompt"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Explore Prompts
+          </Link>
+        </div>
+      )}
+    </PageLayout>
   );
 }

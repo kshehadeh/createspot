@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
-import { Header } from "@/components/header";
-
-export const dynamic = "force-dynamic";
+import { PageLayout } from "@/components/page-layout";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "About | Create Spot",
@@ -17,47 +15,43 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function AboutPage() {
-  const session = await auth();
-
+export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="About" user={session?.user} />
+    <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
+      <section className="mb-14 text-center">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+          About Create Spot
+        </p>
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          A home for creative momentum.
+        </h1>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+          We built Create Spot to help creatives stay inspired, share their
+          work in thoughtful ways, and grow a body of work that feels alive.
+        </p>
+      </section>
 
-      <main className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
-        <section className="mb-14 text-center">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">
-            About Create Spot
-          </p>
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-5xl">
-            A home for creative momentum.
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-            We built Create Spot to help creatives stay inspired, share their
-            work in thoughtful ways, and grow a body of work that feels alive.
-          </p>
-        </section>
-
-        <div className="grid gap-8">
-          <section className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-amber-100/60 p-8 dark:border-amber-900/60 dark:from-amber-950/40 dark:via-zinc-950 dark:to-amber-900/30">
-            <h2 className="mb-3 text-2xl font-semibold text-zinc-900 dark:text-white">
+      <div className="grid gap-8">
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="p-8">
+            <h2 className="mb-3 text-2xl font-semibold text-foreground">
               Purpose
             </h2>
-            <p className="text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <p className="text-base leading-relaxed text-muted-foreground">
               Create Spot exists to give creatives{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 a place to get inspired
               </strong>{" "}
               to create more and{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 exhibit their work in interesting ways
               </strong>
               . We believe creative energy grows when it is{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 both sparked and shared
               </strong>
               . Over time, we will keep building{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 new ways to inspire and new ways to share
               </strong>{" "}
               so your practice stays fresh.
@@ -70,24 +64,26 @@ export default async function AboutPage() {
                 Read more about our purpose →
               </Link>
             </div>
-          </section>
+          </CardContent>
+        </Card>
 
-          <section className="rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-50 via-white to-rose-100/60 p-8 dark:border-rose-900/60 dark:from-rose-950/40 dark:via-zinc-950 dark:to-rose-900/30">
-            <h2 className="mb-3 text-2xl font-semibold text-zinc-900 dark:text-white">
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="p-8">
+            <h2 className="mb-3 text-2xl font-semibold text-foreground">
               How the site is organized
             </h2>
-            <p className="text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <p className="text-base leading-relaxed text-muted-foreground">
               Your portfolio is{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 your personal space
               </strong>
               . You can build it over time,{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 curate the pieces that represent you best
               </strong>
               , and share the results when you want to be seen. When you submit
               new work, it becomes{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 part of your portfolio
               </strong>{" "}
               and can be shared publicly through the exhibitions and galleries.
@@ -100,25 +96,27 @@ export default async function AboutPage() {
                 Learn more about portfolios and sharing →
               </Link>
             </div>
-          </section>
+          </CardContent>
+        </Card>
 
-          <section className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-sky-100/60 p-8 dark:border-sky-900/60 dark:from-sky-950/40 dark:via-zinc-950 dark:to-sky-900/30">
-            <h2 className="mb-3 text-2xl font-semibold text-zinc-900 dark:text-white">
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="p-8">
+            <h2 className="mb-3 text-2xl font-semibold text-foreground">
               Prompt inspiration
             </h2>
-            <p className="text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <p className="text-base leading-relaxed text-muted-foreground">
               Weekly prompts are designed to{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 spark momentum
               </strong>
               . Use the three-word prompt to create something new or connect an
               existing portfolio piece that fits the theme. Every prompt
               submission can live in{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 your portfolio
               </strong>
               , so your inspiration and your body of work{" "}
-              <strong className="text-zinc-900 dark:text-white">
+              <strong className="text-foreground">
                 stay connected
               </strong>
               .
@@ -131,9 +129,9 @@ export default async function AboutPage() {
                 Learn more about prompt submissions →
               </Link>
             </div>
-          </section>
-        </div>
-      </main>
-    </div>
+          </CardContent>
+        </Card>
+      </div>
+    </PageLayout>
   );
 }

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { auth } from "@/lib/auth";
 import {
   getExhibitionFacets,
   getExhibitionSubmissions,
 } from "@/lib/exhibition";
-import { Header } from "@/components/header";
+import { PageLayout } from "@/components/page-layout";
 import { ExhibitionFilters } from "../exhibition-filters";
 import { ConstellationSphere } from "@/components/constellation-sphere";
 
@@ -33,7 +32,7 @@ interface ConstellationExhibitionPageProps {
 export default async function ConstellationExhibitionPage({
   searchParams,
 }: ConstellationExhibitionPageProps) {
-  const [session, params] = await Promise.all([auth(), searchParams]);
+  const params = await searchParams;
 
   const rawCategory = Array.isArray(params.category)
     ? params.category[0]
@@ -77,34 +76,30 @@ export default async function ConstellationExhibitionPage({
   });
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Constellation" user={session?.user} />
+    <PageLayout>
+      <ExhibitionFilters
+        categories={categories}
+        tags={tags}
+        initialCategory={category}
+        initialTag={tag}
+        initialQuery={query}
+      />
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        <ExhibitionFilters
-          categories={categories}
-          tags={tags}
-          initialCategory={category}
-          initialTag={tag}
-          initialQuery={query}
-        />
-
-        {constellationWork.length > 0 ? (
-          <section className="mb-10">
-            <div className="flex flex-col gap-10">
-              <ConstellationSphere items={constellationWork} />
-            </div>
-          </section>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {query || category || tag
-                ? "No work matches your filters."
-                : "No public work available yet."}
-            </p>
+      {constellationWork.length > 0 ? (
+        <section className="mb-10">
+          <div className="flex flex-col gap-10">
+            <ConstellationSphere items={constellationWork} />
           </div>
-        )}
-      </main>
-    </div>
+        </section>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
+          <p className="text-sm text-muted-foreground">
+            {query || category || tag
+              ? "No work matches your filters."
+              : "No public work available yet."}
+          </p>
+        </div>
+      )}
+    </PageLayout>
   );
 }

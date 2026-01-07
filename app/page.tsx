@@ -3,9 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Header } from "@/components/header";
 import { SignInButton } from "@/components/auth-button";
 import { CreateSpotLogo } from "@/components/create-spot-logo";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -52,10 +52,7 @@ export default async function Home() {
   const recentWork = await getRecentWork();
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-black">
-      <Header user={session?.user} />
-
-      <main className="flex-1">
+    <main className="flex-1">
         {/* Hero Section */}
         <section className="relative overflow-hidden px-6 py-20 sm:py-32">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-rose-50 to-violet-50 dark:from-amber-950/20 dark:via-rose-950/20 dark:to-violet-950/20" />
@@ -70,42 +67,43 @@ export default async function Home() {
                 />
               </div>
               <div className="flex-1 lg:order-1">
-                <h1 className="mb-6 text-5xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-7xl">
+                <h1 className="mb-6 text-5xl font-bold tracking-tight text-foreground sm:text-7xl">
                   Where creativity
                   <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
                     finds its home
                   </span>
                 </h1>
-                <p className="mx-auto mb-10 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400 lg:mx-0">
-                  Join a vibrant community of artists and writers. Build your
+                <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground lg:mx-0">
+                  A home for photographers, painters, illustrators, writers,
+                  sculptors, and anyone else who wants to create. Build your
                   portfolio, share your creative journey, and get inspired by
                   weekly prompts.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 lg:justify-start">
                   {session ? (
                     <>
-                      <Link
-                        href="/profile/edit"
-                        className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-                      >
-                        Build Your Portfolio
-                      </Link>
-                      <Link
-                        href="/prompt"
-                        className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 bg-white px-8 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
-                      >
-                        Play Weekly Prompts
-                      </Link>
+                      <Button asChild>
+                        <Link href="/profile/edit">
+                          Build Your Portfolio
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline">
+                        <Link href="/prompt">
+                          Play Weekly Prompts
+                        </Link>
+                      </Button>
                     </>
                   ) : (
                     <>
                       <SignInButton />
-                      <Link
-                        href="/prompt/this-week"
-                        className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 bg-white px-8 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+                      <Button
+                        asChild
+                        variant="outline"
                       >
-                        Browse Gallery
-                      </Link>
+                        <Link href="/prompt/this-week">
+                          Browse Gallery
+                        </Link>
+                      </Button>
                     </>
                   )}
                 </div>
@@ -117,7 +115,7 @@ export default async function Home() {
         {/* Mission Statement Section */}
         <section className="px-6 pb-8 pt-0 sm:pb-12 sm:pt-2">
           <div className="mx-auto max-w-5xl text-center">
-            <p className="text-2xl leading-relaxed text-zinc-700 dark:text-zinc-300 sm:text-3xl sm:leading-relaxed md:text-4xl md:leading-relaxed lg:text-5xl lg:leading-relaxed">
+            <p className="text-2xl leading-relaxed text-muted-foreground sm:text-3xl sm:leading-relaxed md:text-4xl md:leading-relaxed lg:text-5xl lg:leading-relaxed">
               A place for creatives to{" "}
               <strong className="rainbow-sheen">exhibit their work</strong>,
               find inspiration to{" "}
@@ -133,16 +131,16 @@ export default async function Home() {
             <div className="mx-auto max-w-6xl">
               <div className="mb-10 flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">
+                  <h2 className="text-2xl font-bold text-foreground">
                     Recent Work
                   </h2>
-                  <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+                  <p className="mt-1 text-muted-foreground">
                     Fresh inspiration from the community
                   </p>
                 </div>
                 <Link
                   href="/prompt/this-week"
-                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   View all →
                 </Link>
@@ -152,7 +150,7 @@ export default async function Home() {
                   <Link
                     key={work.id}
                     href={`/s/${work.id}`}
-                    className="group relative aspect-square overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800"
+                    className="group relative aspect-square overflow-hidden rounded-xl bg-muted"
                   >
                     {work.imageUrl ? (
                       <Image
@@ -163,8 +161,8 @@ export default async function Home() {
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       />
                     ) : work.text ? (
-                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-zinc-100 to-zinc-200 p-4 dark:from-zinc-800 dark:to-zinc-900">
-                        <p className="line-clamp-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
+                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-muted to-muted/80 p-4">
+                        <p className="line-clamp-4 text-center text-sm text-muted-foreground">
                           {work.text.replace(/<[^>]*>/g, "").slice(0, 100)}...
                         </p>
                       </div>
@@ -213,7 +211,7 @@ export default async function Home() {
                 </p>
                 <Link
                   href="/prompt/this-week"
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-medium text-violet-600 transition-colors hover:bg-zinc-100"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-background px-8 text-sm font-medium text-primary transition-colors hover:bg-accent"
                 >
                   See This Week&apos;s Prompt
                 </Link>
@@ -221,11 +219,10 @@ export default async function Home() {
             </div>
           </div>
         </section>
-      </main>
 
-      <footer className="px-6 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-        &copy; {new Date().getFullYear()} Create Spot
-      </footer>
-    </div>
+        <footer className="px-6 py-8 text-center text-sm text-muted-foreground">
+          &copy; {new Date().getFullYear()} Create Spot
+        </footer>
+      </main>
   );
 }

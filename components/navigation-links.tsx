@@ -17,10 +17,10 @@ export function NavigationLinks({
 }: NavigationLinksProps) {
   const pathname = usePathname();
   const isAboutPage = pathname === "/about" || pathname.startsWith("/about/");
-  const aboutClassName = `text-sm transition-colors dark:hover:text-white ${
+  const aboutClassName = `rounded-md px-2 py-1 text-sm transition-colors ${
     isAboutPage
-      ? "text-zinc-900 font-medium dark:text-white"
-      : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400"
+      ? "bg-accent text-accent-foreground font-medium"
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
   }`;
 
   return (

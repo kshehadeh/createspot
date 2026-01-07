@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Header } from "@/components/header";
+import { PageLayout } from "@/components/page-layout";
 import { UsersList } from "./users-list";
 
 export const dynamic = "force-dynamic";
@@ -30,19 +30,15 @@ export default async function AdminUsersPage() {
   });
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Users" user={session.user} />
-
-      <main className="mx-auto max-w-4xl px-6 py-12">
-        <section>
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">
-              All Users ({users.length})
-            </h2>
-          </div>
-          <UsersList users={users} currentUserId={session.user.id} />
-        </section>
-      </main>
-    </div>
+    <PageLayout maxWidth="max-w-4xl">
+      <section>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-2xl font-semibold text-foreground">
+            All Users ({users.length})
+          </h2>
+        </div>
+        <UsersList users={users} currentUserId={session.user.id} />
+      </section>
+    </PageLayout>
   );
 }

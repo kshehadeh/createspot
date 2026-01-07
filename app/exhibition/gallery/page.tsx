@@ -5,7 +5,7 @@ import {
   getExhibitionSubmissions,
 } from "@/lib/exhibition";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
-import { Header } from "@/components/header";
+import { PageLayout } from "@/components/page-layout";
 import { ExhibitionFilters } from "../exhibition-filters";
 import { ExhibitionGrid } from "../exhibition-grid";
 
@@ -58,24 +58,20 @@ export default async function GalleryExhibitionPage({
   ]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <Header title="Gallery" user={session?.user} />
+    <PageLayout>
+      <ExhibitionFilters
+        categories={categories}
+        tags={tags}
+        initialCategory={category}
+        initialTag={tag}
+        initialQuery={query}
+      />
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        <ExhibitionFilters
-          categories={categories}
-          tags={tags}
-          initialCategory={category}
-          initialTag={tag}
-          initialQuery={query}
-        />
-
-        <ExhibitionGrid
-          submissions={submissions}
-          isLoggedIn={!!session?.user}
-          initialHasMore={hasMore}
-        />
-      </main>
-    </div>
+      <ExhibitionGrid
+        submissions={submissions}
+        isLoggedIn={!!session?.user}
+        initialHasMore={hasMore}
+      />
+    </PageLayout>
   );
 }

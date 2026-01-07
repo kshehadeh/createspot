@@ -165,6 +165,7 @@ function FavoritesGridContent({ favorites }: FavoritesGridProps) {
           submission={selectedSubmission}
           word={getWord(selectedSubmission)}
           onClose={() => setSelectedSubmission(null)}
+          isOpen={!!selectedSubmission}
         />
       )}
     </>

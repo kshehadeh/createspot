@@ -9,6 +9,8 @@ import { TextThumbnail } from "@/components/text-thumbnail";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface ExhibitionSubmission {
   id: string;
@@ -156,14 +158,16 @@ function GridContent({
 
   if (submissions.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          No work matches these filters yet.
-        </p>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">
-          Try removing a filter or searching with a different keyword.
-        </p>
-      </div>
+      <Card className="rounded-2xl border-dashed">
+        <CardContent className="px-6 py-12 text-center">
+          <p className="text-sm text-muted-foreground">
+            No work matches these filters yet.
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Try removing a filter or searching with a different keyword.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -190,11 +194,11 @@ function GridContent({
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.25 }}
                 whileHover={{ y: -4 }}
-                className="group cursor-pointer overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+                className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
                 onClick={() => router.push(`/s/${submission.id}`)}
               >
                 {submission.imageUrl ? (
-                  <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                  <div className="relative aspect-square overflow-hidden bg-muted">
                     <Image
                       src={submission.imageUrl}
                       alt={submission.title || "Submission"}
@@ -243,8 +247,8 @@ function GridContent({
                           className="h-6 w-6 rounded-full"
                         />
                       ) : (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
-                          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
+                          <span className="text-xs font-medium text-muted-foreground">
                             {submission.user.name?.charAt(0).toUpperCase() ||
                               "?"}
                           </span>
@@ -285,8 +289,8 @@ function GridContent({
                           className="h-6 w-6 rounded-full"
                         />
                       ) : (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
-                          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
+                          <span className="text-xs font-medium text-muted-foreground">
                             {submission.user.name?.charAt(0).toUpperCase() ||
                               "?"}
                           </span>
@@ -302,19 +306,19 @@ function GridContent({
                 <div className="space-y-2 p-3">
                   <div className="flex flex-wrap items-center gap-2">
                     {submission.category && (
-                      <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                      <Badge variant="secondary" className="rounded-full">
                         {submission.category}
-                      </span>
+                      </Badge>
                     )}
                     {promptWord && (
-                      <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                      <Badge className="rounded-full bg-prompt/15 text-prompt-foreground hover:bg-prompt/25 dark:bg-prompt/30 dark:text-prompt-foreground">
                         {promptWord}
-                      </span>
+                      </Badge>
                     )}
                   </div>
 
                   {submission.title && (
-                    <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {submission.title}
                     </h3>
                   )}
@@ -326,13 +330,13 @@ function GridContent({
                           key={tag}
                           href={buildTagHref(tag)}
                           onClick={(event) => event.stopPropagation()}
-                          className="text-xs text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                          className="text-xs text-muted-foreground transition hover:text-foreground"
                         >
                           #{tag}
                         </Link>
                       ))}
                       {submission.tags.length > 4 && (
-                        <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                        <span className="text-xs text-muted-foreground">
                           +{submission.tags.length - 4}
                         </span>
                       )}
@@ -346,7 +350,7 @@ function GridContent({
       </motion.div>
 
       <div ref={sentinelRef} className="h-10" />
-      <div className="mt-4 flex flex-col items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+      <div className="mt-4 flex flex-col items-center gap-2 text-sm text-muted-foreground">
         {isLoading && <span>Loading more work...</span>}
         {loadError && (
           <div className="flex items-center gap-3">
@@ -354,14 +358,14 @@ function GridContent({
             <button
               type="button"
               onClick={onLoadMore}
-              className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
             >
               Retry
             </button>
           </div>
         )}
         {!hasMore && submissions.length > 0 && (
-          <span className="text-zinc-400 dark:text-zinc-500">
+          <span className="text-muted-foreground">
             You&apos;ve reached the end.
           </span>
         )}

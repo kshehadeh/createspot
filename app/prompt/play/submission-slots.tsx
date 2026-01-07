@@ -294,21 +294,18 @@ export function SubmissionSlots({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium text-zinc-900 dark:text-white">
-          Your submissions
-        </h2>
-        {hasAnySubmissions && (
+      {hasAnySubmissions && (
+        <div className="flex justify-end">
           <button
             onClick={() => setShowClearModal(true)}
             className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
           >
             Clear
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
-      <div className="grid gap-6 sm:grid-cols-3">
+      <div className="flex flex-col items-center gap-6 lg:flex-row lg:justify-center">
         {words.map((word, index) => {
           const wordIndex = index + 1;
           const submission = existingSubmissions[wordIndex];
@@ -316,7 +313,7 @@ export function SubmissionSlots({
           return (
             <div
               key={wordIndex}
-              className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+              className="w-full max-w-full rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 lg:max-w-[350px]"
             >
               <h3 className="mb-4 text-center text-lg font-semibold text-zinc-900 dark:text-white">
                 {word}

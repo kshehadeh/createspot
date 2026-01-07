@@ -8,22 +8,57 @@ import { signOut } from "next-auth/react";
 import { CreateSpotLogo } from "./create-spot-logo";
 import { UserDropdown } from "./user-dropdown";
 import { NavigationLinks } from "./navigation-links";
+import { ThemeToggle } from "./theme-toggle";
 
 interface HeaderUser {
+  id?: string;
   name?: string | null;
   image?: string | null;
   isAdmin?: boolean;
 }
 
 interface HeaderProps {
-  title?: string;
   user?: HeaderUser | null;
 }
 
-export function Header({ title, user }: HeaderProps) {
+// Get breadcrumb segments based on pathname
+function getBreadcrumbs(pathname: string): string[] | null {
+  // Homepage - no breadcrumbs
+  if (pathname === "/") return null;
+  
+  // Exhibition routes
+  if (pathname === "/exhibition/gallery") return ["Exhibit", "Gallery"];
+  if (pathname === "/exhibition/constellation") return ["Exhibit", "Constellation"];
+  if (pathname.startsWith("/exhibition")) return ["Exhibit"];
+  
+  // Prompt routes
+  if (pathname === "/prompt/play") return ["Prompts", "Play"];
+  if (pathname === "/prompt/history") return ["Prompts", "History"];
+  if (pathname === "/prompt/this-week") return ["Prompts", "This Week"];
+  if (pathname.startsWith("/prompt")) return ["Prompts"];
+  
+  // Admin routes
+  if (pathname === "/admin/users") return ["Admin", "Users"];
+  if (pathname.startsWith("/admin")) return ["Admin"];
+  
+  // Profile routes
+  if (pathname === "/profile/edit") return ["Profile", "Edit"];
+  if (pathname.startsWith("/profile")) return ["Profile"];
+  
+  // Other routes
+  if (pathname.startsWith("/favorites")) return ["Favorites"];
+  if (pathname.startsWith("/s/")) return ["Submission"];
+  if (pathname.startsWith("/about")) return ["About"];
+  if (pathname.startsWith("/auth")) return null; // No breadcrumbs for auth
+  
+  return null;
+}
+
+export function Header({ user }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const breadcrumbs = getBreadcrumbs(pathname);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -56,11 +91,11 @@ export function Header({ title, user }: HeaderProps) {
 
   return (
     <>
-      <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800 sm:px-12">
+      <header className="flex items-center justify-between border-b border-border px-6 py-4 sm:px-12">
         <div className="flex items-center gap-6">
           <Link
             href="/"
-            className="flex items-center gap-2 text-zinc-900 dark:text-white"
+            className="flex items-center gap-2 text-foreground"
           >
             <CreateSpotLogo
               className="h-6 w-auto"
@@ -69,62 +104,12 @@ export function Header({ title, user }: HeaderProps) {
             />
             <span className="text-xl font-normal">Create Spot</span>
           </Link>
-          {title && (
-            <>
-              {pathname === "/exhibition/gallery" ? (
-                <>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    Exhibit
-                  </span>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    Gallery
-                  </span>
-                </>
-              ) : pathname === "/exhibition/constellation" ? (
-                <>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    Exhibit
-                  </span>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    Constellation
-                  </span>
-                </>
-              ) : pathname === "/prompt/play" ? (
-                <>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    Prompts
-                  </span>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    Play
-                  </span>
-                </>
-              ) : pathname === "/prompt/history" ? (
-                <>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    Prompts
-                  </span>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    History
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="text-zinc-300 dark:text-zinc-700">/</span>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                    {title}
-                  </span>
-                </>
-              )}
-            </>
-          )}
+          {breadcrumbs && breadcrumbs.map((segment, index) => (
+            <span key={index} className="flex items-center gap-6">
+              <span className="text-muted-foreground">/</span>
+              <span className="text-lg text-muted-foreground">{segment}</span>
+            </span>
+          ))}
         </div>
         <div className="flex items-center gap-4">
           {/* Desktop Navigation */}
@@ -133,27 +118,28 @@ export function Header({ title, user }: HeaderProps) {
               isAuthenticated={!!user}
               isAdmin={!!user?.isAdmin}
             />
-            {user && <UserDropdown name={user.name} image={user.image} />}
+            <ThemeToggle />
+            {user && <UserDropdown id={user.id} name={user.name} image={user.image} />}
           </div>
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex flex-col gap-1.5 p-2 md:hidden"
+            className="flex flex-col gap-1.5 p-2 text-foreground md:hidden"
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
           >
             <span
-              className={`h-0.5 w-6 bg-zinc-900 transition-all dark:bg-white ${
-                isMenuOpen ? "translate-y-2 rotate-45" : ""
-              }`}
+            className={`h-0.5 w-6 bg-foreground transition-all ${
+              isMenuOpen ? "translate-y-2 rotate-45" : ""
+            }`}
             />
             <span
-              className={`h-0.5 w-6 bg-zinc-900 transition-all dark:bg-white ${
+              className={`h-0.5 w-6 bg-foreground transition-all ${
                 isMenuOpen ? "opacity-0" : ""
               }`}
             />
             <span
-              className={`h-0.5 w-6 bg-zinc-900 transition-all dark:bg-white ${
+              className={`h-0.5 w-6 bg-foreground transition-all ${
                 isMenuOpen ? "-translate-y-2 -rotate-45" : ""
               }`}
             />
@@ -172,19 +158,19 @@ export function Header({ title, user }: HeaderProps) {
       {/* Mobile Slide-in Menu */}
       <div
         ref={menuRef}
-        className={`fixed right-0 top-0 z-50 h-full w-64 transform border-l border-zinc-200 bg-white transition-transform duration-300 ease-in-out dark:border-zinc-800 dark:bg-zinc-900 md:hidden ${
+        className={`fixed right-0 top-0 z-50 h-full w-64 transform border-l border-border bg-background transition-transform duration-300 ease-in-out md:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex h-full flex-col">
           {/* Menu Header */}
-          <div className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-            <span className="text-lg font-medium text-zinc-900 dark:text-white">
+          <div className="flex items-center justify-between border-b border-border px-6 py-4">
+            <span className="text-lg font-medium text-foreground">
               Menu
             </span>
             <button
               onClick={() => setIsMenuOpen(false)}
-              className="p-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+              className="p-2 text-muted-foreground hover:text-foreground"
               aria-label="Close menu"
             >
               <svg
@@ -210,8 +196,11 @@ export function Header({ title, user }: HeaderProps) {
               isAdmin={!!user?.isAdmin}
               onLinkClick={() => setIsMenuOpen(false)}
             />
+            <div className="mt-4 flex justify-center">
+              <ThemeToggle />
+            </div>
             {user && (
-              <div className="mt-auto border-t border-zinc-200 pt-4 dark:border-zinc-800">
+              <div className="mt-auto border-t border-border pt-4">
                 <div className="flex items-center gap-3 px-4 py-2">
                   {user.image ? (
                     <Image
@@ -222,14 +211,14 @@ export function Header({ title, user }: HeaderProps) {
                       className="rounded-full"
                     />
                   ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
                       {user.name?.charAt(0).toUpperCase() || "?"}
                     </div>
                   )}
                   {user.name && (
-                    <span className="text-sm font-medium text-zinc-900 dark:text-white">
-                      {user.name}
-                    </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {user.name}
+                  </span>
                   )}
                 </div>
                 <MobileUserActions onActionClick={() => setIsMenuOpen(false)} />
@@ -265,15 +254,15 @@ function MobileNavigationLinks({
     const baseClasses =
       "block px-4 py-3 text-base font-medium transition-colors rounded-lg";
     const activeClasses = isActive(path)
-      ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white"
-      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800";
+      ? "bg-accent text-accent-foreground"
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
     return `${baseClasses} ${activeClasses}`;
   };
 
   return (
     <>
       <div className="mb-2">
-        <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+        <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Explore
         </div>
         <Link
@@ -299,9 +288,9 @@ function MobileNavigationLinks({
         </Link>
       </div>
       <div className="mb-2">
-        <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-          Prompts
-        </div>
+          <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Prompts
+          </div>
         {isAuthenticated ? (
           <>
             <Link
@@ -331,7 +320,7 @@ function MobileNavigationLinks({
       </div>
       {isAdmin && (
         <div className="mt-2">
-          <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Admin
           </div>
           <Link
@@ -364,7 +353,7 @@ function MobileUserActions({ onActionClick }: { onActionClick: () => void }) {
   return (
     <button
       onClick={handleLogout}
-      className="w-full px-4 py-3 text-left text-base text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      className="w-full px-4 py-3 text-left text-base text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
     >
       Logout
     </button>

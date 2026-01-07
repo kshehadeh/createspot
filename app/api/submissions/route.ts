@@ -57,7 +57,10 @@ export async function GET(request: NextRequest) {
         isPortfolio: true,
         ...shareStatusFilter,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: [
+        { portfolioOrder: "asc" },
+        { createdAt: "desc" },
+      ],
       include: {
         prompt: {
           select: {

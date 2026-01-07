@@ -5,6 +5,18 @@ import { useRouter } from "next/navigation";
 import type { Prompt } from "@/app/generated/prisma/client";
 import { formatDateRangeUTC } from "@/lib/date-utils";
 import { ConfirmModal } from "@/components/confirm-modal";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const dictionaryCache = new Map<string, boolean>();
 
@@ -421,56 +433,46 @@ export function PromptForm({
   return (
     <div className="space-y-6">
       <div className="flex gap-4">
-        <button
+        <Button
           type="button"
           onClick={() => handleModeChange("create")}
-          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-            mode === "create"
-              ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-              : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-          }`}
+          variant={mode === "create" ? "default" : "outline"}
         >
           Create New Prompt
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={() => handleModeChange("edit")}
           disabled={editablePrompts.length === 0}
-          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-            mode === "edit"
-              ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-              : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-          }`}
+          variant={mode === "edit" ? "default" : "outline"}
         >
           Edit Existing Prompt
-        </button>
+        </Button>
       </div>
 
       {mode === "edit" && editablePrompts.length > 0 && (
         <div>
-          <label
-            htmlFor="promptSelect"
-            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Select Prompt to Edit
-          </label>
-          <select
-            id="promptSelect"
+          <Label htmlFor="promptSelect">Select Prompt to Edit</Label>
+          <Select
             value={selectedPromptId}
-            onChange={(e) => handlePromptSelect(e.target.value)}
-            className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            onValueChange={handlePromptSelect}
           >
-            {editablePrompts.map((prompt) => (
-              <option key={prompt.id} value={prompt.id}>
-                {prompt.word1} / {prompt.word2} / {prompt.word3} (
-                {formatDateRangeUTC(
-                  new Date(prompt.weekStart),
-                  new Date(prompt.weekEnd),
-                )}
-                )
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="promptSelect" className="w-full">
+              <SelectValue placeholder="Select a prompt..." />
+            </SelectTrigger>
+            <SelectContent>
+              {editablePrompts.map((prompt) => (
+                <SelectItem key={prompt.id} value={prompt.id}>
+                  {prompt.word1} / {prompt.word2} / {prompt.word3} (
+                  {formatDateRangeUTC(
+                    new Date(prompt.weekStart),
+                    new Date(prompt.weekEnd),
+                  )}
+                  )
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             Only prompts without submissions can be edited
           </p>
@@ -498,27 +500,24 @@ export function PromptForm({
 
         {mode === "create" ? (
           <div>
-            <label
-              htmlFor="weekSelect"
-              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Week (Monday - Sunday)
-            </label>
-            <select
-              id="weekSelect"
+            <Label htmlFor="weekSelect">Week (Monday - Sunday)</Label>
+            <Select
               value={selectedWeek}
-              onChange={(e) => setSelectedWeek(e.target.value)}
+              onValueChange={setSelectedWeek}
               required
               disabled={availableWeeks.length === 0}
-              className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             >
-              <option value="">Select a week...</option>
-              {availableWeeks.map((week) => (
-                <option key={week.key} value={week.key}>
-                  {week.label}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id="weekSelect" className="w-full">
+                <SelectValue placeholder="Select a week..." />
+              </SelectTrigger>
+              <SelectContent>
+                {availableWeeks.map((week) => (
+                  <SelectItem key={week.key} value={week.key}>
+                    {week.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {availableWeeks.length === 0 && (
               <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
                 All upcoming weeks already have prompts assigned
@@ -527,9 +526,7 @@ export function PromptForm({
           </div>
         ) : selectedPrompt ? (
           <div>
-            <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Week
-            </label>
+            <Label>Week</Label>
             <p className="rounded-lg border border-zinc-200 bg-zinc-100 px-4 py-2 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
               {formatDateRangeUTC(
                 new Date(selectedPrompt.weekStart),
@@ -541,70 +538,37 @@ export function PromptForm({
 
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <label
-              htmlFor="word1"
-              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Word 1
-            </label>
+            <Label htmlFor="word1">Word 1</Label>
             <div className="relative">
-              <input
+              <Input
                 type="text"
                 id="word1"
                 value={word1}
                 onChange={(e) => setWord1(e.target.value)}
                 required
                 disabled={hasSubmissions}
-                className={`w-full rounded-lg border bg-white px-4 py-2 pr-10 text-zinc-900 focus:outline-none focus:ring-1 disabled:opacity-50 dark:bg-zinc-800 dark:text-white ${
-                  word1Warning
-                    ? "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
-                    : "border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700"
-                }`}
+                className={cn(
+                  "pr-10",
+                  word1Warning &&
+                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                )}
               />
               {mode === "create" && !hasSubmissions && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => fillRandomWord(1, setWord1)}
                   disabled={loadingRandomWord.has(1)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2"
                   title="Fill with random word"
                 >
                   {loadingRandomWord.has(1) ? (
-                    <svg
-                      className="h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
+                    <RefreshCw className="h-4 w-4" />
                   )}
-                </button>
+                </Button>
               )}
             </div>
             <p className="mt-1 h-4 text-xs">
@@ -620,70 +584,37 @@ export function PromptForm({
             </p>
           </div>
           <div>
-            <label
-              htmlFor="word2"
-              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Word 2
-            </label>
+            <Label htmlFor="word2">Word 2</Label>
             <div className="relative">
-              <input
+              <Input
                 type="text"
                 id="word2"
                 value={word2}
                 onChange={(e) => setWord2(e.target.value)}
                 required
                 disabled={hasSubmissions}
-                className={`w-full rounded-lg border bg-white px-4 py-2 pr-10 text-zinc-900 focus:outline-none focus:ring-1 disabled:opacity-50 dark:bg-zinc-800 dark:text-white ${
-                  word2Warning
-                    ? "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
-                    : "border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700"
-                }`}
+                className={cn(
+                  "pr-10",
+                  word2Warning &&
+                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                )}
               />
               {mode === "create" && !hasSubmissions && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => fillRandomWord(2, setWord2)}
                   disabled={loadingRandomWord.has(2)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2"
                   title="Fill with random word"
                 >
                   {loadingRandomWord.has(2) ? (
-                    <svg
-                      className="h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
+                    <RefreshCw className="h-4 w-4" />
                   )}
-                </button>
+                </Button>
               )}
             </div>
             <p className="mt-1 h-4 text-xs">
@@ -699,70 +630,37 @@ export function PromptForm({
             </p>
           </div>
           <div>
-            <label
-              htmlFor="word3"
-              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Word 3
-            </label>
+            <Label htmlFor="word3">Word 3</Label>
             <div className="relative">
-              <input
+              <Input
                 type="text"
                 id="word3"
                 value={word3}
                 onChange={(e) => setWord3(e.target.value)}
                 required
                 disabled={hasSubmissions}
-                className={`w-full rounded-lg border bg-white px-4 py-2 pr-10 text-zinc-900 focus:outline-none focus:ring-1 disabled:opacity-50 dark:bg-zinc-800 dark:text-white ${
-                  word3Warning
-                    ? "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
-                    : "border-zinc-300 focus:border-zinc-500 focus:ring-zinc-500 dark:border-zinc-700"
-                }`}
+                className={cn(
+                  "pr-10",
+                  word3Warning &&
+                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                )}
               />
               {mode === "create" && !hasSubmissions && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => fillRandomWord(3, setWord3)}
                   disabled={loadingRandomWord.has(3)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2"
                   title="Fill with random word"
                 >
                   {loadingRandomWord.has(3) ? (
-                    <svg
-                      className="h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
+                    <RefreshCw className="h-4 w-4" />
                   )}
-                </button>
+                </Button>
               )}
             </div>
             <p className="mt-1 h-4 text-xs">
@@ -780,7 +678,7 @@ export function PromptForm({
         </div>
 
         <div className="flex gap-4">
-          <button
+          <Button
             type="submit"
             disabled={
               isLoading ||
@@ -788,23 +686,22 @@ export function PromptForm({
               hasSubmissions ||
               (mode === "create" && availableWeeks.length === 0)
             }
-            className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             {isLoading
               ? "Saving..."
               : mode === "edit"
                 ? "Update Prompt"
                 : "Create Prompt"}
-          </button>
+          </Button>
           {mode === "edit" && selectedPromptId && !hasSubmissions && (
-            <button
+            <Button
               type="button"
               onClick={handleDeleteClick}
               disabled={isLoading || isDeleting}
-              className="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+              variant="destructive"
             >
               {isDeleting ? "Deleting..." : "Delete Prompt"}
-            </button>
+            </Button>
           )}
         </div>
       </form>
