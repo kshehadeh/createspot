@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
@@ -76,11 +77,12 @@ function FavoritesGridContent({ favorites }: FavoritesGridProps) {
             >
               {favorite.submission.imageUrl ? (
                 <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={favorite.submission.imageUrl}
                     alt={favorite.submission.title || "Submission"}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   <FavoriteButton
                     submissionId={favorite.submission.id}

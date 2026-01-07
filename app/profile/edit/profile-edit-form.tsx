@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
@@ -297,12 +298,13 @@ export function ProfileEditForm({
                     return (
                       <div className="flex min-w-0 flex-1 items-center gap-3">
                         {selected.imageUrl ? (
-                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                            <Image
                               src={selected.imageUrl}
                               alt={selected.title || word}
-                              className="h-full w-full object-cover"
+                              fill
+                              className="object-cover"
+                              sizes="40px"
                             />
                           </div>
                         ) : selected.text ? (
@@ -382,12 +384,13 @@ export function ProfileEditForm({
                           >
                             <div className="flex items-center gap-3">
                               {submission.imageUrl ? (
-                                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
+                                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                                  <Image
                                     src={submission.imageUrl}
                                     alt={submission.title || word}
-                                    className="h-full w-full object-cover"
+                                    fill
+                                    className="object-cover"
+                                    sizes="48px"
                                   />
                                 </div>
                               ) : submission.text ? (
@@ -609,12 +612,13 @@ export function ProfileEditForm({
                     className="flex items-center gap-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
                   >
                     {item.imageUrl ? (
-                      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                        <Image
                           src={item.imageUrl}
                           alt={item.title || "Portfolio item"}
-                          className="h-full w-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="64px"
                         />
                       </div>
                     ) : item.text ? (
@@ -711,12 +715,13 @@ export function ProfileEditForm({
                           className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900"
                         >
                           {submission.imageUrl ? (
-                            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
+                            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                              <Image
                                 src={submission.imageUrl}
                                 alt={submission.title || word}
-                                className="h-full w-full object-cover"
+                                fill
+                                className="object-cover"
+                                sizes="40px"
                               />
                             </div>
                           ) : submission.text ? (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { Submission } from "@/app/generated/prisma/client";
 import { RichTextEditor } from "@/components/rich-text-editor";
@@ -324,12 +325,13 @@ export function SubmissionSlots({
               {submission ? (
                 <div className="space-y-4">
                   {submission.imageUrl ? (
-                    <div className="aspect-square overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="relative aspect-square overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                      <Image
                         src={submission.imageUrl}
                         alt={submission.title || word}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 33vw"
                       />
                     </div>
                   ) : submission.text ? (
@@ -446,12 +448,13 @@ export function SubmissionSlots({
                             className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
                           >
                             {item.imageUrl ? (
-                              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
+                              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                                <Image
                                   src={item.imageUrl}
                                   alt={item.title || "Portfolio item"}
-                                  className="h-full w-full object-cover"
+                                  fill
+                                  className="object-cover"
+                                  sizes="40px"
                                 />
                               </div>
                             ) : item.text ? (
@@ -551,12 +554,13 @@ export function SubmissionSlots({
                 </label>
                 {formData.imageUrl ? (
                   <div className="relative">
-                    <div className="aspect-video overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="relative aspect-video overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                      <Image
                         src={formData.imageUrl}
                         alt="Preview"
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 512px"
                       />
                     </div>
                     {!selectedPortfolioId && (

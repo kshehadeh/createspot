@@ -302,7 +302,7 @@ function MobileNavigationLinks({
         <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           Prompts
         </div>
-        {isAuthenticated && (
+        {isAuthenticated ? (
           <>
             <Link
               href="/prompt/play"
@@ -319,6 +319,14 @@ function MobileNavigationLinks({
               History
             </Link>
           </>
+        ) : (
+          <Link
+            href="/prompt"
+            className={linkClassName("/prompt")}
+            onClick={onLinkClick}
+          >
+            Prompts
+          </Link>
         )}
       </div>
       {isAdmin && (

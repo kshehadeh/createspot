@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { RichTextEditor } from "@/components/rich-text-editor";
 
@@ -239,11 +240,12 @@ export function PortfolioItemForm({
         {imageUrl ? (
           <div className="relative">
             <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={imageUrl}
                 alt="Preview"
-                className="h-full w-full object-contain"
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 100vw, 512px"
               />
             </div>
             <button
