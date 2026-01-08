@@ -19,6 +19,9 @@ export async function GET() {
       twitter: true,
       linkedin: true,
       website: true,
+      city: true,
+      stateProvince: true,
+      country: true,
       featuredSubmissionId: true,
     },
   });
@@ -34,8 +37,17 @@ export async function PUT(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { bio, instagram, twitter, linkedin, website, featuredSubmissionId } =
-    body;
+  const {
+    bio,
+    instagram,
+    twitter,
+    linkedin,
+    website,
+    city,
+    stateProvince,
+    country,
+    featuredSubmissionId,
+  } = body;
 
   // Validate that featuredSubmissionId belongs to the user if provided
   if (featuredSubmissionId) {
@@ -60,6 +72,9 @@ export async function PUT(request: NextRequest) {
       twitter: twitter ?? null,
       linkedin: linkedin ?? null,
       website: website ?? null,
+      city: city ?? null,
+      stateProvince: stateProvince ?? null,
+      country: country ?? null,
       featuredSubmissionId: featuredSubmissionId ?? null,
     },
     select: {
@@ -70,6 +85,9 @@ export async function PUT(request: NextRequest) {
       twitter: true,
       linkedin: true,
       website: true,
+      city: true,
+      stateProvince: true,
+      country: true,
       featuredSubmissionId: true,
     },
   });

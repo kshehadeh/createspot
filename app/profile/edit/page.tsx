@@ -25,6 +25,9 @@ export default async function ProfileEditPage() {
       twitter: true,
       linkedin: true,
       website: true,
+      city: true,
+      stateProvince: true,
+      country: true,
       featuredSubmissionId: true,
     },
   });
@@ -117,6 +120,9 @@ export default async function ProfileEditPage() {
         initialTwitter={user.twitter || ""}
         initialLinkedin={user.linkedin || ""}
         initialWebsite={user.website || ""}
+        initialCity={user.city || ""}
+        initialStateProvince={user.stateProvince || ""}
+        initialCountry={user.country || ""}
         initialFeaturedSubmissionId={user.featuredSubmissionId || ""}
         submissions={submissions.map((s) => ({
           id: s.id,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { RichTextEditor } from "@/components/rich-text-editor";
@@ -11,6 +11,16 @@ import { PortfolioGrid } from "@/components/portfolio-grid";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Country, State, City } from "country-state-city";
 
 interface SubmissionOption {
   id: string;
@@ -57,6 +67,9 @@ interface ProfileEditFormProps {
   initialTwitter: string;
   initialLinkedin: string;
   initialWebsite: string;
+  initialCity: string;
+  initialStateProvince: string;
+  initialCountry: string;
   initialFeaturedSubmissionId: string;
   submissions: SubmissionOption[];
   portfolioItems: PortfolioItem[];
@@ -69,6 +82,9 @@ export function ProfileEditForm({
   initialTwitter,
   initialLinkedin,
   initialWebsite,
+  initialCity,
+  initialStateProvince,
+  initialCountry,
   initialFeaturedSubmissionId,
   submissions,
   portfolioItems: initialPortfolioItems,
@@ -81,6 +97,9 @@ export function ProfileEditForm({
   const [twitter, setTwitter] = useState(initialTwitter);
   const [linkedin, setLinkedin] = useState(initialLinkedin);
   const [website, setWebsite] = useState(initialWebsite);
+  const [city, setCity] = useState(initialCity);
+  const [stateProvince, setStateProvince] = useState(initialStateProvince);
+  const [country, setCountry] = useState(initialCountry);
   const [featuredSubmissionId, setFeaturedSubmissionId] = useState(
     initialFeaturedSubmissionId,
   );
@@ -106,6 +125,49 @@ export function ProfileEditForm({
       setActiveTab("portfolio");
     }
   }, [searchParams]);
+
+  // Get available states/provinces for selected country
+  const availableStates = useMemo(
+    () => (country ? State.getStatesOfCountry(country) : []),
+    [country],
+  );
+
+  // Get available cities for selected country and state
+  const availableCities = useMemo(
+    () =>
+      country && stateProvince
+        ? City.getCitiesOfState(country, stateProvince)
+        : [],
+    [country, stateProvince],
+  );
+
+  // Reset state when country changes
+  useEffect(() => {
+    if (country) {
+      const isValidState = availableStates.some(
+        (s) => s.isoCode === stateProvince,
+      );
+      if (stateProvince && !isValidState) {
+        setStateProvince("");
+        setCity("");
+      }
+    } else if (stateProvince) {
+      setStateProvince("");
+      setCity("");
+    }
+  }, [country, stateProvince, availableStates]);
+
+  // Reset city when state changes
+  useEffect(() => {
+    if (stateProvince && availableCities.length > 0) {
+      const isValidCity = availableCities.some((c) => c.name === city);
+      if (city && !isValidCity) {
+        setCity("");
+      }
+    } else if (stateProvince && !country) {
+      setCity("");
+    }
+  }, [stateProvince, city, availableCities, country]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -153,6 +215,9 @@ export function ProfileEditForm({
           twitter: twitter || null,
           linkedin: linkedin || null,
           website: website || null,
+          city: city || null,
+          stateProvince: stateProvince || null,
+          country: country || null,
           featuredSubmissionId: featuredSubmissionId || null,
         }),
       });
@@ -479,13 +544,13 @@ export function ProfileEditForm({
                 <span className="inline-flex items-center rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
                   @
                 </span>
-                <input
+                <Input
                   type="text"
                   id="instagram"
                   value={instagram}
                   onChange={(e) => setInstagram(e.target.value)}
                   placeholder="username"
-                  className="block w-full rounded-r-lg border border-input bg-background px-3 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="rounded-l-none rounded-r-lg"
                 />
               </div>
             </div>
@@ -501,13 +566,13 @@ export function ProfileEditForm({
                 <span className="inline-flex items-center rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
                   @
                 </span>
-                <input
+                <Input
                   type="text"
                   id="twitter"
                   value={twitter}
                   onChange={(e) => setTwitter(e.target.value)}
                   placeholder="username"
-                  className="block w-full rounded-r-lg border border-input bg-background px-3 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="rounded-l-none rounded-r-lg"
                 />
               </div>
             </div>
@@ -523,13 +588,13 @@ export function ProfileEditForm({
                 <span className="inline-flex items-center rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
                   in/
                 </span>
-                <input
+                <Input
                   type="text"
                   id="linkedin"
                   value={linkedin}
                   onChange={(e) => setLinkedin(e.target.value)}
                   placeholder="username"
-                  className="block w-full rounded-r-lg border border-input bg-background px-3 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="rounded-l-none rounded-r-lg"
                 />
               </div>
             </div>
@@ -541,32 +606,143 @@ export function ProfileEditForm({
               >
                 Website
               </label>
-              <input
+              <Input
                 type="url"
                 id="website"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://example.com"
-                className="block w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
           </div>
 
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-foreground">Location</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <label
+                  htmlFor="country"
+                  className="mb-2 block text-sm font-medium text-foreground"
+                >
+                  Country
+                </label>
+                <Select value={country} onValueChange={setCountry}>
+                  <SelectTrigger id="country">
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent className="!max-h-[60vh]">
+                    {Country.getAllCountries().map((c) => (
+                      <SelectItem key={c.isoCode} value={c.isoCode}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {availableStates.length > 0 && (
+                <div>
+                  <label
+                    htmlFor="state"
+                    className="mb-2 block text-sm font-medium text-foreground"
+                  >
+                    State/Province
+                  </label>
+                  <Select
+                    value={stateProvince}
+                    onValueChange={setStateProvince}
+                    disabled={!country}
+                  >
+                    <SelectTrigger id="state">
+                      <SelectValue
+                        placeholder={
+                          country
+                            ? "Select state/province"
+                            : "Select country first"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="!max-h-[60vh]">
+                      {availableStates.map((s) => (
+                        <SelectItem key={s.isoCode} value={s.isoCode}>
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {availableStates.length > 0 && availableCities.length > 0 && (
+                <div>
+                  <label
+                    htmlFor="city"
+                    className="mb-2 block text-sm font-medium text-foreground"
+                  >
+                    City
+                  </label>
+                  <Select
+                    value={city}
+                    onValueChange={setCity}
+                    disabled={!country || !stateProvince}
+                  >
+                    <SelectTrigger id="city">
+                      <SelectValue
+                        placeholder={
+                          !country
+                            ? "Select country first"
+                            : !stateProvince
+                              ? "Select state/province first"
+                              : "Select city"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="!max-h-[60vh]">
+                      {availableCities.map((c) => (
+                        <SelectItem key={c.name} value={c.name}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {((availableStates.length === 0 && country) ||
+                (availableStates.length > 0 &&
+                  stateProvince &&
+                  availableCities.length === 0)) && (
+                <div>
+                  <label
+                    htmlFor="city"
+                    className="mb-2 block text-sm font-medium text-foreground"
+                  >
+                    City
+                  </label>
+                  <Input
+                    type="text"
+                    id="city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Enter city"
+                    disabled={!country || (availableStates.length > 0 && !stateProvince)}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="flex gap-3">
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-            >
+            <Button type="submit" disabled={saving}>
               {saving ? "Saving..." : "Save Profile"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="outline"
               onClick={() => router.back()}
-              className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
             >
               Cancel
-            </button>
+            </Button>
           </div>
           </form>
         </div>
@@ -610,10 +786,11 @@ export function ProfileEditForm({
               </CardContent>
             </Card>
           ) : (
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => setShowAddForm(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 py-8 text-sm font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+              className="w-full border-2 border-dashed py-8"
             >
               <svg
                 className="h-5 w-5"
@@ -629,13 +806,13 @@ export function ProfileEditForm({
                 />
               </svg>
               Add New Portfolio Item
-            </button>
+            </Button>
           )}
 
           {/* Portfolio Items Grid */}
           {portfolioItems.length > 0 && !showAddForm && !editingItem && (
             <div>
-              <h3 className="mb-4 text-sm font-medium text-zinc-900 dark:text-white">
+              <h3 className="mb-4 text-sm font-medium text-foreground">
                 Your Portfolio Items ({portfolioItems.length})
               </h3>
               <PortfolioGrid
@@ -655,10 +832,10 @@ export function ProfileEditForm({
             !showAddForm &&
             !editingItem && (
               <div>
-                <h3 className="mb-4 text-sm font-medium text-zinc-900 dark:text-white">
+                <h3 className="mb-4 text-sm font-medium text-foreground">
                   Add Prompt Submissions to Portfolio
                 </h3>
-                <p className="mb-4 text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="mb-4 text-xs text-muted-foreground">
                   Your prompt submissions can also be added to your portfolio
                 </p>
                 <div className="space-y-2">
@@ -670,7 +847,7 @@ export function ProfileEditForm({
                       return (
                         <div
                           key={submission.id}
-                          className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900"
+                          className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
                         >
                           {submission.imageUrl ? (
                             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
@@ -691,22 +868,24 @@ export function ProfileEditForm({
                             <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
                           )}
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">
+                            <p className="truncate text-sm font-medium text-foreground">
                               {submission.title || word}
                             </p>
-                            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                            <span className="text-xs text-muted-foreground">
                               {word}
                             </span>
                           </div>
-                          <button
+                          <Button
                             type="button"
+                            variant="secondary"
+                            size="sm"
                             onClick={() =>
                               handleTogglePortfolio(submission, true)
                             }
-                            className="shrink-0 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                            className="shrink-0"
                           >
                             Add to Portfolio
-                          </button>
+                          </Button>
                         </div>
                       );
                     })}

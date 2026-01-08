@@ -4,6 +4,16 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 const CATEGORIES = [
   "Photography",
@@ -221,25 +231,21 @@ export function PortfolioItemForm({
       )}
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
-          Title
-        </label>
-        <input
+        <Label htmlFor="title">Title</Label>
+        <Input
+          id="title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Give your work a title"
-          className="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-zinc-500"
         />
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
-          Image
-        </label>
+        <Label>Image</Label>
         {imageUrl ? (
           <div className="relative">
-            <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
               <Image
                 src={imageUrl}
                 alt="Preview"
@@ -248,10 +254,12 @@ export function PortfolioItemForm({
                 sizes="(max-width: 640px) 100vw, 512px"
               />
             </div>
-            <button
+            <Button
               type="button"
+              variant="destructive"
+              size="icon"
               onClick={handleRemoveImage}
-              className="absolute top-2 right-2 rounded-lg bg-red-500 p-1.5 text-white transition-colors hover:bg-red-600"
+              className="absolute top-2 right-2"
             >
               <svg
                 className="h-4 w-4"
@@ -266,12 +274,12 @@ export function PortfolioItemForm({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
         ) : (
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="cursor-pointer rounded-lg border-2 border-dashed border-zinc-300 p-8 text-center transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600"
+            className="cursor-pointer rounded-lg border-2 border-dashed border-border p-8 text-center transition-colors hover:border-primary/50"
           >
             <input
               ref={fileInputRef}
@@ -283,7 +291,7 @@ export function PortfolioItemForm({
             {uploading ? (
               <div className="flex items-center justify-center gap-2">
                 <svg
-                  className="h-5 w-5 animate-spin text-zinc-500"
+                  className="h-5 w-5 animate-spin text-muted-foreground"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
@@ -301,12 +309,12 @@ export function PortfolioItemForm({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                <span className="text-sm text-zinc-500">Uploading...</span>
+                <span className="text-sm text-muted-foreground">Uploading...</span>
               </div>
             ) : (
               <>
                 <svg
-                  className="mx-auto h-8 w-8 text-zinc-400"
+                  className="mx-auto h-8 w-8 text-muted-foreground"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -318,10 +326,10 @@ export function PortfolioItemForm({
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="mt-2 text-sm text-muted-foreground">
                   Click to upload an image
                 </p>
-                <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
+                <p className="mt-1 text-xs text-muted-foreground/70">
                   PNG, JPG, GIF up to 10MB
                 </p>
               </>
@@ -331,9 +339,7 @@ export function PortfolioItemForm({
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
-          Text / Description
-        </label>
+        <Label>Text / Description</Label>
         <RichTextEditor
           value={text}
           onChange={setText}
@@ -342,32 +348,32 @@ export function PortfolioItemForm({
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
-          Category
-        </label>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-zinc-500"
+        <Label>Category</Label>
+        <Select
+          value={category || "__none__"}
+          onValueChange={(value) => setCategory(value === "__none__" ? "" : value)}
         >
-          <option value="">Select a category</option>
-          {CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none__">None</SelectItem>
+            {CATEGORIES.map((cat) => (
+              <SelectItem key={cat} value={cat}>
+                {cat}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
-          Tags
-        </label>
-        <div className="flex min-h-[42px] flex-wrap items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 focus-within:border-zinc-500 focus-within:outline-none focus-within:ring-1 focus-within:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:focus-within:border-zinc-500">
+        <Label>Tags</Label>
+        <div className="flex min-h-[42px] flex-wrap items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 focus-within:border-ring focus-within:outline-none focus-within:ring-2 focus-within:ring-ring">
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="inline-flex items-center gap-1.5 rounded-md bg-zinc-100 px-2.5 py-1 text-sm text-zinc-900 dark:bg-zinc-700 dark:text-white"
+              className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1 text-sm text-secondary-foreground"
             >
               {tag}
               <button
@@ -376,7 +382,7 @@ export function PortfolioItemForm({
                   setTags(tags.filter((_, i) => i !== index));
                   tagInputRef.current?.focus();
                 }}
-                className="ml-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-600"
+                className="ml-0.5 rounded hover:bg-secondary/80"
                 aria-label={`Remove ${tag}`}
               >
                 <svg
@@ -420,26 +426,24 @@ export function PortfolioItemForm({
               }
             }}
             placeholder={tags.length === 0 ? "Type a tag and press space" : ""}
-            className="flex-1 min-w-[120px] border-0 bg-transparent px-0 py-1 text-zinc-900 placeholder:text-zinc-400 focus:outline-none dark:text-white dark:placeholder:text-zinc-500"
+            className="flex-1 min-w-[120px] border-0 bg-transparent px-0 py-1 text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
         </div>
-        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-xs text-muted-foreground">
           Type a tag and press space to add it
         </p>
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-white">
-          Visibility
-        </label>
+        <Label>Visibility</Label>
         <div className="space-y-2">
           {SHARE_STATUS_OPTIONS.map((option) => (
             <label
               key={option.value}
               className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
                 shareStatus === option.value
-                  ? "border-zinc-900 bg-zinc-50 dark:border-zinc-300 dark:bg-zinc-800"
-                  : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600"
+                  ? "border-primary bg-accent"
+                  : "border-border hover:border-primary/50"
               }`}
             >
               <input
@@ -455,10 +459,10 @@ export function PortfolioItemForm({
                 className="mt-0.5"
               />
               <div>
-                <div className="text-sm font-medium text-zinc-900 dark:text-white">
+                <div className="text-sm font-medium text-foreground">
                   {option.label}
                 </div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="text-xs text-muted-foreground">
                   {option.description}
                 </div>
               </div>
@@ -468,25 +472,17 @@ export function PortfolioItemForm({
       </div>
 
       <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={saving || uploading}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button type="submit" disabled={saving || uploading}>
           {saving
             ? "Saving..."
             : mode === "create"
               ? "Add to Portfolio"
               : "Save Changes"}
-        </button>
+        </Button>
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-          >
+          <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>
