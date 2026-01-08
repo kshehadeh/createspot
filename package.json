@@ -11,7 +11,8 @@
     "format:check": "biome format .",
     "download-words": "bun scripts/download-words.ts",
     "postinstall": "prisma generate && bun scripts/download-words.ts",
-    "knip": "knip"
+    "knip": "knip",
+    "db:migrate:deploy": "bun scripts/migrate-deploy.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
