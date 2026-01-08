@@ -4,11 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef, startTransition } from "react";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, signIn } from "next-auth/react";
 import { CreateSpotLogo } from "./create-spot-logo";
 import { UserDropdown } from "./user-dropdown";
 import { NavigationLinks } from "./navigation-links";
 import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./ui/button";
 import { getExhibitionByPath, EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
 import { cn } from "@/lib/utils";
 
@@ -132,8 +133,25 @@ export function Header({ user }: HeaderProps) {
               isAdmin={!!user?.isAdmin}
             />
             <ThemeToggle />
-            {user && <UserDropdown id={user.id} name={user.name} image={user.image} isAdmin={user.isAdmin} />}
+            {user ? (
+              <UserDropdown id={user.id} name={user.name} image={user.image} isAdmin={user.isAdmin} />
+            ) : (
+              <Button onClick={() => signIn("google")} variant="default" size="default">
+                Sign in
+              </Button>
+            )}
           </div>
+          {/* Mobile Sign In Button */}
+          {!user && (
+            <Button 
+              onClick={() => signIn("google")} 
+              variant="default" 
+              size="sm"
+              className="md:hidden"
+            >
+              Sign in
+            </Button>
+          )}
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -212,7 +230,7 @@ export function Header({ user }: HeaderProps) {
             <div className="mt-4 flex justify-center">
               <ThemeToggle />
             </div>
-            {user && (
+            {user ? (
               <div className="mt-auto border-t border-border pt-4">
                 <div className="flex items-center gap-3 px-4 py-2">
                   {user.image ? (
@@ -238,6 +256,20 @@ export function Header({ user }: HeaderProps) {
                   isAdmin={!!user?.isAdmin}
                   onActionClick={() => setIsMenuOpen(false)} 
                 />
+              </div>
+            ) : (
+              <div className="mt-auto border-t border-border pt-4 px-4">
+                <Button 
+                  onClick={() => {
+                    signIn("google");
+                    setIsMenuOpen(false);
+                  }} 
+                  variant="default" 
+                  size="default"
+                  className="w-full"
+                >
+                  Sign in
+                </Button>
               </div>
             )}
           </nav>

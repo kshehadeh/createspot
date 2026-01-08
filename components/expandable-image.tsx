@@ -14,12 +14,15 @@ interface ExpandableImageProps {
   imageUrl: string;
   alt: string;
   className?: string;
+  /** How the image should fit in its container (expanded view is always contain). */
+  objectFit?: "contain" | "cover";
 }
 
 export function ExpandableImage({
   imageUrl,
   alt,
   className = "",
+  objectFit = "contain",
 }: ExpandableImageProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -29,7 +32,7 @@ export function ExpandableImage({
       <img
         src={imageUrl}
         alt={alt}
-        className="h-full w-full object-contain"
+        className={`h-full w-full ${objectFit === "cover" ? "object-cover" : "object-contain"}`}
       />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
@@ -42,7 +45,7 @@ export function ExpandableImage({
             <Maximize2 className="h-5 w-5" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] border-none bg-black/95 p-0">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] border-none bg-background/95 backdrop-blur-sm p-0">
           <div className="flex items-center justify-center p-4">
             <motion.div
               initial={{ scale: 0.9 }}

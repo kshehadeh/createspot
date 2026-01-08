@@ -116,7 +116,7 @@ export default async function Home() {
     icon: React.ComponentType<{ className?: string }>;
   }> = [
     { id: "exhibits", title: "Exhibits", href: "/exhibition", icon: LayoutGrid },
-    { id: "prompt", title: "Prompt Your Creativity", href: "/prompt", icon: Sparkles },
+    { id: "prompt", title: "Prompts", href: "/prompt", icon: Sparkles },
     ...(session?.user
       ? [
           {
@@ -151,8 +151,11 @@ export default async function Home() {
                 </p>
               </div>
               <div className="w-full">
-                <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
-                  {heroCards.map((card) => {
+                <div className={!session?.user 
+                  ? "flex flex-wrap justify-center gap-3" 
+                  : "grid gap-3 grid-cols-1 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]"
+                }>
+                    {heroCards.map((card) => {
                     const Icon = card.icon;
                     const decor = heroCardDecor[card.id];
                     return (
@@ -160,7 +163,7 @@ export default async function Home() {
                         key={`${card.id}:${card.href}`}
                         href={card.href}
                         aria-label={`Open ${card.title}`}
-                        className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                        className={`block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${!session?.user ? "w-full sm:w-[240px]" : ""}`}
                       >
                         <Card className="group relative h-full overflow-hidden border-border/60 bg-card/70 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-border hover:bg-card hover:shadow-lg">
                           <div
@@ -177,11 +180,11 @@ export default async function Home() {
                             <CardHeader className="p-4 pb-3">
                               <div className="mb-1 flex items-center gap-3">
                                 <span
-                                  className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ring-1 ${decor.badge}`}
+                                  className={`inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ring-1 ${decor.badge}`}
                                 >
-                                  <Icon className={`h-5 w-5 ${decor.icon}`} />
+                                  <Icon className={`h-5 w-5 stroke-[1.5] ${decor.icon}`} />
                                 </span>
-                                <CardTitle className="text-base sm:text-lg">
+                                <CardTitle className="whitespace-nowrap text-base sm:text-lg">
                                   {card.title}
                                 </CardTitle>
                               </div>
@@ -287,31 +290,6 @@ export default async function Home() {
             </div>
           </section>
         )}
-
-        {/* Weekly Prompts CTA Section */}
-        <section className="px-6 py-16">
-          <div className="mx-auto max-w-4xl">
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 p-8 sm:p-12">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRoLTJ2LTRoMnY0em0wLThoLTJ2LTRoMnY0em0tOCA4aC0ydi00aDJ2NHptMC04aC0ydi00aDJ2NHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30" />
-              <div className="relative text-center">
-                <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">
-                  Weekly Creative Prompts
-                </h2>
-                <p className="mx-auto mb-8 max-w-xl text-lg text-white/80">
-                  Challenge yourself with three new words every week. Create
-                  something unique, share your interpretation, and see how
-                  others bring the same words to life.
-                </p>
-                <Link
-                  href="/prompt/this-week"
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-background px-8 text-sm font-medium text-primary transition-colors hover:bg-accent"
-                >
-                  See This Week&apos;s Prompt
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
 
         <footer className="px-6 py-8 text-center text-sm text-muted-foreground">
           &copy; {new Date().getFullYear()} Create Spot

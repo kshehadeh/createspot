@@ -13,7 +13,16 @@ interface SubmissionPageProps {
 async function getSubmission(id: string) {
   const submission = await prisma.submission.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      imageUrl: true,
+      text: true,
+      wordIndex: true,
+      category: true,
+      tags: true,
+      shareStatus: true,
+      userId: true,
       user: {
         select: {
           id: true,
