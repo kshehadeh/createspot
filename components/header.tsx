@@ -12,6 +12,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { getExhibitionByPath, EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
 import { cn } from "@/lib/utils";
+import { Home, ChevronDown, ChevronRight } from "lucide-react";
 
 interface HeaderUser {
   id?: string;
@@ -141,17 +142,19 @@ export function Header({ user }: HeaderProps) {
               </Button>
             )}
           </div>
-          {/* Mobile Sign In Button */}
-          {!user && (
-            <Button 
-              onClick={() => signIn("google")} 
-              variant="default" 
-              size="sm"
-              className="md:hidden"
-            >
-              Sign in
-            </Button>
-          )}
+          {/* Mobile Navigation */}
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            {!user && (
+              <Button 
+                onClick={() => signIn("google")} 
+                variant="default" 
+                size="sm"
+              >
+                Sign in
+              </Button>
+            )}
+          </div>
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -197,7 +200,7 @@ export function Header({ user }: HeaderProps) {
           {/* Menu Header */}
           <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <span className="text-lg font-medium text-foreground">
-              Menu
+              Create Spot
             </span>
             <button
               onClick={() => setIsMenuOpen(false)}
@@ -227,36 +230,11 @@ export function Header({ user }: HeaderProps) {
               isAdmin={!!user?.isAdmin}
               onLinkClick={() => setIsMenuOpen(false)}
             />
-            <div className="mt-4 flex justify-center">
-              <ThemeToggle />
-            </div>
             {user ? (
-              <div className="mt-auto border-t border-border pt-4">
-                <div className="flex items-center gap-3 px-4 py-2">
-                  {user.image ? (
-                    <Image
-                      src={user.image}
-                      alt={user.name || "User avatar"}
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
-                      {user.name?.charAt(0).toUpperCase() || "?"}
-                    </div>
-                  )}
-                  {user.name && (
-                  <span className="text-sm font-medium text-foreground">
-                    {user.name}
-                  </span>
-                  )}
-                </div>
-                <MobileUserActions 
-                  isAdmin={!!user?.isAdmin}
-                  onActionClick={() => setIsMenuOpen(false)} 
-                />
-              </div>
+              <MobileUserSection
+                user={user}
+                onActionClick={() => setIsMenuOpen(false)}
+              />
             ) : (
               <div className="mt-auto border-t border-border pt-4 px-4">
                 <Button 
@@ -290,6 +268,16 @@ function MobileNavigationLinks({
   onLinkClick: () => void;
 }) {
   const pathname = usePathname();
+  const [isExhibitsOpen, setIsExhibitsOpen] = useState(false);
+  const [isInspireOpen, setIsInspireOpen] = useState(false);
+
+  // Auto-expand sections if current path matches
+  useEffect(() => {
+    const isExhibitionPage = pathname.startsWith("/exhibition");
+    const isPromptPage = pathname.startsWith("/prompt");
+    setIsExhibitsOpen(isExhibitionPage);
+    setIsInspireOpen(isPromptPage);
+  }, [pathname]);
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -307,28 +295,112 @@ function MobileNavigationLinks({
     return `${baseClasses} ${activeClasses}`;
   };
 
+  const sectionHeaderClassName = "flex items-center justify-between w-full px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg";
+
   return (
     <>
       <div className="mb-2">
-        <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Explore
-        </div>
-        <Link
-          href={EXHIBITION_CONFIGS.gallery.path}
-          className={cn(linkClassName(EXHIBITION_CONFIGS.gallery.path), "flex items-center gap-2")}
-          onClick={onLinkClick}
+        <button
+          onClick={() => setIsExhibitsOpen(!isExhibitsOpen)}
+          className={sectionHeaderClassName}
+          aria-expanded={isExhibitsOpen}
         >
-          <EXHIBITION_CONFIGS.gallery.icon className="h-5 w-5" />
-          {EXHIBITION_CONFIGS.gallery.name}
-        </Link>
-        <Link
-          href={EXHIBITION_CONFIGS.constellation.path}
-          className={cn(linkClassName(EXHIBITION_CONFIGS.constellation.path), "flex items-center gap-2")}
-          onClick={onLinkClick}
+          <span>Exhibits</span>
+          {isExhibitsOpen ? (
+            <ChevronDown className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+        </button>
+        {isExhibitsOpen && (
+          <div className="mt-1">
+            <Link
+              href="/exhibition"
+              className={cn(linkClassName("/exhibition"), "flex items-center gap-2")}
+              onClick={onLinkClick}
+            >
+              <Home className="h-5 w-5" />
+              Home
+            </Link>
+            <Link
+              href={EXHIBITION_CONFIGS.gallery.path}
+              className={cn(linkClassName(EXHIBITION_CONFIGS.gallery.path), "flex items-center gap-2")}
+              onClick={onLinkClick}
+            >
+              <EXHIBITION_CONFIGS.gallery.icon className="h-5 w-5" />
+              {EXHIBITION_CONFIGS.gallery.name}
+            </Link>
+            <Link
+              href={EXHIBITION_CONFIGS.constellation.path}
+              className={cn(linkClassName(EXHIBITION_CONFIGS.constellation.path), "flex items-center gap-2")}
+              onClick={onLinkClick}
+            >
+              <EXHIBITION_CONFIGS.constellation.icon className="h-5 w-5" />
+              {EXHIBITION_CONFIGS.constellation.name}
+            </Link>
+            <Link
+              href={EXHIBITION_CONFIGS.global.path}
+              className={cn(linkClassName(EXHIBITION_CONFIGS.global.path), "flex items-center gap-2")}
+              onClick={onLinkClick}
+            >
+              <EXHIBITION_CONFIGS.global.icon className="h-5 w-5" />
+              {EXHIBITION_CONFIGS.global.name}
+            </Link>
+          </div>
+        )}
+      </div>
+      <div className="mb-2">
+        <button
+          onClick={() => setIsInspireOpen(!isInspireOpen)}
+          className={sectionHeaderClassName}
+          aria-expanded={isInspireOpen}
         >
-          <EXHIBITION_CONFIGS.constellation.icon className="h-5 w-5" />
-          {EXHIBITION_CONFIGS.constellation.name}
-        </Link>
+          <span>Inspire</span>
+          {isInspireOpen ? (
+            <ChevronDown className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+        </button>
+        {isInspireOpen && (
+          <div className="mt-1">
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href="/prompt"
+                  className={linkClassName("/prompt")}
+                  onClick={onLinkClick}
+                >
+                  About
+                </Link>
+                <Link
+                  href="/prompt/play"
+                  className={linkClassName("/prompt/play")}
+                  onClick={onLinkClick}
+                >
+                  Play
+                </Link>
+                <Link
+                  href="/prompt/history"
+                  className={linkClassName("/prompt/history")}
+                  onClick={onLinkClick}
+                >
+                  History
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/prompt"
+                className={linkClassName("/prompt")}
+                onClick={onLinkClick}
+              >
+                About
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="mb-2">
         <Link
           href="/about"
           className={linkClassName("/about")}
@@ -337,57 +409,30 @@ function MobileNavigationLinks({
           About
         </Link>
       </div>
-      <div className="mb-2">
-          <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Prompts
-          </div>
-        {isAuthenticated ? (
-          <>
-            <Link
-              href="/prompt"
-              className={linkClassName("/prompt")}
-              onClick={onLinkClick}
-            >
-              About
-            </Link>
-            <Link
-              href="/prompt/play"
-              className={linkClassName("/prompt/play")}
-              onClick={onLinkClick}
-            >
-              Play
-            </Link>
-            <Link
-              href="/prompt/history"
-              className={linkClassName("/prompt/history")}
-              onClick={onLinkClick}
-            >
-              History
-            </Link>
-          </>
-        ) : (
-          <Link
-            href="/prompt"
-            className={linkClassName("/prompt")}
-            onClick={onLinkClick}
-          >
-            About
-          </Link>
-        )}
-      </div>
     </>
   );
 }
 
-// Mobile User Actions Component
-function MobileUserActions({ 
-  isAdmin, 
-  onActionClick 
-}: { 
-  isAdmin?: boolean;
+// Mobile User Section Component
+function MobileUserSection({
+  user,
+  onActionClick,
+}: {
+  user: HeaderUser;
   onActionClick: () => void;
 }) {
   const pathname = usePathname();
+  const [isUserOpen, setIsUserOpen] = useState(false);
+
+  // Auto-expand if user is on a profile/favorites/admin page
+  useEffect(() => {
+    const isUserPage =
+      pathname.startsWith("/profile") ||
+      pathname.startsWith("/favorites") ||
+      pathname.startsWith("/admin");
+    setIsUserOpen(isUserPage);
+  }, [pathname]);
+
   const handleLogout = () => {
     signOut();
     onActionClick();
@@ -402,46 +447,83 @@ function MobileUserActions({
     return `${baseClasses} ${activeClasses}`;
   };
 
+  const sectionHeaderClassName = "flex items-center justify-between w-full px-4 py-3 text-left transition-colors rounded-lg hover:bg-accent";
+
   return (
-    <>
-      <Link
-        href="/profile/edit"
-        className={linkClassName("/profile/edit")}
-        onClick={onActionClick}
-      >
-        Edit Profile
-      </Link>
-      <Link
-        href="/favorites"
-        className={linkClassName("/favorites")}
-        onClick={onActionClick}
-      >
-        Favorites
-      </Link>
-      {isAdmin && (
-        <>
-          <Link
-            href="/admin"
-            className={linkClassName("/admin")}
-            onClick={onActionClick}
-          >
-            Manage Prompts
-          </Link>
-          <Link
-            href="/admin/users"
-            className={linkClassName("/admin/users")}
-            onClick={onActionClick}
-          >
-            Manage Users
-          </Link>
-        </>
-      )}
+    <div className="mt-auto border-t border-border pt-4">
       <button
-        onClick={handleLogout}
-        className="w-full px-4 py-3 text-left text-base text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground rounded-lg"
+        onClick={() => setIsUserOpen(!isUserOpen)}
+        className={sectionHeaderClassName}
+        aria-expanded={isUserOpen}
       >
-        Logout
+        <div className="flex items-center gap-3">
+          {user.image ? (
+            <Image
+              src={user.image}
+              alt={user.name || "User avatar"}
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
+              {user.name?.charAt(0).toUpperCase() || "?"}
+            </div>
+          )}
+          {user.name && (
+            <span className="text-sm font-medium text-foreground">
+              {user.name}
+            </span>
+          )}
+        </div>
+        {isUserOpen ? (
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        )}
       </button>
-    </>
+      {isUserOpen && (
+        <div className="mt-1">
+          <Link
+            href="/profile/edit"
+            className={linkClassName("/profile/edit")}
+            onClick={onActionClick}
+          >
+            Edit Profile
+          </Link>
+          <Link
+            href="/favorites"
+            className={linkClassName("/favorites")}
+            onClick={onActionClick}
+          >
+            Favorites
+          </Link>
+          {user.isAdmin && (
+            <>
+              <Link
+                href="/admin"
+                className={linkClassName("/admin")}
+                onClick={onActionClick}
+              >
+                Manage Prompts
+              </Link>
+              <Link
+                href="/admin/users"
+                className={linkClassName("/admin/users")}
+                onClick={onActionClick}
+              >
+                Manage Users
+              </Link>
+            </>
+          )}
+          <button
+            onClick={handleLogout}
+            className="w-full px-4 py-3 text-left text-base text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground rounded-lg"
+          >
+            Logout
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
