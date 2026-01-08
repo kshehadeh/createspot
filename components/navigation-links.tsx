@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AdminDropdown } from "./admin-dropdown";
 import { PromptsDropdown } from "./prompts-dropdown";
 import { ExhibitionsDropdown } from "./exhibitions-dropdown";
 
@@ -30,7 +29,6 @@ export function NavigationLinks({
       <Link href="/about" className={aboutClassName}>
         About
       </Link>
-      {isAdmin && <AdminDropdown />}
     </nav>
   );
 }

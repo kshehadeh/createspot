@@ -43,10 +43,10 @@ export function ProfileAnalytics({ userId }: ProfileAnalyticsProps) {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="animate-pulse rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+            className="animate-pulse rounded-lg border border-border bg-card p-4"
           >
-            <div className="h-4 w-12 rounded bg-zinc-200 dark:bg-zinc-700" />
-            <div className="mt-2 h-6 w-8 rounded bg-zinc-200 dark:bg-zinc-700" />
+            <div className="h-4 w-12 rounded bg-muted" />
+            <div className="mt-2 h-6 w-8 rounded bg-muted" />
           </div>
         ))}
       </div>
@@ -147,13 +147,13 @@ export function ProfileAnalytics({ userId }: ProfileAnalyticsProps) {
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+          className="rounded-lg border border-border bg-card p-4"
         >
-          <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
+          <div className="flex items-center gap-2 text-muted-foreground">
             {stat.icon}
             <span className="text-xs font-medium">{stat.label}</span>
           </div>
-          <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+          <p className="mt-1 text-2xl font-semibold text-card-foreground">
             {stat.value.toLocaleString()}
           </p>
         </div>

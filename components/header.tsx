@@ -119,7 +119,7 @@ export function Header({ user }: HeaderProps) {
               isAdmin={!!user?.isAdmin}
             />
             <ThemeToggle />
-            {user && <UserDropdown id={user.id} name={user.name} image={user.image} />}
+            {user && <UserDropdown id={user.id} name={user.name} image={user.image} isAdmin={user.isAdmin} />}
           </div>
           {/* Mobile Hamburger Button */}
           <button
@@ -221,7 +221,10 @@ export function Header({ user }: HeaderProps) {
                   </span>
                   )}
                 </div>
-                <MobileUserActions onActionClick={() => setIsMenuOpen(false)} />
+                <MobileUserActions 
+                  isAdmin={!!user?.isAdmin}
+                  onActionClick={() => setIsMenuOpen(false)} 
+                />
               </div>
             )}
           </nav>
@@ -294,6 +297,13 @@ function MobileNavigationLinks({
         {isAuthenticated ? (
           <>
             <Link
+              href="/prompt"
+              className={linkClassName("/prompt")}
+              onClick={onLinkClick}
+            >
+              About
+            </Link>
+            <Link
               href="/prompt/play"
               className={linkClassName("/prompt/play")}
               onClick={onLinkClick}
@@ -314,48 +324,77 @@ function MobileNavigationLinks({
             className={linkClassName("/prompt")}
             onClick={onLinkClick}
           >
-            Prompts
+            About
           </Link>
         )}
       </div>
+    </>
+  );
+}
+
+// Mobile User Actions Component
+function MobileUserActions({ 
+  isAdmin, 
+  onActionClick 
+}: { 
+  isAdmin?: boolean;
+  onActionClick: () => void;
+}) {
+  const pathname = usePathname();
+  const handleLogout = () => {
+    signOut();
+    onActionClick();
+  };
+
+  const linkClassName = (path: string) => {
+    const baseClasses =
+      "block w-full px-4 py-3 text-left text-base transition-colors rounded-lg";
+    const activeClasses = pathname.startsWith(path)
+      ? "bg-accent text-accent-foreground"
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
+    return `${baseClasses} ${activeClasses}`;
+  };
+
+  return (
+    <>
+      <Link
+        href="/profile/edit"
+        className={linkClassName("/profile/edit")}
+        onClick={onActionClick}
+      >
+        Edit Profile
+      </Link>
+      <Link
+        href="/favorites"
+        className={linkClassName("/favorites")}
+        onClick={onActionClick}
+      >
+        Favorites
+      </Link>
       {isAdmin && (
-        <div className="mt-2">
-          <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Admin
-          </div>
+        <>
           <Link
             href="/admin"
             className={linkClassName("/admin")}
-            onClick={onLinkClick}
+            onClick={onActionClick}
           >
             Manage Prompts
           </Link>
           <Link
             href="/admin/users"
             className={linkClassName("/admin/users")}
-            onClick={onLinkClick}
+            onClick={onActionClick}
           >
             Manage Users
           </Link>
-        </div>
+        </>
       )}
+      <button
+        onClick={handleLogout}
+        className="w-full px-4 py-3 text-left text-base text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground rounded-lg"
+      >
+        Logout
+      </button>
     </>
-  );
-}
-
-// Mobile User Actions Component
-function MobileUserActions({ onActionClick }: { onActionClick: () => void }) {
-  const handleLogout = () => {
-    signOut();
-    onActionClick();
-  };
-
-  return (
-    <button
-      onClick={handleLogout}
-      className="w-full px-4 py-3 text-left text-base text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-    >
-      Logout
-    </button>
   );
 }

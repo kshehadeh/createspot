@@ -48,6 +48,17 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
           <>
             <DropdownMenuItem asChild>
               <Link
+                href="/prompt"
+                className={cn(
+                  isActive("/prompt") &&
+                    "bg-accent text-accent-foreground"
+                )}
+              >
+                About
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
                 href="/prompt/play"
                 className={cn(
                   isActive("/prompt/play") &&
@@ -78,7 +89,7 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
                   "bg-accent text-accent-foreground"
               )}
             >
-              Prompts
+              About
             </Link>
           </DropdownMenuItem>
         )}

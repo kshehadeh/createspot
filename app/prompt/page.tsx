@@ -27,44 +27,6 @@ export default async function PromptsPage() {
 
   return (
     <PageLayout maxWidth="max-w-4xl">
-      {/* Current Prompt Preview - First thing users see */}
-      {currentPrompt && (
-        <div className="mb-16">
-          <Card className="mb-6 rounded-2xl">
-            <CardContent className="p-8 text-center">
-              <p className="mb-4 text-sm uppercase tracking-widest text-muted-foreground">
-                This week&apos;s prompt
-              </p>
-              <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
-                {[
-                  currentPrompt.word1,
-                  currentPrompt.word2,
-                  currentPrompt.word3,
-                ].map((word, index) => (
-                  <span
-                    key={index}
-                    className={`inline-block text-3xl font-bold text-foreground sm:text-4xl rainbow-shimmer-${index + 1}`}
-                  >
-                    {word}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Start Creating Button - Below Prompts */}
-          <div className="flex justify-center">
-            {session ? (
-              <Button asChild>
-                <Link href="/prompt/play">Start Creating</Link>
-              </Button>
-            ) : (
-              <StyledSignInButton />
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Hero Section */}
       <section className="mb-16 text-center">
         <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
@@ -80,6 +42,43 @@ export default async function PromptsPage() {
           perspectives.
         </p>
       </section>
+
+      {/* Current Prompt Preview - Just above How It Works */}
+      {currentPrompt && (
+        <div className="mb-16">
+          <Card className="rounded-2xl">
+            <CardContent className="p-8 text-center">
+              <p className="mb-4 text-sm uppercase tracking-widest text-muted-foreground">
+                This week&apos;s prompt
+              </p>
+              <div className="mb-6 flex flex-wrap justify-center gap-4 sm:gap-8">
+                {[
+                  currentPrompt.word1,
+                  currentPrompt.word2,
+                  currentPrompt.word3,
+                ].map((word, index) => (
+                  <span
+                    key={index}
+                    className={`inline-block text-3xl font-bold text-foreground sm:text-4xl rainbow-shimmer-${index + 1}`}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </div>
+              {/* Start Creating Button - Below Words */}
+              <div className="flex justify-center">
+                {session ? (
+                  <Button asChild>
+                    <Link href="/prompt/play">Start Creating</Link>
+                  </Button>
+                ) : (
+                  <StyledSignInButton />
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* How It Works Section */}
       <section className="mb-16">

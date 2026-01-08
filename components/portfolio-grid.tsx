@@ -517,7 +517,7 @@ function PortfolioGridContent({
                         </Badge>
                       )}
                       {showPromptBadge && item.promptId && item.prompt && (
-                        <Badge className="rounded-full border-0 bg-prompt/80 text-prompt-foreground backdrop-blur-sm hover:bg-prompt/90">
+                        <Badge className="rounded-full border-0 bg-prompt/80 text-white backdrop-blur-sm hover:bg-prompt/90">
                           {item.wordIndex
                             ? [
                                 item.prompt.word1,
