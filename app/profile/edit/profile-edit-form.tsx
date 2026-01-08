@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { RichTextEditor } from "@/components/rich-text-editor";
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Country, State, City } from "country-state-city";
 
 interface SubmissionOption {
@@ -76,7 +77,7 @@ interface ProfileEditFormProps {
 }
 
 export function ProfileEditForm({
-  userId: _userId,
+  userId,
   initialBio,
   initialInstagram,
   initialTwitter,
@@ -93,6 +94,8 @@ export function ProfileEditForm({
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("profile");
   const [bio, setBio] = useState(initialBio);
+  const [bioHasFocus, setBioHasFocus] = useState(false);
+  const [bioOriginalValue, setBioOriginalValue] = useState(initialBio);
   const [instagram, setInstagram] = useState(initialInstagram);
   const [twitter, setTwitter] = useState(initialTwitter);
   const [linkedin, setLinkedin] = useState(initialLinkedin);
@@ -107,6 +110,22 @@ export function ProfileEditForm({
   const [error, setError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Track initial values to detect changes
+  const initialValuesRef = useRef({
+    bio: initialBio,
+    instagram: initialInstagram,
+    twitter: initialTwitter,
+    linkedin: initialLinkedin,
+    website: initialWebsite,
+    city: initialCity,
+    stateProvince: initialStateProvince,
+    country: initialCountry,
+    featuredSubmissionId: initialFeaturedSubmissionId,
+  });
+
+  // Debounce timer ref
+  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Portfolio state
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(
@@ -200,10 +219,185 @@ export function ProfileEditForm({
     };
   }, [isDropdownOpen]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Auto-save function (excludes bio which is handled separately)
+  const saveProfile = useCallback(async (
+    showToast = true, 
+    overrides?: { 
+      featuredSubmissionId?: string;
+      instagram?: string;
+      twitter?: string;
+      linkedin?: string;
+      website?: string;
+      city?: string;
+      stateProvince?: string;
+      country?: string;
+    }
+  ) => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+
+    if (showToast) {
+      setSaving(true);
+    }
+    setError(null);
+
+    const toastId = showToast ? toast.loading("Saving...") : undefined;
+
+    // Use override values if provided, otherwise use current state
+    const featuredId = overrides?.featuredSubmissionId !== undefined 
+      ? overrides.featuredSubmissionId 
+      : featuredSubmissionId;
+    const instagramValue = overrides?.instagram !== undefined 
+      ? overrides.instagram 
+      : instagram;
+    const twitterValue = overrides?.twitter !== undefined 
+      ? overrides.twitter 
+      : twitter;
+    const linkedinValue = overrides?.linkedin !== undefined 
+      ? overrides.linkedin 
+      : linkedin;
+    const websiteValue = overrides?.website !== undefined 
+      ? overrides.website 
+      : website;
+    const cityValue = overrides?.city !== undefined 
+      ? overrides.city 
+      : city;
+    const stateProvinceValue = overrides?.stateProvince !== undefined 
+      ? overrides.stateProvince 
+      : stateProvince;
+    const countryValue = overrides?.country !== undefined 
+      ? overrides.country 
+      : country;
+
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bio: initialValuesRef.current.bio || null, // Use saved bio value, not current
+          instagram: instagramValue || null,
+          twitter: twitterValue || null,
+          linkedin: linkedinValue || null,
+          website: websiteValue || null,
+          city: cityValue || null,
+          stateProvince: stateProvinceValue || null,
+          country: countryValue || null,
+          featuredSubmissionId: featuredId || null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save profile");
+      }
+
+      if (showToast && toastId) {
+        toast.success("Profile saved", { id: toastId });
+      }
+
+      // Update initial values ref to track new baseline (excluding bio)
+      initialValuesRef.current = {
+        ...initialValuesRef.current,
+        instagram: instagramValue,
+        twitter: twitterValue,
+        linkedin: linkedinValue,
+        website: websiteValue,
+        city: cityValue,
+        stateProvince: stateProvinceValue,
+        country: countryValue,
+        featuredSubmissionId: featuredId,
+      };
+
+      router.refresh();
+    } catch {
+      if (showToast && toastId) {
+        toast.error("Failed to save profile. Please try again.", { id: toastId });
+        setError("Failed to save profile. Please try again.");
+      }
+    } finally {
+      if (showToast) {
+        setSaving(false);
+      }
+    }
+  }, [instagram, twitter, linkedin, website, city, stateProvince, country, featuredSubmissionId, router]);
+
+  // Debounced auto-save - only saves if there are actual changes
+  // Note: Location fields (country, stateProvince, city) are excluded - they're saved separately when city changes
+  // Note: By the time this fires (500ms delay), React state should be updated,
+  // but we still pass values explicitly to ensure we use the latest
+  const debouncedSave = useCallback(() => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
+    saveTimerRef.current = setTimeout(() => {
+      // Check if there are actual changes before saving (excluding location fields)
+      const hasActualChanges = 
+        instagram !== initialValuesRef.current.instagram ||
+        twitter !== initialValuesRef.current.twitter ||
+        linkedin !== initialValuesRef.current.linkedin ||
+        website !== initialValuesRef.current.website ||
+        featuredSubmissionId !== initialValuesRef.current.featuredSubmissionId;
+      
+      if (hasActualChanges) {
+        // Pass current values explicitly to ensure we use the latest
+        // Location fields are excluded - they're saved separately
+        saveProfile(true, {
+          instagram,
+          twitter,
+          linkedin,
+          website,
+          featuredSubmissionId,
+        });
+      }
+    }, 500);
+  }, [instagram, twitter, linkedin, website, featuredSubmissionId, saveProfile]);
+
+  // Check if values have changed (excluding bio and location fields which are handled separately)
+  const hasChanges = useMemo(() => {
+    return (
+      instagram !== initialValuesRef.current.instagram ||
+      twitter !== initialValuesRef.current.twitter ||
+      linkedin !== initialValuesRef.current.linkedin ||
+      website !== initialValuesRef.current.website ||
+      featuredSubmissionId !== initialValuesRef.current.featuredSubmissionId
+    );
+  }, [instagram, twitter, linkedin, website, featuredSubmissionId]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Bio handlers - manual save/cancel
+  const handleBioChange = useCallback((value: string) => {
+    setBio(value);
+    // Don't auto-save bio, wait for user to click Save
+  }, []);
+
+  const handleBioFocus = useCallback(() => {
+    setBioHasFocus(true);
+    setBioOriginalValue(bio);
+  }, [bio]);
+
+  const handleBioBlur = useCallback(() => {
+    // Don't hide buttons on blur - let user decide to save or cancel
+  }, []);
+
+  const handleBioSave = useCallback(async () => {
+    setBioHasFocus(false);
+    // Save bio specifically
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
     setSaving(true);
     setError(null);
+
+    const toastId = toast.loading("Saving bio...");
 
     try {
       const response = await fetch("/api/profile", {
@@ -226,14 +420,133 @@ export function ProfileEditForm({
         throw new Error("Failed to save profile");
       }
 
-      router.push(`/profile/${(await response.json()).user.id}`);
+      toast.success("Bio saved", { id: toastId });
+
+      // Update initial values ref
+      initialValuesRef.current.bio = bio;
+      setBioOriginalValue(bio);
+
       router.refresh();
     } catch {
-      setError("Failed to save profile. Please try again.");
+      toast.error("Failed to save bio. Please try again.", { id: toastId });
+      setError("Failed to save bio. Please try again.");
     } finally {
       setSaving(false);
     }
-  };
+  }, [bio, instagram, twitter, linkedin, website, city, stateProvince, country, featuredSubmissionId, router]);
+
+  const handleBioCancel = useCallback(() => {
+    setBio(bioOriginalValue);
+    setBioHasFocus(false);
+  }, [bioOriginalValue]);
+
+  const handleInstagramChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInstagram(e.target.value);
+    debouncedSave();
+  }, [debouncedSave]);
+
+  const handleInstagramBlur = useCallback(() => {
+    if (instagram !== initialValuesRef.current.instagram) {
+      // Pass the current value directly to avoid closure issue
+      saveProfile(true, { instagram });
+    }
+  }, [instagram, saveProfile]);
+
+  const handleTwitterChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setTwitter(e.target.value);
+    debouncedSave();
+  }, [debouncedSave]);
+
+  const handleTwitterBlur = useCallback(() => {
+    if (twitter !== initialValuesRef.current.twitter) {
+      // Pass the current value directly to avoid closure issue
+      saveProfile(true, { twitter });
+    }
+  }, [twitter, saveProfile]);
+
+  const handleLinkedinChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setLinkedin(e.target.value);
+    debouncedSave();
+  }, [debouncedSave]);
+
+  const handleLinkedinBlur = useCallback(() => {
+    if (linkedin !== initialValuesRef.current.linkedin) {
+      // Pass the current value directly to avoid closure issue
+      saveProfile(true, { linkedin });
+    }
+  }, [linkedin, saveProfile]);
+
+  const handleWebsiteChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setWebsite(e.target.value);
+    debouncedSave();
+  }, [debouncedSave]);
+
+  const handleWebsiteBlur = useCallback(() => {
+    if (website !== initialValuesRef.current.website) {
+      // Pass the current value directly to avoid closure issue
+      saveProfile(true, { website });
+    }
+  }, [website, saveProfile]);
+
+  const handleCityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setCity(e.target.value);
+    // Don't use debouncedSave for city - we'll save on blur instead
+    // This prevents saving incomplete location data
+  }, []);
+
+  const handleCityBlur = useCallback(() => {
+    // Save location when city text input is blurred, if it changed
+    // Save all three location fields together
+    if (city !== initialValuesRef.current.city) {
+      saveProfile(true, { 
+        country, 
+        stateProvince, 
+        city 
+      });
+    }
+  }, [city, country, stateProvince, saveProfile]);
+
+  const handleCountryChange = useCallback((value: string) => {
+    setCountry(value);
+    // Don't save on country change - wait for city to be set
+    // Changing country resets state and city, so we wait until city is updated
+  }, []);
+
+  const handleStateProvinceChange = useCallback((value: string) => {
+    setStateProvince(value);
+    // Don't save on state change - wait for city to be set
+    // Changing state resets city, so we wait until city is updated
+  }, []);
+
+  const handleCitySelectChange = useCallback((value: string) => {
+    setCity(value);
+    // Save location when city changes - this is the final field in the hierarchy
+    // Save all three location fields together
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
+    // Only save if city value actually changed
+    if (value !== initialValuesRef.current.city) {
+      // Save all location fields together
+      saveProfile(true, { 
+        country, 
+        stateProvince, 
+        city: value 
+      });
+    }
+  }, [country, stateProvince, saveProfile]);
+
+  const handleFeaturedSubmissionChange = useCallback((id: string) => {
+    setFeaturedSubmissionId(id);
+    // Save immediately for dropdown, but only if value changed
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
+    if (id !== initialValuesRef.current.featuredSubmissionId) {
+      saveProfile(true, { featuredSubmissionId: id });
+    }
+  }, [saveProfile]);
+
 
   const handleDeletePortfolioItem = async (item: PortfolioItem) => {
     try {
@@ -348,16 +661,44 @@ export function ProfileEditForm({
 
         <TabsContent value="profile" className="mt-0">
           <div className="w-full">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
           <div>
             <label className="mb-2 block text-sm font-medium text-foreground">
               Bio
             </label>
             <RichTextEditor
               value={bio}
-              onChange={setBio}
+              onChange={handleBioChange}
+              onFocus={handleBioFocus}
+              onBlur={handleBioBlur}
               placeholder="Tell us about yourself..."
             />
+            {bioHasFocus && (
+              <div className="mt-3 flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleBioSave}
+                  disabled={saving || bio === bioOriginalValue}
+                >
+                  {saving ? "Saving..." : "Save"}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={handleBioCancel}
+                  disabled={saving}
+                >
+                  Cancel
+                </Button>
+                {bio !== bioOriginalValue && (
+                  <span className="flex items-center text-xs text-muted-foreground">
+                    Unsaved changes
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           <div>
@@ -446,7 +787,7 @@ export function ProfileEditForm({
                       <button
                         type="button"
                         onClick={() => {
-                          setFeaturedSubmissionId("");
+                          handleFeaturedSubmissionChange("");
                           setIsDropdownOpen(false);
                         }}
                         className={`w-full px-4 py-3 text-left transition-colors ${
@@ -466,7 +807,7 @@ export function ProfileEditForm({
                             key={submission.id}
                             type="button"
                             onClick={() => {
-                              setFeaturedSubmissionId(submission.id);
+                              handleFeaturedSubmissionChange(submission.id);
                               setIsDropdownOpen(false);
                             }}
                             className={`w-full px-4 py-3 text-left transition-colors ${
@@ -548,7 +889,8 @@ export function ProfileEditForm({
                   type="text"
                   id="instagram"
                   value={instagram}
-                  onChange={(e) => setInstagram(e.target.value)}
+                  onChange={handleInstagramChange}
+                  onBlur={handleInstagramBlur}
                   placeholder="username"
                   className="rounded-l-none rounded-r-lg"
                 />
@@ -570,7 +912,8 @@ export function ProfileEditForm({
                   type="text"
                   id="twitter"
                   value={twitter}
-                  onChange={(e) => setTwitter(e.target.value)}
+                  onChange={handleTwitterChange}
+                  onBlur={handleTwitterBlur}
                   placeholder="username"
                   className="rounded-l-none rounded-r-lg"
                 />
@@ -592,7 +935,8 @@ export function ProfileEditForm({
                   type="text"
                   id="linkedin"
                   value={linkedin}
-                  onChange={(e) => setLinkedin(e.target.value)}
+                  onChange={handleLinkedinChange}
+                  onBlur={handleLinkedinBlur}
                   placeholder="username"
                   className="rounded-l-none rounded-r-lg"
                 />
@@ -610,7 +954,8 @@ export function ProfileEditForm({
                 type="url"
                 id="website"
                 value={website}
-                onChange={(e) => setWebsite(e.target.value)}
+                onChange={handleWebsiteChange}
+                onBlur={handleWebsiteBlur}
                 placeholder="https://example.com"
               />
             </div>
@@ -626,7 +971,7 @@ export function ProfileEditForm({
                 >
                   Country
                 </label>
-                <Select value={country} onValueChange={setCountry}>
+                <Select value={country} onValueChange={handleCountryChange}>
                   <SelectTrigger id="country">
                     <SelectValue placeholder="Select country" />
                   </SelectTrigger>
@@ -650,7 +995,7 @@ export function ProfileEditForm({
                   </label>
                   <Select
                     value={stateProvince}
-                    onValueChange={setStateProvince}
+                    onValueChange={handleStateProvinceChange}
                     disabled={!country}
                   >
                     <SelectTrigger id="state">
@@ -683,7 +1028,7 @@ export function ProfileEditForm({
                   </label>
                   <Select
                     value={city}
-                    onValueChange={setCity}
+                    onValueChange={handleCitySelectChange}
                     disabled={!country || !stateProvince}
                   >
                     <SelectTrigger id="city">
@@ -723,7 +1068,8 @@ export function ProfileEditForm({
                     type="text"
                     id="city"
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    onChange={handleCityChange}
+                    onBlur={handleCityBlur}
                     placeholder="Enter city"
                     disabled={!country || (availableStates.length > 0 && !stateProvince)}
                   />
@@ -731,20 +1077,7 @@ export function ProfileEditForm({
               )}
             </div>
           </div>
-
-          <div className="flex gap-3">
-            <Button type="submit" disabled={saving}>
-              {saving ? "Saving..." : "Save Profile"}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-            >
-              Cancel
-            </Button>
           </div>
-          </form>
         </div>
         </TabsContent>
 

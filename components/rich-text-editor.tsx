@@ -10,6 +10,8 @@ interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 function ToolbarButton({
@@ -169,6 +171,8 @@ export function RichTextEditor({
   value,
   onChange,
   placeholder = "Write something...",
+  onFocus,
+  onBlur,
 }: RichTextEditorProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -198,6 +202,16 @@ export function RichTextEditor({
       attributes: {
         class:
           "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[100px] px-3 py-2",
+      },
+      handleDOMEvents: {
+        focus: () => {
+          onFocus?.();
+          return true; // Allow default focus behavior
+        },
+        blur: () => {
+          onBlur?.();
+          return true; // Allow default blur behavior
+        },
       },
     },
   });

@@ -70,6 +70,8 @@ model User {
   city                 String?
   stateProvince        String?
   country              String?
+  latitude             Float?
+  longitude            Float?
   featuredSubmissionId String?      @unique
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt

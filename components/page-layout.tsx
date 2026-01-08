@@ -23,7 +23,8 @@ export function PageLayout({
   return (
     <main
       className={cn(
-        "mx-auto flex-1 py-12",
+        "mx-auto flex-1",
+        withPadding && "py-12",
         maxWidth,
         withPadding && "px-6",
         className

@@ -9,6 +9,8 @@ import { CreateSpotLogo } from "./create-spot-logo";
 import { UserDropdown } from "./user-dropdown";
 import { NavigationLinks } from "./navigation-links";
 import { ThemeToggle } from "./theme-toggle";
+import { getExhibitionByPath, EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
+import { cn } from "@/lib/utils";
 
 interface HeaderUser {
   id?: string;
@@ -29,6 +31,7 @@ function getBreadcrumbs(pathname: string): string[] | null {
   // Exhibition routes
   if (pathname === "/exhibition/gallery") return ["Exhibit", "Gallery"];
   if (pathname === "/exhibition/constellation") return ["Exhibit", "Constellation"];
+  if (pathname === "/exhibition/global") return ["Exhibit", "Global"];
   if (pathname.startsWith("/exhibition")) return ["Exhibit"];
   
   // Prompt routes
@@ -59,6 +62,7 @@ export function Header({ user }: HeaderProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const breadcrumbs = getBreadcrumbs(pathname);
+  const exhibitionConfig = getExhibitionByPath(pathname);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -104,12 +108,21 @@ export function Header({ user }: HeaderProps) {
             />
             <span className="text-xl font-normal">Create Spot</span>
           </Link>
-          {breadcrumbs && breadcrumbs.map((segment, index) => (
-            <span key={index} className="flex items-center gap-6">
-              <span className="text-muted-foreground">/</span>
-              <span className="text-lg text-muted-foreground">{segment}</span>
-            </span>
-          ))}
+          {breadcrumbs && breadcrumbs.map((segment, index) => {
+            const isLastSegment = index === breadcrumbs.length - 1;
+            const shouldShowIcon = isLastSegment && exhibitionConfig;
+            const IconComponent = shouldShowIcon ? exhibitionConfig.icon : null;
+            
+            return (
+              <span key={index} className="flex items-center gap-6">
+                <span className="text-muted-foreground">/</span>
+                <span className="flex items-center gap-2 text-lg text-muted-foreground">
+                  {IconComponent && <IconComponent className="h-5 w-5" />}
+                  {segment}
+                </span>
+              </span>
+            );
+          })}
         </div>
         <div className="flex items-center gap-4">
           {/* Desktop Navigation */}
@@ -269,18 +282,20 @@ function MobileNavigationLinks({
           Explore
         </div>
         <Link
-          href="/exhibition/gallery"
-          className={linkClassName("/exhibition/gallery")}
+          href={EXHIBITION_CONFIGS.gallery.path}
+          className={cn(linkClassName(EXHIBITION_CONFIGS.gallery.path), "flex items-center gap-2")}
           onClick={onLinkClick}
         >
-          Gallery
+          <EXHIBITION_CONFIGS.gallery.icon className="h-5 w-5" />
+          {EXHIBITION_CONFIGS.gallery.name}
         </Link>
         <Link
-          href="/exhibition/constellation"
-          className={linkClassName("/exhibition/constellation")}
+          href={EXHIBITION_CONFIGS.constellation.path}
+          className={cn(linkClassName(EXHIBITION_CONFIGS.constellation.path), "flex items-center gap-2")}
           onClick={onLinkClick}
         >
-          Constellation
+          <EXHIBITION_CONFIGS.constellation.icon className="h-5 w-5" />
+          {EXHIBITION_CONFIGS.constellation.name}
         </Link>
         <Link
           href="/about"

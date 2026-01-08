@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
+import { Toaster } from "@/components/ui/sonner";
 import { auth } from "@/lib/auth";
 import "./globals.css";
 
@@ -60,6 +61,7 @@ export default async function RootLayout({
             <Analytics />
           </SessionProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

@@ -24,6 +24,7 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
+    --navbar-height: calc(4rem + 5px); /* 4rem for navbar height + 5px for border and margin */
   }
 
   .dark {
@@ -204,4 +205,35 @@ body {
 
 .animate-logo-sheen {
   animation: logo-sheen 5s ease-in-out infinite;
+}
+
+/* Leaflet popup theme styling */
+.leaflet-popup-content-wrapper {
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-radius: calc(var(--radius) * 2) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+.leaflet-popup-tip {
+  background: hsl(var(--background)) !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.leaflet-popup-close-button {
+  color: hsl(var(--muted-foreground)) !important;
+  padding: 8px !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: hsl(var(--foreground)) !important;
+  background: hsl(var(--accent)) !important;
 }
