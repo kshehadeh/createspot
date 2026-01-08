@@ -283,55 +283,6 @@ export function SubmissionDetail({
               </div>
             )}
           </div>
-
-          {/* Creator profile section */}
-          <Card className="rounded-xl">
-            <CardContent className="p-6">
-              <div className="mb-4 flex items-center gap-4">
-                {submission.user.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={submission.user.image}
-                    alt={submission.user.name || "User"}
-                    className="h-16 w-16 rounded-full"
-                  />
-                ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-                    <span className="text-2xl font-medium text-muted-foreground">
-                      {submission.user.name?.charAt(0) || "?"}
-                    </span>
-                  </div>
-                )}
-                <div className="flex-1">
-                  <Link
-                    href={`/profile/${submission.user.id}`}
-                    className="text-xl font-semibold text-foreground transition-colors hover:text-foreground/80"
-                  >
-                    {submission.user.name || "Anonymous"}
-                  </Link>
-                </div>
-              </div>
-
-              {submission.user.bio && (
-                <div
-                  className="prose prose-sm dark:prose-invert mb-4 max-w-none text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: submission.user.bio }}
-                />
-              )}
-
-              {(submission.user.instagram ||
-                submission.user.twitter ||
-                submission.user.linkedin ||
-                submission.user.website) && (
-                <SocialLinks
-                  instagram={submission.user.instagram}
-                  twitter={submission.user.twitter}
-                  linkedin={submission.user.linkedin}
-                  website={submission.user.website}
-                />
-              )}
-            </CardContent>
-          </Card>
         </main>
       </div>
     </FavoritesProvider>

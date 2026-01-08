@@ -107,7 +107,7 @@ export function Header({ user }: HeaderProps) {
               base="currentColor"
               highlight="rgb(161 161 170)"
             />
-            <span className="text-xl font-normal">Create Spot</span>
+            <span className="hidden whitespace-nowrap text-xl font-normal md:inline">Create Spot</span>
           </Link>
           {breadcrumbs && breadcrumbs.map((segment, index) => {
             const isLastSegment = index === breadcrumbs.length - 1;
@@ -115,9 +115,9 @@ export function Header({ user }: HeaderProps) {
             const IconComponent = shouldShowIcon ? exhibitionConfig.icon : null;
             
             return (
-              <span key={index} className="flex items-center gap-6">
+              <span key={index} className="flex items-center gap-2">
                 <span className="text-muted-foreground">/</span>
-                <span className="flex items-center gap-2 text-lg text-muted-foreground">
+                <span className="flex items-center gap-2 text-sm text-muted-foreground">
                   {IconComponent && <IconComponent className="h-5 w-5" />}
                   {segment}
                 </span>
