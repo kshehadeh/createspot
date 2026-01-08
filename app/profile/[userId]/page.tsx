@@ -5,8 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { HistoryList } from "@/app/prompt/history/history-list";
 import { SocialLinks } from "./social-links";
-import { ExpandableImage } from "@/components/expandable-image";
 import { ExpandableText } from "@/components/expandable-text";
+import { SubmissionImage } from "@/components/submission-image";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
@@ -253,79 +253,101 @@ export default async function ProfilePage({
                   : null;
 
               return (
-                <Card className="rounded-xl">
-                  <CardContent className="p-6">
-                    {/* Image section */}
-                    {hasImage && (
-                      <div className="mb-4">
-                        <div className="rounded-lg border border-border bg-muted p-4">
-                          <ExpandableImage
-                            imageUrl={featuredSubmission.imageUrl!}
-                            alt={featuredSubmission.title || word || "Featured"}
-                            className="min-h-[200px]"
-                          />
-                        </div>
-                      </div>
-                    )}
+                <>
+                  {/* Image section */}
+                  {hasImage && (
+                    <div className="mb-6">
+                      <SubmissionImage
+                        imageUrl={featuredSubmission.imageUrl!}
+                        alt={featuredSubmission.title || word || "Featured"}
+                        heightClasses="h-[50vh] sm:h-[60vh] md:h-[65vh]"
+                      />
+                    </div>
+                  )}
 
-                    {/* Text section */}
-                    {hasText && (
-                      <div className="mb-4">
-                        <div className="rounded-lg border border-border bg-muted p-4">
-                          {featuredSubmission.title && (
-                            <h3 className="mb-3 text-lg font-semibold text-foreground">
-                              {featuredSubmission.title}
-                            </h3>
-                          )}
-                          <ExpandableText
-                            text={featuredSubmission.text!}
-                            title={featuredSubmission.title}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Link to full submission */}
-                    <div className="flex flex-col gap-3 border-t border-border pt-4">
-                      {featuredSubmission.prompt &&
-                        featuredSubmission.wordIndex && (
-                          <div className="flex flex-col gap-2">
-                            <span className="text-xs text-muted-foreground">
-                              Prompt:
-                            </span>
-                            <div className="flex flex-wrap gap-2">
-                              {[
-                                featuredSubmission.prompt.word1,
-                                featuredSubmission.prompt.word2,
-                                featuredSubmission.prompt.word3,
-                              ].map((promptWord, index) => {
-                                const isActive =
-                                  index + 1 === featuredSubmission.wordIndex;
-                                return (
-                                  <span
-                                    key={index}
-                                    className={`text-sm font-medium ${
-                                      isActive
-                                        ? "text-foreground"
-                                        : "text-muted-foreground/50"
-                                    }`}
-                                  >
-                                    {promptWord}
-                                  </span>
-                                );
-                              })}
-                            </div>
+                  {/* Text and metadata section */}
+                  {(hasText ||
+                    (featuredSubmission.prompt &&
+                      featuredSubmission.wordIndex)) && (
+                    <Card className="rounded-xl">
+                      <CardContent className="p-6">
+                        {/* Text section */}
+                        {hasText && (
+                          <div className="mb-4">
+                            {featuredSubmission.title && (
+                              <h3 className="mb-3 text-lg font-semibold text-foreground">
+                                {featuredSubmission.title}
+                              </h3>
+                            )}
+                            <ExpandableText
+                              text={featuredSubmission.text!}
+                              title={featuredSubmission.title}
+                            />
                           </div>
                         )}
-                      <Link
-                        href={`/s/${featuredSubmission.id}`}
-                        className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        View full submission →
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
+
+                        {/* Link to full submission */}
+                        <div
+                          className={`flex flex-col gap-3 ${
+                            hasText ? "border-t border-border pt-4" : ""
+                          }`}
+                        >
+                          {featuredSubmission.prompt &&
+                            featuredSubmission.wordIndex && (
+                              <div className="flex flex-col gap-2">
+                                <span className="text-xs text-muted-foreground">
+                                  Prompt:
+                                </span>
+                                <div className="flex flex-wrap gap-2">
+                                  {[
+                                    featuredSubmission.prompt.word1,
+                                    featuredSubmission.prompt.word2,
+                                    featuredSubmission.prompt.word3,
+                                  ].map((promptWord, index) => {
+                                    const isActive =
+                                      index + 1 ===
+                                      featuredSubmission.wordIndex;
+                                    return (
+                                      <span
+                                        key={index}
+                                        className={`text-sm font-medium ${
+                                          isActive
+                                            ? "text-foreground"
+                                            : "text-muted-foreground/50"
+                                        }`}
+                                      >
+                                        {promptWord}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          <Link
+                            href={`/s/${featuredSubmission.id}`}
+                            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                          >
+                            View full submission →
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Link only (when no text and no prompt) */}
+                  {!hasText &&
+                    !(featuredSubmission.prompt &&
+                      featuredSubmission.wordIndex) && (
+                      <div>
+                        <Link
+                          href={`/s/${featuredSubmission.id}`}
+                          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          View full submission →
+                        </Link>
+                      </div>
+                    )}
+                </>
               );
             })()}
           </div>

@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ExpandableImage } from "@/components/expandable-image";
 import { ExpandableText } from "@/components/expandable-text";
+import { SubmissionImage } from "@/components/submission-image";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
-import { SocialLinks } from "@/app/profile/[userId]/social-links";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -236,27 +235,11 @@ export function SubmissionDetail({
                   hasBoth && mobileView === "text" ? "hidden md:block" : ""
                 }`}
               >
-                <div className="relative h-[65vh] w-full overflow-hidden rounded-xl sm:h-[72vh] md:h-[80vh]">
-                  <ExpandableImage
-                    imageUrl={submission.imageUrl!}
-                    alt={submission.title || "Submission"}
-                    objectFit="cover"
-                    className="h-full w-full"
-                  />
-                  {/* Tags overlay */}
-                  {submission.tags.length > 0 && (
-                    <div className="absolute bottom-2 right-2 flex flex-col gap-1.5">
-                      {submission.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="rounded-full bg-black/70 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <SubmissionImage
+                  imageUrl={submission.imageUrl!}
+                  alt={submission.title || "Submission"}
+                  tags={submission.tags}
+                />
               </div>
             )}
 

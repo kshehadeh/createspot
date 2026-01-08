@@ -121,8 +121,8 @@ export default async function Home() {
       ? [
           {
             id: "portfolio" as const,
-            title: "Build Your Portfolio",
-            href: "/profile/edit",
+            title: "Your Portfolio",
+            href: "/profile/edit#portfolio",
             icon: Briefcase,
           },
         ]

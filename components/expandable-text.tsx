@@ -46,7 +46,7 @@ export function ExpandableText({
         />
         <button
           onClick={() => setIsExpanded(true)}
-          className="mt-4 flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          className="mt-4 flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           aria-label="Expand text"
         >
           <svg
@@ -72,18 +72,18 @@ export function ExpandableText({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-sm p-4"
             onClick={() => setIsExpanded(false)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-white p-8 dark:bg-zinc-900"
+              className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-card border border-border p-8"
               onClick={(e) => e.stopPropagation()}
             >
               {title && (
-                <h2 className="mb-4 text-2xl font-semibold text-zinc-900 dark:text-white">
+                <h2 className="mb-4 text-2xl font-semibold text-foreground">
                   {title}
                 </h2>
               )}
@@ -93,7 +93,7 @@ export function ExpandableText({
               />
               <button
                 onClick={() => setIsExpanded(false)}
-                className="absolute right-4 top-4 rounded-full bg-zinc-200 p-2 text-zinc-700 transition-colors hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                className="absolute right-4 top-4 rounded-full bg-muted p-2 text-foreground transition-colors hover:bg-accent"
                 aria-label="Close expanded text"
               >
                 <svg
