@@ -7,9 +7,6 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, X } from "lucide-react";
 
 interface LightboxSubmission {
@@ -43,7 +40,6 @@ export function SubmissionLightbox({
   isOpen,
   hideGoToSubmission = false,
 }: SubmissionLightboxProps) {
-  const [mobileView, setMobileView] = useState<"image" | "text">("image");
   const [zoomState, setZoomState] = useState<{
     isActive: boolean;
     x: number;
@@ -55,9 +51,6 @@ export function SubmissionLightbox({
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const hasImage = !!submission.imageUrl;
-  const hasText = !!submission.text;
-  const hasBoth = hasImage && hasText;
-  const isImageOnly = hasImage && !hasText;
 
   // Get favorite count - handle both _count and direct favoriteCount
   const favoriteCount =
@@ -185,11 +178,7 @@ export function SubmissionLightbox({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent 
-        className={
-          isImageOnly
-            ? "w-screen h-screen max-w-none max-h-none border-none bg-black/90 p-0"
-            : "max-w-[95vw] max-h-[95vh] border-none bg-black/90 p-0"
-        }
+        className="w-screen h-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden"
       >
         <div className="absolute right-4 top-4 z-10 flex gap-2">
           {!hideGoToSubmission && (
@@ -212,133 +201,56 @@ export function SubmissionLightbox({
           </Button>
         </div>
 
-        {/* Mobile view with tabs */}
-        {hasBoth && (
-          <div className="absolute left-1/2 top-4 z-10 flex -translate-x-1/2 gap-2 md:hidden">
-            <Tabs value={mobileView} onValueChange={(v) => setMobileView(v as "image" | "text")}>
-              <TabsList className="bg-transparent">
-                <TabsTrigger
-                  value="image"
-                  className="rounded-full data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=inactive]:bg-white/20 data-[state=inactive]:text-white"
-                >
-                  Image
-                </TabsTrigger>
-                <TabsTrigger
-                  value="text"
-                  className="rounded-full data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=inactive]:bg-white/20 data-[state=inactive]:text-white"
-                >
-                  Text
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-        )}
-
         <div
-          className={`flex h-full w-full flex-col ${
-            isImageOnly ? "p-0" : "max-w-7xl p-4 md:flex-row md:items-center md:gap-6 md:p-8"
-          }`}
+          className="flex h-full w-full flex-col p-0"
           onClick={(e) => e.stopPropagation()}
         >
-        {/* Image section */}
-        {hasImage && (
-          <div
-            ref={imageContainerRef}
-            className={`relative flex flex-1 items-center justify-center ${
-              hasBoth ? "md:w-2/3" : "w-full"
-            } ${hasBoth && mobileView === "text" ? "hidden md:flex" : ""} ${
-              isImageOnly ? "h-screen" : ""
-            }`}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              ref={imageRef}
-              src={submission.imageUrl!}
-              alt={submission.title || "Submission"}
-              className={
-                isImageOnly
-                  ? "max-h-[100vh] max-w-[100vw] object-contain"
-                  : "max-h-[80vh] max-w-full rounded-lg object-contain"
-              }
-              onLoad={() => setImageLoaded(true)}
-              onMouseMove={handleImageMouseMove}
-              onMouseLeave={handleImageMouseLeave}
-            />
-            
-            {/* Zoom square overlay */}
-            {zoomState.isActive && supportsHover && (
-              <div
-                className="pointer-events-none absolute z-20 border-2 border-white bg-white/10"
-                style={{
-                  width: `${ZOOM_SQUARE_SIZE}px`,
-                  height: `${ZOOM_SQUARE_SIZE}px`,
-                  ...getZoomSquareStyle(),
-                }}
-              />
-            )}
-            
-            {/* Zoom preview box */}
-            {zoomState.isActive && supportsHover && (
-              <div
-                className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl"
-                style={{
-                  width: `${ZOOM_PREVIEW_SIZE}px`,
-                  height: `${ZOOM_PREVIEW_SIZE}px`,
-                  ...getZoomPreviewStyle(),
-                }}
-              />
-            )}
-          </div>
-        )}
-
-          {/* Text section */}
-          {hasText && (
+          {/* Image section */}
+          {hasImage && (
             <div
-              className={`flex flex-col overflow-hidden ${
-                hasBoth ? "md:w-1/3" : "w-full max-w-2xl"
-              } ${hasBoth && mobileView === "image" ? "hidden md:flex" : ""} ${
-                !hasImage ? "mx-auto" : ""
-              }`}
+              ref={imageContainerRef}
+              className="relative flex h-screen w-full flex-1 items-center justify-center"
             >
-              <div className="max-h-[80vh] overflow-y-auto rounded-xl bg-white p-6 dark:bg-zinc-900">
-                <div className="mb-4 flex items-center gap-2">
-                  <Badge variant="secondary">{word}</Badge>
-                  {favoriteCount > 0 && (
-                    <div className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
-                      <Heart className="h-4 w-4 fill-red-500 text-red-500" />
-                      <span>{favoriteCount}</span>
-                    </div>
-                  )}
-                </div>
-                {submission.title && (
-                  <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-white">
-                    {submission.title}
-                  </h2>
-                )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                ref={imageRef}
+                src={submission.imageUrl!}
+                alt={submission.title || "Submission"}
+                className="max-h-[100vh] max-w-[100vw] object-contain"
+                onLoad={() => setImageLoaded(true)}
+                onMouseMove={handleImageMouseMove}
+                onMouseLeave={handleImageMouseLeave}
+              />
+              
+              {/* Zoom square overlay */}
+              {zoomState.isActive && supportsHover && (
                 <div
-                  className="prose prose-zinc dark:prose-invert max-w-none"
-                  dangerouslySetInnerHTML={{ __html: submission.text! }}
+                  className="pointer-events-none absolute z-20 border-2 border-white bg-white/10"
+                  style={{
+                    width: `${ZOOM_SQUARE_SIZE}px`,
+                    height: `${ZOOM_SQUARE_SIZE}px`,
+                    ...getZoomSquareStyle(),
+                  }}
                 />
-                {submission.user && (
-                  <div className="mt-6 flex items-center gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-800">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={submission.user.image || undefined} alt={submission.user.name || "User"} />
-                      <AvatarFallback className="bg-zinc-200 dark:bg-zinc-700">
-                        {submission.user.name?.charAt(0) || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                      {submission.user.name || "Anonymous"}
-                    </span>
-                  </div>
-                )}
-              </div>
+              )}
+              
+              {/* Zoom preview box */}
+              {zoomState.isActive && supportsHover && (
+                <div
+                  className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl"
+                  style={{
+                    width: `${ZOOM_PREVIEW_SIZE}px`,
+                    height: `${ZOOM_PREVIEW_SIZE}px`,
+                    ...getZoomPreviewStyle(),
+                  }}
+                />
+              )}
             </div>
           )}
 
-          {/* Image-only metadata overlay */}
-          {hasImage && !hasText && (
-            <div className="absolute bottom-8 right-8 rounded-xl bg-black/70 px-6 py-4 backdrop-blur-sm">
+          {/* Image metadata overlay */}
+          {hasImage && (
+            <div className="absolute bottom-8 right-8 z-10 rounded-xl bg-black/70 px-6 py-4 backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 <span className="text-white font-medium">
                   {submission.title || "Untitled"}
