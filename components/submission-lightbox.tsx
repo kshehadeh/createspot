@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import {
   Dialog,
@@ -32,6 +32,8 @@ interface SubmissionLightboxProps {
   word: string;
   onClose: () => void;
   isOpen: boolean;
+  /** Hide the "Go To Submission" button (e.g., when already on the submission page) */
+  hideGoToSubmission?: boolean;
 }
 
 export function SubmissionLightbox({
@@ -39,29 +41,167 @@ export function SubmissionLightbox({
   word,
   onClose,
   isOpen,
+  hideGoToSubmission = false,
 }: SubmissionLightboxProps) {
   const [mobileView, setMobileView] = useState<"image" | "text">("image");
+  const [zoomState, setZoomState] = useState<{
+    isActive: boolean;
+    x: number;
+    y: number;
+    imageRect: DOMRect | null;
+  }>({ isActive: false, x: 0, y: 0, imageRect: null });
+  const [supportsHover, setSupportsHover] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const hasBoth = hasImage && hasText;
+  const isImageOnly = hasImage && !hasText;
 
   // Get favorite count - handle both _count and direct favoriteCount
   const favoriteCount =
     submission._count?.favorites ?? (submission as any).favoriteCount ?? 0;
 
+  // Check if device supports hover (not touch) - use effect to handle SSR
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSupportsHover(window.matchMedia("(hover: hover)").matches);
+    }
+  }, []);
+
+  const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
+    if (!supportsHover || !imageRef.current || !imageLoaded) return;
+    
+    const imageRect = imageRef.current.getBoundingClientRect();
+    
+    // Calculate mouse position relative to the image
+    const x = e.clientX - imageRect.left;
+    const y = e.clientY - imageRect.top;
+    
+    setZoomState({
+      isActive: true,
+      x,
+      y,
+      imageRect,
+    });
+  }, [supportsHover, imageLoaded]);
+
+  const handleImageMouseLeave = useCallback(() => {
+    setZoomState((prev) => ({ ...prev, isActive: false }));
+  }, []);
+
+  // Calculate zoom preview position and background
+  const ZOOM_SQUARE_SIZE = 200;
+  const ZOOM_PREVIEW_SIZE = 400;
+  // Zoom level is the ratio of preview to square - this ensures
+  // the preview shows exactly what's inside the square, magnified to fill it
+  const ZOOM_LEVEL = ZOOM_PREVIEW_SIZE / ZOOM_SQUARE_SIZE; // = 2x
+
+  const getZoomPreviewStyle = (): React.CSSProperties => {
+    if (!zoomState.isActive || !zoomState.imageRect || !imageRef.current || typeof window === "undefined") {
+      return { display: "none" };
+    }
+    
+    const imageWidth = zoomState.imageRect.width;
+    const imageHeight = zoomState.imageRect.height;
+    
+    // Don't show zoom preview if image is too small
+    if (imageWidth < ZOOM_SQUARE_SIZE || imageHeight < ZOOM_SQUARE_SIZE) {
+      return { display: "none" };
+    }
+    
+    // Get the clamped position to calculate correct zoom area
+    const halfSize = ZOOM_SQUARE_SIZE / 2;
+    const clampedX = Math.max(halfSize, Math.min(imageWidth - halfSize, zoomState.x));
+    const clampedY = Math.max(halfSize, Math.min(imageHeight - halfSize, zoomState.y));
+    
+    // Calculate background size in pixels - scale the DISPLAYED image by zoom level
+    // This ensures the zoom matches exactly what's shown on screen
+    const bgWidth = imageWidth * ZOOM_LEVEL;
+    const bgHeight = imageHeight * ZOOM_LEVEL;
+    
+    // Calculate background position to center the cursor position in the preview
+    // The zoomed cursor position is (clampedX * ZOOM_LEVEL, clampedY * ZOOM_LEVEL)
+    // We want that point to be at the center of the preview (PREVIEW_SIZE / 2)
+    const bgPosX = ZOOM_PREVIEW_SIZE / 2 - clampedX * ZOOM_LEVEL;
+    const bgPosY = ZOOM_PREVIEW_SIZE / 2 - clampedY * ZOOM_LEVEL;
+    
+    // Calculate zoom preview position (prefer top-right corner of viewport)
+    const margin = 20;
+    const previewX = window.innerWidth - ZOOM_PREVIEW_SIZE - margin;
+    const previewY = margin;
+    
+    return {
+      position: "fixed" as const,
+      backgroundImage: `url(${submission.imageUrl})`,
+      backgroundSize: `${bgWidth}px ${bgHeight}px`,
+      backgroundPosition: `${bgPosX}px ${bgPosY}px`,
+      backgroundRepeat: "no-repeat",
+      backgroundColor: "#000",
+      left: `${previewX}px`,
+      top: `${previewY}px`,
+    };
+  };
+
+  const getZoomSquareStyle = () => {
+    if (!zoomState.isActive || !imageContainerRef.current || !zoomState.imageRect) return {};
+    
+    const containerRect = imageContainerRef.current.getBoundingClientRect();
+    const imageRect = zoomState.imageRect;
+    
+    // Calculate square position relative to container
+    const imageLeft = imageRect.left - containerRect.left;
+    const imageTop = imageRect.top - containerRect.top;
+    
+    // Clamp square position to stay within image bounds
+    const halfSize = ZOOM_SQUARE_SIZE / 2;
+    const squareX = Math.max(
+      imageLeft,
+      Math.min(
+        imageLeft + imageRect.width - ZOOM_SQUARE_SIZE,
+        imageLeft + zoomState.x - halfSize
+      )
+    );
+    const squareY = Math.max(
+      imageTop,
+      Math.min(
+        imageTop + imageRect.height - ZOOM_SQUARE_SIZE,
+        imageTop + zoomState.y - halfSize
+      )
+    );
+    
+    // Only show zoom if image is large enough
+    if (imageRect.width < ZOOM_SQUARE_SIZE || imageRect.height < ZOOM_SQUARE_SIZE) {
+      return { display: "none" };
+    }
+    
+    return {
+      left: `${squareX}px`,
+      top: `${squareY}px`,
+    };
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[95vw] max-h-[95vh] border-none bg-black/90 p-0">
+      <DialogContent 
+        className={
+          isImageOnly
+            ? "w-screen h-screen max-w-none max-h-none border-none bg-black/90 p-0"
+            : "max-w-[95vw] max-h-[95vh] border-none bg-black/90 p-0"
+        }
+      >
         <div className="absolute right-4 top-4 z-10 flex gap-2">
-          <Button
-            asChild
-            variant="ghost"
-            className="rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
-          >
-            <Link href={`/s/${submission.id}`} onClick={(e) => e.stopPropagation()}>
-              View Full Page
-            </Link>
-          </Button>
+          {!hideGoToSubmission && (
+            <Button
+              asChild
+              variant="outline"
+            >
+              <Link href={`/s/${submission.id}`} onClick={(e) => e.stopPropagation()}>
+                Go To Submission
+              </Link>
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -95,22 +235,59 @@ export function SubmissionLightbox({
         )}
 
         <div
-          className="flex h-full w-full max-w-7xl flex-col p-4 md:flex-row md:items-center md:gap-6 md:p-8"
+          className={`flex h-full w-full flex-col ${
+            isImageOnly ? "p-0" : "max-w-7xl p-4 md:flex-row md:items-center md:gap-6 md:p-8"
+          }`}
           onClick={(e) => e.stopPropagation()}
         >
         {/* Image section */}
         {hasImage && (
           <div
-            className={`flex flex-1 items-center justify-center ${
+            ref={imageContainerRef}
+            className={`relative flex flex-1 items-center justify-center ${
               hasBoth ? "md:w-2/3" : "w-full"
-            } ${hasBoth && mobileView === "text" ? "hidden md:flex" : ""}`}
+            } ${hasBoth && mobileView === "text" ? "hidden md:flex" : ""} ${
+              isImageOnly ? "h-screen" : ""
+            }`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              ref={imageRef}
               src={submission.imageUrl!}
               alt={submission.title || "Submission"}
-              className="max-h-[80vh] max-w-full rounded-lg object-contain"
+              className={
+                isImageOnly
+                  ? "max-h-[100vh] max-w-[100vw] object-contain"
+                  : "max-h-[80vh] max-w-full rounded-lg object-contain"
+              }
+              onLoad={() => setImageLoaded(true)}
+              onMouseMove={handleImageMouseMove}
+              onMouseLeave={handleImageMouseLeave}
             />
+            
+            {/* Zoom square overlay */}
+            {zoomState.isActive && supportsHover && (
+              <div
+                className="pointer-events-none absolute z-20 border-2 border-white bg-white/10"
+                style={{
+                  width: `${ZOOM_SQUARE_SIZE}px`,
+                  height: `${ZOOM_SQUARE_SIZE}px`,
+                  ...getZoomSquareStyle(),
+                }}
+              />
+            )}
+            
+            {/* Zoom preview box */}
+            {zoomState.isActive && supportsHover && (
+              <div
+                className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl"
+                style={{
+                  width: `${ZOOM_PREVIEW_SIZE}px`,
+                  height: `${ZOOM_PREVIEW_SIZE}px`,
+                  ...getZoomPreviewStyle(),
+                }}
+              />
+            )}
           </div>
         )}
 
@@ -161,25 +338,21 @@ export function SubmissionLightbox({
 
           {/* Image-only metadata overlay */}
           {hasImage && !hasText && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 rounded-xl bg-black/70 px-6 py-4 backdrop-blur-sm">
+            <div className="absolute bottom-8 right-8 rounded-xl bg-black/70 px-6 py-4 backdrop-blur-sm">
               <div className="flex items-center gap-3">
-                <Badge className="bg-white/20 text-white">{word}</Badge>
-                {submission.title && (
-                  <span className="text-white">{submission.title}</span>
+                <span className="text-white font-medium">
+                  {submission.title || "Untitled"}
+                </span>
+                {submission.user && (
+                  <span className="text-zinc-300">
+                    {submission.user.name || "Anonymous"}
+                  </span>
                 )}
                 {favoriteCount > 0 && (
                   <div className="flex items-center gap-1.5 text-white">
                     <Heart className="h-4 w-4 fill-red-400 text-red-400" />
                     <span className="text-sm">{favoriteCount}</span>
                   </div>
-                )}
-                {submission.user && (
-                  <>
-                    <span className="text-zinc-400">by</span>
-                    <span className="text-white">
-                      {submission.user.name || "Anonymous"}
-                    </span>
-                  </>
                 )}
               </div>
             </div>

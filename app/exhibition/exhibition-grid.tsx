@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
+import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -121,8 +121,18 @@ function GridContent({
   onLoadMore: () => void;
   loadError: string | null;
 }) {
-  const router = useRouter();
+  const [selectedSubmission, setSelectedSubmission] = useState<ExhibitionSubmission | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const getWord = (submission: ExhibitionSubmission): string => {
+    if (!submission.prompt || !submission.wordIndex) return "";
+    const words = [
+      submission.prompt.word1,
+      submission.prompt.word2,
+      submission.prompt.word3,
+    ];
+    return words[submission.wordIndex - 1];
+  };
 
   useEffect(() => {
     if (!hasMore) return;
@@ -177,7 +187,7 @@ function GridContent({
                 transition={{ duration: 0.25 }}
                 whileHover={{ y: -4 }}
                 className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
-                onClick={() => router.push(`/s/${submission.id}`)}
+                onClick={() => setSelectedSubmission(submission)}
               >
                 {submission.imageUrl ? (
                   <div className="relative aspect-square overflow-hidden bg-muted">
@@ -285,6 +295,15 @@ function GridContent({
           </span>
         )}
       </div>
+
+      {selectedSubmission && (
+        <SubmissionLightbox
+          submission={selectedSubmission}
+          word={getWord(selectedSubmission)}
+          onClose={() => setSelectedSubmission(null)}
+          isOpen={!!selectedSubmission}
+        />
+      )}
     </>
   );
 }

@@ -7,6 +7,7 @@ import { SubmissionImage } from "@/components/submission-image";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
+import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface SubmissionDetailProps {
@@ -46,9 +47,20 @@ export function SubmissionDetail({
   isLoggedIn,
 }: SubmissionDetailProps) {
   const [mobileView, setMobileView] = useState<"image" | "text">("image");
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const hasBoth = hasImage && hasText;
+
+  const getWord = (): string => {
+    if (!submission.prompt || !submission.wordIndex) return "";
+    const words = [
+      submission.prompt.word1,
+      submission.prompt.word2,
+      submission.prompt.word3,
+    ];
+    return words[submission.wordIndex - 1];
+  };
 
   return (
     <FavoritesProvider
@@ -239,6 +251,7 @@ export function SubmissionDetail({
                   imageUrl={submission.imageUrl!}
                   alt={submission.title || "Submission"}
                   tags={submission.tags}
+                  onExpand={() => setIsLightboxOpen(true)}
                 />
               </div>
             )}
@@ -268,6 +281,23 @@ export function SubmissionDetail({
           </div>
         </main>
       </div>
+
+      {hasImage && (
+        <SubmissionLightbox
+          submission={{
+            id: submission.id,
+            title: submission.title,
+            imageUrl: submission.imageUrl,
+            text: submission.text,
+            user: submission.user,
+            _count: submission._count,
+          }}
+          word={getWord()}
+          onClose={() => setIsLightboxOpen(false)}
+          isOpen={isLightboxOpen}
+          hideGoToSubmission={true}
+        />
+      )}
     </FavoritesProvider>
   );
 }
