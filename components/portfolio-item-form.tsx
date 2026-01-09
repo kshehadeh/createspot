@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { ConfirmModal } from "@/components/confirm-modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,18 +35,20 @@ const SHARE_STATUS_OPTIONS = [
   },
 ];
 
+interface SubmissionData {
+  id: string;
+  title: string | null;
+  imageUrl: string | null;
+  text: string | null;
+  tags: string[];
+  category: string | null;
+  shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
+}
+
 interface PortfolioItemFormProps {
   mode: "create" | "edit";
-  initialData?: {
-    id: string;
-    title: string | null;
-    imageUrl: string | null;
-    text: string | null;
-    tags: string[];
-    category: string | null;
-    shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
-  };
-  onSuccess?: () => void;
+  initialData?: SubmissionData;
+  onSuccess?: (data?: SubmissionData) => void;
   onCancel?: () => void;
 }
 
@@ -71,6 +74,7 @@ export function PortfolioItemForm({
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showRemoveImageConfirm, setShowRemoveImageConfirm] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -202,7 +206,19 @@ export function PortfolioItemForm({
       }
 
       if (onSuccess) {
-        onSuccess();
+        // Pass the updated data back for edit mode
+        const updatedData: SubmissionData | undefined = initialData
+          ? {
+              id: initialData.id,
+              title: title || null,
+              imageUrl: imageUrl || null,
+              text: text || null,
+              tags: trimmedTags,
+              category: category || null,
+              shareStatus,
+            }
+          : undefined;
+        onSuccess(updatedData);
       } else {
         router.refresh();
       }
@@ -249,7 +265,7 @@ export function PortfolioItemForm({
               type="button"
               variant="destructive"
               size="icon"
-              onClick={handleRemoveImage}
+              onClick={() => setShowRemoveImageConfirm(true)}
               className="absolute top-2 right-2"
             >
               <svg
@@ -476,6 +492,19 @@ export function PortfolioItemForm({
           </Button>
         )}
       </div>
+
+      {/* Remove Image Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showRemoveImageConfirm}
+        title="Remove Image"
+        message="Are you sure you want to remove this image from your submission? This action cannot be undone."
+        confirmLabel="Remove"
+        onConfirm={() => {
+          handleRemoveImage();
+          setShowRemoveImageConfirm(false);
+        }}
+        onCancel={() => setShowRemoveImageConfirm(false)}
+      />
     </form>
   );
 }

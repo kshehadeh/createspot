@@ -224,7 +224,7 @@ export default async function ProfilePage({
       : null;
 
   return (
-    <PageLayout maxWidth="max-w-3xl">
+    <PageLayout maxWidth="max-w-5xl">
       {/* Track profile view for non-owners (not in public view mode) */}
       {!effectiveIsOwnProfile && <ProfileViewTracker profileUserId={user.id} />}
 

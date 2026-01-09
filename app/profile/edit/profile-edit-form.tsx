@@ -8,6 +8,7 @@ import { TextThumbnail } from "@/components/text-thumbnail";
 import { PortfolioItemForm } from "@/components/portfolio-item-form";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { PortfolioGrid } from "@/components/portfolio-grid";
+import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -1089,23 +1090,6 @@ export function ProfileEditForm({
                 />
               </CardContent>
             </Card>
-          ) : editingItem ? (
-            <Card className="rounded-xl">
-              <CardContent className="p-6">
-                <h3 className="mb-4 text-lg font-semibold text-foreground">
-                  Edit Portfolio Item
-                </h3>
-                <PortfolioItemForm
-                  mode="edit"
-                  initialData={editingItem}
-                  onSuccess={() => {
-                    setEditingItem(null);
-                    router.refresh();
-                  }}
-                  onCancel={() => setEditingItem(null)}
-                />
-              </CardContent>
-            </Card>
           ) : (
             <Button
               type="button"
@@ -1131,7 +1115,7 @@ export function ProfileEditForm({
           )}
 
           {/* Portfolio Items Grid */}
-          {portfolioItems.length > 0 && !showAddForm && !editingItem && (
+          {portfolioItems.length > 0 && !showAddForm && (
             <div>
               <h3 className="mb-4 text-sm font-medium text-foreground">
                 Your Portfolio Items ({portfolioItems.length})
@@ -1150,8 +1134,7 @@ export function ProfileEditForm({
 
           {/* Add from Prompt Submissions */}
           {submissions.filter((s) => !s.isPortfolio && s.prompt).length > 0 &&
-            !showAddForm &&
-            !editingItem && (
+            !showAddForm && (
               <div>
                 <h3 className="mb-4 text-sm font-medium text-foreground">
                   Add Prompt Submissions to Portfolio
@@ -1227,6 +1210,44 @@ export function ProfileEditForm({
           confirmLabel="Delete"
           onConfirm={() => handleDeletePortfolioItem(deletingItem)}
           onCancel={() => setDeletingItem(null)}
+        />
+      )}
+
+      {/* Edit Modal */}
+      {editingItem && (
+        <SubmissionEditModal
+          isOpen={true}
+          onClose={() => setEditingItem(null)}
+          initialData={{
+            id: editingItem.id,
+            title: editingItem.title,
+            imageUrl: editingItem.imageUrl,
+            text: editingItem.text,
+            tags: editingItem.tags,
+            category: editingItem.category,
+            shareStatus: editingItem.shareStatus,
+          }}
+          onSuccess={(updatedData) => {
+            // Update the local portfolio items state with the new data
+            if (updatedData) {
+              setPortfolioItems((prev) =>
+                prev.map((item) =>
+                  item.id === updatedData.id
+                    ? {
+                        ...item,
+                        title: updatedData.title,
+                        imageUrl: updatedData.imageUrl,
+                        text: updatedData.text,
+                        tags: updatedData.tags,
+                        category: updatedData.category,
+                        shareStatus: updatedData.shareStatus,
+                      }
+                    : item
+                )
+              );
+            }
+            setEditingItem(null);
+          }}
         />
       )}
     </div>

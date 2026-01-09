@@ -81,10 +81,21 @@ export function PortfolioGrid({
 
   // Update ordered items when items prop changes (but not during reordering)
   useEffect(() => {
-    // Check if items prop actually changed (from server)
+    // Check if items prop actually changed (from server or parent state update)
     const itemsChanged = 
       items.length !== lastItemsRef.current.length || 
-      items.some((item, idx) => item.id !== lastItemsRef.current[idx]?.id);
+      items.some((item, idx) => {
+        const lastItem = lastItemsRef.current[idx];
+        if (!lastItem) return true;
+        // Check ID and key properties that might change during editing
+        return (
+          item.id !== lastItem.id ||
+          item.title !== lastItem.title ||
+          item.imageUrl !== lastItem.imageUrl ||
+          item.text !== lastItem.text ||
+          item.category !== lastItem.category
+        );
+      });
     
     if (itemsChanged && !isReorderingRef.current && !isSaving) {
       setOrderedItems(items);
@@ -268,7 +279,7 @@ function SortablePortfolioItem({
 
         {/* Overlay information in lower left */}
         <div className="absolute bottom-0 left-0 max-w-[85%] bg-gradient-to-tr from-black/80 via-black/70 to-transparent p-2.5 pr-6">
-          <h3 className="truncate text-sm font-medium text-white drop-shadow-sm xl:hidden">
+          <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
             {item.title || "Untitled"}
           </h3>
         </div>
@@ -323,7 +334,7 @@ function SortablePortfolioItem({
             onClick={handleEdit}
           >
             <svg
-              className="mr-1.5 h-3.5 w-3.5"
+              className="h-3.5 w-3.5 md:mr-1.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -335,7 +346,7 @@ function SortablePortfolioItem({
                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
               />
             </svg>
-            Edit
+            <span className="hidden md:inline xl:hidden">Edit</span>
           </Button>
           <Button
             variant="ghost"
@@ -344,7 +355,7 @@ function SortablePortfolioItem({
             onClick={(e) => onDeleteClick(e, item)}
           >
             <svg
-              className="mr-1.5 h-3.5 w-3.5"
+              className="h-3.5 w-3.5 md:mr-1.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -356,7 +367,7 @@ function SortablePortfolioItem({
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
-            Delete
+            <span className="hidden md:inline xl:hidden">Delete</span>
           </Button>
         </CardContent>
       )}
@@ -499,7 +510,7 @@ function PortfolioGridContent({
 
                   {/* Overlay information in lower left */}
                   <div className="absolute bottom-0 left-0 max-w-[85%] bg-gradient-to-tr from-black/80 via-black/70 to-transparent p-2.5 pr-6">
-                    <h3 className="truncate text-sm font-medium text-white drop-shadow-sm xl:hidden">
+                    <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
                       {item.title || "Untitled"}
                     </h3>
                   </div>
@@ -575,8 +586,8 @@ function PortfolioGridContent({
               onClick={() => setCategoryFilter(category)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                 categoryFilter === category
-                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                  : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               }`}
             >
               {category}

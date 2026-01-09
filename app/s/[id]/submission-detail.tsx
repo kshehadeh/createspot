@@ -8,7 +8,9 @@ import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
+import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface SubmissionDetailProps {
   submission: {
@@ -19,6 +21,7 @@ interface SubmissionDetailProps {
     wordIndex: number | null;
     category: string | null;
     tags: string[];
+    shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
     user: {
       id: string;
       name: string | null;
@@ -40,14 +43,21 @@ interface SubmissionDetailProps {
     };
   };
   isLoggedIn: boolean;
+  isOwner?: boolean;
 }
 
 export function SubmissionDetail({
-  submission,
+  submission: initialSubmission,
   isLoggedIn,
+  isOwner = false,
 }: SubmissionDetailProps) {
   const [mobileView, setMobileView] = useState<"image" | "text">("image");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  // Local state for submission data that can be updated after editing
+  const [submission, setSubmission] = useState(initialSubmission);
+  
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const hasBoth = hasImage && hasText;
@@ -178,6 +188,29 @@ export function SubmissionDetail({
 
                 {/* Actions */}
                 <div className="flex flex-wrap items-center gap-3">
+                  {isOwner && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="gap-1.5"
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                      Edit
+                    </Button>
+                  )}
                   <ShareButton
                     submissionId={submission.id}
                     title={submission.title}
@@ -296,6 +329,36 @@ export function SubmissionDetail({
           onClose={() => setIsLightboxOpen(false)}
           isOpen={isLightboxOpen}
           hideGoToSubmission={true}
+        />
+      )}
+
+      {isOwner && (
+        <SubmissionEditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          initialData={{
+            id: submission.id,
+            title: submission.title,
+            imageUrl: submission.imageUrl,
+            text: submission.text,
+            tags: submission.tags,
+            category: submission.category,
+            shareStatus: submission.shareStatus,
+          }}
+          onSuccess={(updatedData) => {
+            // Update the local submission state with the new data
+            if (updatedData) {
+              setSubmission((prev) => ({
+                ...prev,
+                title: updatedData.title,
+                imageUrl: updatedData.imageUrl,
+                text: updatedData.text,
+                tags: updatedData.tags,
+                category: updatedData.category,
+                shareStatus: updatedData.shareStatus,
+              }));
+            }
+          }}
         />
       )}
     </FavoritesProvider>

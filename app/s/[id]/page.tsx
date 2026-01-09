@@ -133,5 +133,7 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
   }
   // PROFILE and PUBLIC are visible to everyone
 
-  return <SubmissionDetail submission={submission} isLoggedIn={!!session?.user} />;
+  const isOwner = !!session?.user && session.user.id === submission.userId;
+
+  return <SubmissionDetail submission={submission} isLoggedIn={!!session?.user} isOwner={isOwner} />;
 }

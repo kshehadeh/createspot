@@ -85,7 +85,7 @@ export default async function ProfileEditPage() {
   }
 
   return (
-    <PageLayout maxWidth="max-w-3xl" className="w-full">
+    <PageLayout maxWidth="max-w-5xl" className="w-full">
       <div className="mb-8">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
