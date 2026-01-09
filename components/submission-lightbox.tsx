@@ -200,14 +200,17 @@ export function SubmissionLightbox({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-screen h-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden">
+      <DialogContent 
+        className="w-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden"
+        style={{ height: "100dvh", minHeight: "100vh" }}
+      >
         <VisuallyHidden>
           <DialogTitle>
             {submission.title || "Submission"}{" "}
             {submission.user?.name ? `by ${submission.user.name}` : ""}
           </DialogTitle>
         </VisuallyHidden>
-        <div className="absolute right-4 top-4 z-10 flex gap-2">
+        <div className="absolute right-4 z-10 flex gap-2" style={{ top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)` }}>
           {!hideGoToSubmission && (
             <Button asChild variant="outline">
               <Link
@@ -236,7 +239,7 @@ export function SubmissionLightbox({
           {hasImage && (
             <div
               ref={imageContainerRef}
-              className="relative flex h-screen w-full flex-1 items-center justify-center"
+              className="relative flex h-full w-full flex-1 items-center justify-center"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -277,7 +280,7 @@ export function SubmissionLightbox({
 
           {/* Image metadata overlay */}
           {hasImage && (
-            <div className="absolute bottom-8 right-8 z-10 rounded-xl bg-black/70 px-6 py-4 backdrop-blur-sm">
+            <div className="absolute right-8 z-10 rounded-xl bg-black/70 px-6 py-4 backdrop-blur-sm" style={{ bottom: `max(2rem, env(safe-area-inset-bottom, 0px) + 2rem)` }}>
               <div className="flex items-center gap-3">
                 <span className="text-white font-medium">
                   {submission.title || "Untitled"}
