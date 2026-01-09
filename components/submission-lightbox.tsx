@@ -135,9 +135,10 @@ export function SubmissionLightbox({
     const bgPosX = ZOOM_PREVIEW_SIZE / 2 - clampedX * ZOOM_LEVEL;
     const bgPosY = ZOOM_PREVIEW_SIZE / 2 - clampedY * ZOOM_LEVEL;
 
-    // Calculate zoom preview position (prefer top-right corner of viewport)
+    // Calculate zoom preview position (avoid top-right where close button is)
+    // Always position in top-left corner for consistency
     const margin = 20;
-    const previewX = window.innerWidth - ZOOM_PREVIEW_SIZE - margin;
+    const previewX = margin;
     const previewY = margin;
 
     return {
@@ -201,7 +202,7 @@ export function SubmissionLightbox({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="w-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden"
+        className="w-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden overflow-hidden"
         style={{ height: "100dvh", minHeight: "100vh" }}
       >
         <VisuallyHidden>
@@ -215,7 +216,7 @@ export function SubmissionLightbox({
           style={{ top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)` }}
         >
           {!hideGoToSubmission && (
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="min-h-[44px] min-w-[44px]">
               <Link
                 href={`/s/${submission.id}`}
                 onClick={(e) => e.stopPropagation()}
@@ -228,7 +229,7 @@ export function SubmissionLightbox({
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="rounded-full bg-black/50 text-white hover:bg-black/70"
+            className="min-h-[44px] min-w-[44px] rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30 dark:bg-white/20 dark:text-white dark:hover:bg-white/30"
           >
             <X className="h-6 w-6" />
           </Button>
@@ -242,17 +243,19 @@ export function SubmissionLightbox({
           {hasImage && (
             <div
               ref={imageContainerRef}
-              className="relative flex h-full w-full flex-1 items-center justify-center"
+              className="relative flex h-full w-full flex-1 items-center justify-center overflow-hidden touch-none"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 ref={imageRef}
                 src={submission.imageUrl!}
                 alt={submission.title || "Submission"}
-                className="max-h-[100vh] max-w-[100vw] object-contain"
+                className="max-h-[100dvh] max-w-[100vw] h-auto w-auto object-contain select-none"
+                style={{ maxHeight: "100dvh", maxWidth: "100vw" }}
                 onLoad={() => setImageLoaded(true)}
                 onMouseMove={handleImageMouseMove}
                 onMouseLeave={handleImageMouseLeave}
+                draggable={false}
               />
 
               {/* Zoom square overlay */}
@@ -284,24 +287,24 @@ export function SubmissionLightbox({
           {/* Image metadata overlay */}
           {hasImage && (
             <div
-              className="absolute right-8 z-10 rounded-xl bg-black/70 px-6 py-4 backdrop-blur-sm"
+              className="absolute right-4 left-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:right-8 sm:left-auto sm:px-6 sm:py-4"
               style={{
-                bottom: `max(2rem, env(safe-area-inset-bottom, 0px) + 2rem)`,
+                bottom: `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
               }}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-white font-medium">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <span className="text-white font-medium text-sm sm:text-base">
                   {submission.title || "Untitled"}
                 </span>
                 {submission.user && (
-                  <span className="text-zinc-300">
+                  <span className="text-zinc-300 text-xs sm:text-sm">
                     {submission.user.name || "Anonymous"}
                   </span>
                 )}
                 {favoriteCount > 0 && (
                   <div className="flex items-center gap-1.5 text-white">
-                    <Heart className="h-4 w-4 fill-red-400 text-red-400" />
-                    <span className="text-sm">{favoriteCount}</span>
+                    <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
+                    <span className="text-xs sm:text-sm">{favoriteCount}</span>
                   </div>
                 )}
               </div>

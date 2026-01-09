@@ -10,6 +10,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface ExhibitionFiltersProps {
   categories: string[];
@@ -93,7 +95,7 @@ export function ExhibitionFilters({
   const activeFiltersCount = (initialCategory ? 1 : 0) + (initialTag ? 1 : 0);
 
   return (
-    <Card className="mb-8 rounded-2xl shadow-sm">
+    <Card className="mb-8 rounded-2xl border-0 shadow-none">
       <CardContent className="p-6">
         <form onSubmit={handleSearch}>
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
@@ -111,10 +113,10 @@ export function ExhibitionFilters({
                   d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
                 />
               </svg>
-              <input
+              <Input
                 value={searchValue}
                 onChange={(event) => setSearchValue(event.target.value)}
-                className="w-full rounded-xl border border-input bg-background px-10 py-3 text-sm text-foreground shadow-inner transition focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                className="h-10 w-full rounded-xl pl-10 pr-10 shadow-inner"
                 placeholder="Search titles, tags, prompt words, or keywords"
               />
               {isPending && (
@@ -124,20 +126,18 @@ export function ExhibitionFilters({
               )}
             </div>
             <div className="flex gap-2">
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
-              >
+              <Button type="submit" className="rounded-xl">
                 Search
-              </button>
+              </Button>
               <Popover open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
                 <PopoverTrigger asChild>
-                  <button
+                  <Button
                     type="button"
-                    className={`inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition ${
+                    variant="outline"
+                    className={`rounded-xl gap-2 ${
                       activeFiltersCount > 0
                         ? "border-amber-500 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-950/30 dark:text-amber-300 dark:hover:bg-amber-950/50"
-                        : "border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+                        : ""
                     }`}
                   >
                     <svg
@@ -159,7 +159,7 @@ export function ExhibitionFilters({
                         {activeFiltersCount}
                       </Badge>
                     )}
-                  </button>
+                  </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-80 rounded-xl p-4" align="end">
                   <div className="max-h-96 space-y-6 overflow-y-auto">
@@ -231,28 +231,30 @@ export function ExhibitionFilters({
 
                   {hasFilters && (
                     <div className="mt-4 border-t border-border pt-4">
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
                         onClick={() => {
                           handleClear();
                           setIsFiltersOpen(false);
                         }}
-                        className="w-full rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
+                        className="w-full rounded-lg"
                       >
                         Clear All Filters
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </PopoverContent>
               </Popover>
               {hasFilters && (
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={handleClear}
-                  className="inline-flex items-center justify-center rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  className="rounded-xl"
                 >
                   Clear
-                </button>
+                </Button>
               )}
             </div>
           </div>
