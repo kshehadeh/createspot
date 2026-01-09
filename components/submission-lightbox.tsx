@@ -35,7 +35,6 @@ interface SubmissionLightboxProps {
 
 export function SubmissionLightbox({
   submission,
-  word,
   onClose,
   isOpen,
   hideGoToSubmission = false,
