@@ -109,7 +109,7 @@ export function Header({ user }: HeaderProps) {
               base="currentColor"
               highlight="rgb(161 161 170)"
             />
-            <span className="hidden whitespace-nowrap text-xl font-normal md:inline">
+            <span className="hidden whitespace-nowrap text-2xl font-normal md:inline font-permanent-marker">
               Create Spot
             </span>
           </Link>
@@ -214,7 +214,7 @@ export function Header({ user }: HeaderProps) {
         <div className="flex h-full flex-col">
           {/* Menu Header */}
           <div className="flex items-center justify-between border-b border-border px-6 py-4">
-            <span className="text-lg font-medium text-foreground">
+            <span className="text-xl font-medium text-foreground font-permanent-marker">
               Create Spot
             </span>
             <button

@@ -138,7 +138,7 @@ export default async function Home() {
           <div className="flex flex-col items-center gap-5 text-center">
             <div className="w-full">
               <h1 className="mb-6 text-5xl font-bold tracking-tight text-foreground sm:text-7xl">
-                Where creativity
+                Where <span className="font-permanent-marker">creativity</span>
                 <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
                   finds its home
                 </span>
