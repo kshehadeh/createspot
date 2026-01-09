@@ -158,6 +158,7 @@ export default async function ProfileEditPage() {
                 word3: s.prompt.word3,
               }
             : null,
+          shareStatus: s.shareStatus,
         }))}
         portfolioItems={portfolioItems.map((p) => ({
           id: p.id,

@@ -5,13 +5,11 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
-import { PortfolioItemForm } from "@/components/portfolio-item-form";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -38,6 +36,7 @@ interface SubmissionOption {
     word2: string;
     word3: string;
   } | null;
+  shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
 }
 
 interface PortfolioItem {
@@ -131,8 +130,10 @@ export function ProfileEditForm({
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(
     initialPortfolioItems,
   );
-  const [showAddForm, setShowAddForm] = useState(false);
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
+  const [addingToPortfolio, setAddingToPortfolio] =
+    useState<SubmissionOption | null>(null);
+  const [creatingPortfolioItem, setCreatingPortfolioItem] = useState(false);
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
 
   // Sync portfolio items state when initialPortfolioItems prop changes (e.g., after router.refresh())
@@ -617,51 +618,6 @@ export function ProfileEditForm({
     await handleDeletePortfolioItem(item);
   };
 
-  const handleTogglePortfolio = async (
-    submission: SubmissionOption,
-    addToPortfolio: boolean,
-  ) => {
-    try {
-      const response = await fetch(`/api/submissions/${submission.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          isPortfolio: addToPortfolio,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update");
-      }
-
-      if (addToPortfolio) {
-        setPortfolioItems((prev) => [
-          ...prev,
-          {
-            id: submission.id,
-            title: submission.title,
-            imageUrl: submission.imageUrl,
-            text: submission.text,
-            isPortfolio: true,
-            portfolioOrder: null,
-            tags: submission.tags,
-            category: submission.category,
-            promptId: null,
-            wordIndex: submission.wordIndex,
-            prompt: submission.prompt,
-            _count: { favorites: 0 },
-          },
-        ]);
-      } else {
-        setPortfolioItems((prev) => prev.filter((p) => p.id !== submission.id));
-      }
-
-      router.refresh();
-    } catch {
-      setError("Failed to update portfolio. Please try again.");
-    }
-  };
-
   const getSubmissionLabel = (submission: SubmissionOption): string => {
     if (submission.prompt && submission.wordIndex) {
       return [
@@ -1135,48 +1091,30 @@ export function ProfileEditForm({
           <div className="w-full">
             <div className="space-y-6">
               {/* Add New Portfolio Item */}
-              {showAddForm ? (
-                <Card className="rounded-xl">
-                  <CardContent className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-foreground">
-                      Add Portfolio Item
-                    </h3>
-                    <PortfolioItemForm
-                      mode="create"
-                      onSuccess={() => {
-                        setShowAddForm(false);
-                        router.refresh();
-                      }}
-                      onCancel={() => setShowAddForm(false)}
-                    />
-                  </CardContent>
-                </Card>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowAddForm(true)}
-                  className="w-full border-2 border-dashed py-8"
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCreatingPortfolioItem(true)}
+                className="w-full border-2 border-dashed py-8"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                  Add New Portfolio Item
-                </Button>
-              )}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                Add New Portfolio Item
+              </Button>
 
               {/* Portfolio Items Grid */}
-              {portfolioItems.length > 0 && !showAddForm && (
+              {portfolioItems.length > 0 && (
                 <div>
                   <h3 className="mb-4 text-sm font-medium text-foreground">
                     Your Portfolio Items ({portfolioItems.length})
@@ -1195,70 +1133,66 @@ export function ProfileEditForm({
 
               {/* Add from Prompt Submissions */}
               {submissions.filter((s) => !s.isPortfolio && s.prompt).length >
-                0 &&
-                !showAddForm && (
-                  <div>
-                    <h3 className="mb-4 text-sm font-medium text-foreground">
-                      Add Prompt Submissions to Portfolio
-                    </h3>
-                    <p className="mb-4 text-xs text-muted-foreground">
-                      Your prompt submissions can also be added to your
-                      portfolio
-                    </p>
-                    <div className="space-y-2">
-                      {submissions
-                        .filter((s) => !s.isPortfolio && s.prompt)
-                        .slice(0, 5)
-                        .map((submission) => {
-                          const word = getSubmissionLabel(submission);
-                          return (
-                            <div
-                              key={submission.id}
-                              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
-                            >
-                              {submission.imageUrl ? (
-                                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
-                                  <Image
-                                    src={submission.imageUrl}
-                                    alt={submission.title || word}
-                                    fill
-                                    className="object-cover"
-                                    sizes="40px"
-                                  />
-                                </div>
-                              ) : submission.text ? (
-                                <TextThumbnail
-                                  text={submission.text}
-                                  className="h-10 w-10 shrink-0 rounded-lg"
+                0 && (
+                <div>
+                  <h3 className="mb-4 text-sm font-medium text-foreground">
+                    Add Prompt Submissions to Portfolio
+                  </h3>
+                  <p className="mb-4 text-xs text-muted-foreground">
+                    Your prompt submissions can also be added to your portfolio
+                  </p>
+                  <div className="space-y-2">
+                    {submissions
+                      .filter((s) => !s.isPortfolio && s.prompt)
+                      .slice(0, 5)
+                      .map((submission) => {
+                        const word = getSubmissionLabel(submission);
+                        return (
+                          <div
+                            key={submission.id}
+                            className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+                          >
+                            {submission.imageUrl ? (
+                              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
+                                <Image
+                                  src={submission.imageUrl}
+                                  alt={submission.title || word}
+                                  fill
+                                  className="object-cover"
+                                  sizes="40px"
                                 />
-                              ) : (
-                                <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
-                              )}
-                              <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-medium text-foreground">
-                                  {submission.title || word}
-                                </p>
-                                <span className="text-xs text-muted-foreground">
-                                  {word}
-                                </span>
                               </div>
-                              <Button
-                                type="button"
-                                variant="secondary"
-                                size="sm"
-                                onClick={() =>
-                                  handleTogglePortfolio(submission, true)
-                                }
-                                className="shrink-0"
-                              >
-                                Add to Portfolio
-                              </Button>
+                            ) : submission.text ? (
+                              <TextThumbnail
+                                text={submission.text}
+                                className="h-10 w-10 shrink-0 rounded-lg"
+                              />
+                            ) : (
+                              <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium text-foreground">
+                                {submission.title || word}
+                              </p>
+                              <span className="text-xs text-muted-foreground">
+                                {word}
+                              </span>
                             </div>
-                          );
-                        })}
-                    </div>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => setAddingToPortfolio(submission)}
+                              className="shrink-0"
+                            >
+                              Add to Portfolio
+                            </Button>
+                          </div>
+                        );
+                      })}
                   </div>
-                )}
+                </div>
+              )}
             </div>
           </div>
         </TabsContent>
@@ -1310,6 +1244,60 @@ export function ProfileEditForm({
               );
             }
             setEditingItem(null);
+          }}
+        />
+      )}
+
+      {/* Create New Portfolio Item Modal */}
+      {creatingPortfolioItem && (
+        <SubmissionEditModal
+          isOpen={true}
+          onClose={() => setCreatingPortfolioItem(false)}
+          mode="create"
+          onSuccess={() => {
+            setCreatingPortfolioItem(false);
+          }}
+        />
+      )}
+
+      {/* Add to Portfolio Modal */}
+      {addingToPortfolio && (
+        <SubmissionEditModal
+          isOpen={true}
+          onClose={() => setAddingToPortfolio(null)}
+          mode="add-to-portfolio"
+          initialData={{
+            id: addingToPortfolio.id,
+            title: addingToPortfolio.title,
+            imageUrl: addingToPortfolio.imageUrl,
+            text: addingToPortfolio.text,
+            tags: addingToPortfolio.tags,
+            category: addingToPortfolio.category,
+            shareStatus: addingToPortfolio.shareStatus || "PUBLIC",
+          }}
+          onSuccess={(updatedData) => {
+            // Add the submission to portfolio items state
+            if (updatedData && addingToPortfolio) {
+              setPortfolioItems((prev) => [
+                ...prev,
+                {
+                  id: updatedData.id,
+                  title: updatedData.title,
+                  imageUrl: updatedData.imageUrl,
+                  text: updatedData.text,
+                  isPortfolio: true,
+                  portfolioOrder: null,
+                  tags: updatedData.tags,
+                  category: updatedData.category,
+                  promptId: null,
+                  wordIndex: addingToPortfolio.wordIndex,
+                  prompt: addingToPortfolio.prompt,
+                  _count: { favorites: 0 },
+                  shareStatus: updatedData.shareStatus,
+                },
+              ]);
+            }
+            setAddingToPortfolio(null);
           }}
         />
       )}

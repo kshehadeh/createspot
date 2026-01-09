@@ -50,6 +50,7 @@ interface PortfolioItemFormProps {
   initialData?: SubmissionData;
   onSuccess?: (data?: SubmissionData) => void;
   onCancel?: () => void;
+  setIsPortfolio?: boolean;
 }
 
 export function PortfolioItemForm({
@@ -57,6 +58,7 @@ export function PortfolioItemForm({
   initialData,
   onSuccess,
   onCancel,
+  setIsPortfolio = false,
 }: PortfolioItemFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -197,6 +199,7 @@ export function PortfolioItemForm({
             tags: trimmedTags,
             category: category || null,
             shareStatus,
+            ...(setIsPortfolio ? { isPortfolio: true } : {}),
           }),
         });
 
