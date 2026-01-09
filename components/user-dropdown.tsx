@@ -44,17 +44,9 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
         <ChevronDown className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem asChild>
-          <Link href="/profile/edit">Edit Profile</Link>
-        </DropdownMenuItem>
         {id && (
           <DropdownMenuItem asChild>
-            <Link href="/profile/edit#portfolio">Edit Portfolio</Link>
-          </DropdownMenuItem>
-        )}
-        {id && (
-          <DropdownMenuItem asChild>
-            <Link href={`/profile/${id}`}>View Public Profile</Link>
+            <Link href={`/profile/${id}`}>View Profile</Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>

@@ -29,6 +29,7 @@ import { ConfirmModal } from "@/components/confirm-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getCategoryIcon } from "@/lib/categories";
 
 interface PortfolioItem {
   id: string;
@@ -269,30 +270,20 @@ function SortablePortfolioItem({
 
         {/* Overlay information in lower left */}
         <div className="absolute bottom-0 left-0 max-w-[85%] bg-gradient-to-tr from-black/80 via-black/70 to-transparent p-2.5 pr-6">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {item.category && (
-              <Badge className="rounded-full border-0 bg-white/20 text-white backdrop-blur-sm hover:bg-white/30">
-                {item.category}
-              </Badge>
-            )}
-            {showPromptBadge && item.promptId && item.prompt && (
-              <Badge className="rounded-full border-0 bg-emerald-500/80 text-white backdrop-blur-sm hover:bg-emerald-500/90">
-                {item.wordIndex
-                  ? [
-                      item.prompt.word1,
-                      item.prompt.word2,
-                      item.prompt.word3,
-                    ][item.wordIndex - 1]
-                  : "Prompt"}
-              </Badge>
-            )}
-          </div>
-          {item.title && (
-            <h3 className="mt-1 line-clamp-1 text-sm font-medium text-white drop-shadow-sm">
-              {item.title}
-            </h3>
-          )}
+          <h3 className="truncate text-sm font-medium text-white drop-shadow-sm xl:hidden">
+            {item.title || "Untitled"}
+          </h3>
         </div>
+
+        {/* Category icon in lower right */}
+        {(() => {
+          const CategoryIcon = getCategoryIcon(item.category);
+          return CategoryIcon ? (
+            <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/40 backdrop-blur-sm">
+              <CategoryIcon className="h-4 w-4 text-white/60" />
+            </div>
+          ) : null;
+        })()}
 
         {/* Favorite button in top right */}
         {isLoggedIn && (
@@ -510,30 +501,20 @@ function PortfolioGridContent({
 
                   {/* Overlay information in lower left */}
                   <div className="absolute bottom-0 left-0 max-w-[85%] bg-gradient-to-tr from-black/80 via-black/70 to-transparent p-2.5 pr-6">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {item.category && (
-                        <Badge className="rounded-full border-0 bg-white/20 text-white backdrop-blur-sm hover:bg-white/30">
-                          {item.category}
-                        </Badge>
-                      )}
-                      {showPromptBadge && item.promptId && item.prompt && (
-                        <Badge className="rounded-full border-0 bg-prompt/80 text-white backdrop-blur-sm hover:bg-prompt/90">
-                          {item.wordIndex
-                            ? [
-                                item.prompt.word1,
-                                item.prompt.word2,
-                                item.prompt.word3,
-                              ][item.wordIndex - 1]
-                            : "Prompt"}
-                        </Badge>
-                      )}
-                    </div>
-                    {item.title && (
-                      <h3 className="mt-1 line-clamp-1 text-sm font-medium text-white drop-shadow-sm">
-                        {item.title}
-                      </h3>
-                    )}
+                    <h3 className="truncate text-sm font-medium text-white drop-shadow-sm xl:hidden">
+                      {item.title || "Untitled"}
+                    </h3>
                   </div>
+
+                  {/* Category icon in lower right */}
+                  {(() => {
+                    const CategoryIcon = getCategoryIcon(item.category);
+                    return CategoryIcon ? (
+                      <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/40 backdrop-blur-sm">
+                        <CategoryIcon className="h-4 w-4 text-white/60" />
+                      </div>
+                    ) : null;
+                  })()}
 
                   {/* Favorite button in top right */}
                   {isLoggedIn && (

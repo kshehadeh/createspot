@@ -4,6 +4,14 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { ProfileEditForm } from "./profile-edit-form";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Eye, ChevronDown } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -77,7 +85,7 @@ export default async function ProfileEditPage() {
   }
 
   return (
-    <PageLayout maxWidth="max-w-none" className="w-full">
+    <PageLayout maxWidth="max-w-3xl" className="w-full">
       <div className="mb-8">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
@@ -104,12 +112,28 @@ export default async function ProfileEditPage() {
               </p>
             </div>
           </div>
-          <Link
-            href={`/profile/${user.id}`}
-            className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            View Profile
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="gap-2"
+              >
+                <Eye className="h-4 w-4" />
+                View Profile
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/profile/${user.id}`}>View As Owner</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/profile/${user.id}?view=public`}>
+                  View as Public
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

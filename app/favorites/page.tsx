@@ -54,10 +54,10 @@ export default async function FavoritesPage() {
             You haven&apos;t favorited any submissions yet.
           </p>
           <Link
-            href="/prompt"
+            href="/exhibition"
             className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Explore Prompts
+            Explore Exhibits
           </Link>
         </div>
       )}

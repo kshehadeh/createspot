@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { prisma } from "@/lib/prisma";
+import sharp from "sharp";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -76,7 +77,14 @@ export default async function OpenGraphImage({ params }: RouteParams) {
       const imageResponse = await fetch(featuredImageUrl);
       if (imageResponse.ok) {
         const arrayBuffer = await imageResponse.arrayBuffer();
-        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        const buffer = Buffer.from(arrayBuffer);
+        
+        // Process image with sharp to auto-rotate based on EXIF orientation
+        const processedBuffer = await sharp(buffer)
+          .rotate() // Auto-rotate based on EXIF orientation
+          .toBuffer();
+        
+        const base64 = processedBuffer.toString("base64");
         const contentType =
           imageResponse.headers.get("content-type") || "image/jpeg";
         const imageDataUrl = `data:${contentType};base64,${base64}`;
@@ -168,7 +176,14 @@ export default async function OpenGraphImage({ params }: RouteParams) {
           const imageResponse = await fetch(item.imageUrl);
           if (imageResponse.ok) {
             const arrayBuffer = await imageResponse.arrayBuffer();
-            const base64 = Buffer.from(arrayBuffer).toString("base64");
+            const buffer = Buffer.from(arrayBuffer);
+            
+            // Process image with sharp to auto-rotate based on EXIF orientation
+            const processedBuffer = await sharp(buffer)
+              .rotate() // Auto-rotate based on EXIF orientation
+              .toBuffer();
+            
+            const base64 = processedBuffer.toString("base64");
             const contentType =
               imageResponse.headers.get("content-type") || "image/jpeg";
             return `data:${contentType};base64,${base64}`;

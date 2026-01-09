@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -11,12 +12,81 @@ import { PortfolioGrid } from "@/components/portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Eye, ChevronDown, Pencil } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 interface ProfilePageProps {
   params: Promise<{ userId: string }>;
   searchParams: Promise<{ view?: string | string[] }>;
+}
+
+async function getUser(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      bio: true,
+    },
+  });
+
+  return user;
+}
+
+export async function generateMetadata({
+  params,
+}: ProfilePageProps): Promise<Metadata> {
+  const { userId } = await params;
+  const user = await getUser(userId);
+
+  if (!user) {
+    return {
+      title: "Profile Not Found | Create Spot",
+    };
+  }
+
+  const creatorName = user.name || "Anonymous";
+  const pageTitle = `${creatorName} | Create Spot`;
+
+  // Use bio if available, otherwise use generic description with creator indication
+  let description: string;
+  if (user.bio) {
+    // Strip HTML tags from bio for description
+    description = user.bio.replace(/<[^>]*>/g, "").trim();
+  } else {
+    description =
+      "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts. Profile for a creator on Create Spot.";
+  }
+
+  // Generate absolute OG image URL - Next.js will automatically use opengraph-image.tsx
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const ogImageUrl = `${baseUrl}/profile/${userId}/opengraph-image`;
+
+  return {
+    title: pageTitle,
+    description,
+    openGraph: {
+      title: pageTitle,
+      description,
+      images: [ogImageUrl],
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: pageTitle,
+      description,
+      images: [ogImageUrl],
+    },
+  };
 }
 
 export default async function ProfilePage({
@@ -154,9 +224,16 @@ export default async function ProfilePage({
       : null;
 
   return (
-    <PageLayout maxWidth="max-w-5xl">
+    <PageLayout maxWidth="max-w-3xl">
       {/* Track profile view for non-owners (not in public view mode) */}
       {!effectiveIsOwnProfile && <ProfileViewTracker profileUserId={user.id} />}
+
+      {/* Public View indicator - fixed below navbar */}
+      {isOwnProfile && isPublicView && (
+        <div className="fixed top-16 right-4 z-50 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-lg">
+          Public View
+        </div>
+      )}
 
       <div className="mb-8">
         <div className="flex items-start justify-between">
@@ -185,29 +262,47 @@ export default async function ProfilePage({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {isOwnProfile && !isPublicView && (
-              <Link
-                href={`/profile/${user.id}?view=public`}
-                className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-              >
-                View as Public
-              </Link>
+            {isOwnProfile && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <Eye className="h-4 w-4" />
+                    View Profile
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`/profile/${user.id}`}
+                      className={cn(
+                        !isPublicView &&
+                          "bg-accent text-accent-foreground"
+                      )}
+                    >
+                      View As Owner
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`/profile/${user.id}?view=public`}
+                      className={cn(
+                        isPublicView &&
+                          "bg-accent text-accent-foreground"
+                      )}
+                    >
+                      View as Public
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
-            {isOwnProfile && isPublicView && (
-              <Link
-                href={`/profile/${user.id}`}
-                className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-              >
-                View as Owner
-              </Link>
-            )}
-            {effectiveIsOwnProfile && (
-              <Link
-                href="/profile/edit"
-                className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-              >
-                Edit Profile
-              </Link>
+            {isOwnProfile && (
+              <Button variant="outline" size="icon" asChild>
+                <Link href="/profile/edit" title="Edit Profile">
+                  <Pencil className="h-4 w-4" />
+                </Link>
+              </Button>
             )}
           </div>
         </div>

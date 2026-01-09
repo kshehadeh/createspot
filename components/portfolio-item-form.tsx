@@ -14,16 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-
-const CATEGORIES = [
-  "Photography",
-  "Writing",
-  "Digital Art",
-  "Illustration",
-  "Mixed Media",
-  "Design",
-  "Other",
-];
+import { CATEGORIES } from "@/lib/categories";
 
 const SHARE_STATUS_OPTIONS = [
   {

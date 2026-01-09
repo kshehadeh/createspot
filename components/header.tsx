@@ -484,13 +484,15 @@ function MobileUserSection({
       </button>
       {isUserOpen && (
         <div className="mt-1">
-          <Link
-            href="/profile/edit"
-            className={linkClassName("/profile/edit")}
-            onClick={onActionClick}
-          >
-            Edit Profile
-          </Link>
+          {user.id && (
+            <Link
+              href={`/profile/${user.id}`}
+              className={linkClassName("/profile")}
+              onClick={onActionClick}
+            >
+              View Profile
+            </Link>
+          )}
           <Link
             href="/favorites"
             className={linkClassName("/favorites")}
