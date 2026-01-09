@@ -26,8 +26,8 @@ export default function PromptSubmissionsPage() {
           Build a prompt submission your way.
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Each prompt is flexible: share visuals, text, or both, and decide
-          what you want the community to see.
+          Each prompt is flexible: share visuals, text, or both, and decide what
+          you want the community to see.
         </p>
       </section>
 
@@ -56,8 +56,7 @@ export default function PromptSubmissionsPage() {
               Titles in the gallery
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              You can add a{" "}
-              <strong className="text-foreground">title</strong>{" "}
+              You can add a <strong className="text-foreground">title</strong>{" "}
               to your submission. That title appears in the gallery and on the
               submission detail page, helping viewers understand your intent at
               a glance.
@@ -72,9 +71,7 @@ export default function PromptSubmissionsPage() {
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
               You can{" "}
-              <strong className="text-foreground">
-                clear all submissions
-              </strong>{" "}
+              <strong className="text-foreground">clear all submissions</strong>{" "}
               for the current prompt or{" "}
               <strong className="text-foreground">
                 remove individual submissions

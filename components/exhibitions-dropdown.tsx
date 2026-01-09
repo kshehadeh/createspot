@@ -24,7 +24,7 @@ export function ExhibitionsDropdown() {
           "flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors outline-none",
           isExhibitionPage
             ? "bg-accent text-accent-foreground font-medium"
-            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
         )}
       >
         <span>Exhibits</span>
@@ -36,7 +36,7 @@ export function ExhibitionsDropdown() {
             href="/exhibition"
             className={cn(
               "flex items-center gap-2",
-              pathname === "/exhibition" && "bg-accent text-accent-foreground"
+              pathname === "/exhibition" && "bg-accent text-accent-foreground",
             )}
           >
             <Home className="h-4 w-4" />
@@ -50,7 +50,7 @@ export function ExhibitionsDropdown() {
               "flex items-center gap-2",
               (pathname === EXHIBITION_CONFIGS.gallery.path ||
                 pathname.startsWith(`${EXHIBITION_CONFIGS.gallery.path}/`)) &&
-                "bg-accent text-accent-foreground"
+                "bg-accent text-accent-foreground",
             )}
           >
             <EXHIBITION_CONFIGS.gallery.icon className="h-4 w-4" />
@@ -63,8 +63,10 @@ export function ExhibitionsDropdown() {
             className={cn(
               "flex items-center gap-2",
               (pathname === EXHIBITION_CONFIGS.constellation.path ||
-                pathname.startsWith(`${EXHIBITION_CONFIGS.constellation.path}/`)) &&
-                "bg-accent text-accent-foreground"
+                pathname.startsWith(
+                  `${EXHIBITION_CONFIGS.constellation.path}/`,
+                )) &&
+                "bg-accent text-accent-foreground",
             )}
           >
             <EXHIBITION_CONFIGS.constellation.icon className="h-4 w-4" />
@@ -78,7 +80,7 @@ export function ExhibitionsDropdown() {
               "flex items-center gap-2",
               (pathname === EXHIBITION_CONFIGS.global.path ||
                 pathname.startsWith(`${EXHIBITION_CONFIGS.global.path}/`)) &&
-                "bg-accent text-accent-foreground"
+                "bg-accent text-accent-foreground",
             )}
           >
             <EXHIBITION_CONFIGS.global.icon className="h-4 w-4" />

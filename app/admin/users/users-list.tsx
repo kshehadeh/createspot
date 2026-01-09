@@ -100,17 +100,13 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
 
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    Joined
-                  </span>
+                  <span className="text-muted-foreground">Joined</span>
                   <span className="text-foreground">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Role
-                  </span>
+                  <span className="text-sm text-muted-foreground">Role</span>
                   {user.isAdmin ? (
                     <Badge variant="default">Admin</Badge>
                   ) : (

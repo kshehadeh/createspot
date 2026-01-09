@@ -62,10 +62,7 @@ export default async function ProfileEditPage() {
       userId: session.user.id,
       isPortfolio: true,
     },
-    orderBy: [
-      { portfolioOrder: "asc" },
-      { createdAt: "desc" },
-    ],
+    orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
     include: {
       prompt: {
         select: {
@@ -114,10 +111,7 @@ export default async function ProfileEditPage() {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="gap-2"
-              >
+              <Button variant="outline" className="gap-2">
                 <Eye className="h-4 w-4" />
                 View Profile
                 <ChevronDown className="h-4 w-4" />

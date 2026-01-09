@@ -10,7 +10,10 @@ import { UserDropdown } from "./user-dropdown";
 import { NavigationLinks } from "./navigation-links";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { getExhibitionByPath, EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
+import {
+  getExhibitionByPath,
+  EXHIBITION_CONFIGS,
+} from "@/lib/exhibition-constants";
 import { cn } from "@/lib/utils";
 import { Home, ChevronDown, ChevronRight } from "lucide-react";
 
@@ -29,33 +32,34 @@ interface HeaderProps {
 function getBreadcrumbs(pathname: string): string[] | null {
   // Homepage - no breadcrumbs
   if (pathname === "/") return null;
-  
+
   // Exhibition routes
   if (pathname === "/exhibition/gallery") return ["Exhibit", "Gallery"];
-  if (pathname === "/exhibition/constellation") return ["Exhibit", "Constellation"];
+  if (pathname === "/exhibition/constellation")
+    return ["Exhibit", "Constellation"];
   if (pathname === "/exhibition/global") return ["Exhibit", "Global"];
   if (pathname.startsWith("/exhibition")) return ["Exhibit"];
-  
+
   // Prompt routes
   if (pathname === "/prompt/play") return ["Prompts", "Play"];
   if (pathname === "/prompt/history") return ["Prompts", "History"];
   if (pathname === "/prompt/this-week") return ["Prompts", "This Week"];
   if (pathname.startsWith("/prompt")) return ["Prompts"];
-  
+
   // Admin routes
   if (pathname === "/admin/users") return ["Admin", "Users"];
   if (pathname.startsWith("/admin")) return ["Admin"];
-  
+
   // Profile routes
   if (pathname === "/profile/edit") return ["Profile", "Edit"];
   if (pathname.startsWith("/profile")) return ["Profile"];
-  
+
   // Other routes
   if (pathname.startsWith("/favorites")) return ["Favorites"];
   if (pathname.startsWith("/s/")) return ["Submission"];
   if (pathname.startsWith("/about")) return ["About"];
   if (pathname.startsWith("/auth")) return null; // No breadcrumbs for auth
-  
+
   return null;
 }
 
@@ -99,32 +103,34 @@ export function Header({ user }: HeaderProps) {
     <>
       <header className="flex items-center justify-between border-b border-border px-6 py-4 sm:px-12">
         <div className="flex items-center gap-6">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-foreground"
-          >
+          <Link href="/" className="flex items-center gap-2 text-foreground">
             <CreateSpotLogo
               className="h-6 w-auto"
               base="currentColor"
               highlight="rgb(161 161 170)"
             />
-            <span className="hidden whitespace-nowrap text-xl font-normal md:inline">Create Spot</span>
+            <span className="hidden whitespace-nowrap text-xl font-normal md:inline">
+              Create Spot
+            </span>
           </Link>
-          {breadcrumbs && breadcrumbs.map((segment, index) => {
-            const isLastSegment = index === breadcrumbs.length - 1;
-            const shouldShowIcon = isLastSegment && exhibitionConfig;
-            const IconComponent = shouldShowIcon ? exhibitionConfig.icon : null;
-            
-            return (
-              <span key={index} className="flex items-center gap-2">
-                <span className="text-muted-foreground">/</span>
-                <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                  {IconComponent && <IconComponent className="h-5 w-5" />}
-                  {segment}
+          {breadcrumbs &&
+            breadcrumbs.map((segment, index) => {
+              const isLastSegment = index === breadcrumbs.length - 1;
+              const shouldShowIcon = isLastSegment && exhibitionConfig;
+              const IconComponent = shouldShowIcon
+                ? exhibitionConfig.icon
+                : null;
+
+              return (
+                <span key={index} className="flex items-center gap-2">
+                  <span className="text-muted-foreground">/</span>
+                  <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                    {IconComponent && <IconComponent className="h-5 w-5" />}
+                    {segment}
+                  </span>
                 </span>
-              </span>
-            );
-          })}
+              );
+            })}
         </div>
         <div className="flex items-center gap-4">
           {/* Desktop Navigation */}
@@ -135,9 +141,18 @@ export function Header({ user }: HeaderProps) {
             />
             <ThemeToggle />
             {user ? (
-              <UserDropdown id={user.id} name={user.name} image={user.image} isAdmin={user.isAdmin} />
+              <UserDropdown
+                id={user.id}
+                name={user.name}
+                image={user.image}
+                isAdmin={user.isAdmin}
+              />
             ) : (
-              <Button onClick={() => signIn("google")} variant="default" size="default">
+              <Button
+                onClick={() => signIn("google")}
+                variant="default"
+                size="default"
+              >
                 Sign in
               </Button>
             )}
@@ -146,9 +161,9 @@ export function Header({ user }: HeaderProps) {
           <div className="flex md:hidden items-center gap-2">
             <ThemeToggle />
             {!user && (
-              <Button 
-                onClick={() => signIn("google")} 
-                variant="default" 
+              <Button
+                onClick={() => signIn("google")}
+                variant="default"
                 size="sm"
               >
                 Sign in
@@ -163,9 +178,9 @@ export function Header({ user }: HeaderProps) {
             aria-expanded={isMenuOpen}
           >
             <span
-            className={`h-0.5 w-6 bg-foreground transition-all ${
-              isMenuOpen ? "translate-y-2 rotate-45" : ""
-            }`}
+              className={`h-0.5 w-6 bg-foreground transition-all ${
+                isMenuOpen ? "translate-y-2 rotate-45" : ""
+              }`}
             />
             <span
               className={`h-0.5 w-6 bg-foreground transition-all ${
@@ -237,12 +252,12 @@ export function Header({ user }: HeaderProps) {
               />
             ) : (
               <div className="mt-auto border-t border-border pt-4 px-4">
-                <Button 
+                <Button
                   onClick={() => {
                     signIn("google");
                     setIsMenuOpen(false);
-                  }} 
-                  variant="default" 
+                  }}
+                  variant="default"
                   size="default"
                   className="w-full"
                 >
@@ -294,7 +309,8 @@ function MobileNavigationLinks({
     return `${baseClasses} ${activeClasses}`;
   };
 
-  const sectionHeaderClassName = "flex items-center justify-between w-full px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg";
+  const sectionHeaderClassName =
+    "flex items-center justify-between w-full px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg";
 
   return (
     <>
@@ -315,7 +331,10 @@ function MobileNavigationLinks({
           <div className="mt-1">
             <Link
               href="/exhibition"
-              className={cn(linkClassName("/exhibition"), "flex items-center gap-2")}
+              className={cn(
+                linkClassName("/exhibition"),
+                "flex items-center gap-2",
+              )}
               onClick={onLinkClick}
             >
               <Home className="h-5 w-5" />
@@ -323,7 +342,10 @@ function MobileNavigationLinks({
             </Link>
             <Link
               href={EXHIBITION_CONFIGS.gallery.path}
-              className={cn(linkClassName(EXHIBITION_CONFIGS.gallery.path), "flex items-center gap-2")}
+              className={cn(
+                linkClassName(EXHIBITION_CONFIGS.gallery.path),
+                "flex items-center gap-2",
+              )}
               onClick={onLinkClick}
             >
               <EXHIBITION_CONFIGS.gallery.icon className="h-5 w-5" />
@@ -331,7 +353,10 @@ function MobileNavigationLinks({
             </Link>
             <Link
               href={EXHIBITION_CONFIGS.constellation.path}
-              className={cn(linkClassName(EXHIBITION_CONFIGS.constellation.path), "flex items-center gap-2")}
+              className={cn(
+                linkClassName(EXHIBITION_CONFIGS.constellation.path),
+                "flex items-center gap-2",
+              )}
               onClick={onLinkClick}
             >
               <EXHIBITION_CONFIGS.constellation.icon className="h-5 w-5" />
@@ -339,7 +364,10 @@ function MobileNavigationLinks({
             </Link>
             <Link
               href={EXHIBITION_CONFIGS.global.path}
-              className={cn(linkClassName(EXHIBITION_CONFIGS.global.path), "flex items-center gap-2")}
+              className={cn(
+                linkClassName(EXHIBITION_CONFIGS.global.path),
+                "flex items-center gap-2",
+              )}
               onClick={onLinkClick}
             >
               <EXHIBITION_CONFIGS.global.icon className="h-5 w-5" />
@@ -446,7 +474,8 @@ function MobileUserSection({
     return `${baseClasses} ${activeClasses}`;
   };
 
-  const sectionHeaderClassName = "flex items-center justify-between w-full px-4 py-3 text-left transition-colors rounded-lg hover:bg-accent";
+  const sectionHeaderClassName =
+    "flex items-center justify-between w-full px-4 py-3 text-left transition-colors rounded-lg hover:bg-accent";
 
   return (
     <div className="mt-auto border-t border-border pt-4">

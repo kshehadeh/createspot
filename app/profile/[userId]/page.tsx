@@ -141,10 +141,7 @@ export default async function ProfilePage({
       isPortfolio: true,
       ...shareStatusFilter,
     },
-    orderBy: [
-      { portfolioOrder: "asc" },
-      { createdAt: "desc" },
-    ],
+    orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
     include: {
       prompt: {
         select: {
@@ -276,8 +273,7 @@ export default async function ProfilePage({
                     <Link
                       href={`/profile/${user.id}`}
                       className={cn(
-                        !isPublicView &&
-                          "bg-accent text-accent-foreground"
+                        !isPublicView && "bg-accent text-accent-foreground",
                       )}
                     >
                       View As Owner
@@ -287,8 +283,7 @@ export default async function ProfilePage({
                     <Link
                       href={`/profile/${user.id}?view=public`}
                       className={cn(
-                        isPublicView &&
-                          "bg-accent text-accent-foreground"
+                        isPublicView && "bg-accent text-accent-foreground",
                       )}
                     >
                       View as Public
@@ -431,8 +426,9 @@ export default async function ProfilePage({
 
                   {/* Link only (when no text and no prompt) */}
                   {!hasText &&
-                    !(featuredSubmission.prompt &&
-                      featuredSubmission.wordIndex) && (
+                    !(
+                      featuredSubmission.prompt && featuredSubmission.wordIndex
+                    ) && (
                       <div>
                         <Link
                           href={`/s/${featuredSubmission.id}`}
@@ -452,7 +448,7 @@ export default async function ProfilePage({
         <div
           className={cn(
             featuredSubmission ? "lg:col-span-2" : "lg:col-span-3",
-            "w-full min-w-0"
+            "w-full min-w-0",
           )}
         >
           {/* Portfolio Section */}

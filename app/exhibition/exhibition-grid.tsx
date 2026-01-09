@@ -121,7 +121,8 @@ function GridContent({
   onLoadMore: () => void;
   loadError: string | null;
 }) {
-  const [selectedSubmission, setSelectedSubmission] = useState<ExhibitionSubmission | null>(null);
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<ExhibitionSubmission | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const getWord = (submission: ExhibitionSubmission): string => {
@@ -174,7 +175,10 @@ function GridContent({
 
   return (
     <>
-      <motion.div layout className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <motion.div
+        layout
+        className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      >
         <AnimatePresence mode="popLayout">
           {submissions.map((submission) => {
             return (

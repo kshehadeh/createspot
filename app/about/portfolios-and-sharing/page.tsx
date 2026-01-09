@@ -39,32 +39,23 @@ export default function PortfoliosAndSharingPage() {
             </h2>
             <p className="mb-4 text-base leading-relaxed text-muted-foreground">
               Every portfolio item uses a share status so you can decide{" "}
-              <strong className="text-foreground">
-                who gets to see it
-              </strong>
-              .
+              <strong className="text-foreground">who gets to see it</strong>.
             </p>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-xl border border-border bg-background/50 p-4 text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground">
-                  Private
-                </p>
+                <p className="font-semibold text-foreground">Private</p>
                 <p className="mt-1">
                   Only you can see it in your profile editor.
                 </p>
               </div>
               <div className="rounded-xl border border-border bg-background/50 p-4 text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground">
-                  Profile
-                </p>
+                <p className="font-semibold text-foreground">Profile</p>
                 <p className="mt-1">
                   Visible on your public profile, but not in galleries.
                 </p>
               </div>
               <div className="rounded-xl border border-border bg-background/50 p-4 text-sm text-muted-foreground">
-                <p className="font-semibold text-foreground">
-                  Public
-                </p>
+                <p className="font-semibold text-foreground">Public</p>
                 <p className="mt-1">
                   Visible on your profile and in public galleries.
                 </p>
@@ -72,8 +63,8 @@ export default function PortfoliosAndSharingPage() {
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
               Note: if you link a portfolio item to a prompt, it becomes{" "}
-              <strong className="text-foreground">public</strong>{" "}
-              so it can appear with other prompt submissions.
+              <strong className="text-foreground">public</strong> so it can
+              appear with other prompt submissions.
             </p>
           </CardContent>
         </Card>
@@ -85,15 +76,13 @@ export default function PortfoliosAndSharingPage() {
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
               Your public portfolio lives at{" "}
-              <strong className="text-foreground">
-                /profile/your-id
-              </strong>
-              , and each individual piece has its own shareable link at{" "}
-              <strong className="text-foreground">/s/id</strong>.
-              When you share your profile link, we automatically generate a
-              preview image that highlights your work. If you have a featured
-              image that is shareable, it becomes the preview. Otherwise we
-              build a grid from your most recent portfolio images.
+              <strong className="text-foreground">/profile/your-id</strong>, and
+              each individual piece has its own shareable link at{" "}
+              <strong className="text-foreground">/s/id</strong>. When you share
+              your profile link, we automatically generate a preview image that
+              highlights your work. If you have a featured image that is
+              shareable, it becomes the preview. Otherwise we build a grid from
+              your most recent portfolio images.
             </p>
           </CardContent>
         </Card>
@@ -105,14 +94,11 @@ export default function PortfoliosAndSharingPage() {
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
               You can select a{" "}
-              <strong className="text-foreground">
-                featured submission
-              </strong>{" "}
+              <strong className="text-foreground">featured submission</strong>{" "}
               in your profile settings to spotlight a single piece at the top of
               your profile. Featured work also powers your profile preview image
               as long as it is set to{" "}
-              <strong className="text-foreground">Profile</strong>{" "}
-              or{" "}
+              <strong className="text-foreground">Profile</strong> or{" "}
               <strong className="text-foreground">Public</strong>.
             </p>
           </CardContent>

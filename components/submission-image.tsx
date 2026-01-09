@@ -24,16 +24,12 @@ export function SubmissionImage({
   onExpand,
 }: SubmissionImageProps) {
   return (
-    <div 
+    <div
       className={`relative w-full overflow-hidden rounded-xl ${heightClasses} ${className} ${onExpand ? "cursor-pointer" : ""}`}
       onClick={onExpand}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={imageUrl}
-        alt={alt}
-        className="h-full w-full object-cover"
-      />
+      <img src={imageUrl} alt={alt} className="h-full w-full object-cover" />
       {onExpand && (
         <Button
           variant="ghost"

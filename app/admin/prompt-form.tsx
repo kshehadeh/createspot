@@ -453,10 +453,7 @@ export function PromptForm({
       {mode === "edit" && editablePrompts.length > 0 && (
         <div>
           <Label htmlFor="promptSelect">Select Prompt to Edit</Label>
-          <Select
-            value={selectedPromptId}
-            onValueChange={handlePromptSelect}
-          >
+          <Select value={selectedPromptId} onValueChange={handlePromptSelect}>
             <SelectTrigger id="promptSelect" className="w-full">
               <SelectValue placeholder="Select a prompt..." />
             </SelectTrigger>
@@ -550,7 +547,7 @@ export function PromptForm({
                 className={cn(
                   "pr-10",
                   word1Warning &&
-                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500",
                 )}
               />
               {mode === "create" && !hasSubmissions && (
@@ -573,9 +570,7 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word1Checking ? (
-                <span className="text-muted-foreground">
-                  Checking...
-                </span>
+                <span className="text-muted-foreground">Checking...</span>
               ) : word1Warning ? (
                 <span className="text-amber-600 dark:text-amber-400">
                   {word1Warning}
@@ -596,7 +591,7 @@ export function PromptForm({
                 className={cn(
                   "pr-10",
                   word2Warning &&
-                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500",
                 )}
               />
               {mode === "create" && !hasSubmissions && (
@@ -619,9 +614,7 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word2Checking ? (
-                <span className="text-muted-foreground">
-                  Checking...
-                </span>
+                <span className="text-muted-foreground">Checking...</span>
               ) : word2Warning ? (
                 <span className="text-amber-600 dark:text-amber-400">
                   {word2Warning}
@@ -642,7 +635,7 @@ export function PromptForm({
                 className={cn(
                   "pr-10",
                   word3Warning &&
-                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500"
+                    "border-amber-400 focus:border-amber-500 focus:ring-amber-500 dark:border-amber-500",
                 )}
               />
               {mode === "create" && !hasSubmissions && (
@@ -665,9 +658,7 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word3Checking ? (
-                <span className="text-muted-foreground">
-                  Checking...
-                </span>
+                <span className="text-muted-foreground">Checking...</span>
               ) : word3Warning ? (
                 <span className="text-amber-600 dark:text-amber-400">
                   {word3Warning}

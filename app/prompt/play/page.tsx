@@ -19,7 +19,10 @@ export default async function PlayPage() {
 
   if (!prompt) {
     return (
-      <PageLayout maxWidth="max-w-4xl" className="flex flex-col items-center justify-center text-center">
+      <PageLayout
+        maxWidth="max-w-4xl"
+        className="flex flex-col items-center justify-center text-center"
+      >
         <h1 className="mb-4 text-2xl font-bold text-foreground">
           No Active Prompt
         </h1>

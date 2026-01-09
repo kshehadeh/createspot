@@ -59,8 +59,7 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
               <Link
                 href="/admin"
                 className={cn(
-                  pathname === "/admin" &&
-                    "bg-accent text-accent-foreground"
+                  pathname === "/admin" && "bg-accent text-accent-foreground",
                 )}
               >
                 Manage Prompts
@@ -71,7 +70,7 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
                 href="/admin/users"
                 className={cn(
                   pathname === "/admin/users" &&
-                    "bg-accent text-accent-foreground"
+                    "bg-accent text-accent-foreground",
                 )}
               >
                 Manage Users

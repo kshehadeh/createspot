@@ -36,10 +36,9 @@ export default async function PromptsPage() {
           </span>
         </h1>
         <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
-          Every week, we share three carefully chosen words. Pick one (or
-          more!) and create something unique — a photo, artwork, poem, or
-          story. See how others interpret the same words and discover new
-          perspectives.
+          Every week, we share three carefully chosen words. Pick one (or more!)
+          and create something unique — a photo, artwork, poem, or story. See
+          how others interpret the same words and discover new perspectives.
         </p>
       </section>
 
@@ -143,9 +142,7 @@ export default async function PromptsPage() {
                 ✦
               </span>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">
-                  Think abstractly.
-                </strong>{" "}
+                <strong className="text-foreground">Think abstractly.</strong>{" "}
                 The word &quot;light&quot; could mean sunlight, feeling
                 light-hearted, or even enlightenment.
               </span>
@@ -155,11 +152,9 @@ export default async function PromptsPage() {
                 ✦
               </span>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">
-                  Combine words.
-                </strong>{" "}
-                Try creating one piece that incorporates multiple prompt words
-                for an extra challenge.
+                <strong className="text-foreground">Combine words.</strong> Try
+                creating one piece that incorporates multiple prompt words for
+                an extra challenge.
               </span>
             </li>
             <li className="flex gap-3">
@@ -167,9 +162,7 @@ export default async function PromptsPage() {
                 ✦
               </span>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">
-                  Use what you have.
-                </strong>{" "}
+                <strong className="text-foreground">Use what you have.</strong>{" "}
                 You don&apos;t need fancy equipment. A phone camera or simple
                 writing is perfect.
               </span>
@@ -179,9 +172,7 @@ export default async function PromptsPage() {
                 ✦
               </span>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">
-                  Add existing work.
-                </strong>{" "}
+                <strong className="text-foreground">Add existing work.</strong>{" "}
                 If you have portfolio pieces that fit the prompt, you can link
                 them directly!
               </span>

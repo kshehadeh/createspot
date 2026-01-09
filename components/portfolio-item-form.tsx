@@ -316,7 +316,9 @@ export function PortfolioItemForm({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                <span className="text-sm text-muted-foreground">Uploading...</span>
+                <span className="text-sm text-muted-foreground">
+                  Uploading...
+                </span>
               </div>
             ) : (
               <>
@@ -358,7 +360,9 @@ export function PortfolioItemForm({
         <Label>Category</Label>
         <Select
           value={category || "__none__"}
-          onValueChange={(value) => setCategory(value === "__none__" ? "" : value)}
+          onValueChange={(value) =>
+            setCategory(value === "__none__" ? "" : value)
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />

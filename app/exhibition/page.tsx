@@ -47,10 +47,8 @@ const EXHIBIT_DECOR: Record<
   gallery: {
     gradient:
       "from-amber-500/15 via-rose-500/10 to-violet-500/10 dark:from-amber-400/10 dark:via-rose-400/10 dark:to-violet-400/10",
-    orb1:
-      "bg-gradient-to-br from-amber-500/40 to-rose-500/30 dark:from-amber-400/30 dark:to-rose-400/20",
-    orb2:
-      "bg-gradient-to-br from-violet-500/25 to-fuchsia-500/20 dark:from-violet-400/20 dark:to-fuchsia-400/15",
+    orb1: "bg-gradient-to-br from-amber-500/40 to-rose-500/30 dark:from-amber-400/30 dark:to-rose-400/20",
+    orb2: "bg-gradient-to-br from-violet-500/25 to-fuchsia-500/20 dark:from-violet-400/20 dark:to-fuchsia-400/15",
     icon: "text-amber-700 dark:text-amber-300",
     badge:
       "bg-amber-500/10 ring-amber-500/20 dark:bg-amber-400/10 dark:ring-amber-300/20",
@@ -58,10 +56,8 @@ const EXHIBIT_DECOR: Record<
   constellation: {
     gradient:
       "from-indigo-500/12 via-violet-500/12 to-fuchsia-500/10 dark:from-indigo-400/10 dark:via-violet-400/10 dark:to-fuchsia-400/10",
-    orb1:
-      "bg-gradient-to-br from-violet-500/35 to-indigo-500/25 dark:from-violet-400/25 dark:to-indigo-400/20",
-    orb2:
-      "bg-gradient-to-br from-fuchsia-500/25 to-sky-500/15 dark:from-fuchsia-400/20 dark:to-sky-400/10",
+    orb1: "bg-gradient-to-br from-violet-500/35 to-indigo-500/25 dark:from-violet-400/25 dark:to-indigo-400/20",
+    orb2: "bg-gradient-to-br from-fuchsia-500/25 to-sky-500/15 dark:from-fuchsia-400/20 dark:to-sky-400/10",
     icon: "text-violet-700 dark:text-violet-300",
     badge:
       "bg-violet-500/10 ring-violet-500/20 dark:bg-violet-400/10 dark:ring-violet-300/20",
@@ -69,10 +65,8 @@ const EXHIBIT_DECOR: Record<
   global: {
     gradient:
       "from-emerald-500/12 via-cyan-500/10 to-sky-500/10 dark:from-emerald-400/10 dark:via-cyan-400/10 dark:to-sky-400/10",
-    orb1:
-      "bg-gradient-to-br from-emerald-500/35 to-cyan-500/25 dark:from-emerald-400/25 dark:to-cyan-400/20",
-    orb2:
-      "bg-gradient-to-br from-sky-500/25 to-indigo-500/15 dark:from-sky-400/20 dark:to-indigo-400/10",
+    orb1: "bg-gradient-to-br from-emerald-500/35 to-cyan-500/25 dark:from-emerald-400/25 dark:to-cyan-400/20",
+    orb2: "bg-gradient-to-br from-sky-500/25 to-indigo-500/15 dark:from-sky-400/20 dark:to-indigo-400/10",
     icon: "text-emerald-700 dark:text-emerald-300",
     badge:
       "bg-emerald-500/10 ring-emerald-500/20 dark:bg-emerald-400/10 dark:ring-emerald-300/20",

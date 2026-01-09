@@ -82,8 +82,8 @@ export function PortfolioGrid({
   // Update ordered items when items prop changes (but not during reordering)
   useEffect(() => {
     // Check if items prop actually changed (from server or parent state update)
-    const itemsChanged = 
-      items.length !== lastItemsRef.current.length || 
+    const itemsChanged =
+      items.length !== lastItemsRef.current.length ||
       items.some((item, idx) => {
         const lastItem = lastItemsRef.current[idx];
         if (!lastItem) return true;
@@ -96,7 +96,7 @@ export function PortfolioGrid({
           item.category !== lastItem.category
         );
       });
-    
+
     if (itemsChanged && !isReorderingRef.current && !isSaving) {
       setOrderedItems(items);
       lastItemsRef.current = items;
@@ -106,7 +106,9 @@ export function PortfolioGrid({
   // Get unique categories
   const categories = Array.from(
     new Set(
-      orderedItems.filter((item) => item.category).map((item) => item.category!),
+      orderedItems
+        .filter((item) => item.category)
+        .map((item) => item.category!),
     ),
   );
 
@@ -116,53 +118,56 @@ export function PortfolioGrid({
 
   const submissionIds = orderedItems.map((s) => s.id);
 
-  const handleReorder = useCallback(async (newItems: PortfolioItem[]) => {
-    // Update portfolioOrder values in the items
-    const itemsWithOrder = newItems.map((item, index) => ({
-      ...item,
-      portfolioOrder: index + 1,
-    }));
-    
-    // Optimistically update the UI
-    isReorderingRef.current = true;
-    setOrderedItems(itemsWithOrder);
-    setIsSaving(true);
-    
-    try {
-      const response = await fetch("/api/submissions/reorder", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          submissionIds: newItems.map((item) => item.id),
-        }),
-      });
+  const handleReorder = useCallback(
+    async (newItems: PortfolioItem[]) => {
+      // Update portfolioOrder values in the items
+      const itemsWithOrder = newItems.map((item, index) => ({
+        ...item,
+        portfolioOrder: index + 1,
+      }));
 
-      if (!response.ok) {
-        throw new Error("Failed to save order");
-      }
+      // Optimistically update the UI
+      isReorderingRef.current = true;
+      setOrderedItems(itemsWithOrder);
+      setIsSaving(true);
 
-      // Update the ref to match the new order so we don't reset on next prop update
-      lastItemsRef.current = itemsWithOrder;
-      onReorder?.(itemsWithOrder);
-      
-      // Refresh to get updated data from server after a delay to ensure state is stable
-      setTimeout(() => {
-        router.refresh();
-        // Allow prop updates after refresh completes
+      try {
+        const response = await fetch("/api/submissions/reorder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            submissionIds: newItems.map((item) => item.id),
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save order");
+        }
+
+        // Update the ref to match the new order so we don't reset on next prop update
+        lastItemsRef.current = itemsWithOrder;
+        onReorder?.(itemsWithOrder);
+
+        // Refresh to get updated data from server after a delay to ensure state is stable
         setTimeout(() => {
-          isReorderingRef.current = false;
-        }, 500);
-      }, 200);
-    } catch (error) {
-      console.error("Failed to save portfolio order:", error);
-      // Revert to original order on error
-      setOrderedItems(items);
-      lastItemsRef.current = items;
-      isReorderingRef.current = false;
-    } finally {
-      setIsSaving(false);
-    }
-  }, [items, onReorder, router]);
+          router.refresh();
+          // Allow prop updates after refresh completes
+          setTimeout(() => {
+            isReorderingRef.current = false;
+          }, 500);
+        }, 200);
+      } catch (error) {
+        console.error("Failed to save portfolio order:", error);
+        // Revert to original order on error
+        setOrderedItems(items);
+        lastItemsRef.current = items;
+        isReorderingRef.current = false;
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [items, onReorder, router],
+  );
 
   return (
     <FavoritesProvider
@@ -417,7 +422,7 @@ function PortfolioGridContent({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {

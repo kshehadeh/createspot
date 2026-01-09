@@ -54,10 +54,10 @@ export function SubmissionDetail({
   const [mobileView, setMobileView] = useState<"image" | "text">("image");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  
+
   // Local state for submission data that can be updated after editing
   const [submission, setSubmission] = useState(initialSubmission);
-  
+
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const hasBoth = hasImage && hasText;
@@ -102,7 +102,6 @@ export function SubmissionDetail({
 
               {/* Actions */}
               <div className="flex flex-wrap items-center gap-3">
-
                 {/* Social links */}
                 {(submission.user.instagram ||
                   submission.user.twitter ||

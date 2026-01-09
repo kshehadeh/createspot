@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   if (!Array.isArray(submissionIds) || submissionIds.length === 0) {
     return NextResponse.json(
       { error: "submissionIds must be a non-empty array" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   if (submissions.length !== submissionIds.length) {
     return NextResponse.json(
       { error: "Some submissions not found or not owned by user" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -42,13 +42,10 @@ export async function POST(request: NextRequest) {
     prisma.submission.update({
       where: { id },
       data: { portfolioOrder: index + 1 },
-    })
+    }),
   );
 
   await prisma.$transaction(updates);
 
   return NextResponse.json({ success: true });
 }
-
-
-

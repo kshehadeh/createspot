@@ -64,22 +64,25 @@ export function SubmissionLightbox({
     }
   }, []);
 
-  const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
-    if (!supportsHover || !imageRef.current || !imageLoaded) return;
-    
-    const imageRect = imageRef.current.getBoundingClientRect();
-    
-    // Calculate mouse position relative to the image
-    const x = e.clientX - imageRect.left;
-    const y = e.clientY - imageRect.top;
-    
-    setZoomState({
-      isActive: true,
-      x,
-      y,
-      imageRect,
-    });
-  }, [supportsHover, imageLoaded]);
+  const handleImageMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLImageElement>) => {
+      if (!supportsHover || !imageRef.current || !imageLoaded) return;
+
+      const imageRect = imageRef.current.getBoundingClientRect();
+
+      // Calculate mouse position relative to the image
+      const x = e.clientX - imageRect.left;
+      const y = e.clientY - imageRect.top;
+
+      setZoomState({
+        isActive: true,
+        x,
+        y,
+        imageRect,
+      });
+    },
+    [supportsHover, imageLoaded],
+  );
 
   const handleImageMouseLeave = useCallback(() => {
     setZoomState((prev) => ({ ...prev, isActive: false }));
@@ -93,39 +96,50 @@ export function SubmissionLightbox({
   const ZOOM_LEVEL = ZOOM_PREVIEW_SIZE / ZOOM_SQUARE_SIZE; // = 2x
 
   const getZoomPreviewStyle = (): React.CSSProperties => {
-    if (!zoomState.isActive || !zoomState.imageRect || !imageRef.current || typeof window === "undefined") {
+    if (
+      !zoomState.isActive ||
+      !zoomState.imageRect ||
+      !imageRef.current ||
+      typeof window === "undefined"
+    ) {
       return { display: "none" };
     }
-    
+
     const imageWidth = zoomState.imageRect.width;
     const imageHeight = zoomState.imageRect.height;
-    
+
     // Don't show zoom preview if image is too small
     if (imageWidth < ZOOM_SQUARE_SIZE || imageHeight < ZOOM_SQUARE_SIZE) {
       return { display: "none" };
     }
-    
+
     // Get the clamped position to calculate correct zoom area
     const halfSize = ZOOM_SQUARE_SIZE / 2;
-    const clampedX = Math.max(halfSize, Math.min(imageWidth - halfSize, zoomState.x));
-    const clampedY = Math.max(halfSize, Math.min(imageHeight - halfSize, zoomState.y));
-    
+    const clampedX = Math.max(
+      halfSize,
+      Math.min(imageWidth - halfSize, zoomState.x),
+    );
+    const clampedY = Math.max(
+      halfSize,
+      Math.min(imageHeight - halfSize, zoomState.y),
+    );
+
     // Calculate background size in pixels - scale the DISPLAYED image by zoom level
     // This ensures the zoom matches exactly what's shown on screen
     const bgWidth = imageWidth * ZOOM_LEVEL;
     const bgHeight = imageHeight * ZOOM_LEVEL;
-    
+
     // Calculate background position to center the cursor position in the preview
     // The zoomed cursor position is (clampedX * ZOOM_LEVEL, clampedY * ZOOM_LEVEL)
     // We want that point to be at the center of the preview (PREVIEW_SIZE / 2)
     const bgPosX = ZOOM_PREVIEW_SIZE / 2 - clampedX * ZOOM_LEVEL;
     const bgPosY = ZOOM_PREVIEW_SIZE / 2 - clampedY * ZOOM_LEVEL;
-    
+
     // Calculate zoom preview position (prefer top-right corner of viewport)
     const margin = 20;
     const previewX = window.innerWidth - ZOOM_PREVIEW_SIZE - margin;
     const previewY = margin;
-    
+
     return {
       position: "fixed" as const,
       backgroundImage: `url(${submission.imageUrl})`,
@@ -139,37 +153,45 @@ export function SubmissionLightbox({
   };
 
   const getZoomSquareStyle = () => {
-    if (!zoomState.isActive || !imageContainerRef.current || !zoomState.imageRect) return {};
-    
+    if (
+      !zoomState.isActive ||
+      !imageContainerRef.current ||
+      !zoomState.imageRect
+    )
+      return {};
+
     const containerRect = imageContainerRef.current.getBoundingClientRect();
     const imageRect = zoomState.imageRect;
-    
+
     // Calculate square position relative to container
     const imageLeft = imageRect.left - containerRect.left;
     const imageTop = imageRect.top - containerRect.top;
-    
+
     // Clamp square position to stay within image bounds
     const halfSize = ZOOM_SQUARE_SIZE / 2;
     const squareX = Math.max(
       imageLeft,
       Math.min(
         imageLeft + imageRect.width - ZOOM_SQUARE_SIZE,
-        imageLeft + zoomState.x - halfSize
-      )
+        imageLeft + zoomState.x - halfSize,
+      ),
     );
     const squareY = Math.max(
       imageTop,
       Math.min(
         imageTop + imageRect.height - ZOOM_SQUARE_SIZE,
-        imageTop + zoomState.y - halfSize
-      )
+        imageTop + zoomState.y - halfSize,
+      ),
     );
-    
+
     // Only show zoom if image is large enough
-    if (imageRect.width < ZOOM_SQUARE_SIZE || imageRect.height < ZOOM_SQUARE_SIZE) {
+    if (
+      imageRect.width < ZOOM_SQUARE_SIZE ||
+      imageRect.height < ZOOM_SQUARE_SIZE
+    ) {
       return { display: "none" };
     }
-    
+
     return {
       left: `${squareX}px`,
       top: `${squareY}px`,
@@ -178,21 +200,20 @@ export function SubmissionLightbox({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent 
-        className="w-screen h-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden"
-      >
+      <DialogContent className="w-screen h-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden">
         <VisuallyHidden>
           <DialogTitle>
-            {submission.title || "Submission"} {submission.user?.name ? `by ${submission.user.name}` : ""}
+            {submission.title || "Submission"}{" "}
+            {submission.user?.name ? `by ${submission.user.name}` : ""}
           </DialogTitle>
         </VisuallyHidden>
         <div className="absolute right-4 top-4 z-10 flex gap-2">
           {!hideGoToSubmission && (
-            <Button
-              asChild
-              variant="outline"
-            >
-              <Link href={`/s/${submission.id}`} onClick={(e) => e.stopPropagation()}>
+            <Button asChild variant="outline">
+              <Link
+                href={`/s/${submission.id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 Go To Submission
               </Link>
             </Button>
@@ -227,7 +248,7 @@ export function SubmissionLightbox({
                 onMouseMove={handleImageMouseMove}
                 onMouseLeave={handleImageMouseLeave}
               />
-              
+
               {/* Zoom square overlay */}
               {zoomState.isActive && supportsHover && (
                 <div
@@ -239,7 +260,7 @@ export function SubmissionLightbox({
                   }}
                 />
               )}
-              
+
               {/* Zoom preview box */}
               {zoomState.isActive && supportsHover && (
                 <div

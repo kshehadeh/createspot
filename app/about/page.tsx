@@ -26,8 +26,8 @@ export default function AboutPage() {
           A home for creative momentum.
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          We built Create Spot to help creatives stay inspired, share their
-          work in thoughtful ways, and grow a body of work that feels alive.
+          We built Create Spot to help creatives stay inspired, share their work
+          in thoughtful ways, and grow a body of work that feels alive.
         </p>
       </section>
 
@@ -74,10 +74,8 @@ export default function AboutPage() {
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
               Your portfolio is{" "}
-              <strong className="text-foreground">
-                your personal space
-              </strong>
-              . You can build it over time,{" "}
+              <strong className="text-foreground">your personal space</strong>.
+              You can build it over time,{" "}
               <strong className="text-foreground">
                 curate the pieces that represent you best
               </strong>
@@ -106,20 +104,13 @@ export default function AboutPage() {
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
               Weekly prompts are designed to{" "}
-              <strong className="text-foreground">
-                spark momentum
-              </strong>
-              . Use the three-word prompt to create something new or connect an
+              <strong className="text-foreground">spark momentum</strong>. Use
+              the three-word prompt to create something new or connect an
               existing portfolio piece that fits the theme. Every prompt
               submission can live in{" "}
-              <strong className="text-foreground">
-                your portfolio
-              </strong>
-              , so your inspiration and your body of work{" "}
-              <strong className="text-foreground">
-                stay connected
-              </strong>
-              .
+              <strong className="text-foreground">your portfolio</strong>, so
+              your inspiration and your body of work{" "}
+              <strong className="text-foreground">stay connected</strong>.
             </p>
             <div className="mt-5">
               <Link

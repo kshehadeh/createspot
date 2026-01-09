@@ -41,12 +41,14 @@ export async function geocodeLocation(
 
     if (matchedCity && matchedCity.latitude && matchedCity.longitude) {
       // Ensure values are numbers, not strings
-      const lat = typeof matchedCity.latitude === "string"
-        ? parseFloat(matchedCity.latitude)
-        : matchedCity.latitude;
-      const lng = typeof matchedCity.longitude === "string"
-        ? parseFloat(matchedCity.longitude)
-        : matchedCity.longitude;
+      const lat =
+        typeof matchedCity.latitude === "string"
+          ? parseFloat(matchedCity.latitude)
+          : matchedCity.latitude;
+      const lng =
+        typeof matchedCity.longitude === "string"
+          ? parseFloat(matchedCity.longitude)
+          : matchedCity.longitude;
 
       if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
         return {
@@ -65,12 +67,14 @@ export async function geocodeLocation(
 
     if (partialMatch && partialMatch.latitude && partialMatch.longitude) {
       // Ensure values are numbers, not strings
-      const lat = typeof partialMatch.latitude === "string"
-        ? parseFloat(partialMatch.latitude)
-        : partialMatch.latitude;
-      const lng = typeof partialMatch.longitude === "string"
-        ? parseFloat(partialMatch.longitude)
-        : partialMatch.longitude;
+      const lat =
+        typeof partialMatch.latitude === "string"
+          ? parseFloat(partialMatch.latitude)
+          : partialMatch.latitude;
+      const lng =
+        typeof partialMatch.longitude === "string"
+          ? parseFloat(partialMatch.longitude)
+          : partialMatch.longitude;
 
       if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
         return {
@@ -151,4 +155,3 @@ export async function geocodeLocation(
 
   return null;
 }
-

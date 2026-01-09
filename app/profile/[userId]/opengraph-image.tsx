@@ -78,12 +78,12 @@ export default async function OpenGraphImage({ params }: RouteParams) {
       if (imageResponse.ok) {
         const arrayBuffer = await imageResponse.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
-        
+
         // Process image with sharp to auto-rotate based on EXIF orientation
         const processedBuffer = await sharp(buffer)
           .rotate() // Auto-rotate based on EXIF orientation
           .toBuffer();
-        
+
         const base64 = processedBuffer.toString("base64");
         const contentType =
           imageResponse.headers.get("content-type") || "image/jpeg";
@@ -177,12 +177,12 @@ export default async function OpenGraphImage({ params }: RouteParams) {
           if (imageResponse.ok) {
             const arrayBuffer = await imageResponse.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
-            
+
             // Process image with sharp to auto-rotate based on EXIF orientation
             const processedBuffer = await sharp(buffer)
               .rotate() // Auto-rotate based on EXIF orientation
               .toBuffer();
-            
+
             const base64 = processedBuffer.toString("base64");
             const contentType =
               imageResponse.headers.get("content-type") || "image/jpeg";

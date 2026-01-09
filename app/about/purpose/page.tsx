@@ -26,8 +26,8 @@ export default function PurposePage() {
           Humanity is the point.
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          In a world where automation is everywhere, what we make is proof
-          that we are still here, still feeling, still paying attention.
+          In a world where automation is everywhere, what we make is proof that
+          we are still here, still feeling, still paying attention.
         </p>
       </section>
 
@@ -40,10 +40,8 @@ export default function PurposePage() {
             <p className="text-base leading-relaxed text-muted-foreground">
               As automation becomes more prevalent, the value of our work is not
               just in output but in{" "}
-              <strong className="text-foreground">
-                human meaning
-              </strong>
-              . Our perspective, emotion, and lived experience make technology
+              <strong className="text-foreground">human meaning</strong>. Our
+              perspective, emotion, and lived experience make technology
               worthwhile. The tools can scale, but{" "}
               <strong className="text-foreground">
                 our humanity gives it purpose

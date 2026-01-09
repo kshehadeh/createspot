@@ -23,10 +23,9 @@ const Marker = dynamic(
   { ssr: false },
 );
 
-const Popup = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Popup),
-  { ssr: false },
-);
+const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
+  ssr: false,
+});
 
 interface UserWithLocation {
   id: string;
@@ -84,7 +83,9 @@ export function GlobalMap() {
         const data = await response.json();
         setUsers(data.users || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load map data");
+        setError(
+          err instanceof Error ? err.message : "Failed to load map data",
+        );
       } finally {
         setLoading(false);
       }
@@ -96,37 +97,33 @@ export function GlobalMap() {
   }, [mounted]);
 
   // Group users by location (same city = same location)
-  const locationGroups = users.reduce(
-    (acc, user) => {
-      const locationKey = `${user.city || ""}-${user.stateProvince || ""}-${user.country || ""}`.toLowerCase();
-      const existingGroup = acc.find(
-        (g) => g.locationKey === locationKey,
-      );
+  const locationGroups = users.reduce((acc, user) => {
+    const locationKey =
+      `${user.city || ""}-${user.stateProvince || ""}-${user.country || ""}`.toLowerCase();
+    const existingGroup = acc.find((g) => g.locationKey === locationKey);
 
-      if (existingGroup) {
-        existingGroup.users.push(user);
-        // Average coordinates if multiple users in same city
-        const avgLat =
-          existingGroup.users.reduce((sum, u) => sum + u.latitude, 0) /
-          existingGroup.users.length;
-        const avgLng =
-          existingGroup.users.reduce((sum, u) => sum + u.longitude, 0) /
-          existingGroup.users.length;
-        existingGroup.lat = avgLat;
-        existingGroup.lng = avgLng;
-      } else {
-        acc.push({
-          lat: user.latitude,
-          lng: user.longitude,
-          users: [user],
-          locationKey,
-        });
-      }
+    if (existingGroup) {
+      existingGroup.users.push(user);
+      // Average coordinates if multiple users in same city
+      const avgLat =
+        existingGroup.users.reduce((sum, u) => sum + u.latitude, 0) /
+        existingGroup.users.length;
+      const avgLng =
+        existingGroup.users.reduce((sum, u) => sum + u.longitude, 0) /
+        existingGroup.users.length;
+      existingGroup.lat = avgLat;
+      existingGroup.lng = avgLng;
+    } else {
+      acc.push({
+        lat: user.latitude,
+        lng: user.longitude,
+        users: [user],
+        locationKey,
+      });
+    }
 
-      return acc;
-    },
-    [] as LocationGroup[],
-  );
+    return acc;
+  }, [] as LocationGroup[]);
 
   if (!mounted) {
     return (
@@ -235,4 +232,3 @@ export function GlobalMap() {
     </div>
   );
 }
-

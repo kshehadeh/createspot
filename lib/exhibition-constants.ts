@@ -33,13 +33,22 @@ export const EXHIBITION_CONFIGS: Record<ExhibitionType, ExhibitionConfig> = {
  * Get exhibition config by pathname
  */
 export function getExhibitionByPath(pathname: string): ExhibitionConfig | null {
-  if (pathname === "/exhibition/gallery" || pathname.startsWith("/exhibition/gallery/")) {
+  if (
+    pathname === "/exhibition/gallery" ||
+    pathname.startsWith("/exhibition/gallery/")
+  ) {
     return EXHIBITION_CONFIGS.gallery;
   }
-  if (pathname === "/exhibition/constellation" || pathname.startsWith("/exhibition/constellation/")) {
+  if (
+    pathname === "/exhibition/constellation" ||
+    pathname.startsWith("/exhibition/constellation/")
+  ) {
     return EXHIBITION_CONFIGS.constellation;
   }
-  if (pathname === "/exhibition/global" || pathname.startsWith("/exhibition/global/")) {
+  if (
+    pathname === "/exhibition/global" ||
+    pathname.startsWith("/exhibition/global/")
+  ) {
     return EXHIBITION_CONFIGS.global;
   }
   return null;

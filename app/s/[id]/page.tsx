@@ -78,12 +78,12 @@ export async function generateMetadata({
 
   // Build keywords array from tags and category
   const keywords: string[] = [];
-  
+
   // Add tags
   if (submission.tags && submission.tags.length > 0) {
     keywords.push(...submission.tags);
   }
-  
+
   // Add category
   if (submission.category) {
     keywords.push(submission.category);
@@ -135,5 +135,11 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
 
   const isOwner = !!session?.user && session.user.id === submission.userId;
 
-  return <SubmissionDetail submission={submission} isLoggedIn={!!session?.user} isOwner={isOwner} />;
+  return (
+    <SubmissionDetail
+      submission={submission}
+      isLoggedIn={!!session?.user}
+      isOwner={isOwner}
+    />
+  );
 }

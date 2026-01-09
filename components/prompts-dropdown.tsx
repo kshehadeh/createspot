@@ -34,7 +34,7 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
           "flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors outline-none",
           isPromptPage
             ? "bg-accent text-accent-foreground font-medium"
-            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
         )}
       >
         <span>Inspire</span>
@@ -50,8 +50,7 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
               <Link
                 href="/prompt"
                 className={cn(
-                  isActive("/prompt") &&
-                    "bg-accent text-accent-foreground"
+                  isActive("/prompt") && "bg-accent text-accent-foreground",
                 )}
               >
                 About
@@ -62,7 +61,7 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
                 href="/prompt/play"
                 className={cn(
                   isActive("/prompt/play") &&
-                    "bg-accent text-accent-foreground"
+                    "bg-accent text-accent-foreground",
                 )}
               >
                 Play
@@ -73,7 +72,7 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
                 href="/prompt/history"
                 className={cn(
                   isActive("/prompt/history") &&
-                    "bg-accent text-accent-foreground"
+                    "bg-accent text-accent-foreground",
                 )}
               >
                 History
@@ -85,8 +84,7 @@ export function PromptsDropdown({ isAuthenticated }: PromptsDropdownProps) {
             <Link
               href="/prompt"
               className={cn(
-                isActive("/prompt") &&
-                  "bg-accent text-accent-foreground"
+                isActive("/prompt") && "bg-accent text-accent-foreground",
               )}
             >
               About

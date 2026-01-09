@@ -81,7 +81,6 @@ function GalleryContent({
   selectedSubmission: Submission | null;
   setSelectedSubmission: (submission: Submission | null) => void;
 }) {
-
   return (
     <div>
       <div className="mb-8 flex flex-wrap justify-center gap-2">

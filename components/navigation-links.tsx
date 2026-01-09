@@ -10,9 +10,7 @@ interface NavigationLinksProps {
   isAdmin?: boolean;
 }
 
-export function NavigationLinks({
-  isAuthenticated,
-}: NavigationLinksProps) {
+export function NavigationLinks({ isAuthenticated }: NavigationLinksProps) {
   const pathname = usePathname();
   const isAboutPage = pathname === "/about" || pathname.startsWith("/about/");
   const aboutClassName = `rounded-md px-2 py-1 text-sm transition-colors ${

@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "oxlint",
+    "validate": "bun run lint && bun run format:check && bun run knip && bun run build",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "download-words": "bun scripts/download-words.ts",

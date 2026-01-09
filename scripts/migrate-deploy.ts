@@ -31,7 +31,9 @@ async function main(): Promise<void> {
 
   if (!databaseUrl) {
     console.error("Error: Missing database URL.");
-    console.error("Provide it as an argument, or set DATABASE_URL in the environment.");
+    console.error(
+      "Provide it as an argument, or set DATABASE_URL in the environment.",
+    );
     console.error("");
     printUsage();
     process.exit(1);
@@ -61,5 +63,3 @@ main().catch((error: unknown) => {
   console.error("Migration failed:", error);
   process.exit(1);
 });
-
-
