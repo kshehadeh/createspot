@@ -216,7 +216,11 @@ export function SubmissionLightbox({
           style={{ top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)` }}
         >
           {!hideGoToSubmission && (
-            <Button asChild variant="outline" className="min-h-[44px] min-w-[44px]">
+            <Button
+              asChild
+              variant="outline"
+              className="min-h-[44px] min-w-[44px]"
+            >
               <Link
                 href={`/s/${submission.id}`}
                 onClick={(e) => e.stopPropagation()}
