@@ -73,11 +73,11 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
       <div className="flex gap-8">
         <section
           id="prompt-form-section"
-          className={`flex-1 rounded-3xl p-8 ${
+          className={`flex-1 rounded-3xl bg-card p-8 ${
             filteredPrompts.length > 0 ? "pb-24 md:pb-8" : ""
           } ${showHighlight ? "animate-glow-pulse" : ""}`}
         >
-          <h2 className="mb-6 text-2xl font-semibold text-zinc-900 dark:text-white">
+          <h2 className="mb-6 text-2xl font-semibold text-foreground">
             Manage Prompts
           </h2>
           <PromptForm
@@ -92,7 +92,7 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
           <>
             {/* Desktop Sidebar */}
             <aside className="hidden w-72 shrink-0 md:block">
-              <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">
+              <h2 className="mb-4 text-lg font-semibold text-foreground">
                 Recent & Upcoming
               </h2>
               <PromptSidebar
@@ -105,26 +105,26 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
             {/* Mobile Bottom Bar */}
             <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden">
               <div
-                className={`flex flex-col overflow-hidden border-t border-zinc-200 bg-white shadow-2xl transition-all duration-200 ease-out dark:border-zinc-800 dark:bg-zinc-900 ${
+                className={`flex flex-col overflow-hidden border-t border-border bg-card shadow-2xl transition-all duration-200 ease-out ${
                   isMobileSidebarOpen ? "max-h-[600px]" : "max-h-20"
                 }`}
               >
                 {/* Collapsed Bar / Header */}
-                <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+                <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
                   {!isMobileSidebarOpen ? (
                     <>
                       <div className="flex-1">
-                        <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+                        <h3 className="text-sm font-semibold text-foreground">
                           Recent & Upcoming
                         </h3>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        <p className="text-xs text-muted-foreground">
                           {filteredPrompts.length} prompt
                           {filteredPrompts.length !== 1 ? "s" : ""}
                         </p>
                       </div>
                       <button
                         onClick={() => setIsMobileSidebarOpen(true)}
-                        className="p-2 text-zinc-600 dark:text-zinc-400"
+                        className="p-2 text-muted-foreground"
                         aria-label="Expand sidebar"
                       >
                         <svg
@@ -144,12 +144,12 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
                     </>
                   ) : (
                     <>
-                      <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
+                      <h2 className="text-lg font-semibold text-foreground">
                         Recent & Upcoming
                       </h2>
                       <button
                         onClick={() => setIsMobileSidebarOpen(false)}
-                        className="rounded-full p-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                        className="rounded-full p-2 text-muted-foreground hover:bg-accent"
                         aria-label="Close sidebar"
                       >
                         <svg

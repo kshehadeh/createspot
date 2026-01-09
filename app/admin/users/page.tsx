@@ -30,7 +30,7 @@ export default async function AdminUsersPage() {
   });
 
   return (
-    <PageLayout maxWidth="max-w-4xl">
+    <PageLayout maxWidth="max-w-5xl">
       <section>
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-foreground">

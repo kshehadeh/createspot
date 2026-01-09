@@ -31,7 +31,7 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-2 border-l border-zinc-200 pl-4 outline-none dark:border-zinc-700">
         {name && (
-          <span className="hidden text-sm text-zinc-600 dark:text-zinc-400 lg:inline">
+          <span className="hidden text-sm text-foreground lg:inline">
             {name}
           </span>
         )}

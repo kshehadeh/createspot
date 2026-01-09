@@ -5,6 +5,8 @@ import Link from "next/link";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
+  VisuallyHidden,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Heart, X } from "lucide-react";
@@ -179,6 +181,11 @@ export function SubmissionLightbox({
       <DialogContent 
         className="w-screen h-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden"
       >
+        <VisuallyHidden>
+          <DialogTitle>
+            {submission.title || "Submission"} {submission.user?.name ? `by ${submission.user.name}` : ""}
+          </DialogTitle>
+        </VisuallyHidden>
         <div className="absolute right-4 top-4 z-10 flex gap-2">
           {!hideGoToSubmission && (
             <Button

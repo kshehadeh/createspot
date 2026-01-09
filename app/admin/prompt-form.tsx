@@ -473,7 +473,7 @@ export function PromptForm({
               ))}
             </SelectContent>
           </Select>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1 text-xs text-muted-foreground">
             Only prompts without submissions can be edited
           </p>
         </div>
@@ -527,7 +527,7 @@ export function PromptForm({
         ) : selectedPrompt ? (
           <div>
             <Label>Week</Label>
-            <p className="rounded-lg border border-zinc-200 bg-zinc-100 px-4 py-2 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+            <p className="rounded-lg border border-border bg-muted px-4 py-2 text-muted-foreground">
               {formatDateRangeUTC(
                 new Date(selectedPrompt.weekStart),
                 new Date(selectedPrompt.weekEnd),
@@ -573,7 +573,7 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word1Checking ? (
-                <span className="text-zinc-500 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Checking...
                 </span>
               ) : word1Warning ? (
@@ -619,7 +619,7 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word2Checking ? (
-                <span className="text-zinc-500 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Checking...
                 </span>
               ) : word2Warning ? (
@@ -665,7 +665,7 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word3Checking ? (
-                <span className="text-zinc-500 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Checking...
                 </span>
               ) : word3Warning ? (

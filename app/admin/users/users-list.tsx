@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface User {
   id: string;
@@ -62,7 +64,7 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
           return (
             <div
               key={user.id}
-              className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+              className="rounded-lg border border-border bg-card p-4"
             >
               <div className="flex items-start gap-3">
                 {user.image ? (
@@ -73,24 +75,24 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
                     className="h-12 w-12 rounded-full"
                   />
                 ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
-                    <span className="text-base font-medium text-zinc-600 dark:text-zinc-400">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                    <span className="text-base font-medium text-muted-foreground">
                       {user.name?.charAt(0) || user.email?.charAt(0) || "?"}
                     </span>
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-medium text-zinc-900 dark:text-white truncate">
+                    <h3 className="font-medium text-foreground truncate">
                       {user.name || "No name"}
                     </h3>
                     {isCurrentUser && (
-                      <span className="flex-shrink-0 text-xs text-zinc-500 dark:text-zinc-400">
+                      <span className="flex-shrink-0 text-xs text-muted-foreground">
                         (you)
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 truncate">
+                  <p className="mt-1 text-sm text-muted-foreground truncate">
                     {user.email}
                   </p>
                 </div>
@@ -98,50 +100,43 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
 
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-zinc-500 dark:text-zinc-400">
+                  <span className="text-muted-foreground">
                     Joined
                   </span>
-                  <span className="text-zinc-900 dark:text-white">
+                  <span className="text-foreground">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                  <span className="text-sm text-muted-foreground">
                     Role
                   </span>
-                  <span
-                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-                      user.isAdmin
-                        ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
-                        : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                    }`}
-                  >
-                    {user.isAdmin ? "Admin" : "User"}
-                  </span>
+                  {user.isAdmin ? (
+                    <Badge variant="default">Admin</Badge>
+                  ) : (
+                    <Badge variant="secondary">User</Badge>
+                  )}
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+              <div className="mt-4 pt-4 border-t border-border">
                 {isCurrentUser ? (
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                  <span className="text-xs text-muted-foreground">
                     Cannot modify your own account
                   </span>
                 ) : (
-                  <button
+                  <Button
                     onClick={() => toggleAdmin(user.id, user.isAdmin)}
                     disabled={isLoading}
-                    className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
-                      user.isAdmin
-                        ? "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-                        : "bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50"
-                    }`}
+                    variant={user.isAdmin ? "secondary" : "default"}
+                    className="w-full"
                   >
                     {isLoading
                       ? "Updating..."
                       : user.isAdmin
                         ? "Remove Admin"
                         : "Make Admin"}
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

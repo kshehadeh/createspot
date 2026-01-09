@@ -114,23 +114,23 @@ export function PromptSidebar({
             className={`rounded-lg border p-3 transition-all ${
               isEditing
                 ? "border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20"
-                : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+                : "border-border bg-card"
             }`}
           >
             <div className="mb-1 flex items-center gap-2">
-              <span className="text-sm font-medium text-zinc-900 dark:text-white">
+              <span className="text-sm font-medium text-foreground">
                 {prompt.word1}
               </span>
-              <span className="text-zinc-400">/</span>
-              <span className="text-sm font-medium text-zinc-900 dark:text-white">
+              <span className="text-muted-foreground">/</span>
+              <span className="text-sm font-medium text-foreground">
                 {prompt.word2}
               </span>
-              <span className="text-zinc-400">/</span>
-              <span className="text-sm font-medium text-zinc-900 dark:text-white">
+              <span className="text-muted-foreground">/</span>
+              <span className="text-sm font-medium text-foreground">
                 {prompt.word3}
               </span>
             </div>
-            <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mb-2 text-xs text-muted-foreground">
               {formatDateRangeUTC(weekStart, weekEnd)}
             </p>
             {daysInfo && (
@@ -139,7 +139,7 @@ export function PromptSidebar({
               </p>
             )}
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-400 dark:text-zinc-500">
+              <span className="text-xs text-muted-foreground">
                 {prompt._count.submissions} submission
                 {prompt._count.submissions !== 1 ? "s" : ""}
               </span>
@@ -154,7 +154,7 @@ export function PromptSidebar({
                       <button
                         type="button"
                         onClick={() => onEditPrompt(prompt.id)}
-                        className="rounded px-2 py-0.5 text-xs font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                        className="rounded px-2 py-0.5 text-xs font-medium text-muted-foreground hover:bg-accent"
                       >
                         Edit
                       </button>
