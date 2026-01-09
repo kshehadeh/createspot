@@ -19,6 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXTAUTH_URL || "http://localhost:3000"
+  ),
   title: "Create Spot",
   description:
     "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",

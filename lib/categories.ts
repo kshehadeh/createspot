@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 // Category to icon mapping
-export const CATEGORY_ICONS: Record<string, LucideIcon> = {
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
   Photography: Camera,
   Writing: PenTool,
   "Digital Art": Palette,

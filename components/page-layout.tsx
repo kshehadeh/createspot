@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 interface PageLayoutProps {
   children: React.ReactNode;
   /** Max width class (default: max-w-6xl) */
-  maxWidth?: "max-w-4xl" | "max-w-5xl" | "max-w-6xl" | "max-w-7xl" | "max-w-none";
+  maxWidth?: "max-w-3xl" | "max-w-4xl" | "max-w-5xl" | "max-w-6xl" | "max-w-7xl" | "max-w-none" | "max-w-full";
   /** Additional class names */
   className?: string;
   /** Whether to include horizontal padding (default: true) */
