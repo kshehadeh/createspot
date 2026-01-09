@@ -135,6 +135,11 @@ export function ProfileEditForm({
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
 
+  // Sync portfolio items state when initialPortfolioItems prop changes (e.g., after router.refresh())
+  useEffect(() => {
+    setPortfolioItems(initialPortfolioItems);
+  }, [initialPortfolioItems]);
+
   // Check for hash or query parameter to auto-switch to portfolio tab
   useEffect(() => {
     const tabParam = searchParams.get("tab");
