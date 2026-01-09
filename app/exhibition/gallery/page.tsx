@@ -58,7 +58,7 @@ export default async function GalleryExhibitionPage({
   ]);
 
   return (
-    <PageLayout>
+    <PageLayout maxWidth="max-w-none" className="w-full">
       <ExhibitionFilters
         categories={categories}
         tags={tags}

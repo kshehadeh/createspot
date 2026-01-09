@@ -10,7 +10,6 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 interface ExhibitionSubmission {
   id: string;
@@ -123,7 +122,6 @@ function GridContent({
   loadError: string | null;
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -149,13 +147,6 @@ function GridContent({
     };
   }, [hasMore, isLoading, onLoadMore]);
 
-  const buildTagHref = (tag: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tag", tag);
-    const next = params.toString();
-    return next ? `/exhibition/gallery?${next}` : "/exhibition/gallery";
-  };
-
   if (submissions.length === 0) {
     return (
       <Card className="rounded-2xl border-dashed">
@@ -173,18 +164,9 @@ function GridContent({
 
   return (
     <>
-      <motion.div layout className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <motion.div layout className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <AnimatePresence mode="popLayout">
           {submissions.map((submission) => {
-            const promptWord =
-              submission.prompt && submission.wordIndex
-                ? [
-                    submission.prompt.word1,
-                    submission.prompt.word2,
-                    submission.prompt.word3,
-                  ][submission.wordIndex - 1]
-                : null;
-
             return (
               <motion.article
                 key={submission.id}
@@ -204,11 +186,11 @@ function GridContent({
                       alt={submission.title || "Submission"}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                     {isLoggedIn && (
                       <div
-                        className="absolute right-2 top-2"
+                        className="absolute right-2 top-2 z-10"
                         onClick={(event) => event.stopPropagation()}
                       >
                         <FavoriteButton
@@ -218,7 +200,7 @@ function GridContent({
                       </div>
                     )}
                     {submission.text && (
-                      <div className="absolute left-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">
+                      <div className="absolute left-2 bottom-2 z-10 flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">
                         <svg
                           className="h-4 w-4 text-white"
                           fill="none"
@@ -234,40 +216,27 @@ function GridContent({
                         </svg>
                       </div>
                     )}
-                    <Link
-                      href={`/profile/${submission.user.id}`}
-                      onClick={(event) => event.stopPropagation()}
-                      className="absolute bottom-2 right-2 flex items-center gap-2 rounded-lg bg-black/60 px-2 py-1.5 backdrop-blur-sm transition-opacity hover:opacity-80"
-                    >
-                      {submission.user.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={submission.user.image}
-                          alt={submission.user.name || "User"}
-                          className="h-6 w-6 rounded-full"
-                        />
-                      ) : (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
-                          <span className="text-xs font-medium text-muted-foreground">
-                            {submission.user.name?.charAt(0).toUpperCase() ||
-                              "?"}
-                          </span>
-                        </div>
-                      )}
-                      <span className="text-xs font-medium text-white">
-                        {submission.user.name || "Anonymous"}
-                      </span>
-                    </Link>
+                    {/* Hover overlay with creator name and title */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="px-4 text-center">
+                        <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
+                          {submission.title || "Untitled"}
+                        </h3>
+                        <p className="text-sm font-medium text-white/90 drop-shadow-md">
+                          {submission.user.name || "Anonymous"}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 ) : submission.text ? (
-                  <div className="relative">
+                  <div className="relative aspect-square overflow-hidden bg-muted">
                     <TextThumbnail
                       text={submission.text}
-                      className="aspect-square"
+                      className="h-full w-full"
                     />
                     {isLoggedIn && (
                       <div
-                        className="absolute right-2 top-2"
+                        className="absolute right-2 top-2 z-10"
                         onClick={(event) => event.stopPropagation()}
                       >
                         <FavoriteButton
@@ -276,73 +245,19 @@ function GridContent({
                         />
                       </div>
                     )}
-                    <Link
-                      href={`/profile/${submission.user.id}`}
-                      onClick={(event) => event.stopPropagation()}
-                      className="absolute bottom-2 right-2 flex items-center gap-2 rounded-lg bg-black/60 px-2 py-1.5 backdrop-blur-sm transition-opacity hover:opacity-80"
-                    >
-                      {submission.user.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={submission.user.image}
-                          alt={submission.user.name || "User"}
-                          className="h-6 w-6 rounded-full"
-                        />
-                      ) : (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
-                          <span className="text-xs font-medium text-muted-foreground">
-                            {submission.user.name?.charAt(0).toUpperCase() ||
-                              "?"}
-                          </span>
-                        </div>
-                      )}
-                      <span className="text-xs font-medium text-white">
-                        {submission.user.name || "Anonymous"}
-                      </span>
-                    </Link>
+                    {/* Hover overlay with creator name and title */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="px-4 text-center">
+                        <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
+                          {submission.title || "Untitled"}
+                        </h3>
+                        <p className="text-sm font-medium text-white/90 drop-shadow-md">
+                          {submission.user.name || "Anonymous"}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 ) : null}
-
-                <div className="space-y-2 p-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    {submission.category && (
-                      <Badge variant="secondary" className="rounded-full">
-                        {submission.category}
-                      </Badge>
-                    )}
-                    {promptWord && (
-                      <Badge className="rounded-full bg-prompt/15 text-prompt-foreground hover:bg-prompt/25 dark:bg-prompt/30 dark:text-prompt-foreground">
-                        {promptWord}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {submission.title && (
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {submission.title}
-                    </h3>
-                  )}
-
-                  {submission.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {submission.tags.slice(0, 4).map((tag) => (
-                        <Link
-                          key={tag}
-                          href={buildTagHref(tag)}
-                          onClick={(event) => event.stopPropagation()}
-                          className="text-xs text-muted-foreground transition hover:text-foreground"
-                        >
-                          #{tag}
-                        </Link>
-                      ))}
-                      {submission.tags.length > 4 && (
-                        <span className="text-xs text-muted-foreground">
-                          +{submission.tags.length - 4}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
               </motion.article>
             );
           })}
