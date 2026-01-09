@@ -240,10 +240,10 @@ export default async function ProfilePage({
               <img
                 src={user.image}
                 alt={user.name || "User"}
-                className="h-16 w-16 rounded-full"
+                className="hidden h-16 w-16 rounded-full md:block"
               />
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-muted md:flex">
                 <span className="text-2xl font-medium text-muted-foreground">
                   {user.name?.charAt(0) || "?"}
                 </span>
@@ -262,10 +262,10 @@ export default async function ProfilePage({
             {isOwnProfile && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
+                  <Button variant="outline" className="gap-2 md:gap-2 px-2 md:px-4">
                     <Eye className="h-4 w-4" />
-                    View Profile
-                    <ChevronDown className="h-4 w-4" />
+                    <span className="hidden md:inline">View Profile</span>
+                    <ChevronDown className="hidden h-4 w-4 md:block" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
