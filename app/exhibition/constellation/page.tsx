@@ -76,7 +76,7 @@ export default async function ConstellationExhibitionPage({
   });
 
   return (
-    <PageLayout>
+    <PageLayout maxWidth="max-w-none">
       <ExhibitionFilters
         categories={categories}
         tags={tags}
