@@ -77,7 +77,6 @@ interface ProfileEditFormProps {
 }
 
 export function ProfileEditForm({
-  userId,
   initialBio,
   initialInstagram,
   initialTwitter,
@@ -352,17 +351,6 @@ export function ProfileEditForm({
       }
     }, 500);
   }, [instagram, twitter, linkedin, website, featuredSubmissionId, saveProfile]);
-
-  // Check if values have changed (excluding bio and location fields which are handled separately)
-  const hasChanges = useMemo(() => {
-    return (
-      instagram !== initialValuesRef.current.instagram ||
-      twitter !== initialValuesRef.current.twitter ||
-      linkedin !== initialValuesRef.current.linkedin ||
-      website !== initialValuesRef.current.website ||
-      featuredSubmissionId !== initialValuesRef.current.featuredSubmissionId
-    );
-  }, [instagram, twitter, linkedin, website, featuredSubmissionId]);
 
   // Cleanup timer on unmount
   useEffect(() => {

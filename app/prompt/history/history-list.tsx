@@ -106,7 +106,7 @@ export function HistoryList({
                 {prompt.word1} &middot; {prompt.word2} &middot; {prompt.word3}
               </p>
             </div>
-            <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden">
+            <div className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto overflow-y-hidden">
               {prompt.submissions.map((submission, subIndex) => {
                 const word = submission.wordIndex
                   ? getWordForIndex(prompt, submission.wordIndex)

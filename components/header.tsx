@@ -260,7 +260,6 @@ export function Header({ user }: HeaderProps) {
 // Mobile Navigation Links Component
 function MobileNavigationLinks({
   isAuthenticated,
-  isAdmin,
   onLinkClick,
 }: {
   isAuthenticated?: boolean;

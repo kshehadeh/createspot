@@ -28,7 +28,6 @@ import { FavoritesProvider } from "@/components/favorites-provider";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { getCategoryIcon } from "@/lib/categories";
 
 interface PortfolioItem {
@@ -192,7 +191,6 @@ interface SortablePortfolioItemProps {
 function SortablePortfolioItem({
   item,
   isLoggedIn,
-  showPromptBadge,
   allowEdit,
   isDragging,
   onEdit,
@@ -459,7 +457,7 @@ function PortfolioGridContent({
   const isDndEnabled = allowEdit && !categoryFilter;
 
   const gridContent = (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full min-w-0">
       <AnimatePresence mode="popLayout">
         {items.map((item) => (
           <motion.div

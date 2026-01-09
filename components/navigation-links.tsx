@@ -12,7 +12,6 @@ interface NavigationLinksProps {
 
 export function NavigationLinks({
   isAuthenticated,
-  isAdmin,
 }: NavigationLinksProps) {
   const pathname = usePathname();
   const isAboutPage = pathname === "/about" || pathname.startsWith("/about/");
