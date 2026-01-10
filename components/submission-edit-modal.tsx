@@ -59,12 +59,12 @@ export function SubmissionEditModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-h-[90vh] max-w-2xl flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4">
           <DialogTitle>{getTitle()}</DialogTitle>
           <DialogDescription>{getDescription()}</DialogDescription>
         </DialogHeader>
-        <div className="mt-4">
+        <div className="overflow-y-auto flex-1 min-h-0 px-6 pb-6">
           <PortfolioItemForm
             mode={mode === "create" ? "create" : "edit"}
             initialData={initialData}

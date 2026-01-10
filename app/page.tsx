@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -11,6 +10,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Briefcase, LayoutGrid, Sparkles } from "lucide-react";
+import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -135,80 +135,97 @@ export default async function Home() {
       <section className="relative overflow-hidden px-6 py-14 sm:py-20">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-rose-50 to-violet-50 dark:from-amber-950/20 dark:via-rose-950/20 dark:to-violet-950/20" />
         <div className="relative mx-auto max-w-6xl">
-          <div className="flex flex-col items-center gap-5 text-center">
-            <div className="w-full">
-              <h1 className="mb-6 text-5xl font-bold tracking-tight text-foreground sm:text-7xl">
-                Where <span className="font-permanent-marker">creativity</span>
-                <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
-                  finds its home
-                </span>
-              </h1>
-              <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-                A home for photographers, painters, illustrators, writers,
-                sculptors, and anyone else who wants to create. Build your
-                portfolio, share your creative journey, and get inspired by
-                weekly prompts.
-              </p>
-            </div>
-            <div className="w-full">
-              <div
-                className={
-                  !session?.user
-                    ? "flex flex-wrap justify-center gap-3"
-                    : "grid gap-3 grid-cols-1 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]"
-                }
-              >
-                {heroCards.map((card) => {
-                  const Icon = card.icon;
-                  const decor = heroCardDecor[card.id];
-                  return (
-                    <Link
-                      key={`${card.id}:${card.href}`}
-                      href={card.href}
-                      aria-label={`Open ${card.title}`}
-                      className={`block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${!session?.user ? "w-full sm:w-[240px]" : ""}`}
-                    >
-                      <Card className="group relative h-full overflow-hidden border-border/60 bg-card/70 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-border hover:bg-card hover:shadow-lg">
-                        <div
-                          className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${decor.gradient}`}
-                        />
-                        <div
-                          className={`pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl opacity-70 ${decor.orb1}`}
-                        />
-                        <div
-                          className={`pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full blur-2xl opacity-60 ${decor.orb2}`}
-                        />
+          <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-stretch lg:gap-12">
+            {/* Left: Hero content */}
+            <div className="flex flex-1 flex-col items-start gap-5 text-left">
+              <div className="w-full">
+                <h1 className="mb-6 text-5xl font-bold tracking-tight text-foreground sm:text-7xl">
+                  Where{" "}
+                  <span className="font-permanent-marker">creativity</span>
+                  <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
+                    finds its home
+                  </span>
+                </h1>
+                <p className="max-w-2xl text-lg text-muted-foreground">
+                  A home for photographers, painters, illustrators, writers,
+                  sculptors, and anyone else who wants to create. Build your
+                  portfolio, share your creative journey, and get inspired by
+                  weekly prompts.
+                </p>
+                <Link
+                  href="/about"
+                  className="mt-3 inline-block text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Learn more →
+                </Link>
+              </div>
+              <div className="w-full">
+                <div
+                  className={
+                    !session?.user
+                      ? "flex flex-wrap justify-start gap-3"
+                      : "grid gap-3 grid-cols-1 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]"
+                  }
+                >
+                  {heroCards.map((card) => {
+                    const Icon = card.icon;
+                    const decor = heroCardDecor[card.id];
+                    return (
+                      <Link
+                        key={`${card.id}:${card.href}`}
+                        href={card.href}
+                        aria-label={`Open ${card.title}`}
+                        className={`block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${!session?.user ? "w-full sm:w-[240px]" : ""}`}
+                      >
+                        <Card className="group relative h-full overflow-hidden border-border/60 bg-card/70 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-border hover:bg-card hover:shadow-lg">
+                          <div
+                            className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${decor.gradient}`}
+                          />
+                          <div
+                            className={`pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl opacity-70 ${decor.orb1}`}
+                          />
+                          <div
+                            className={`pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full blur-2xl opacity-60 ${decor.orb2}`}
+                          />
 
-                        <div className="relative">
-                          <CardHeader className="p-4 pb-3">
-                            <div className="mb-1 flex items-center gap-3">
-                              <span
-                                className={`inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ring-1 ${decor.badge}`}
-                              >
-                                <Icon
-                                  className={`h-5 w-5 stroke-[1.5] ${decor.icon}`}
-                                />
-                              </span>
-                              <CardTitle className="whitespace-nowrap text-base sm:text-lg">
-                                {card.title}
-                              </CardTitle>
-                            </div>
-                            <CardDescription className="text-sm">
-                              {descriptions[card.id]}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="px-4 pb-4 pt-0">
-                            <div className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 transition-colors group-hover:text-foreground">
-                              Open <span aria-hidden>→</span>
-                            </div>
-                          </CardContent>
-                        </div>
-                      </Card>
-                    </Link>
-                  );
-                })}
+                          <div className="relative">
+                            <CardHeader className="p-4 pb-3">
+                              <div className="mb-1 flex items-center gap-3">
+                                <span
+                                  className={`inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ring-1 ${decor.badge}`}
+                                >
+                                  <Icon
+                                    className={`h-5 w-5 stroke-[1.5] ${decor.icon}`}
+                                  />
+                                </span>
+                                <CardTitle className="whitespace-nowrap text-base sm:text-lg">
+                                  {card.title}
+                                </CardTitle>
+                              </div>
+                              <CardDescription className="text-sm">
+                                {descriptions[card.id]}
+                              </CardDescription>
+                            </CardHeader>
+                            <CardContent className="px-4 pb-4 pt-0">
+                              <div className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 transition-colors group-hover:text-foreground">
+                                Open <span aria-hidden>→</span>
+                              </div>
+                            </CardContent>
+                          </div>
+                        </Card>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             </div>
+
+            {/* Right: Recent Submissions Carousel (appears below on mobile) */}
+            {recentWork.length > 0 && (
+              <div className="flex w-full flex-col lg:w-[40%] lg:max-w-md lg:flex-shrink-0">
+                <RecentSubmissionsCarousel submissions={recentWork} />
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -225,76 +242,6 @@ export default async function Home() {
           </p>
         </div>
       </section>
-
-      {/* Recent Work Section */}
-      {recentWork.length > 0 && (
-        <section className="px-6 py-16">
-          <div className="mx-auto max-w-6xl">
-            <div className="mb-10 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">
-                  Recent Work
-                </h2>
-                <p className="mt-1 text-muted-foreground">
-                  Fresh inspiration from the community
-                </p>
-              </div>
-              <Link
-                href="/prompt/this-week"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                View all →
-              </Link>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {recentWork.map((work) => (
-                <Link
-                  key={work.id}
-                  href={`/s/${work.id}`}
-                  className="group relative aspect-square overflow-hidden rounded-xl bg-muted"
-                >
-                  {work.imageUrl ? (
-                    <Image
-                      src={work.imageUrl}
-                      alt={work.title || "Creative work"}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    />
-                  ) : work.text ? (
-                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-muted to-muted/80 p-4">
-                      <p className="line-clamp-4 text-center text-sm text-muted-foreground">
-                        {work.text.replace(/<[^>]*>/g, "").slice(0, 100)}...
-                      </p>
-                    </div>
-                  ) : null}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="flex items-center gap-2">
-                      {work.user.image ? (
-                        <Image
-                          src={work.user.image}
-                          alt={work.user.name || "User"}
-                          width={24}
-                          height={24}
-                          className="rounded-full"
-                        />
-                      ) : (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-medium text-white">
-                          {work.user.name?.charAt(0).toUpperCase() || "?"}
-                        </div>
-                      )}
-                      <span className="truncate text-sm text-white">
-                        {work.user.name || "Anonymous"}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <footer className="px-6 py-8 text-center text-sm text-muted-foreground">
         &copy; {new Date().getFullYear()} Create Spot
