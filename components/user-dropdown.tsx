@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getRoute } from "@/lib/routes";
 
 interface UserDropdownProps {
   id?: string;
@@ -23,6 +24,11 @@ interface UserDropdownProps {
 
 export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
   const pathname = usePathname();
+  const profileRoute = getRoute("profile");
+  const portfolioRoute = getRoute("portfolio");
+  const favoritesRoute = getRoute("favorites");
+  const adminRoute = getRoute("admin");
+  const logoutRoute = getRoute("logout");
   const handleLogout = () => {
     signOut();
   };
@@ -46,56 +52,57 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
       <DropdownMenuContent align="end" className="w-48">
         {id && (
           <DropdownMenuItem asChild>
-            <Link href={`/profile/${id}`}>View Profile</Link>
+            <Link
+              href={`${profileRoute.path}/${id}`}
+              className="flex items-center gap-2"
+            >
+              {profileRoute.icon && <profileRoute.icon className="h-4 w-4" />}
+              {profileRoute.label}
+            </Link>
           </DropdownMenuItem>
         )}
         {id && (
           <DropdownMenuItem asChild>
-            <Link href={`/portfolio/${id}`}>View Portfolio</Link>
+            <Link
+              href={`${portfolioRoute.path}/${id}`}
+              className="flex items-center gap-2"
+            >
+              {portfolioRoute.icon && (
+                <portfolioRoute.icon className="h-4 w-4" />
+              )}
+              {portfolioRoute.label}
+            </Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>
-          <Link href="/favorites">Favorites</Link>
+          <Link href={favoritesRoute.path} className="flex items-center gap-2">
+            {favoritesRoute.icon && <favoritesRoute.icon className="h-4 w-4" />}
+            {favoritesRoute.label}
+          </Link>
         </DropdownMenuItem>
         {isAdmin && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link
-                href="/admin"
+                href={adminRoute.path}
                 className={cn(
-                  pathname === "/admin" && "bg-accent text-accent-foreground",
-                )}
-              >
-                Manage Prompts
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/admin/users"
-                className={cn(
-                  pathname === "/admin/users" &&
+                  "flex items-center gap-2",
+                  pathname.startsWith(adminRoute.path) &&
                     "bg-accent text-accent-foreground",
                 )}
               >
-                Manage Users
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/admin/exhibits"
-                className={cn(
-                  pathname.startsWith("/admin/exhibits") &&
-                    "bg-accent text-accent-foreground",
-                )}
-              >
-                Manage Exhibits
+                {adminRoute.icon && <adminRoute.icon className="h-4 w-4" />}
+                {adminRoute.label}
               </Link>
             </DropdownMenuItem>
           </>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>
+          {logoutRoute.icon && <logoutRoute.icon className="h-4 w-4" />}
+          {logoutRoute.label}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

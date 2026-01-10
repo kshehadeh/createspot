@@ -19,7 +19,6 @@ export function Breadcrumb({ segments }: BreadcrumbProps) {
   return (
     <div className="flex flex-row items-center border-b border-border px-6 py-2 sm:px-12">
       {segments.map((segment, index) => {
-        const isLastSegment = index === segments.length - 1;
         const IconComponent = segment.icon;
 
         return (
@@ -41,7 +40,7 @@ export function Breadcrumb({ segments }: BreadcrumbProps) {
                 />
               </svg>
             )}
-            {segment.href && !isLastSegment ? (
+            {segment.href ? (
               <Link
                 href={segment.href}
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"

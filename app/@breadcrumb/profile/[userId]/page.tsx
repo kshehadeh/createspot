@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { getRouteByPath } from "@/lib/routes";
 
 interface ProfileBreadcrumbProps {
   params: Promise<{ userId: string }>;
@@ -14,9 +15,21 @@ export default async function ProfileBreadcrumb({
     select: { name: true },
   });
 
+  const profileRoute = getRouteByPath("/profile");
+  const userName = user?.name || "Unknown";
+
   return (
     <Breadcrumb
-      segments={[{ label: "Profile" }, { label: user?.name || "Unknown" }]}
+      segments={[
+        {
+          label: profileRoute?.label || "Profile",
+          // No href - profile doesn't have a root page
+        },
+        {
+          label: userName,
+          href: `/profile/${userId}`, // Last item links to itself
+        },
+      ]}
     />
   );
 }
