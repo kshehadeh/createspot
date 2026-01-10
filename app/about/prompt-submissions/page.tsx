@@ -32,9 +32,9 @@ export default function PromptSubmissionsPage() {
       </section>
 
       <div className="grid gap-8">
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-fuchsia-50/50 to-white shadow-sm dark:from-fuchsia-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               What you can submit
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -50,9 +50,9 @@ export default function PromptSubmissionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-violet-50/50 to-white shadow-sm dark:from-violet-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               Titles in the gallery
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -64,9 +64,9 @@ export default function PromptSubmissionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-cyan-50/50 to-white shadow-sm dark:from-cyan-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               Clearing and removing submissions
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -86,7 +86,7 @@ export default function PromptSubmissionsPage() {
       <div className="mt-10 text-center">
         <Link
           href="/about"
-          className="inline-flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground underline underline-offset-4 decoration-muted-foreground/30"
         >
           ← Back to About
         </Link>

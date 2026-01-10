@@ -23,18 +23,20 @@ export default function AboutPage() {
           About Create Spot
         </p>
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          A home for creative momentum.
+          A home for <span className="font-permanent-marker">creative</span>{" "}
+          momentum.
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          We built Create Spot to help creatives stay inspired, share their work
-          in thoughtful ways, and grow a body of work that feels alive.
+          We built <span className="font-permanent-marker">Create Spot</span> to
+          help creatives stay inspired, share their work in thoughtful ways, and
+          grow a body of work that feels alive.
         </p>
       </section>
 
       <div className="grid gap-8">
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-amber-50/50 to-white shadow-sm dark:from-amber-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               Purpose
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -59,7 +61,7 @@ export default function AboutPage() {
             <div className="mt-5">
               <Link
                 href="/about/purpose"
-                className="inline-flex items-center text-sm font-medium text-amber-700 transition-colors hover:text-amber-900 dark:text-amber-300 dark:hover:text-amber-200"
+                className="inline-flex items-center text-sm font-semibold text-amber-600 transition-colors hover:text-amber-700 dark:text-amber-300 dark:hover:text-amber-200 underline underline-offset-4 decoration-amber-600/50 hover:decoration-amber-700"
               >
                 Read more about our purpose →
               </Link>
@@ -67,9 +69,9 @@ export default function AboutPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-rose-50/50 to-white shadow-sm dark:from-rose-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               How the site is organized
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -89,7 +91,7 @@ export default function AboutPage() {
             <div className="mt-5">
               <Link
                 href="/about/portfolios-and-sharing"
-                className="inline-flex items-center text-sm font-medium text-rose-700 transition-colors hover:text-rose-900 dark:text-rose-300 dark:hover:text-rose-200"
+                className="inline-flex items-center text-sm font-semibold text-rose-600 transition-colors hover:text-rose-700 dark:text-rose-300 dark:hover:text-rose-200 underline underline-offset-4 decoration-rose-600/50 hover:decoration-rose-700"
               >
                 Learn more about portfolios and sharing →
               </Link>
@@ -97,9 +99,9 @@ export default function AboutPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-sky-50/50 to-white shadow-sm dark:from-sky-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               Prompt inspiration
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -115,7 +117,7 @@ export default function AboutPage() {
             <div className="mt-5">
               <Link
                 href="/about/prompt-submissions"
-                className="inline-flex items-center text-sm font-medium text-sky-700 transition-colors hover:text-sky-900 dark:text-sky-300 dark:hover:text-sky-200"
+                className="inline-flex items-center text-sm font-semibold text-sky-700 transition-colors hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200 underline underline-offset-4 decoration-sky-600/50 hover:decoration-sky-700"
               >
                 Learn more about prompt submissions →
               </Link>

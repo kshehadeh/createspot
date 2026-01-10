@@ -20,6 +20,10 @@
     --destructive-foreground: 0 0% 98%;
     --prompt: 142 71% 45%;
     --prompt-foreground: 142 76% 28%;
+    --filter-active: 38 92% 50%;
+    --filter-active-foreground: 38 92% 20%;
+    --filter-active-background: 38 92% 96%;
+    --filter-active-hover: 38 92% 94%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
@@ -46,6 +50,10 @@
     --destructive-foreground: 0 0% 98%;
     --prompt: 142 70% 45%;
     --prompt-foreground: 0 0% 98%;
+    --filter-active: 38 92% 60%;
+    --filter-active-foreground: 0 0% 98%;
+    --filter-active-background: 38 92% 8%;
+    --filter-active-hover: 38 92% 12%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
@@ -71,6 +79,10 @@
   --color-destructive-foreground: hsl(var(--destructive-foreground));
   --color-prompt: hsl(var(--prompt));
   --color-prompt-foreground: hsl(var(--prompt-foreground));
+  --color-filter-active: hsl(var(--filter-active));
+  --color-filter-active-foreground: hsl(var(--filter-active-foreground));
+  --color-filter-active-background: hsl(var(--filter-active-background));
+  --color-filter-active-hover: hsl(var(--filter-active-hover));
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));

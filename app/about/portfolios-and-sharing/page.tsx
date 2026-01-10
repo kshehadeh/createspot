@@ -32,9 +32,9 @@ export default function PortfoliosAndSharingPage() {
       </section>
 
       <div className="grid gap-8">
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-orange-50/50 to-white shadow-sm dark:from-orange-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               Sharing levels
             </h2>
             <p className="mb-4 text-base leading-relaxed text-muted-foreground">
@@ -42,19 +42,19 @@ export default function PortfoliosAndSharingPage() {
               <strong className="text-foreground">who gets to see it</strong>.
             </p>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl border border-border bg-background/50 p-4 text-sm text-muted-foreground">
+              <div className="rounded-xl border border-orange-100/50 bg-white/50 p-4 text-sm text-muted-foreground dark:border-orange-900/20 dark:bg-black/20">
                 <p className="font-semibold text-foreground">Private</p>
                 <p className="mt-1">
                   Only you can see it in your profile editor.
                 </p>
               </div>
-              <div className="rounded-xl border border-border bg-background/50 p-4 text-sm text-muted-foreground">
+              <div className="rounded-xl border border-orange-100/50 bg-white/50 p-4 text-sm text-muted-foreground dark:border-orange-900/20 dark:bg-black/20">
                 <p className="font-semibold text-foreground">Profile</p>
                 <p className="mt-1">
                   Visible on your public profile, but not in galleries.
                 </p>
               </div>
-              <div className="rounded-xl border border-border bg-background/50 p-4 text-sm text-muted-foreground">
+              <div className="rounded-xl border border-orange-100/50 bg-white/50 p-4 text-sm text-muted-foreground dark:border-orange-900/20 dark:bg-black/20">
                 <p className="font-semibold text-foreground">Public</p>
                 <p className="mt-1">
                   Visible on your profile and in public galleries.
@@ -69,9 +69,9 @@ export default function PortfoliosAndSharingPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-pink-50/50 to-white shadow-sm dark:from-pink-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               Portfolio links and preview images
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -87,9 +87,9 @@ export default function PortfoliosAndSharingPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-teal-50/50 to-white shadow-sm dark:from-teal-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               Featured work
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -104,9 +104,9 @@ export default function PortfoliosAndSharingPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl border-none bg-linear-to-br from-indigo-50/50 to-white shadow-sm dark:from-indigo-950/10 dark:to-transparent">
           <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               Prompts and portfolios together
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -122,7 +122,7 @@ export default function PortfoliosAndSharingPage() {
       <div className="mt-10 text-center">
         <Link
           href="/about"
-          className="inline-flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground underline underline-offset-4 decoration-muted-foreground/30"
         >
           ← Back to About
         </Link>

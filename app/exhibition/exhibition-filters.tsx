@@ -136,7 +136,7 @@ export function ExhibitionFilters({
                     variant="outline"
                     className={`rounded-xl gap-2 ${
                       activeFiltersCount > 0
-                        ? "border-amber-500 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-950/30 dark:text-amber-300 dark:hover:bg-amber-950/50"
+                        ? "border-[hsl(var(--filter-active))] bg-[hsl(var(--filter-active-background))] text-[hsl(var(--filter-active-foreground))] hover:bg-[hsl(var(--filter-active-hover))]"
                         : ""
                     }`}
                   >
@@ -155,7 +155,7 @@ export function ExhibitionFilters({
                     </svg>
                     Filters
                     {activeFiltersCount > 0 && (
-                      <Badge className="ml-1 bg-amber-500 text-white dark:bg-amber-600">
+                      <Badge className="ml-1 bg-[hsl(var(--filter-active))] text-[hsl(var(--filter-active-foreground))]">
                         {activeFiltersCount}
                       </Badge>
                     )}
