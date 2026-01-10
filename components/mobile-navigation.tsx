@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, startTransition } from "react";
 import { usePathname } from "next/navigation";
 import { signOut, signIn } from "next-auth/react";
 import { Button } from "./ui/button";
+import { SubmissionEditModal } from "./submission-edit-modal";
 import { cn } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -23,6 +24,7 @@ interface MobileNavigationProps {
 
 export function MobileNavigation({ user }: MobileNavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
@@ -57,6 +59,16 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
 
   return (
     <>
+      {/* Mobile Create Button */}
+      {user && (
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="flex items-center justify-center w-9 h-9 rounded-md text-foreground hover:bg-accent transition-colors md:hidden"
+          aria-label="Create"
+        >
+          <span className="text-xl font-medium">+</span>
+        </button>
+      )}
       {/* Mobile Hamburger Button */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -127,10 +139,23 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-6">
             <MobileNavigationLinks onLinkClick={() => setIsMenuOpen(false)} />
             {user ? (
-              <MobileUserSection
-                user={user}
-                onActionClick={() => setIsMenuOpen(false)}
-              />
+              <>
+                <div className="mb-2">
+                  <button
+                    onClick={() => {
+                      setIsCreateModalOpen(true);
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full px-4 py-3 text-left text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Create
+                  </button>
+                </div>
+                <MobileUserSection
+                  user={user}
+                  onActionClick={() => setIsMenuOpen(false)}
+                />
+              </>
             ) : (
               <div className="mt-auto border-t border-border pt-4 px-4">
                 <Button
@@ -149,6 +174,13 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
           </nav>
         </div>
       </div>
+      {user && (
+        <SubmissionEditModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          mode="create"
+        />
+      )}
     </>
   );
 }

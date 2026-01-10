@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { getRouteByPath } from "@/lib/routes";
 
+export const dynamic = "force-dynamic";
+
 interface PortfolioBreadcrumbProps {
   params: Promise<{ userId: string }>;
 }

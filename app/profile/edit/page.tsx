@@ -106,6 +106,8 @@ export default async function ProfileEditPage() {
       </div>
 
       <ProfileEditForm
+        initialName={user.name || ""}
+        initialGoogleName={session.user.name || ""}
         initialBio={user.bio || ""}
         initialInstagram={user.instagram || ""}
         initialTwitter={user.twitter || ""}

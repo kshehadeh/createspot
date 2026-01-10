@@ -38,6 +38,8 @@ interface SubmissionOption {
 }
 
 interface ProfileEditFormProps {
+  initialName: string;
+  initialGoogleName: string;
   initialBio: string;
   initialInstagram: string;
   initialTwitter: string;
@@ -52,6 +54,8 @@ interface ProfileEditFormProps {
 }
 
 export function ProfileEditForm({
+  initialName,
+  initialGoogleName,
   initialBio,
   initialInstagram,
   initialTwitter,
@@ -65,6 +69,7 @@ export function ProfileEditForm({
   portfolioItemCount,
 }: ProfileEditFormProps) {
   const router = useRouter();
+  const [name, setName] = useState(initialName || initialGoogleName || "");
   const [bio, setBio] = useState(initialBio);
   const [bioHasFocus, setBioHasFocus] = useState(false);
   const [bioOriginalValue, setBioOriginalValue] = useState(initialBio);
@@ -85,6 +90,7 @@ export function ProfileEditForm({
 
   // Track initial values to detect changes
   const initialValuesRef = useRef({
+    name: initialName || initialGoogleName || "",
     bio: initialBio,
     instagram: initialInstagram,
     twitter: initialTwitter,
@@ -166,6 +172,7 @@ export function ProfileEditForm({
     async (
       showToast = true,
       overrides?: {
+        name?: string;
         featuredSubmissionId?: string;
         instagram?: string;
         twitter?: string;
@@ -189,6 +196,7 @@ export function ProfileEditForm({
       const toastId = showToast ? toast.loading("Saving...") : undefined;
 
       // Use override values if provided, otherwise use current state
+      const nameValue = overrides?.name !== undefined ? overrides.name : name;
       const featuredId =
         overrides?.featuredSubmissionId !== undefined
           ? overrides.featuredSubmissionId
@@ -214,6 +222,7 @@ export function ProfileEditForm({
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            name: nameValue || null,
             bio: initialValuesRef.current.bio || null, // Use saved bio value, not current
             instagram: instagramValue || null,
             twitter: twitterValue || null,
@@ -237,6 +246,7 @@ export function ProfileEditForm({
         // Update initial values ref to track new baseline (excluding bio)
         initialValuesRef.current = {
           ...initialValuesRef.current,
+          name: nameValue,
           instagram: instagramValue,
           twitter: twitterValue,
           linkedin: linkedinValue,
@@ -262,6 +272,7 @@ export function ProfileEditForm({
       }
     },
     [
+      name,
       instagram,
       twitter,
       linkedin,
@@ -282,6 +293,7 @@ export function ProfileEditForm({
     saveTimerRef.current = setTimeout(() => {
       // Check if there are actual changes before saving (excluding location fields)
       const hasActualChanges =
+        name !== initialValuesRef.current.name ||
         instagram !== initialValuesRef.current.instagram ||
         twitter !== initialValuesRef.current.twitter ||
         linkedin !== initialValuesRef.current.linkedin ||
@@ -290,6 +302,7 @@ export function ProfileEditForm({
 
       if (hasActualChanges) {
         saveProfile(true, {
+          name,
           instagram,
           twitter,
           linkedin,
@@ -299,6 +312,7 @@ export function ProfileEditForm({
       }
     }, 500);
   }, [
+    name,
     instagram,
     twitter,
     linkedin,
@@ -345,6 +359,7 @@ export function ProfileEditForm({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name: name || null,
           bio: bio || null,
           instagram: instagram || null,
           twitter: twitter || null,
@@ -374,6 +389,7 @@ export function ProfileEditForm({
       setSaving(false);
     }
   }, [
+    name,
     bio,
     instagram,
     twitter,
@@ -390,6 +406,20 @@ export function ProfileEditForm({
     setBio(bioOriginalValue);
     setBioHasFocus(false);
   }, [bioOriginalValue]);
+
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setName(e.target.value);
+      debouncedSave();
+    },
+    [debouncedSave],
+  );
+
+  const handleNameBlur = useCallback(() => {
+    if (name !== initialValuesRef.current.name) {
+      saveProfile(true, { name });
+    }
+  }, [name, saveProfile]);
 
   const handleInstagramChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -547,6 +577,23 @@ export function ProfileEditForm({
             <ArrowRight className="h-4 w-4 text-muted-foreground" />
           </div>
         </Link>
+
+        <div>
+          <label
+            htmlFor="name"
+            className="mb-2 block text-sm font-medium text-foreground"
+          >
+            Name
+          </label>
+          <Input
+            type="text"
+            id="name"
+            value={name}
+            onChange={handleNameChange}
+            onBlur={handleNameBlur}
+            placeholder="Your name"
+          />
+        </div>
 
         <div>
           <label className="mb-2 block text-sm font-medium text-foreground">

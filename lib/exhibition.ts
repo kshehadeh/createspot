@@ -54,6 +54,7 @@ function buildExhibitionWhere({
         { text: { contains: query, mode: "insensitive" } },
         { category: { contains: query, mode: "insensitive" } },
         { tags: { has: query } },
+        { user: { name: { contains: query, mode: "insensitive" } } },
       ],
     });
   }

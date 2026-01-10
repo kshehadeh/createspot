@@ -41,6 +41,7 @@ export async function PUT(request: NextRequest) {
 
   const body = await request.json();
   const {
+    name,
     bio,
     instagram,
     twitter,
@@ -87,6 +88,7 @@ export async function PUT(request: NextRequest) {
 
   // Prepare update data
   const updateData: {
+    name: string | null;
     bio: string | null;
     instagram: string | null;
     twitter: string | null;
@@ -99,6 +101,7 @@ export async function PUT(request: NextRequest) {
     longitude?: number | null;
     featuredSubmissionId: string | null;
   } = {
+    name: name ?? null,
     bio: bio ?? null,
     instagram: instagram ?? null,
     twitter: twitter ?? null,

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { CreateSpotLogo } from "./create-spot-logo";
@@ -7,7 +8,9 @@ import { UserDropdown } from "./user-dropdown";
 import { DashboardNavigation } from "./navigation-links";
 import { MobileNavigation } from "./mobile-navigation";
 import { ThemeToggle } from "./theme-toggle";
+import { SubmissionEditModal } from "./submission-edit-modal";
 import { Button } from "./ui/button";
+import { Plus } from "lucide-react";
 import { getRoute } from "@/lib/routes";
 
 interface HeaderUser {
@@ -22,6 +25,8 @@ interface HeaderProps {
 }
 
 export function Header({ user }: HeaderProps) {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   return (
     <>
       <header className="flex items-center justify-between border-b border-border px-6 py-4 sm:px-12">
@@ -44,6 +49,17 @@ export function Header({ user }: HeaderProps) {
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:gap-4">
             <DashboardNavigation />
+            {user && (
+              <Button
+                onClick={() => setIsCreateModalOpen(true)}
+                variant="default"
+                size="default"
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Create
+              </Button>
+            )}
             <ThemeToggle />
             {user ? (
               <UserDropdown
@@ -78,6 +94,13 @@ export function Header({ user }: HeaderProps) {
           </div>
         </div>
       </header>
+      {user && (
+        <SubmissionEditModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          mode="create"
+        />
+      )}
     </>
   );
 }

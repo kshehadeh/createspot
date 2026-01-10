@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PortfolioGrid } from "@/components/portfolio-grid";
+import { PortfolioShareButton } from "@/components/portfolio-share-button";
 
 export const dynamic = "force-dynamic";
 
@@ -130,10 +131,13 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
                 </span>
               </div>
             )}
-            <div className="min-w-0">
-              <h1 className="text-2xl font-semibold text-foreground truncate">
-                {user.name ? `${user.name}'s Portfolio` : "Portfolio"}
-              </h1>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-semibold text-foreground truncate">
+                  {user.name ? `${user.name}'s Portfolio` : "Portfolio"}
+                </h1>
+                <PortfolioShareButton userId={user.id} />
+              </div>
               <p className="text-sm text-muted-foreground">
                 {portfolioItems.length} work
                 {portfolioItems.length !== 1 ? "s" : ""}
