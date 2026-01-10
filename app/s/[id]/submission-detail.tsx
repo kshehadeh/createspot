@@ -11,6 +11,7 @@ import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { normalizeUrl } from "@/lib/utils";
 
 interface SubmissionDetailProps {
   submission: {
@@ -159,14 +160,17 @@ export function SubmissionDetail({
                         </svg>
                       </a>
                     )}
-                    {submission.user.website && (
-                      <a
-                        href={submission.user.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                        aria-label={`Website: ${submission.user.website}`}
-                      >
+                    {submission.user.website && (() => {
+                      const normalizedUrl = normalizeUrl(submission.user.website);
+                      if (!normalizedUrl) return null;
+                      return (
+                        <a
+                          href={normalizedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                          aria-label={`Website: ${submission.user.website}`}
+                        >
                         <svg
                           className="h-5 w-5"
                           viewBox="0 0 24 24"
@@ -181,7 +185,8 @@ export function SubmissionDetail({
                           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                         </svg>
                       </a>
-                    )}
+                      );
+                    })()}
                   </div>
                 )}
 

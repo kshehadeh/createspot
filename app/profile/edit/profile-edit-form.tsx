@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Country, State, City } from "country-state-city";
 import { Briefcase, ArrowRight } from "lucide-react";
+import { normalizeUrl, isValidUrl } from "@/lib/utils";
 
 interface SubmissionOption {
   id: string;
@@ -85,6 +86,7 @@ export function ProfileEditForm({
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [websiteError, setWebsiteError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -465,15 +467,50 @@ export function ProfileEditForm({
 
   const handleWebsiteChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setWebsite(e.target.value);
+      const value = e.target.value;
+      setWebsite(value);
+      // Clear error when user starts typing
+      if (websiteError) {
+        setWebsiteError(null);
+      }
       debouncedSave();
     },
-    [debouncedSave],
+    [debouncedSave, websiteError],
   );
 
   const handleWebsiteBlur = useCallback(() => {
-    if (website !== initialValuesRef.current.website) {
-      saveProfile(true, { website });
+    const trimmed = website.trim();
+    
+    // If empty, clear and save
+    if (!trimmed) {
+      setWebsite("");
+      setWebsiteError(null);
+      if (initialValuesRef.current.website !== "") {
+        saveProfile(true, { website: "" });
+      }
+      return;
+    }
+    
+    // Auto-prepend https:// if no protocol
+    const normalized = normalizeUrl(trimmed);
+    
+    // Validate URL
+    if (!normalized || !isValidUrl(normalized)) {
+      setWebsiteError("Please enter a valid URL (e.g., example.com or https://example.com)");
+      return;
+    }
+    
+    // Update website with normalized URL if it changed
+    if (normalized !== trimmed) {
+      setWebsite(normalized);
+    }
+    
+    setWebsiteError(null);
+    
+    // Save if changed
+    const finalValue = normalized || "";
+    if (finalValue !== initialValuesRef.current.website) {
+      saveProfile(true, { website: finalValue });
     }
   }, [website, saveProfile]);
 
@@ -885,7 +922,13 @@ export function ProfileEditForm({
               onChange={handleWebsiteChange}
               onBlur={handleWebsiteBlur}
               placeholder="https://example.com"
+              className={websiteError ? "border-red-500 focus-visible:ring-red-500" : ""}
             />
+            {websiteError && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {websiteError}
+              </p>
+            )}
           </div>
         </div>
 

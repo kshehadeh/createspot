@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { geocodeLocation } from "@/lib/geocoding";
+import { normalizeUrl, isValidUrl } from "@/lib/utils";
 
 export async function GET() {
   const session = await auth();
@@ -40,7 +41,7 @@ export async function PUT(request: NextRequest) {
   }
 
   const body = await request.json();
-  const {
+  let {
     name,
     bio,
     instagram,
@@ -52,6 +53,20 @@ export async function PUT(request: NextRequest) {
     country,
     featuredSubmissionId,
   } = body;
+
+  // Normalize and validate website URL
+  if (website && typeof website === "string") {
+    const normalized = normalizeUrl(website);
+    if (normalized && isValidUrl(normalized)) {
+      website = normalized;
+    } else if (normalized) {
+      // Invalid URL - reject the request
+      return NextResponse.json(
+        { error: "Invalid website URL" },
+        { status: 400 },
+      );
+    }
+  }
 
   // Validate that featuredSubmissionId belongs to the user if provided
   if (featuredSubmissionId) {
