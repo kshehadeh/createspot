@@ -177,7 +177,7 @@ function GridContent({
     <>
       <motion.div
         layout
-        className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full min-w-0"
       >
         <AnimatePresence mode="popLayout">
           {submissions.map((submission) => {
@@ -185,12 +185,11 @@ function GridContent({
               <motion.article
                 key={submission.id}
                 layout
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.25 }}
-                whileHover={{ y: -4 }}
-                className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                className="group cursor-pointer overflow-hidden border-0 rounded-none transition-shadow duration-300 hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)]"
                 onClick={() => setSelectedSubmission(submission)}
               >
                 {submission.imageUrl ? (

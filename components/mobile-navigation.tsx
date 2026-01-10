@@ -366,7 +366,7 @@ function MobileUserSection({
               {portfolioRoute.icon && (
                 <portfolioRoute.icon className="h-5 w-5" />
               )}
-              View Portfolio
+              Browse Portfolio
             </Link>
           )}
           <Link

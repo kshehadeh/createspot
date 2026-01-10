@@ -6,13 +6,11 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { HistoryList } from "@/app/prompt/history/history-list";
 import { SocialLinks } from "./social-links";
-import { FeaturedSubmission } from "@/components/featured-submission";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { ProfileShareButton } from "@/components/profile-share-button";
-import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -224,6 +222,29 @@ export default async function ProfilePage({
       ? featuredSubmissionRaw
       : null;
 
+  // Include featured submission in portfolio items if it's not already there
+  const allPortfolioItems = [...portfolioItems];
+  if (
+    featuredSubmission &&
+    !portfolioItems.some((item) => item.id === featuredSubmission.id)
+  ) {
+    // Add featured submission at the beginning - map to PortfolioItem format
+    allPortfolioItems.unshift({
+      id: featuredSubmission.id,
+      title: featuredSubmission.title,
+      imageUrl: featuredSubmission.imageUrl,
+      text: featuredSubmission.text,
+      isPortfolio: featuredSubmission.isPortfolio,
+      portfolioOrder: featuredSubmission.portfolioOrder,
+      tags: featuredSubmission.tags,
+      category: featuredSubmission.category,
+      promptId: featuredSubmission.promptId,
+      wordIndex: featuredSubmission.wordIndex,
+      prompt: featuredSubmission.prompt,
+      _count: featuredSubmission._count,
+    } as (typeof portfolioItems)[0]);
+  }
+
   return (
     <PageLayout maxWidth="max-w-5xl">
       {/* Track profile view for non-owners (not in public view mode) */}
@@ -242,168 +263,231 @@ export default async function ProfilePage({
         </div>
       )}
 
-      <div className="mb-8 w-full min-w-0">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-4 min-w-0 flex-1">
-            {user.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.image}
-                alt={user.name || "User"}
-                className="hidden h-16 w-16 rounded-full md:block"
-              />
-            ) : (
-              <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-muted md:flex">
-                <span className="text-2xl font-medium text-muted-foreground">
-                  {user.name?.charAt(0) || "?"}
-                </span>
-              </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-semibold text-foreground truncate">
-                  {user.name || "Anonymous"}
-                </h1>
-                <ProfileShareButton userId={user.id} />
-              </div>
-              <div className="flex items-center gap-3">
-                <p className="text-sm text-muted-foreground">
-                  {submissionCount} work{submissionCount !== 1 ? "s" : ""}
-                </p>
-                {hasSocialLinks && (
-                  <SocialLinks
-                    instagram={user.instagram}
-                    twitter={user.twitter}
-                    linkedin={user.linkedin}
-                    website={user.website}
-                    variant="minimal"
-                  />
-                )}
+      {!effectiveIsOwnProfile && featuredSubmission?.imageUrl ? (
+        <div className="mb-8 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-12 bg-muted overflow-hidden">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url(${featuredSubmission.imageUrl})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          {/* Semi-opaque overlay for public view with featured image */}
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+
+          <div className="relative flex items-start justify-between gap-4 p-6 max-w-5xl mx-auto">
+            <div className="flex items-center gap-4 min-w-0 flex-1">
+              {user.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.image}
+                  alt={user.name || "User"}
+                  className="hidden h-16 w-16 rounded-full md:block ring-2 ring-background/50"
+                />
+              ) : (
+                <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-muted md:flex ring-2 ring-background/50">
+                  <span className="text-2xl font-medium text-muted-foreground">
+                    {user.name?.charAt(0) || "?"}
+                  </span>
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl font-semibold text-foreground truncate drop-shadow-sm">
+                    {user.name || "Anonymous"}
+                  </h1>
+                  <ProfileShareButton userId={user.id} />
+                </div>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm text-foreground/90 drop-shadow-sm">
+                    {submissionCount} work{submissionCount !== 1 ? "s" : ""}
+                  </p>
+                  {hasSocialLinks && (
+                    <SocialLinks
+                      instagram={user.instagram}
+                      twitter={user.twitter}
+                      linkedin={user.linkedin}
+                      website={user.website}
+                      variant="minimal"
+                    />
+                  )}
+                </div>
               </div>
             </div>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              {isOwnProfile && !isPublicView && (
+                <Link
+                  href={`/profile/${user.id}?view=public`}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  View as Anonymous User →
+                </Link>
+              )}
+              {isOwnProfile && !isPublicView && (
+                <Link
+                  href="/profile/edit"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Edit Profile →
+                </Link>
+              )}
+            </div>
           </div>
-          <div className="flex flex-col items-end gap-2 shrink-0">
-            {isOwnProfile && !isPublicView && (
-              <Link
-                href={`/profile/${user.id}?view=public`}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                View as Anonymous User →
-              </Link>
-            )}
-            {isOwnProfile && !isPublicView && (
-              <Link
-                href="/profile/edit"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Edit Profile →
-              </Link>
-            )}
-          </div>
-        </div>
 
-        {user.bio && <ExpandableBio html={user.bio} className="mt-4" />}
-      </div>
+          {user.bio && (
+            <div className="relative px-6 pb-6 max-w-5xl mx-auto">
+              <ExpandableBio html={user.bio} className="text-foreground/90" />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="mb-8 w-full min-w-0">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0 flex-1">
+              {user.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.image}
+                  alt={user.name || "User"}
+                  className="hidden h-16 w-16 rounded-full md:block"
+                />
+              ) : (
+                <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-muted md:flex">
+                  <span className="text-2xl font-medium text-muted-foreground">
+                    {user.name?.charAt(0) || "?"}
+                  </span>
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl font-semibold text-foreground truncate">
+                    {user.name || "Anonymous"}
+                  </h1>
+                  <ProfileShareButton userId={user.id} />
+                </div>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    {submissionCount} work{submissionCount !== 1 ? "s" : ""}
+                  </p>
+                  {hasSocialLinks && (
+                    <SocialLinks
+                      instagram={user.instagram}
+                      twitter={user.twitter}
+                      linkedin={user.linkedin}
+                      website={user.website}
+                      variant="minimal"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              {isOwnProfile && !isPublicView && (
+                <Link
+                  href={`/profile/${user.id}?view=public`}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  View as Anonymous User →
+                </Link>
+              )}
+              {isOwnProfile && !isPublicView && (
+                <Link
+                  href="/profile/edit"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Edit Profile →
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {user.bio && <ExpandableBio html={user.bio} className="mt-4" />}
+        </div>
+      )}
 
       {/* Analytics - only visible to profile owner in private view */}
       {effectiveIsOwnProfile && <ProfileAnalytics userId={user.id} />}
 
-      {/* Main content area: Featured on left, Gallery on right */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 w-full min-w-0">
-        {/* Featured Submission - Left Sidebar */}
-        {featuredSubmission && (
-          <div className="lg:col-span-1">
-            <h2 className="mb-6 text-2xl font-semibold text-foreground">
-              Featured
+      {/* Portfolio Section */}
+      {(portfolioItems.length > 0 || featuredSubmission) && (
+        <div className="mb-12">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-foreground">
+              Portfolio
             </h2>
-            <FeaturedSubmission submission={featuredSubmission} />
+            <div className="flex flex-col items-end gap-2">
+              <Link
+                href={`/portfolio/${user.id}`}
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Browse Portfolio →
+              </Link>
+              {effectiveIsOwnProfile && (
+                <Link
+                  href="/portfolio/edit"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Manage Portfolio →
+                </Link>
+              )}
+            </div>
+          </div>
+          <PortfolioGrid
+            items={allPortfolioItems}
+            isLoggedIn={isLoggedIn}
+            isOwnProfile={effectiveIsOwnProfile}
+            featuredSubmissionId={featuredSubmission?.id}
+          />
+        </div>
+      )}
+
+      {/* Gallery Section - Main Content Area */}
+      <div className="w-full min-w-0">
+        {/* Prompt Submissions Section */}
+        {initialItems.length > 0 && (
+          <div>
+            <h2 className="mb-6 text-2xl font-semibold text-foreground">
+              Prompt Submissions
+            </h2>
+            <HistoryList
+              initialItems={initialItems.map((p) => ({
+                ...p,
+                weekStart: p.weekStart.toISOString(),
+                weekEnd: p.weekEnd.toISOString(),
+              }))}
+              initialHasMore={hasMore}
+              userId={user.id}
+            />
           </div>
         )}
 
-        {/* Gallery Section - Main Content Area */}
-        <div
-          className={cn(
-            featuredSubmission ? "lg:col-span-2" : "lg:col-span-3",
-            "w-full min-w-0",
-          )}
-        >
-          {/* Portfolio Section */}
-          {portfolioItems.length > 0 && (
-            <div className="mb-12">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-semibold text-foreground">
-                  Portfolio
-                </h2>
-                <div className="flex flex-col items-end gap-2">
-                  <Link
-                    href={`/portfolio/${user.id}`}
-                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    View Portfolio →
-                  </Link>
-                  {effectiveIsOwnProfile && (
-                    <Link
-                      href="/portfolio/edit"
-                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      Manage Portfolio →
-                    </Link>
-                  )}
-                </div>
+        {/* Empty state */}
+        {allPortfolioItems.length === 0 && initialItems.length === 0 && (
+          <div className="rounded-lg border border-dashed border-border py-12 text-center">
+            <p className="text-muted-foreground">
+              {effectiveIsOwnProfile
+                ? "You haven't added any work yet. Start by adding portfolio items or submitting to prompts."
+                : "No work to display yet."}
+            </p>
+            {effectiveIsOwnProfile && (
+              <div className="mt-4 flex justify-center gap-3">
+                <Link
+                  href="/portfolio/edit"
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  Add Portfolio Item
+                </Link>
+                <Link
+                  href="/prompt/play"
+                  className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                >
+                  Submit to Prompt
+                </Link>
               </div>
-              <PortfolioGrid
-                items={portfolioItems}
-                isLoggedIn={isLoggedIn}
-                isOwnProfile={effectiveIsOwnProfile}
-              />
-            </div>
-          )}
-
-          {/* Prompt Submissions Section */}
-          {initialItems.length > 0 && (
-            <div>
-              <h2 className="mb-6 text-2xl font-semibold text-foreground">
-                Prompt Submissions
-              </h2>
-              <HistoryList
-                initialItems={initialItems.map((p) => ({
-                  ...p,
-                  weekStart: p.weekStart.toISOString(),
-                  weekEnd: p.weekEnd.toISOString(),
-                }))}
-                initialHasMore={hasMore}
-                userId={user.id}
-              />
-            </div>
-          )}
-
-          {/* Empty state */}
-          {portfolioItems.length === 0 && initialItems.length === 0 && (
-            <div className="rounded-lg border border-dashed border-border py-12 text-center">
-              <p className="text-muted-foreground">
-                {effectiveIsOwnProfile
-                  ? "You haven't added any work yet. Start by adding portfolio items or submitting to prompts."
-                  : "No work to display yet."}
-              </p>
-              {effectiveIsOwnProfile && (
-                <div className="mt-4 flex justify-center gap-3">
-                  <Link
-                    href="/portfolio/edit"
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                  >
-                    Add Portfolio Item
-                  </Link>
-                  <Link
-                    href="/prompt/play"
-                    className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-                  >
-                    Submit to Prompt
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </PageLayout>
   );

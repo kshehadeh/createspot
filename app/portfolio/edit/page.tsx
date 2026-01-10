@@ -21,6 +21,7 @@ export default async function PortfolioEditPage() {
       id: true,
       name: true,
       image: true,
+      featuredSubmissionId: true,
     },
   });
 
@@ -87,7 +88,7 @@ export default async function PortfolioEditPage() {
               href={`/portfolio/${user.id}`}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              View Portfolio →
+              Browse Portfolio →
             </Link>
             <Link
               href={`/profile/${user.id}`}
@@ -100,6 +101,7 @@ export default async function PortfolioEditPage() {
       </div>
 
       <PortfolioEditForm
+        featuredSubmissionId={user.featuredSubmissionId}
         submissions={submissions.map((s) => ({
           id: s.id,
           title: s.title,

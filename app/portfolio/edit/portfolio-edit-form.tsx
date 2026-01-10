@@ -50,11 +50,13 @@ interface PortfolioItem {
 interface PortfolioEditFormProps {
   submissions: SubmissionOption[];
   portfolioItems: PortfolioItem[];
+  featuredSubmissionId?: string | null;
 }
 
 export function PortfolioEditForm({
   submissions,
   portfolioItems: initialPortfolioItems,
+  featuredSubmissionId: initialFeaturedSubmissionId,
 }: PortfolioEditFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +65,9 @@ export function PortfolioEditForm({
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(
     initialPortfolioItems,
   );
+  const [featuredSubmissionId, setFeaturedSubmissionId] = useState<
+    string | null
+  >(initialFeaturedSubmissionId ?? null);
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
   const [addingToPortfolio, setAddingToPortfolio] =
     useState<SubmissionOption | null>(null);
@@ -96,6 +101,27 @@ export function PortfolioEditForm({
 
   const handleDeletePortfolioItemFromGrid = async (item: PortfolioItem) => {
     await handleDeletePortfolioItem(item);
+  };
+
+  const handleSetFeatured = async (item: PortfolioItem) => {
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          featuredSubmissionId: item.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to set featured submission");
+      }
+
+      setFeaturedSubmissionId(item.id);
+      router.refresh();
+    } catch {
+      setError("Failed to set featured submission. Please try again.");
+    }
   };
 
   const getSubmissionLabel = (submission: SubmissionOption): string => {
@@ -155,6 +181,8 @@ export function PortfolioEditForm({
               allowEdit={true}
               onEdit={handleEditPortfolioItem}
               onDelete={handleDeletePortfolioItemFromGrid}
+              featuredSubmissionId={featuredSubmissionId}
+              onSetFeatured={handleSetFeatured}
             />
           </div>
         )}

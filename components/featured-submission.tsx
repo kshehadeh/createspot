@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { ExpandableText } from "@/components/expandable-text";
-import { SubmissionImage } from "@/components/submission-image";
+import Image from "next/image";
+import { TextThumbnail } from "@/components/text-thumbnail";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface FeaturedSubmissionProps {
   submission: {
@@ -48,92 +46,71 @@ export function FeaturedSubmission({ submission }: FeaturedSubmissionProps) {
     <>
       {/* Image section */}
       {hasImage && (
-        <div className="mb-6">
-          <SubmissionImage
-            imageUrl={submission.imageUrl!}
+        <div
+          className="group relative aspect-square w-full cursor-pointer overflow-hidden bg-muted"
+          onClick={() => setIsLightboxOpen(true)}
+        >
+          <Image
+            src={submission.imageUrl!}
             alt={submission.title || word || "Featured"}
-            heightClasses="h-[50vh] sm:h-[60vh] md:h-[65vh]"
-            onExpand={() => setIsLightboxOpen(true)}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 1024px) 100vw, 33vw"
           />
+          {hasText && (
+            <div className="absolute left-2 bottom-2 z-10 flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">
+              <svg
+                className="h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h7"
+                />
+              </svg>
+            </div>
+          )}
+          {/* Hover overlay with creator name and title */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <div className="px-4 text-center">
+              <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
+                {submission.title || "Untitled"}
+              </h3>
+              <p className="text-sm font-medium text-white/90 drop-shadow-md">
+                {submission.user.name || "Anonymous"}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Text and metadata section */}
-      {(hasText || (submission.prompt && submission.wordIndex)) && (
-        <Card className="rounded-xl">
-          <CardContent className="p-6">
-            {/* Text section */}
-            {hasText && (
-              <div className="mb-4">
-                {submission.title && (
-                  <h3 className="mb-3 text-lg font-semibold text-foreground">
-                    {submission.title}
-                  </h3>
-                )}
-                <ExpandableText
-                  text={submission.text!}
-                  title={submission.title}
-                />
-              </div>
-            )}
-
-            {/* Link to full submission */}
-            <div
-              className={`flex flex-col gap-3 ${
-                hasText ? "border-t border-border pt-4" : ""
-              }`}
-            >
-              {submission.prompt && submission.wordIndex && (
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs text-muted-foreground">Prompt:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      submission.prompt.word1,
-                      submission.prompt.word2,
-                      submission.prompt.word3,
-                    ].map((promptWord, index) => {
-                      const isActive = index + 1 === submission.wordIndex;
-                      return (
-                        <span
-                          key={index}
-                          className={`text-sm font-medium ${
-                            isActive
-                              ? "text-foreground"
-                              : "text-muted-foreground/50"
-                          }`}
-                        >
-                          {promptWord}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-              <Link
-                href={`/s/${submission.id}`}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                View full submission →
-              </Link>
+      {/* Text-only submission */}
+      {!hasImage && hasText && (
+        <div
+          className="group relative aspect-square w-full cursor-pointer overflow-hidden bg-muted"
+          onClick={() => setIsLightboxOpen(true)}
+        >
+          <TextThumbnail text={submission.text!} className="h-full w-full" />
+          {/* Hover overlay with creator name and title */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <div className="px-4 text-center">
+              <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
+                {submission.title || "Untitled"}
+              </h3>
+              <p className="text-sm font-medium text-white/90 drop-shadow-md">
+                {submission.user.name || "Anonymous"}
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Link only (when no text and no prompt) */}
-      {!hasText && !(submission.prompt && submission.wordIndex) && (
-        <div>
-          <Link
-            href={`/s/${submission.id}`}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            View full submission →
-          </Link>
+          </div>
         </div>
       )}
 
       {/* Lightbox */}
-      {hasImage && (
+      {(hasImage || hasText) && (
         <SubmissionLightbox
           submission={{
             id: submission.id,

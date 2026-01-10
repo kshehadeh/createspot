@@ -12,15 +12,15 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function normalizeUrl(url: string | null | undefined): string | null {
   if (!url || typeof url !== "string") return null;
-  
+
   const trimmed = url.trim();
   if (!trimmed) return null;
-  
+
   // If it already has a protocol, return as-is
   if (/^https?:\/\//i.test(trimmed)) {
     return trimmed;
   }
-  
+
   // Otherwise, prepend https://
   return `https://${trimmed}`;
 }
@@ -32,10 +32,10 @@ export function normalizeUrl(url: string | null | undefined): string | null {
  */
 export function isValidUrl(url: string | null | undefined): boolean {
   if (!url || typeof url !== "string") return false;
-  
+
   const normalized = normalizeUrl(url);
   if (!normalized) return false;
-  
+
   try {
     new URL(normalized);
     return true;
@@ -51,7 +51,7 @@ export function isValidUrl(url: string | null | undefined): boolean {
  */
 export function getUrlHostname(url: string | null | undefined): string {
   if (!url || typeof url !== "string") return url || "";
-  
+
   try {
     const normalized = normalizeUrl(url);
     if (!normalized) return url;

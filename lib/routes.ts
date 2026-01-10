@@ -29,22 +29,28 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "Exhibits",
     isLink: false, // Root exhibit page is not a link in breadcrumbs
   },
+  exhibitionPermanent: {
+    path: "/exhibition/permanent",
+    label: "Permanent Collection",
+    parentPath: "/exhibition",
+    // Note: This is a virtual route for breadcrumbs only - links to /exhibition
+  },
   exhibitionGallery: {
     path: "/exhibition/gallery",
     label: "Grid",
-    parentPath: "/exhibition",
+    parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.gallery.icon,
   },
   exhibitionConstellation: {
     path: "/exhibition/constellation",
     label: "Constellation",
-    parentPath: "/exhibition",
+    parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.constellation.icon,
   },
   exhibitionGlobal: {
     path: "/exhibition/global",
     label: "Map",
-    parentPath: "/exhibition",
+    parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.global.icon,
   },
 
@@ -191,9 +197,14 @@ export function buildBreadcrumbFromParent(
 
       // When used as a parent in breadcrumbs, always make it a link
       // (isLink: false only applies when it's the final destination)
+      // Special case: Permanent Collection links to /exhibition instead of /exhibition/permanent
+      const href =
+        currentRoute.path === "/exhibition/permanent"
+          ? "/exhibition"
+          : currentRoute.path;
       segments.unshift({
         label: currentRoute.label,
-        href: currentRoute.path, // Always a link when used as parent
+        href, // Always a link when used as parent
         icon: currentRoute.icon,
       });
 
@@ -250,9 +261,16 @@ export function getBreadcrumbSegments(
       }
       visited.add(currentRoute.path);
 
+      // Special case: Permanent Collection links to /exhibition instead of /exhibition/permanent
+      const href =
+        currentRoute.isLink !== false
+          ? currentRoute.path === "/exhibition/permanent"
+            ? "/exhibition"
+            : currentRoute.path
+          : undefined;
       segments.unshift({
         label: currentRoute.label,
-        href: currentRoute.isLink !== false ? currentRoute.path : undefined,
+        href,
         icon: currentRoute.icon,
       });
 

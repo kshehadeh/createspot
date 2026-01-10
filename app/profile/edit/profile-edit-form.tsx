@@ -480,7 +480,7 @@ export function ProfileEditForm({
 
   const handleWebsiteBlur = useCallback(() => {
     const trimmed = website.trim();
-    
+
     // If empty, clear and save
     if (!trimmed) {
       setWebsite("");
@@ -490,23 +490,25 @@ export function ProfileEditForm({
       }
       return;
     }
-    
+
     // Auto-prepend https:// if no protocol
     const normalized = normalizeUrl(trimmed);
-    
+
     // Validate URL
     if (!normalized || !isValidUrl(normalized)) {
-      setWebsiteError("Please enter a valid URL (e.g., example.com or https://example.com)");
+      setWebsiteError(
+        "Please enter a valid URL (e.g., example.com or https://example.com)",
+      );
       return;
     }
-    
+
     // Update website with normalized URL if it changed
     if (normalized !== trimmed) {
       setWebsite(normalized);
     }
-    
+
     setWebsiteError(null);
-    
+
     // Save if changed
     const finalValue = normalized || "";
     if (finalValue !== initialValuesRef.current.website) {
@@ -922,7 +924,9 @@ export function ProfileEditForm({
               onChange={handleWebsiteChange}
               onBlur={handleWebsiteBlur}
               placeholder="https://example.com"
-              className={websiteError ? "border-red-500 focus-visible:ring-red-500" : ""}
+              className={
+                websiteError ? "border-red-500 focus-visible:ring-red-500" : ""
+              }
             />
             {websiteError && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
