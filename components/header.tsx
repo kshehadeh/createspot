@@ -294,6 +294,9 @@ function MobileNavigationLinks({
   const pathname = usePathname();
   const [isExhibitsOpen, setIsExhibitsOpen] = useState(false);
   const [isInspireOpen, setIsInspireOpen] = useState(false);
+  const [currentExhibits, setCurrentExhibits] = useState<
+    Array<{ id: string; title: string }>
+  >([]);
 
   // Auto-expand sections if current path matches
   useEffect(() => {
@@ -302,6 +305,22 @@ function MobileNavigationLinks({
     setIsExhibitsOpen(isExhibitionPage);
     setIsInspireOpen(isPromptPage);
   }, [pathname]);
+
+  // Load current exhibits
+  useEffect(() => {
+    async function loadCurrentExhibits() {
+      try {
+        const response = await fetch("/api/exhibits");
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentExhibits(data.exhibits || []);
+        }
+      } catch {
+        // Ignore errors
+      }
+    }
+    loadCurrentExhibits();
+  }, []);
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -321,6 +340,9 @@ function MobileNavigationLinks({
 
   const sectionHeaderClassName =
     "flex items-center justify-between w-full px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg";
+
+  const groupHeaderClassName =
+    "px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground";
 
   return (
     <>
@@ -350,6 +372,25 @@ function MobileNavigationLinks({
               <Home className="h-5 w-5" />
               Home
             </Link>
+            {currentExhibits.length > 0 && (
+              <>
+                <div className={groupHeaderClassName}>Current Exhibits</div>
+                {currentExhibits.map((exhibit) => (
+                  <Link
+                    key={exhibit.id}
+                    href={`/exhibition/${exhibit.id}`}
+                    className={cn(
+                      linkClassName(`/exhibition/${exhibit.id}`),
+                      "flex items-center gap-2",
+                    )}
+                    onClick={onLinkClick}
+                  >
+                    <span className="truncate">{exhibit.title}</span>
+                  </Link>
+                ))}
+              </>
+            )}
+            <div className={groupHeaderClassName}>Permanent Exhibits</div>
             <Link
               href={EXHIBITION_CONFIGS.gallery.path}
               className={cn(

@@ -7,6 +7,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -69,6 +70,7 @@ export function ExhibitionsDropdown() {
         {currentExhibits.length > 0 && (
           <>
             <DropdownMenuSeparator />
+            <DropdownMenuLabel>Current Exhibits</DropdownMenuLabel>
             {currentExhibits.map((exhibit) => (
               <DropdownMenuItem key={exhibit.id} asChild>
                 <Link
@@ -86,6 +88,7 @@ export function ExhibitionsDropdown() {
             <DropdownMenuSeparator />
           </>
         )}
+        <DropdownMenuLabel>Permanent Exhibits</DropdownMenuLabel>
         <DropdownMenuItem asChild>
           <Link
             href={EXHIBITION_CONFIGS.gallery.path}
