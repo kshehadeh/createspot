@@ -55,9 +55,11 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+  breadcrumb,
+}: {
   children: React.ReactNode;
-}>) {
+  breadcrumb?: React.ReactNode;
+}) {
   const session = await auth();
 
   return (
@@ -69,6 +71,7 @@ export default async function RootLayout({
           <SessionProvider>
             <div className="flex min-h-screen flex-col bg-background">
               <Header user={session?.user} />
+              {breadcrumb}
               {children}
             </div>
             <Analytics />

@@ -10,10 +10,7 @@ import { UserDropdown } from "./user-dropdown";
 import { NavigationLinks } from "./navigation-links";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import {
-  getExhibitionByPath,
-  EXHIBITION_CONFIGS,
-} from "@/lib/exhibition-constants";
+import { EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
 import { cn } from "@/lib/utils";
 import { Home, ChevronDown, ChevronRight } from "lucide-react";
 
@@ -28,57 +25,10 @@ interface HeaderProps {
   user?: HeaderUser | null;
 }
 
-// Get breadcrumb segments based on pathname
-function getBreadcrumbs(pathname: string): string[] | null {
-  // Homepage - no breadcrumbs
-  if (pathname === "/") return null;
-
-  // Exhibition routes
-  if (pathname === "/exhibition/gallery") return ["Exhibit", "Grid"];
-  if (pathname === "/exhibition/constellation")
-    return ["Exhibit", "Constellation"];
-  if (pathname === "/exhibition/global") return ["Exhibit", "Map"];
-  if (pathname.startsWith("/exhibition")) return ["Exhibit"];
-
-  // Prompt routes
-  if (pathname === "/prompt/play") return ["Prompts", "Play"];
-  if (pathname === "/prompt/history") return ["Prompts", "History"];
-  if (pathname === "/prompt/this-week") return ["Prompts", "This Week"];
-  if (pathname.startsWith("/prompt")) return ["Prompts"];
-
-  // Admin routes
-  if (pathname === "/admin/users") return ["Admin", "Users"];
-  if (pathname === "/admin/exhibits/new") return ["Admin", "Exhibits", "New"];
-  if (pathname.match(/^\/admin\/exhibits\/[^/]+\/edit$/))
-    return ["Admin", "Exhibits", "Edit"];
-  if (pathname.match(/^\/admin\/exhibits\/[^/]+\/content$/))
-    return ["Admin", "Exhibits", "Content"];
-  if (pathname === "/admin/exhibits") return ["Admin", "Exhibits"];
-  if (pathname.startsWith("/admin")) return ["Admin"];
-
-  // Profile routes
-  if (pathname === "/profile/edit") return ["Profile", "Edit"];
-  if (pathname.startsWith("/profile")) return ["Profile"];
-
-  // Portfolio routes
-  if (pathname === "/portfolio/edit") return ["Portfolio", "Edit"];
-  if (pathname.startsWith("/portfolio")) return ["Portfolio"];
-
-  // Other routes
-  if (pathname.startsWith("/favorites")) return ["Favorites"];
-  if (pathname.startsWith("/s/")) return ["Submission"];
-  if (pathname.startsWith("/about")) return ["About"];
-  if (pathname.startsWith("/auth")) return null; // No breadcrumbs for auth
-
-  return null;
-}
-
 export function Header({ user }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const breadcrumbs = getBreadcrumbs(pathname);
-  const exhibitionConfig = getExhibitionByPath(pathname);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -112,7 +62,7 @@ export function Header({ user }: HeaderProps) {
   return (
     <>
       <header className="flex items-center justify-between border-b border-border px-6 py-4 sm:px-12">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center">
           <Link href="/" className="flex items-center gap-2 text-foreground">
             <CreateSpotLogo
               className="h-6 w-auto"
@@ -123,24 +73,6 @@ export function Header({ user }: HeaderProps) {
               Create Spot
             </span>
           </Link>
-          {breadcrumbs &&
-            breadcrumbs.map((segment, index) => {
-              const isLastSegment = index === breadcrumbs.length - 1;
-              const shouldShowIcon = isLastSegment && exhibitionConfig;
-              const IconComponent = shouldShowIcon
-                ? exhibitionConfig.icon
-                : null;
-
-              return (
-                <span key={index} className="flex items-center gap-2">
-                  <span className="text-muted-foreground">/</span>
-                  <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                    {IconComponent && <IconComponent className="h-5 w-5" />}
-                    {segment}
-                  </span>
-                </span>
-              );
-            })}
         </div>
         <div className="flex items-center gap-4">
           {/* Desktop Navigation */}
