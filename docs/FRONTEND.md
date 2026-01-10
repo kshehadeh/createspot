@@ -768,6 +768,59 @@ const response = await fetch(`/api/submissions/${submissionId}`, {
 });
 ```
 
+## Link Patterns
+
+### Mini-Actions (Arrow Links)
+
+Use **mini-action links** for navigation to related areas within the site. These are styled as text links with arrows (→) to indicate they take you somewhere related, as opposed to buttons which perform actions or open external resources.
+
+**When to use mini-action links:**
+- Navigating to a related page (e.g., "View Profile" from portfolio page)
+- Links within overlays/lightboxes (e.g., "View Submission →", "View Text →")
+- Secondary navigation that supplements the main content
+
+**When NOT to use mini-action links:**
+- Primary actions (use buttons instead)
+- External links (use buttons or different styling)
+- Destructive actions (use buttons with destructive variant)
+- Form submissions (use buttons)
+
+**Styling:**
+
+```tsx
+// Mini-action link pattern
+<Link
+  href={`/profile/${user.id}`}
+  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+>
+  View Profile →
+</Link>
+
+// On dark backgrounds (e.g., lightboxes)
+<Link
+  href={`/s/${submission.id}`}
+  className="text-sm font-medium text-white/80 transition-colors hover:text-white"
+>
+  View Submission →
+</Link>
+```
+
+**Examples:**
+
+| Context | Link Text | Notes |
+|---------|-----------|-------|
+| Portfolio page header | `View Profile →` | Links to user's profile |
+| Lightbox controls | `View Text →` | Opens text overlay |
+| Lightbox controls | `View Submission →` | Navigates to full submission page |
+| Featured submission | `View full submission →` | Links to submission detail |
+
+**Key characteristics:**
+- Use arrow (→) suffix to indicate navigation
+- Use `text-muted-foreground` on light backgrounds
+- Use `text-white/80` on dark backgrounds  
+- Include hover state transition (`hover:text-foreground` or `hover:text-white`)
+- Keep text concise and action-oriented
+
 ## Best Practices
 
 1. **Prefer Server Components** for data fetching and static content
@@ -779,3 +832,4 @@ const response = await fetch(`/api/submissions/${submissionId}`, {
 7. **Use motion sparingly** - entrance animations and hover states only
 8. **Track views client-side** - Use `ProfileViewTracker` for non-blocking analytics
 9. **Handle nullable fields** - Portfolio items may not have `promptId` or `wordIndex`
+10. **Use mini-action links** for related page navigation instead of buttons

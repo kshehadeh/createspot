@@ -26,6 +26,7 @@ import { TextThumbnail } from "@/components/text-thumbnail";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { ConfirmModal } from "@/components/confirm-modal";
+import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getCategoryIcon } from "@/lib/categories";
@@ -60,6 +61,11 @@ interface PortfolioGridProps {
   onEdit?: (item: PortfolioItem) => void;
   onDelete?: (item: PortfolioItem) => Promise<void>;
   onReorder?: (items: PortfolioItem[]) => void;
+  user?: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
 }
 
 export function PortfolioGrid({
@@ -71,6 +77,7 @@ export function PortfolioGrid({
   onEdit,
   onDelete,
   onReorder,
+  user,
 }: PortfolioGridProps) {
   const router = useRouter();
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
@@ -188,6 +195,7 @@ export function PortfolioGrid({
         onDelete={onDelete}
         onReorder={handleReorder}
         isSaving={isSaving}
+        user={user}
       />
     </FavoritesProvider>
   );
@@ -238,9 +246,9 @@ function SortablePortfolioItem({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`group overflow-hidden rounded-lg ${
+      className={`group overflow-hidden border-0 rounded-none transition-shadow duration-300 ${
         isDragging || isSortableDragging ? "ring-2 ring-ring" : ""
-      }`}
+      } hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)]`}
     >
       <div
         className="relative aspect-square cursor-pointer overflow-hidden bg-muted"
@@ -283,7 +291,7 @@ function SortablePortfolioItem({
         )}
 
         {/* Overlay information in lower left */}
-        <div className="absolute bottom-0 left-0 max-w-[85%] bg-gradient-to-tr from-black/80 via-black/70 to-transparent p-2.5 pr-6">
+        <div className="absolute bottom-0 left-0 max-w-[85%] bg-black/70 p-2.5 pr-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
             {item.title || "Untitled"}
           </h3>
@@ -394,6 +402,7 @@ function PortfolioGridContent({
   onDelete,
   onReorder,
   isSaving,
+  user,
 }: {
   items: PortfolioItem[];
   allItems: PortfolioItem[];
@@ -408,11 +417,24 @@ function PortfolioGridContent({
   onDelete?: (item: PortfolioItem) => Promise<void>;
   onReorder: (items: PortfolioItem[]) => void;
   isSaving: boolean;
+  user?: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
 }) {
   const router = useRouter();
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<PortfolioItem | null>(null);
+
+  const getWord = (item: PortfolioItem) => {
+    if (!item.prompt || !item.wordIndex) return "";
+    const words = [item.prompt.word1, item.prompt.word2, item.prompt.word3];
+    return words[item.wordIndex - 1];
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -493,13 +515,25 @@ function PortfolioGridContent({
                 isDragging={activeId === item.id}
                 onEdit={onEdit}
                 onDeleteClick={handleDeleteClick}
-                onClick={() => router.push(`/s/${item.id}`)}
+                onClick={() => {
+                  if (item.imageUrl) {
+                    setSelectedSubmission(item);
+                  } else {
+                    router.push(`/s/${item.id}`);
+                  }
+                }}
               />
             ) : (
-              <Card className="group overflow-hidden rounded-lg">
+              <Card className="group overflow-hidden border-0 rounded-none transition-shadow duration-300 hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)]">
                 <div
                   className="relative aspect-square cursor-pointer overflow-hidden bg-muted"
-                  onClick={() => router.push(`/s/${item.id}`)}
+                  onClick={() => {
+                    if (item.imageUrl) {
+                      setSelectedSubmission(item);
+                    } else {
+                      router.push(`/s/${item.id}`);
+                    }
+                  }}
                 >
                   {item.imageUrl ? (
                     <Image
@@ -514,7 +548,7 @@ function PortfolioGridContent({
                   ) : null}
 
                   {/* Overlay information in lower left */}
-                  <div className="absolute bottom-0 left-0 max-w-[85%] bg-gradient-to-tr from-black/80 via-black/70 to-transparent p-2.5 pr-6">
+                  <div className="absolute bottom-0 left-0 max-w-[85%] bg-black/70 p-2.5 pr-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                     <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
                       {item.title || "Untitled"}
                     </h3>
@@ -662,7 +696,7 @@ function PortfolioGridContent({
           </p>
           {isOwnProfile && (
             <Link
-              href="/profile/edit"
+              href="/portfolio/edit"
               className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Add Portfolio Item
@@ -681,6 +715,23 @@ function PortfolioGridContent({
           onConfirm={handleDeleteConfirm}
           onCancel={() => setDeletingItem(null)}
           isLoading={isDeleting}
+        />
+      )}
+
+      {/* Lightbox */}
+      {selectedSubmission && (
+        <SubmissionLightbox
+          submission={{
+            id: selectedSubmission.id,
+            title: selectedSubmission.title,
+            imageUrl: selectedSubmission.imageUrl,
+            text: selectedSubmission.text,
+            user: user,
+            _count: selectedSubmission._count,
+          }}
+          word={getWord(selectedSubmission)}
+          onClose={() => setSelectedSubmission(null)}
+          isOpen={!!selectedSubmission}
         />
       )}
     </div>

@@ -10,14 +10,7 @@ import { FeaturedSubmission } from "@/components/featured-submission";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Eye, ChevronDown, Pencil } from "lucide-react";
+import { ExpandableBio } from "@/components/expandable-bio";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -237,8 +230,14 @@ export default async function ProfilePage({
 
       {/* Public View indicator - fixed below navbar */}
       {isOwnProfile && isPublicView && (
-        <div className="fixed top-16 right-4 z-50 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-lg">
-          Public View
+        <div className="fixed top-16 right-4 z-50 flex items-center gap-3 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-lg">
+          <span>Public View</span>
+          <Link
+            href={`/profile/${user.id}`}
+            className="text-white underline transition-opacity hover:opacity-80"
+          >
+            Exit →
+          </Link>
         </div>
       )}
 
@@ -260,76 +259,45 @@ export default async function ProfilePage({
               </div>
             )}
             <div className="min-w-0">
-              <h1 className="text-2xl font-semibold text-foreground truncate">
-                {user.name || "Anonymous"}
-              </h1>
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-2xl font-semibold text-foreground truncate">
+                  {user.name || "Anonymous"}
+                </h1>
+                {hasSocialLinks && (
+                  <SocialLinks
+                    instagram={user.instagram}
+                    twitter={user.twitter}
+                    linkedin={user.linkedin}
+                    website={user.website}
+                  />
+                )}
+              </div>
               <p className="text-sm text-muted-foreground">
                 {submissionCount} work{submissionCount !== 1 ? "s" : ""}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            {isOwnProfile && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="gap-2 md:gap-2 px-2 md:px-4"
-                  >
-                    <Eye className="h-4 w-4" />
-                    <span className="hidden md:inline">View Profile</span>
-                    <ChevronDown className="hidden h-4 w-4 md:block" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href={`/profile/${user.id}`}
-                      className={cn(
-                        !isPublicView && "bg-accent text-accent-foreground",
-                      )}
-                    >
-                      View As Owner
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href={`/profile/${user.id}?view=public`}
-                      className={cn(
-                        isPublicView && "bg-accent text-accent-foreground",
-                      )}
-                    >
-                      View as Public
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            {isOwnProfile && !isPublicView && (
+              <Link
+                href={`/profile/${user.id}?view=public`}
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                View as Anonymous User →
+              </Link>
             )}
-            {isOwnProfile && (
-              <Button variant="outline" size="icon" asChild>
-                <Link href="/profile/edit" title="Edit Profile">
-                  <Pencil className="h-4 w-4" />
-                </Link>
-              </Button>
+            {isOwnProfile && !isPublicView && (
+              <Link
+                href="/profile/edit"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Edit Profile →
+              </Link>
             )}
           </div>
         </div>
 
-        {user.bio && (
-          <div
-            className="prose prose-sm dark:prose-invert mt-4 max-w-none text-muted-foreground"
-            dangerouslySetInnerHTML={{ __html: user.bio }}
-          />
-        )}
-
-        {hasSocialLinks && (
-          <SocialLinks
-            instagram={user.instagram}
-            twitter={user.twitter}
-            linkedin={user.linkedin}
-            website={user.website}
-          />
-        )}
+        {user.bio && <ExpandableBio html={user.bio} className="mt-4" />}
       </div>
 
       {/* Analytics - only visible to profile owner in private view */}
@@ -361,14 +329,22 @@ export default async function ProfilePage({
                 <h2 className="text-2xl font-semibold text-foreground">
                   Portfolio
                 </h2>
-                {effectiveIsOwnProfile && (
+                <div className="flex flex-col items-end gap-2">
                   <Link
-                    href="/profile/edit#portfolio"
+                    href={`/portfolio/${user.id}`}
                     className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    Manage Portfolio →
+                    View Portfolio →
                   </Link>
-                )}
+                  {effectiveIsOwnProfile && (
+                    <Link
+                      href="/portfolio/edit"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Manage Portfolio →
+                    </Link>
+                  )}
+                </div>
               </div>
               <PortfolioGrid
                 items={portfolioItems}
@@ -407,7 +383,7 @@ export default async function ProfilePage({
               {effectiveIsOwnProfile && (
                 <div className="mt-4 flex justify-center gap-3">
                   <Link
-                    href="/profile/edit#portfolio"
+                    href="/portfolio/edit"
                     className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                   >
                     Add Portfolio Item

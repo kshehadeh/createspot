@@ -122,7 +122,7 @@ export default async function Home() {
           {
             id: "portfolio" as const,
             title: "Your Portfolio",
-            href: "/profile/edit#portfolio",
+            href: "/portfolio/edit",
             icon: Briefcase,
           },
         ]

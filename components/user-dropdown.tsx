@@ -49,6 +49,11 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
             <Link href={`/profile/${id}`}>View Profile</Link>
           </DropdownMenuItem>
         )}
+        {id && (
+          <DropdownMenuItem asChild>
+            <Link href={`/portfolio/${id}`}>View Portfolio</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <Link href="/favorites">Favorites</Link>
         </DropdownMenuItem>

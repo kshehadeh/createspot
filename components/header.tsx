@@ -54,6 +54,10 @@ function getBreadcrumbs(pathname: string): string[] | null {
   if (pathname === "/profile/edit") return ["Profile", "Edit"];
   if (pathname.startsWith("/profile")) return ["Profile"];
 
+  // Portfolio routes
+  if (pathname === "/portfolio/edit") return ["Portfolio", "Edit"];
+  if (pathname.startsWith("/portfolio")) return ["Portfolio"];
+
   // Other routes
   if (pathname.startsWith("/favorites")) return ["Favorites"];
   if (pathname.startsWith("/s/")) return ["Submission"];
@@ -519,6 +523,15 @@ function MobileUserSection({
               onClick={onActionClick}
             >
               View Profile
+            </Link>
+          )}
+          {user.id && (
+            <Link
+              href={`/portfolio/${user.id}`}
+              className={linkClassName("/portfolio")}
+              onClick={onActionClick}
+            >
+              View Portfolio
             </Link>
           )}
           <Link

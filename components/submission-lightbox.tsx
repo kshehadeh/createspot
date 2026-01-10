@@ -49,9 +49,11 @@ export function SubmissionLightbox({
   }>({ isActive: false, x: 0, y: 0, imageRect: null });
   const [supportsHover, setSupportsHover] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isTextOverlayOpen, setIsTextOverlayOpen] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const hasImage = !!submission.imageUrl;
+  const hasText = !!submission.text;
 
   // Get favorite count - handle both _count and direct favoriteCount
   const favoriteCount =
@@ -63,6 +65,17 @@ export function SubmissionLightbox({
       setSupportsHover(window.matchMedia("(hover: hover)").matches);
     }
   }, []);
+
+  // Handle Escape key to close text overlay
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isTextOverlayOpen) {
+        setIsTextOverlayOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isTextOverlayOpen]);
 
   const handleImageMouseMove = useCallback(
     (e: React.MouseEvent<HTMLImageElement>) => {
@@ -212,31 +225,37 @@ export function SubmissionLightbox({
           </DialogTitle>
         </VisuallyHidden>
         <div
-          className="absolute right-4 z-10 flex gap-2"
-          style={{ top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)` }}
+          className="absolute right-4 z-10 flex flex-col items-end gap-2"
+          style={{ top: `max(3.5rem, env(safe-area-inset-top, 0px) + 1rem)` }}
         >
-          {!hideGoToSubmission && (
-            <Button
-              asChild
-              variant="outline"
-              className="min-h-[44px] min-w-[44px]"
-            >
+          <div className="flex flex-col items-end gap-1 rounded-lg bg-black/60 px-3 py-2 backdrop-blur-sm">
+            {hasText && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsTextOverlayOpen(true);
+                }}
+                className="text-sm font-medium text-white/80 transition-colors hover:text-white"
+              >
+                View Text →
+              </button>
+            )}
+            {!hideGoToSubmission && (
               <Link
                 href={`/s/${submission.id}`}
                 onClick={(e) => e.stopPropagation()}
+                className="text-sm font-medium text-white/80 transition-colors hover:text-white"
               >
-                Go To Submission
+                View Submission →
               </Link>
-            </Button>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
+            )}
+          </div>
+          <button
             onClick={onClose}
-            className="min-h-[44px] min-w-[44px] rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30 dark:bg-white/20 dark:text-white dark:hover:bg-white/30"
+            className="rounded-lg bg-black/60 px-3 py-2 text-sm font-medium text-white/80 backdrop-blur-sm transition-colors hover:text-white"
           >
-            <X className="h-6 w-6" />
-          </Button>
+            Close
+          </button>
         </div>
 
         <div
@@ -315,6 +334,38 @@ export function SubmissionLightbox({
             </div>
           )}
         </div>
+
+        {/* Text Overlay */}
+        {isTextOverlayOpen && hasText && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
+            onClick={() => setIsTextOverlayOpen(false)}
+          >
+            <div
+              className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-zinc-900 border border-zinc-700 p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {submission.title && (
+                <h2 className="mb-4 text-2xl font-semibold text-white">
+                  {submission.title}
+                </h2>
+              )}
+              <div
+                className="prose prose-lg prose-invert max-w-none text-white"
+                dangerouslySetInnerHTML={{ __html: submission.text! }}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsTextOverlayOpen(false)}
+                className="absolute right-4 top-4 rounded-full bg-white/20 text-white hover:bg-white/30"
+                aria-label="Close text overlay"
+              >
+                <X className="h-6 w-6" />
+              </Button>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

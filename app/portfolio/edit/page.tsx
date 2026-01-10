@@ -3,11 +3,12 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
-import { ProfileEditForm } from "./profile-edit-form";
+import { PortfolioEditForm } from "./portfolio-edit-form";
+import { Briefcase } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProfileEditPage() {
+export default async function PortfolioEditPage() {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -20,19 +21,14 @@ export default async function ProfileEditPage() {
       id: true,
       name: true,
       image: true,
-      bio: true,
-      instagram: true,
-      twitter: true,
-      linkedin: true,
-      website: true,
-      city: true,
-      stateProvince: true,
-      country: true,
-      featuredSubmissionId: true,
     },
   });
 
-  // Fetch all user submissions for the featured piece selector (up to 100)
+  if (!user) {
+    redirect("/");
+  }
+
+  // Fetch all user submissions for adding to portfolio (up to 100)
   const submissions = await prisma.submission.findMany({
     where: { userId: session.user.id },
     include: {
@@ -48,73 +44,62 @@ export default async function ProfileEditPage() {
     take: 100,
   });
 
-  // Count portfolio items for display
-  const portfolioItemCount = await prisma.submission.count({
+  // Fetch portfolio items
+  const portfolioItems = await prisma.submission.findMany({
     where: {
       userId: session.user.id,
       isPortfolio: true,
     },
+    orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
+    include: {
+      prompt: {
+        select: {
+          word1: true,
+          word2: true,
+          word3: true,
+        },
+      },
+      _count: {
+        select: { favorites: true },
+      },
+    },
   });
-
-  if (!user) {
-    redirect("/");
-  }
 
   return (
     <PageLayout maxWidth="max-w-5xl" className="w-full">
       <div className="mb-8">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            {user.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.image}
-                alt={user.name || "User"}
-                className="hidden h-16 w-16 rounded-full md:block"
-              />
-            ) : (
-              <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-muted md:flex">
-                <span className="text-2xl font-medium text-muted-foreground">
-                  {user.name?.charAt(0) || "?"}
-                </span>
-              </div>
-            )}
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <Briefcase className="h-8 w-8 text-muted-foreground" />
+            </div>
             <div>
               <h1 className="text-2xl font-semibold text-foreground">
-                {user.name || "Anonymous"}
+                Manage Portfolio
               </h1>
               <p className="text-sm text-muted-foreground">
-                Edit your profile information
+                Add, edit, and organize your portfolio items
               </p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-2">
+            <Link
+              href={`/portfolio/${user.id}`}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              View Portfolio →
+            </Link>
             <Link
               href={`/profile/${user.id}`}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               View Profile →
             </Link>
-            <Link
-              href={`/profile/${user.id}?view=public`}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              View Profile as Anonymous User →
-            </Link>
           </div>
         </div>
       </div>
 
-      <ProfileEditForm
-        initialBio={user.bio || ""}
-        initialInstagram={user.instagram || ""}
-        initialTwitter={user.twitter || ""}
-        initialLinkedin={user.linkedin || ""}
-        initialWebsite={user.website || ""}
-        initialCity={user.city || ""}
-        initialStateProvince={user.stateProvince || ""}
-        initialCountry={user.country || ""}
-        initialFeaturedSubmissionId={user.featuredSubmissionId || ""}
+      <PortfolioEditForm
         submissions={submissions.map((s) => ({
           id: s.id,
           title: s.title,
@@ -133,7 +118,29 @@ export default async function ProfileEditPage() {
             : null,
           shareStatus: s.shareStatus,
         }))}
-        portfolioItemCount={portfolioItemCount}
+        portfolioItems={portfolioItems.map((p) => ({
+          id: p.id,
+          title: p.title,
+          imageUrl: p.imageUrl,
+          text: p.text,
+          isPortfolio: p.isPortfolio,
+          portfolioOrder: p.portfolioOrder,
+          tags: p.tags,
+          category: p.category,
+          promptId: p.promptId,
+          wordIndex: p.wordIndex,
+          prompt: p.prompt
+            ? {
+                word1: p.prompt.word1,
+                word2: p.prompt.word2,
+                word3: p.prompt.word3,
+              }
+            : null,
+          _count: {
+            favorites: p._count.favorites,
+          },
+          shareStatus: p.shareStatus,
+        }))}
       />
     </PageLayout>
   );
