@@ -337,9 +337,9 @@ export function ExhibitFormSimple({
         </p>
         <div className="space-y-2">
           {[
-            { value: "gallery", label: "Gallery" },
+            { value: "gallery", label: "Grid" },
             { value: "constellation", label: "Constellation (3D)" },
-            { value: "global", label: "Global Map" },
+            { value: "global", label: "Map" },
           ].map((viewType) => (
             <div key={viewType.value} className="flex items-center gap-2">
               <input

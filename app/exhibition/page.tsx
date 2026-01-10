@@ -20,11 +20,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Exhibits | Create Spot",
   description:
-    "Explore Create Spot exhibits: browse the Gallery, explore the Constellation in 3D, or discover artists worldwide on the Global map.",
+    "Explore Create Spot exhibits: browse the Grid, explore the Constellation in 3D, or discover artists worldwide on the Map.",
   openGraph: {
     title: "Exhibits | Create Spot",
     description:
-      "Explore Create Spot exhibits: browse the Gallery, explore the Constellation in 3D, or discover artists worldwide on the Global map.",
+      "Explore Create Spot exhibits: browse the Grid, explore the Constellation in 3D, or discover artists worldwide on the Map.",
     type: "website",
   },
 };

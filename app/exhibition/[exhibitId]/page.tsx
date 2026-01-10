@@ -7,8 +7,16 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { FeaturedSubmission } from "@/components/featured-submission";
 import { ExpandableBio } from "@/components/expandable-bio";
+import { EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
 
 export const dynamic = "force-dynamic";
 
@@ -93,22 +101,28 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
 
   const viewTypes = [
     {
-      value: "gallery",
-      label: "Gallery",
+      value: "gallery" as const,
+      label: "Grid",
       path: `/exhibition/gallery?exhibitId=${exhibitId}`,
       enabled: exhibit.allowedViewTypes.includes("gallery"),
+      description:
+        "Browse submissions in a grid layout with filtering and search options.",
     },
     {
-      value: "constellation",
+      value: "constellation" as const,
       label: "Constellation",
       path: `/exhibition/constellation?exhibitId=${exhibitId}`,
       enabled: exhibit.allowedViewTypes.includes("constellation"),
+      description:
+        "Explore submissions in an interactive 3D visualization space.",
     },
     {
-      value: "global",
-      label: "Global",
+      value: "global" as const,
+      label: "Map",
       path: `/exhibition/global?exhibitId=${exhibitId}`,
       enabled: exhibit.allowedViewTypes.includes("global"),
+      description:
+        "View submissions on a geographic map showing artists worldwide.",
     },
   ].filter((vt) => vt.enabled);
 
@@ -180,26 +194,74 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
         </div>
       </div>
 
-      {featuredSubmission && (
+      {featuredSubmission ? (
         <div className="mb-8">
           <h2 className="mb-4 text-xl font-semibold">Featured</h2>
-          <FeaturedSubmission submission={featuredSubmission} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Featured Submission - Left Side */}
+            <div>
+              <FeaturedSubmission submission={featuredSubmission} />
+            </div>
+
+            {/* View Exhibit Cards - Right Side */}
+            <div className="flex flex-col gap-3">
+              {viewTypes.map((viewType) => {
+                const Icon = EXHIBITION_CONFIGS[viewType.value].icon;
+                return (
+                  <Card
+                    key={viewType.value}
+                    className="transition-all hover:shadow-md"
+                  >
+                    <CardHeader>
+                      <div className="flex items-center gap-3">
+                        <Icon className="h-5 w-5 text-muted-foreground" />
+                        <CardTitle className="text-lg">
+                          {viewType.label}
+                        </CardTitle>
+                      </div>
+                      <CardDescription>{viewType.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button asChild variant="outline" className="w-full">
+                        <Link href={viewType.path}>View {viewType.label}</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {viewTypes.map((viewType) => {
+              const Icon = EXHIBITION_CONFIGS[viewType.value].icon;
+              return (
+                <Card
+                  key={viewType.value}
+                  className="transition-all hover:shadow-md"
+                >
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <Icon className="h-5 w-5 text-muted-foreground" />
+                      <CardTitle className="text-lg">
+                        {viewType.label}
+                      </CardTitle>
+                    </div>
+                    <CardDescription>{viewType.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href={viewType.path}>View {viewType.label}</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       )}
-
-      <div className="mb-8">
-        <h2 className="mb-4 text-xl font-semibold">View Exhibit</h2>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Choose how you'd like to explore this exhibit:
-        </p>
-        <div className="flex flex-wrap gap-3">
-          {viewTypes.map((viewType) => (
-            <Button key={viewType.value} asChild variant="outline" size="lg">
-              <Link href={viewType.path}>{viewType.label}</Link>
-            </Button>
-          ))}
-        </div>
-      </div>
     </PageLayout>
   );
 }

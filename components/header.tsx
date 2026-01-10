@@ -34,10 +34,10 @@ function getBreadcrumbs(pathname: string): string[] | null {
   if (pathname === "/") return null;
 
   // Exhibition routes
-  if (pathname === "/exhibition/gallery") return ["Exhibit", "Gallery"];
+  if (pathname === "/exhibition/gallery") return ["Exhibit", "Grid"];
   if (pathname === "/exhibition/constellation")
     return ["Exhibit", "Constellation"];
-  if (pathname === "/exhibition/global") return ["Exhibit", "Global"];
+  if (pathname === "/exhibition/global") return ["Exhibit", "Map"];
   if (pathname.startsWith("/exhibition")) return ["Exhibit"];
 
   // Prompt routes

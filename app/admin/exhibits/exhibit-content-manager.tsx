@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { SubmissionBrowser } from "./submission-browser";
 import { PortfolioGrid } from "@/components/portfolio-grid";

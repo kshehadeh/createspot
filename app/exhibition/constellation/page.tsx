@@ -39,7 +39,7 @@ interface ConstellationExhibitionPageProps {
 export default async function ConstellationExhibitionPage({
   searchParams,
 }: ConstellationExhibitionPageProps) {
-  const [session, params] = await Promise.all([auth(), searchParams]);
+  const [_session, params] = await Promise.all([auth(), searchParams]);
 
   const rawCategory = Array.isArray(params.category)
     ? params.category[0]

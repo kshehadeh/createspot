@@ -10,9 +10,9 @@ The application supports two types of exhibits:
 
 **Permanent Exhibits** are hardcoded views that provide different ways to browse all public submissions in the collection. They are not stored in the database and are always available. There are three permanent exhibit types:
 
-1. **Gallery** (`/exhibition/gallery`) - Grid-based browsing with filtering and search
+1. **Grid** (`/exhibition/gallery`) - Grid-based browsing with filtering and search
 2. **Constellation** (`/exhibition/constellation`) - Interactive 3D visualization
-3. **Global** (`/exhibition/global`) - Geographic map view of artists worldwide
+3. **Map** (`/exhibition/global`) - Geographic map view of artists worldwide
 
 These exhibits show all public submissions and can be filtered by category, tags, and search queries.
 
@@ -23,7 +23,7 @@ These exhibits show all public submissions and can be filtered by category, tags
 - Have a start and end time
 - Can be made active or inactive
 - Contain a curated selection of submissions from multiple artists
-- Support a subset of the three view types (Gallery, Constellation, Global)
+- Support a subset of the three view types (Grid, Constellation, Map)
 - Have a curator, description (markdown), and optional featured submission
 - Are displayed on the main exhibits page when active
 
@@ -117,7 +117,7 @@ Submission
 Displays:
 - **Current Exhibits** section: Active temporary exhibits (within time window and `isActive=true`)
 - **Upcoming Exhibits** message: Next exhibit if no current ones
-- **Permanent Exhibits** section: Gallery, Constellation, Global cards
+- **Permanent Exhibits** section: Grid, Constellation, Map cards
 
 **Components:**
 - `app/exhibition/page.tsx` - Server component
@@ -298,7 +298,7 @@ When `exhibitId` is provided:
 3. Clicks on an exhibit card
 4. Views exhibit detail page (`/exhibition/[exhibitId]`)
 5. Sees description, curator, featured submission
-6. Clicks a view type button (e.g., "Gallery")
+6. Clicks a view type button (e.g., "Grid")
 7. Navigates to `/exhibition/gallery?exhibitId=[id]`
 8. Views filtered submissions in that view type
 
@@ -306,7 +306,7 @@ When `exhibitId` is provided:
 
 1. User navigates to `/exhibition`
 2. Sees "Permanent Exhibits" section
-3. Clicks on Gallery, Constellation, or Global
+3. Clicks on Grid, Constellation, or Map
 4. Views all public submissions in that view type
 5. Can filter by category, tags, search query
 6. No database queries for exhibit metadata (hardcoded)
@@ -321,7 +321,7 @@ The `ExhibitionsDropdown` component (`components/exhibitions-dropdown.tsx`) dyna
 
 Breadcrumbs are handled in `components/header.tsx`:
 - `/exhibition` → ["Exhibit"]
-- `/exhibition/gallery` → ["Exhibit", "Gallery"]
+- `/exhibition/gallery` → ["Exhibit", "Grid"]
 - `/exhibition/[exhibitId]` → ["Exhibit"]
 - `/admin/exhibits` → ["Admin", "Exhibits"]
 - `/admin/exhibits/new` → ["Admin", "Exhibits", "New"]
@@ -332,11 +332,11 @@ Breadcrumbs are handled in `components/header.tsx`:
 
 1. **Permanent vs Temporary**: Permanent exhibits are hardcoded views, temporary exhibits are database-driven. This allows flexibility for curated content while maintaining simple, always-available browsing options.
 
-2. **Reusable Views**: The same view components (Gallery, Constellation, Global) work for both permanent and temporary exhibits via the `exhibitId` query parameter. This reduces code duplication.
+2. **Reusable Views**: The same view components (Grid, Constellation, Map) work for both permanent and temporary exhibits via the `exhibitId` query parameter. This reduces code duplication.
 
 3. **Ordering**: Temporary exhibits support custom ordering via `ExhibitSubmission.order`, allowing curators to control the presentation sequence.
 
-4. **View Type Selection**: Admins can choose which view types are available for each temporary exhibit, allowing for themed experiences (e.g., only Gallery view for a photography exhibit).
+4. **View Type Selection**: Admins can choose which view types are available for each temporary exhibit, allowing for themed experiences (e.g., only Grid view for a photography exhibit).
 
 5. **Active Status**: The combination of `startTime`, `endTime`, and `isActive` provides flexible control over exhibit visibility.
 

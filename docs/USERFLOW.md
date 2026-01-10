@@ -14,9 +14,9 @@ flowchart TD
     
     %% Exhibits Section
     ExhibitsHome["/exhibition (Exhibits Home)"]
-    Gallery["/exhibition/gallery (Gallery)"]
+    Gallery["/exhibition/gallery (Grid)"]
     Constellation["/exhibition/constellation (Constellation)"]
-    Global["/exhibition/global (Global Map)"]
+    Global["/exhibition/global (Map)"]
     
     %% Prompts/Inspire Section
     PromptsAbout["/prompt (Prompts About)"]
@@ -109,9 +109,9 @@ flowchart TD
 The Exhibits section provides three different ways to explore community work:
 
 - **Exhibits Home** (`/exhibition`) - Landing page with links to all exhibit types
-- **Gallery** (`/exhibition/gallery`) - Browseable grid view with filters
+- **Grid** (`/exhibition/gallery`) - Browseable grid view with filters
 - **Constellation** (`/exhibition/constellation`) - Interactive 3D visualization
-- **Global Map** (`/exhibition/global`) - Geographic view of artists worldwide
+- **Map** (`/exhibition/global`) - Geographic view of artists worldwide
 
 All exhibit pages link to individual submission detail pages.
 

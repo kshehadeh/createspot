@@ -247,7 +247,7 @@ import { Header } from "@/components/header";
   title="Play"           // Optional breadcrumb
   user={session?.user}   // Shows avatar if logged in
 >
-  <Link href="/exhibition/gallery">Gallery</Link>
+  <Link href="/exhibition/gallery">Grid</Link>
   <Link href="/prompt/play">Play</Link>
 </Header>
 ```
