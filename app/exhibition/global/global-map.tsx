@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -45,7 +45,12 @@ interface LocationGroup {
   locationKey: string;
 }
 
-export function GlobalMap() {
+interface GlobalMapProps {
+  exhibitId?: string;
+  mapHeight: string;
+}
+
+export function GlobalMap({ exhibitId, mapHeight }: GlobalMapProps) {
   const [users, setUsers] = useState<UserWithLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +81,10 @@ export function GlobalMap() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const response = await fetch("/api/exhibition/global");
+        const url = exhibitId
+          ? `/api/exhibition/global?exhibitId=${encodeURIComponent(exhibitId)}`
+          : "/api/exhibition/global";
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
@@ -94,7 +102,7 @@ export function GlobalMap() {
     if (mounted) {
       fetchUsers();
     }
-  }, [mounted]);
+  }, [mounted, exhibitId]);
 
   // Group users by location (same city = same location)
   const locationGroups = users.reduce((acc, user) => {
@@ -127,13 +135,19 @@ export function GlobalMap() {
 
   if (!mounted) {
     return (
-      <div className="h-[600px] w-full rounded-lg border bg-muted animate-pulse" />
+      <div
+        style={{ height: mapHeight }}
+        className="w-full rounded-lg border bg-muted animate-pulse"
+      />
     );
   }
 
   if (loading) {
     return (
-      <div className="h-[600px] w-full rounded-lg border bg-muted flex items-center justify-center">
+      <div
+        style={{ height: mapHeight }}
+        className="w-full rounded-lg border bg-muted flex items-center justify-center"
+      >
         <p className="text-muted-foreground">Loading map...</p>
       </div>
     );
@@ -141,7 +155,10 @@ export function GlobalMap() {
 
   if (error) {
     return (
-      <div className="h-[600px] w-full rounded-lg border bg-muted flex items-center justify-center">
+      <div
+        style={{ height: mapHeight }}
+        className="w-full rounded-lg border bg-muted flex items-center justify-center"
+      >
         <p className="text-destructive">{error}</p>
       </div>
     );
@@ -149,7 +166,10 @@ export function GlobalMap() {
 
   if (users.length === 0) {
     return (
-      <div className="h-[600px] w-full rounded-lg border border-dashed border-border bg-card flex items-center justify-center">
+      <div
+        style={{ height: mapHeight }}
+        className="w-full rounded-lg border border-dashed border-border bg-card flex items-center justify-center"
+      >
         <p className="text-sm text-muted-foreground">
           No artists with location data yet.
         </p>
@@ -159,7 +179,10 @@ export function GlobalMap() {
 
   return (
     <div className="w-full">
-      <div className="h-[calc(100vh-var(--navbar-height))] w-full border-0 overflow-hidden">
+      <div
+        style={{ height: mapHeight }}
+        className="w-full border-0 overflow-hidden"
+      >
         <MapContainer
           center={[20, 0]}
           zoom={2}

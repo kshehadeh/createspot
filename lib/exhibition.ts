@@ -6,18 +6,38 @@ export interface ExhibitionFilterInput {
   category?: string;
   tag?: string;
   query?: string;
+  exhibitId?: string;
+  userId?: string;
 }
 
 function buildExhibitionWhere({
   category,
   tag,
   query,
+  exhibitId,
+  userId,
 }: ExhibitionFilterInput): Prisma.SubmissionWhereInput {
   const filters: Prisma.SubmissionWhereInput[] = [
     {
       OR: [{ imageUrl: { not: null } }, { text: { not: null } }],
     },
   ];
+
+  // If exhibitId is provided, filter to only submissions in that exhibit
+  if (exhibitId) {
+    filters.push({
+      exhibitSubmissions: {
+        some: {
+          exhibitId,
+        },
+      },
+    });
+  }
+
+  // If userId is provided, filter to only submissions by that user
+  if (userId) {
+    filters.push({ userId });
+  }
 
   if (category) {
     filters.push({ category });
@@ -60,35 +80,121 @@ export async function getExhibitionSubmissions({
   category,
   tag,
   query,
+  exhibitId,
+  userId,
   skip = 0,
   take = EXHIBITION_PAGE_SIZE,
 }: ExhibitionFilterInput & { skip?: number; take?: number }) {
   const limit = Math.max(1, Math.min(take, 30));
-  const submissions = await prisma.submission.findMany({
-    where: buildExhibitionWhere({ category, tag, query }),
-    orderBy: { createdAt: "desc" },
-    include: submissionInclude,
-    skip,
-    take: limit + 1,
+
+  // If exhibitId is provided, we need to order by exhibit submission order
+  const whereClause = buildExhibitionWhere({
+    category,
+    tag,
+    query,
+    exhibitId,
+    userId,
   });
 
-  const hasMore = submissions.length > limit;
+  let orderBy: Prisma.SubmissionOrderByWithRelationInput;
+  if (exhibitId) {
+    // For exhibits, order by the exhibit submission order
+    // First, get all exhibit submissions for this exhibit, ordered
+    const exhibitSubmissions = await prisma.exhibitSubmission.findMany({
+      where: { exhibitId },
+      select: {
+        submissionId: true,
+        order: true,
+      },
+      orderBy: { order: "asc" },
+    });
 
-  return {
-    submissions: submissions.slice(0, limit),
-    hasMore,
-  };
+    const submissionIds = exhibitSubmissions.map((es) => es.submissionId);
+
+    if (submissionIds.length === 0) {
+      return {
+        submissions: [],
+        hasMore: false,
+      };
+    }
+
+    // Build where clause without the exhibitId filter (we're already filtering by IDs)
+    const whereClauseWithoutExhibit = buildExhibitionWhere({
+      category,
+      tag,
+      query,
+      userId,
+    });
+
+    // Remove the exhibitSubmissions filter since we're already filtering by IDs
+    const filters = Array.isArray(whereClauseWithoutExhibit.AND)
+      ? whereClauseWithoutExhibit.AND.filter(
+          (filter: any) => !filter.exhibitSubmissions,
+        )
+      : [];
+
+    // Fetch submissions that match the filters and are in the exhibit
+    const submissions = await prisma.submission.findMany({
+      where: {
+        shareStatus: "PUBLIC",
+        AND: [...filters, { id: { in: submissionIds } }],
+      },
+      include: submissionInclude,
+    });
+
+    // Sort by the order in submissionIds (maintaining exhibit order)
+    const sortedSubmissions = submissionIds
+      .map((id) => submissions.find((s) => s.id === id))
+      .filter((s): s is (typeof submissions)[0] => s !== undefined);
+
+    const hasMore = sortedSubmissions.length > limit;
+
+    return {
+      submissions: sortedSubmissions.slice(skip, skip + limit),
+      hasMore,
+    };
+  } else {
+    // Normal ordering for non-exhibit views
+    orderBy = { createdAt: "desc" };
+    const submissions = await prisma.submission.findMany({
+      where: whereClause,
+      orderBy,
+      include: submissionInclude,
+      skip,
+      take: limit + 1,
+    });
+
+    const hasMore = submissions.length > limit;
+
+    return {
+      submissions: submissions.slice(0, limit),
+      hasMore,
+    };
+  }
 }
 
-export async function getExhibitionFacets() {
+export async function getExhibitionFacets(exhibitId?: string) {
+  const baseWhere: Prisma.SubmissionWhereInput = {
+    shareStatus: "PUBLIC",
+  };
+
+  // If exhibitId is provided, filter to only submissions in that exhibit
+  if (exhibitId) {
+    baseWhere.exhibitSubmissions = {
+      some: {
+        exhibitId,
+      },
+    };
+  }
+
   const [categoryRows, tagRows] = await Promise.all([
     prisma.submission.findMany({
-      where: { shareStatus: "PUBLIC", category: { not: null } },
+      where: { ...baseWhere, category: { not: null } },
       distinct: ["category"],
       select: { category: true },
     }),
     prisma.submission.findMany({
-      where: { shareStatus: "PUBLIC", tags: { isEmpty: false } },
+      where: { ...baseWhere, tags: { isEmpty: false } },
       select: { tags: true },
     }),
   ]);

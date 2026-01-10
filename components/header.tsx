@@ -48,6 +48,12 @@ function getBreadcrumbs(pathname: string): string[] | null {
 
   // Admin routes
   if (pathname === "/admin/users") return ["Admin", "Users"];
+  if (pathname === "/admin/exhibits/new") return ["Admin", "Exhibits", "New"];
+  if (pathname.match(/^\/admin\/exhibits\/[^/]+\/edit$/))
+    return ["Admin", "Exhibits", "Edit"];
+  if (pathname.match(/^\/admin\/exhibits\/[^/]+\/content$/))
+    return ["Admin", "Exhibits", "Content"];
+  if (pathname === "/admin/exhibits") return ["Admin", "Exhibits"];
   if (pathname.startsWith("/admin")) return ["Admin"];
 
   // Profile routes

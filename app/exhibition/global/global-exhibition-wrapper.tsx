@@ -1,82 +1,109 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
-import {
-  getExhibitionFacets,
-  getExhibitionSubmissions,
-} from "@/lib/exhibition";
-import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
-import { getExhibitById } from "@/lib/exhibits";
-import { PageLayout } from "@/components/page-layout";
-import { ExhibitionFilters } from "../exhibition-filters";
-import { ExhibitionGrid } from "../exhibition-grid";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExhibitViewSelector } from "@/components/exhibit-view-selector";
+import { GlobalMap } from "./global-map";
 
-export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = {
-  title: "Gallery Exhibition | Create Spot",
-  description:
-    "Browse public work from the Create Spot community. Filter by category or tag, or search by keyword to find your next source of inspiration.",
-  openGraph: {
-    title: "Gallery Exhibition | Create Spot",
-    description:
-      "Browse public work from the Create Spot community. Filter by category or tag, or search by keyword to find your next source of inspiration.",
-    type: "website",
-  },
-};
-
-interface GalleryExhibitionPageProps {
-  searchParams: Promise<{
-    category?: string | string[];
-    tag?: string | string[];
-    q?: string | string[];
-    exhibitId?: string | string[];
-  }>;
+interface ExhibitData {
+  id: string;
+  title: string;
+  description: string | null;
+  curator: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+  featuredArtist: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  } | null;
+  allowedViewTypes: string[];
 }
 
-export default async function GalleryExhibitionPage({
-  searchParams,
-}: GalleryExhibitionPageProps) {
-  const [session, params] = await Promise.all([auth(), searchParams]);
+interface GlobalExhibitionWrapperProps {
+  exhibitTitle: string;
+  exhibit: ExhibitData | null;
+  exhibitId?: string;
+}
 
-  const rawCategory = Array.isArray(params.category)
-    ? params.category[0]
-    : params.category;
-  const rawTag = Array.isArray(params.tag) ? params.tag[0] : params.tag;
-  const rawQuery = Array.isArray(params.q) ? params.q[0] : params.q;
-  const rawExhibitId = Array.isArray(params.exhibitId)
-    ? params.exhibitId[0]
-    : params.exhibitId;
+export function GlobalExhibitionWrapper({
+  exhibitTitle,
+  exhibit,
+  exhibitId,
+}: GlobalExhibitionWrapperProps) {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [mapHeight, setMapHeight] = useState<string>(
+    "calc(100vh - var(--navbar-height) - 120px)",
+  );
 
-  const category = rawCategory?.trim() || "";
-  const tag = rawTag?.trim() || "";
-  const query = rawQuery?.trim() || "";
-  const exhibitId = rawExhibitId?.trim() || undefined;
+  useEffect(() => {
+    const updateMapHeight = () => {
+      const header = headerRef.current;
 
-  const [{ submissions, hasMore }, { categories, tags }, exhibit] =
-    await Promise.all([
-      getExhibitionSubmissions({
-        category,
-        tag,
-        query,
-        exhibitId,
-        skip: 0,
-        take: EXHIBITION_PAGE_SIZE,
-      }),
-      getExhibitionFacets(exhibitId),
-      exhibitId ? getExhibitById(exhibitId) : Promise.resolve(null),
-    ]);
+      if (!header) {
+        // Fallback to default if element not found
+        setMapHeight("calc(100vh - var(--navbar-height) - 120px)");
+        return;
+      }
 
-  const exhibitTitle = exhibit
-    ? exhibit.title
-    : "Create Spot Permanent Exhibit";
+      // Get the bottom edge of the header relative to the viewport
+      const headerRect = header.getBoundingClientRect();
+      const headerBottom = headerRect.bottom;
+
+      // Calculate available height from header bottom to viewport bottom
+      const availableHeight = window.innerHeight - headerBottom;
+
+      setMapHeight(`${availableHeight}px`);
+    };
+
+    // Initial calculation
+    updateMapHeight();
+
+    if (!headerRef.current) return;
+
+    // Use MutationObserver to watch for DOM changes (e.g., expand/collapse)
+    const mutationObserver = new MutationObserver(() => {
+      // Use requestAnimationFrame to ensure layout has been recalculated
+      requestAnimationFrame(updateMapHeight);
+    });
+
+    mutationObserver.observe(headerRef.current, {
+      childList: true, // Watch for added/removed child elements
+      subtree: true, // Watch all descendants
+      attributes: true, // Watch for attribute changes (like class changes)
+      characterData: true, // Watch for text content changes
+    });
+
+    // Use ResizeObserver as backup for size changes that don't involve DOM mutations
+    const resizeObserver = new ResizeObserver(() => {
+      updateMapHeight();
+    });
+
+    resizeObserver.observe(headerRef.current);
+
+    // Also observe navbar in case it changes
+    const navbar = document.querySelector("nav");
+    if (navbar) {
+      resizeObserver.observe(navbar);
+    }
+
+    // Fallback: also listen to window resize
+    window.addEventListener("resize", updateMapHeight);
+
+    return () => {
+      mutationObserver.disconnect();
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateMapHeight);
+    };
+  }, []);
 
   return (
-    <PageLayout maxWidth="max-w-none" className="w-full">
-      <div className="mb-6">
+    <>
+      <div ref={headerRef} className="px-6 pt-6 pb-4 shrink-0">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-foreground">
@@ -139,25 +166,15 @@ export default async function GalleryExhibitionPage({
             )}
           </div>
           <ExhibitViewSelector
-            currentView="gallery"
+            currentView="global"
             exhibitId={exhibitId}
             allowedViewTypes={exhibit?.allowedViewTypes}
           />
         </div>
       </div>
-      <ExhibitionFilters
-        categories={categories}
-        tags={tags}
-        initialCategory={category}
-        initialTag={tag}
-        initialQuery={query}
-      />
-
-      <ExhibitionGrid
-        submissions={submissions}
-        isLoggedIn={!!session?.user}
-        initialHasMore={hasMore}
-      />
-    </PageLayout>
+      <div className="flex-1 min-h-0">
+        <GlobalMap exhibitId={exhibitId} mapHeight={mapHeight} />
+      </div>
+    </>
   );
 }

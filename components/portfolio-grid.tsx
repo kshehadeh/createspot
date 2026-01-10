@@ -50,6 +50,12 @@ interface PortfolioItem {
   _count: {
     favorites: number;
   };
+  // For exhibit mode - items can come from different users
+  user?: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
 }
 
 interface PortfolioGridProps {
@@ -61,6 +67,9 @@ interface PortfolioGridProps {
   onEdit?: (item: PortfolioItem) => void;
   onDelete?: (item: PortfolioItem) => Promise<void>;
   onReorder?: (items: PortfolioItem[]) => void;
+  // For exhibit mode
+  mode?: "portfolio" | "exhibit";
+  onRemove?: (item: PortfolioItem) => Promise<void>;
   user?: {
     id: string;
     name: string | null;
@@ -77,6 +86,8 @@ export function PortfolioGrid({
   onEdit,
   onDelete,
   onReorder,
+  mode = "portfolio",
+  onRemove,
   user,
 }: PortfolioGridProps) {
   const router = useRouter();
@@ -127,6 +138,32 @@ export function PortfolioGrid({
 
   const handleReorder = useCallback(
     async (newItems: PortfolioItem[]) => {
+      // If onReorder is provided, use it (for exhibit mode)
+      if (onReorder) {
+        isReorderingRef.current = true;
+        setOrderedItems(newItems);
+        setIsSaving(true);
+        try {
+          await onReorder(newItems);
+          lastItemsRef.current = newItems;
+          setTimeout(() => {
+            router.refresh();
+            setTimeout(() => {
+              isReorderingRef.current = false;
+            }, 500);
+          }, 200);
+        } catch (error) {
+          console.error("Failed to save order:", error);
+          setOrderedItems(items);
+          lastItemsRef.current = items;
+          isReorderingRef.current = false;
+        } finally {
+          setIsSaving(false);
+        }
+        return;
+      }
+
+      // Default portfolio reordering
       // Update portfolioOrder values in the items
       const itemsWithOrder = newItems.map((item, index) => ({
         ...item,
@@ -153,7 +190,6 @@ export function PortfolioGrid({
 
         // Update the ref to match the new order so we don't reset on next prop update
         lastItemsRef.current = itemsWithOrder;
-        onReorder?.(itemsWithOrder);
 
         // Refresh to get updated data from server after a delay to ensure state is stable
         setTimeout(() => {
@@ -195,6 +231,8 @@ export function PortfolioGrid({
         onDelete={onDelete}
         onReorder={handleReorder}
         isSaving={isSaving}
+        mode={mode}
+        onRemove={onRemove}
         user={user}
       />
     </FavoritesProvider>
@@ -207,6 +245,7 @@ interface SortablePortfolioItemProps {
   showPromptBadge: boolean;
   allowEdit: boolean;
   isDragging?: boolean;
+  mode?: "portfolio" | "exhibit";
   onEdit?: (item: PortfolioItem) => void;
   onDeleteClick: (e: React.MouseEvent, item: PortfolioItem) => void;
   onClick: () => void;
@@ -217,6 +256,7 @@ function SortablePortfolioItem({
   isLoggedIn,
   allowEdit,
   isDragging,
+  mode = "portfolio",
   onEdit,
   onDeleteClick,
   onClick,
@@ -295,6 +335,11 @@ function SortablePortfolioItem({
           <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
             {item.title || "Untitled"}
           </h3>
+          {mode === "exhibit" && item.user && (
+            <p className="truncate text-xs text-white/80 mt-0.5">
+              by {item.user.name || "Anonymous"}
+            </p>
+          )}
         </div>
 
         {/* Category icon in lower right */}
@@ -337,34 +382,36 @@ function SortablePortfolioItem({
         )}
       </div>
 
-      {/* Edit and Delete buttons below thumbnail (only when editing is allowed) */}
+      {/* Edit and Delete/Remove buttons below thumbnail (only when editing is allowed) */}
       {allowEdit && (
         <CardContent className="flex gap-2 border-t border-border p-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-1 text-xs"
-            onClick={handleEdit}
-          >
-            <svg
-              className="h-3.5 w-3.5 md:mr-1.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          {mode === "portfolio" && onEdit && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 text-xs"
+              onClick={handleEdit}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              />
-            </svg>
-            <span className="hidden md:inline xl:hidden">Edit</span>
-          </Button>
+              <svg
+                className="h-3.5 w-3.5 md:mr-1.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              <span className="hidden md:inline xl:hidden">Edit</span>
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
-            className="flex-1 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+            className={`${mode === "portfolio" ? "flex-1" : "w-full"} text-xs text-destructive hover:bg-destructive/10 hover:text-destructive`}
             onClick={(e) => onDeleteClick(e, item)}
           >
             <svg
@@ -380,7 +427,9 @@ function SortablePortfolioItem({
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
-            <span className="hidden md:inline xl:hidden">Delete</span>
+            <span className="hidden md:inline xl:hidden">
+              {mode === "exhibit" ? "Remove" : "Delete"}
+            </span>
           </Button>
         </CardContent>
       )}
@@ -402,6 +451,8 @@ function PortfolioGridContent({
   onDelete,
   onReorder,
   isSaving,
+  mode,
+  onRemove,
   user,
 }: {
   items: PortfolioItem[];
@@ -417,6 +468,8 @@ function PortfolioGridContent({
   onDelete?: (item: PortfolioItem) => Promise<void>;
   onReorder: (items: PortfolioItem[]) => void;
   isSaving: boolean;
+  mode?: "portfolio" | "exhibit";
+  onRemove?: (item: PortfolioItem) => Promise<void>;
   user?: {
     id: string;
     name: string | null;
@@ -425,7 +478,9 @@ function PortfolioGridContent({
 }) {
   const router = useRouter();
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
+  const [removingItem, setRemovingItem] = useState<PortfolioItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedSubmission, setSelectedSubmission] =
     useState<PortfolioItem | null>(null);
@@ -464,7 +519,11 @@ function PortfolioGridContent({
 
   const handleDeleteClick = (e: React.MouseEvent, item: PortfolioItem) => {
     e.stopPropagation();
-    setDeletingItem(item);
+    if (mode === "exhibit" && onRemove) {
+      setRemovingItem(item);
+    } else {
+      setDeletingItem(item);
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -491,6 +550,21 @@ function PortfolioGridContent({
     }
   };
 
+  const handleRemoveConfirm = async () => {
+    if (!removingItem || !onRemove) return;
+
+    setIsRemoving(true);
+    try {
+      await onRemove(removingItem);
+      setRemovingItem(null);
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to remove item from exhibit:", error);
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
   // Only use DnD when editing is allowed and no category filter is active
   const isDndEnabled = allowEdit && !categoryFilter;
 
@@ -513,6 +587,7 @@ function PortfolioGridContent({
                 showPromptBadge={showPromptBadge}
                 allowEdit={allowEdit}
                 isDragging={activeId === item.id}
+                mode={mode}
                 onEdit={onEdit}
                 onDeleteClick={handleDeleteClick}
                 onClick={() => {
@@ -718,6 +793,19 @@ function PortfolioGridContent({
         />
       )}
 
+      {/* Remove from Exhibit Confirmation Modal */}
+      {removingItem && (
+        <ConfirmModal
+          isOpen={true}
+          title="Remove from Exhibit"
+          message={`Are you sure you want to remove "${removingItem.title || "this item"}" from this exhibit? The submission will remain in the creator's portfolio.`}
+          confirmLabel="Remove"
+          onConfirm={handleRemoveConfirm}
+          onCancel={() => setRemovingItem(null)}
+          isLoading={isRemoving}
+        />
+      )}
+
       {/* Lightbox */}
       {selectedSubmission && (
         <SubmissionLightbox
@@ -726,7 +814,10 @@ function PortfolioGridContent({
             title: selectedSubmission.title,
             imageUrl: selectedSubmission.imageUrl,
             text: selectedSubmission.text,
-            user: user,
+            user:
+              mode === "exhibit" && selectedSubmission.user
+                ? selectedSubmission.user
+                : user,
             _count: selectedSubmission._count,
           }}
           word={getWord(selectedSubmission)}

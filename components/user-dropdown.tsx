@@ -81,6 +81,17 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
                 Manage Users
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href="/admin/exhibits"
+                className={cn(
+                  pathname.startsWith("/admin/exhibits") &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                Manage Exhibits
+              </Link>
+            </DropdownMenuItem>
           </>
         )}
         <DropdownMenuSeparator />

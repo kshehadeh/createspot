@@ -17,6 +17,7 @@ export async function GET(request: Request) {
     category: normalizeParam(searchParams.get("category")),
     tag: normalizeParam(searchParams.get("tag")),
     query: normalizeParam(searchParams.get("q")),
+    userId: normalizeParam(searchParams.get("userId")),
   };
 
   const skip = Math.max(parseInt(searchParams.get("skip") || "0", 10), 0);

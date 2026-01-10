@@ -85,6 +85,8 @@ model User {
   profileViews       ProfileView[]    @relation("ProfileViews")
   viewedProfiles     ProfileView[]    @relation("ViewedProfiles")
   submissionViews    SubmissionView[] @relation("SubmissionViews")
+  curatedExhibits    Exhibit[]        @relation("CuratedExhibits")
+  featuredArtistInExhibits Exhibit[]  @relation("FeaturedArtistInExhibits")
 }
 
 model Prompt {
@@ -125,6 +127,8 @@ model Submission {
   favorites  Favorite[]
   views      SubmissionView[]
   featuredBy User?            @relation("FeaturedSubmission")
+  exhibitSubmissions ExhibitSubmission[]
+  featuredInExhibits Exhibit[] @relation("FeaturedInExhibits")
 
   @@unique([userId, promptId, wordIndex])
   @@index([promptId])
@@ -175,4 +179,41 @@ model SubmissionView {
   @@unique([submissionId, viewerUserId])
   @@unique([submissionId, viewerIpHash])
   @@index([submissionId])
+}
+
+model Exhibit {
+  id                String   @id @default(cuid())
+  title             String
+  description       String?  @db.Text
+  startTime         DateTime
+  endTime           DateTime
+  isActive          Boolean  @default(true)
+  curatorId         String
+  featuredArtistId  String?
+  featuredSubmissionId String? @unique
+  allowedViewTypes  String[] @default(["gallery", "constellation", "global"])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  curator           User     @relation("CuratedExhibits", fields: [curatorId], references: [id], onDelete: Cascade)
+  featuredArtist    User?    @relation("FeaturedArtistInExhibits", fields: [featuredArtistId], references: [id], onDelete: SetNull)
+  featuredSubmission Submission? @relation("FeaturedInExhibits", fields: [featuredSubmissionId], references: [id], onDelete: SetNull)
+  submissions       ExhibitSubmission[]
+
+  @@index([startTime, endTime])
+  @@index([isActive])
+}
+
+model ExhibitSubmission {
+  id           String   @id @default(cuid())
+  exhibitId    String
+  submissionId String
+  order        Int      // Custom ordering (lower = first)
+  createdAt    DateTime @default(now())
+
+  exhibit      Exhibit     @relation(fields: [exhibitId], references: [id], onDelete: Cascade)
+  submission   Submission  @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([exhibitId, submissionId])
+  @@index([exhibitId, order])
 }
