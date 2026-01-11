@@ -77,7 +77,7 @@ export function DeleteAccountModal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
-          targetUserId ? { userId: targetUserId } : undefined,
+          targetUserId ? { userId: targetUserId } : {},
         ),
       });
 
