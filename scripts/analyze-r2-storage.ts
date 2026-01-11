@@ -64,7 +64,10 @@ function extractR2Key(url: string | null, publicUrl: string): string | null {
   return url.replace(`${publicUrl}/`, "");
 }
 
-async function listAllR2Objects(s3Client: S3Client, bucketName: string): Promise<R2Object[]> {
+async function listAllR2Objects(
+  s3Client: S3Client,
+  bucketName: string,
+): Promise<R2Object[]> {
   const objects: R2Object[] = [];
   let continuationToken: string | undefined;
 
@@ -94,7 +97,9 @@ async function listAllR2Objects(s3Client: S3Client, bucketName: string): Promise
   return objects;
 }
 
-async function queryDatabaseImages(publicUrl: string): Promise<DatabaseImage[]> {
+async function queryDatabaseImages(
+  publicUrl: string,
+): Promise<DatabaseImage[]> {
   const images: DatabaseImage[] = [];
 
   // Query submission images
@@ -293,21 +298,37 @@ function printReport(data: ReportData): void {
   // Summary Statistics
   console.log("SUMMARY STATISTICS");
   console.log("-".repeat(80));
-  console.log(`Total objects in R2:        ${data.totalObjects.toLocaleString()}`);
+  console.log(
+    `Total objects in R2:        ${data.totalObjects.toLocaleString()}`,
+  );
   console.log(`Total storage size:          ${formatSize(data.totalSize)}`);
-  console.log(`Referenced in database:      ${data.referencedObjects.toLocaleString()}`);
-  console.log(`Orphaned (not in DB):        ${data.orphanedObjects.toLocaleString()} (${formatSize(data.orphanedSize)})`);
-  console.log(`Missing (in DB, not in R2):  ${data.missingObjects.toLocaleString()}`);
+  console.log(
+    `Referenced in database:      ${data.referencedObjects.toLocaleString()}`,
+  );
+  console.log(
+    `Orphaned (not in DB):        ${data.orphanedObjects.toLocaleString()} (${formatSize(data.orphanedSize)})`,
+  );
+  console.log(
+    `Missing (in DB, not in R2):  ${data.missingObjects.toLocaleString()}`,
+  );
   console.log("");
 
   // Folder Structure Breakdown
   console.log("FOLDER STRUCTURE");
   console.log("-".repeat(80));
-  console.log(`Old format ({userId}/...):    ${data.folderStructure.oldFormat.count.toLocaleString()} files (${formatSize(data.folderStructure.oldFormat.size)})`);
-  console.log(`submissions/ folder:          ${data.folderStructure.submissions.count.toLocaleString()} files (${formatSize(data.folderStructure.submissions.size)})`);
-  console.log(`profiles/ folder:             ${data.folderStructure.profiles.count.toLocaleString()} files (${formatSize(data.folderStructure.profiles.size)})`);
+  console.log(
+    `Old format ({userId}/...):    ${data.folderStructure.oldFormat.count.toLocaleString()} files (${formatSize(data.folderStructure.oldFormat.size)})`,
+  );
+  console.log(
+    `submissions/ folder:          ${data.folderStructure.submissions.count.toLocaleString()} files (${formatSize(data.folderStructure.submissions.size)})`,
+  );
+  console.log(
+    `profiles/ folder:             ${data.folderStructure.profiles.count.toLocaleString()} files (${formatSize(data.folderStructure.profiles.size)})`,
+  );
   if (data.folderStructure.other.count > 0) {
-    console.log(`Other locations:             ${data.folderStructure.other.count.toLocaleString()} files (${formatSize(data.folderStructure.other.size)})`);
+    console.log(
+      `Other locations:             ${data.folderStructure.other.count.toLocaleString()} files (${formatSize(data.folderStructure.other.size)})`,
+    );
   }
   console.log("");
 
@@ -326,9 +347,15 @@ function printReport(data: ReportData): void {
       const email = stats.userEmail.padEnd(30);
       const images = stats.totalImages.toString().padStart(8);
       const size = formatSize(stats.totalSize).padStart(12);
-      const submissions = `${stats.submissionImages} (${formatSize(stats.submissionSize)})`.padStart(12);
-      const profiles = `${stats.profileImages} (${formatSize(stats.profileSize)})`.padStart(8);
-      console.log(`${name} ${email} ${images} ${size} ${submissions} ${profiles}`);
+      const submissions =
+        `${stats.submissionImages} (${formatSize(stats.submissionSize)})`.padStart(
+          12,
+        );
+      const profiles =
+        `${stats.profileImages} (${formatSize(stats.profileSize)})`.padStart(8);
+      console.log(
+        `${name} ${email} ${images} ${size} ${submissions} ${profiles}`,
+      );
     }
   }
   console.log("");
@@ -337,7 +364,9 @@ function printReport(data: ReportData): void {
   if (data.orphanedFiles.length > 0) {
     console.log("ORPHANED FILES (in R2 but not referenced in database)");
     console.log("-".repeat(80));
-    console.log(`Total: ${data.orphanedFiles.length} files, ${formatSize(data.orphanedSize)}`);
+    console.log(
+      `Total: ${data.orphanedFiles.length} files, ${formatSize(data.orphanedSize)}`,
+    );
     console.log("");
     console.log("Top 20 largest orphaned files:");
     console.log(
@@ -394,7 +423,9 @@ async function main(): Promise<void> {
     "DATABASE_URL",
   ];
 
-  const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
+  const missingVars = requiredEnvVars.filter(
+    (varName) => !process.env[varName],
+  );
 
   if (missingVars.length > 0) {
     console.error("Error: Missing required environment variables:");

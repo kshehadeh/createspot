@@ -285,10 +285,18 @@ function printPlan(plan: {
 
   console.log("SUMMARY");
   console.log("-".repeat(80));
-  console.log(`Total files in old format:     ${plan.stats.totalFiles.toLocaleString()}`);
-  console.log(`  - Submission files:          ${plan.stats.submissionFiles.toLocaleString()}`);
-  console.log(`  - Profile files:             ${plan.stats.profileFiles.toLocaleString()}`);
-  console.log(`  - Orphaned (not in DB):      ${plan.orphaned.length.toLocaleString()}`);
+  console.log(
+    `Total files in old format:     ${plan.stats.totalFiles.toLocaleString()}`,
+  );
+  console.log(
+    `  - Submission files:          ${plan.stats.submissionFiles.toLocaleString()}`,
+  );
+  console.log(
+    `  - Profile files:             ${plan.stats.profileFiles.toLocaleString()}`,
+  );
+  console.log(
+    `  - Orphaned (not in DB):      ${plan.orphaned.length.toLocaleString()}`,
+  );
   console.log(
     `Total size to migrate:           ${formatSize(plan.stats.totalSize)}`,
   );
@@ -323,7 +331,10 @@ async function main(): Promise<void> {
   // Parse database URL from CLI args or env var
   const nonFlagArgs = args.filter((arg) => !arg.startsWith("--"));
   const cliUrl = nonFlagArgs[0];
-  const databaseUrl = cliUrl ?? process.env["PRODUCTION_DATABASE_URL"] ?? process.env["DATABASE_URL"];
+  const databaseUrl =
+    cliUrl ??
+    process.env["PRODUCTION_DATABASE_URL"] ??
+    process.env["DATABASE_URL"];
 
   if (!databaseUrl) {
     console.error("Error: Missing database URL.");
@@ -354,11 +365,16 @@ async function main(): Promise<void> {
 
   // Validate environment variables
   const missingVars: string[] = [];
-  if (!r2AccountId) missingVars.push("R2_ACCOUNT_ID or PRODUCTION_R2_ACCOUNT_ID");
-  if (!r2AccessKeyId) missingVars.push("R2_ACCESS_KEY_ID or PRODUCTION_R2_ACCESS_KEY_ID");
-  if (!r2SecretAccessKey) missingVars.push("R2_SECRET_ACCESS_KEY or PRODUCTION_R2_SECRET_ACCESS_KEY");
-  if (!r2BucketName) missingVars.push("R2_BUCKET_NAME or PRODUCTION_R2_BUCKET_NAME");
-  if (!r2PublicUrl) missingVars.push("R2_PUBLIC_URL or PRODUCTION_R2_PUBLIC_URL");
+  if (!r2AccountId)
+    missingVars.push("R2_ACCOUNT_ID or PRODUCTION_R2_ACCOUNT_ID");
+  if (!r2AccessKeyId)
+    missingVars.push("R2_ACCESS_KEY_ID or PRODUCTION_R2_ACCESS_KEY_ID");
+  if (!r2SecretAccessKey)
+    missingVars.push("R2_SECRET_ACCESS_KEY or PRODUCTION_R2_SECRET_ACCESS_KEY");
+  if (!r2BucketName)
+    missingVars.push("R2_BUCKET_NAME or PRODUCTION_R2_BUCKET_NAME");
+  if (!r2PublicUrl)
+    missingVars.push("R2_PUBLIC_URL or PRODUCTION_R2_PUBLIC_URL");
 
   if (missingVars.length > 0) {
     console.error("Error: Missing required environment variables:");
@@ -390,7 +406,12 @@ async function main(): Promise<void> {
 
   try {
     // Build migration plan
-    const plan = await buildMigrationPlan(s3Client, r2BucketName!, r2PublicUrl!, prisma);
+    const plan = await buildMigrationPlan(
+      s3Client,
+      r2BucketName!,
+      r2PublicUrl!,
+      prisma,
+    );
     printPlan(plan);
 
     if (dryRun) {
@@ -419,7 +440,13 @@ async function main(): Promise<void> {
 
     for (let i = 0; i < plan.items.length; i++) {
       const item = plan.items[i];
-      const success = await migrateFile(s3Client, r2BucketName!, item, false, prisma);
+      const success = await migrateFile(
+        s3Client,
+        r2BucketName!,
+        item,
+        false,
+        prisma,
+      );
 
       if (success) {
         migrated++;
@@ -440,7 +467,6 @@ async function main(): Promise<void> {
     console.log(`Migrated: ${migrated}/${plan.items.length} files`);
     console.log(`Errors:   ${errors}`);
     console.log("");
-
   } catch (error) {
     console.error("Error during migration:", error);
     if (error instanceof Error) {

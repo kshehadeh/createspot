@@ -4,7 +4,7 @@
     "interface": true,
     "type": true
   },
-  "ignore": ["postcss.config.mjs"],
+  "ignore": ["postcss.config.mjs", "scripts/**/*.ts"],
   "ignoreBinaries": [],
   "tags": ["-lintignore"]
 }

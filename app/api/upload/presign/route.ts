@@ -73,16 +73,28 @@ export async function POST(request: NextRequest) {
     const folder = type === "profile" ? "profiles" : "submissions";
     const fileName = `${folder}/${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
 
+    // Ensure the Key is correctly set for the presigned URL
     const putCommand = new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,
-      Key: fileName,
+      Key: fileName, // This should be profiles/{userId}/{uuid}.{ext} for profile images
       ContentType: fileType,
       ContentLength: fileSize,
     });
 
+    // Log for debugging (remove in production if needed)
+    console.log(`[Presign] Generating presigned URL for Key: ${fileName}, type: ${type}`);
+
     const presignedUrl = await getSignedUrl(s3Client, putCommand, {
       expiresIn: PRESIGN_EXPIRES_IN,
     });
+
+    // Verify the presigned URL contains the correct Key path
+    // The Key should be in the URL path, not just in query params
+    if (!presignedUrl.includes(fileName.split("/")[0])) {
+      console.warn(
+        `[Presign] Warning: Presigned URL may not contain correct Key path. Expected folder: ${folder}, Key: ${fileName}`,
+      );
+    }
 
     const publicUrl = `${process.env.R2_PUBLIC_URL}/${fileName}`;
 
