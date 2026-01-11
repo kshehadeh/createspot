@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
+export const runtime = "edge";
 
 // CreateSpot logo paths (from create-spot-logo.tsx)
 const basePaths = [
@@ -32,7 +33,7 @@ export default function AppleIcon() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#000000",
+        background: "#ffffff",
       }}
     >
       <svg
@@ -45,12 +46,12 @@ export default function AppleIcon() {
       >
         <g>
           {basePaths.map((d, i) => (
-            <path key={`base-${i}`} fill="#ffffff" stroke="none" d={d} />
+            <path key={`base-${i}`} fill="#000000" stroke="none" d={d} />
           ))}
         </g>
         <g>
           {highlightPaths.map((d, i) => (
-            <path key={`highlight-${i}`} fill="#000000" stroke="none" d={d} />
+            <path key={`highlight-${i}`} fill="#ffffff" stroke="none" d={d} />
           ))}
         </g>
       </svg>

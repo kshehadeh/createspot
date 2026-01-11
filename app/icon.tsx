@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
+export const runtime = "edge";
 
 // CreateSpot logo paths (from create-spot-logo.tsx)
 const basePaths = [
@@ -32,7 +33,7 @@ export default function Icon() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "transparent",
+        background: "#ffffff",
       }}
     >
       <svg
