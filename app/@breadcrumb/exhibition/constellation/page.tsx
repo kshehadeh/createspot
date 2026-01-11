@@ -1,8 +1,14 @@
+import { getTranslations } from "next-intl/server";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { buildBreadcrumbFromParent } from "@/lib/routes";
 
 export default async function ExhibitionConstellationBreadcrumb() {
-  const segments = buildBreadcrumbFromParent("/exhibition/constellation");
+  const t = await getTranslations("navigation");
+  const segments = buildBreadcrumbFromParent(
+    "/exhibition/constellation",
+    [],
+    t,
+  );
 
   return <Breadcrumb segments={segments} />;
 }

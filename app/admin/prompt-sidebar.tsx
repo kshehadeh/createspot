@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import type { Prompt } from "@/app/generated/prisma/client";
 import {
   formatDateRangeUTC,
@@ -24,6 +25,8 @@ export function PromptSidebar({
   editingPromptId,
 }: PromptSidebarProps) {
   const router = useRouter();
+  const t = useTranslations("admin.prompts");
+  const tCommon = useTranslations("common");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,14 +48,14 @@ export function PromptSidebar({
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error || "Failed to delete prompt");
+        setError(data.error || t("deleteError"));
         return;
       }
 
       setConfirmDeleteId(null);
       router.refresh();
     } catch {
-      setError("An error occurred while deleting");
+      setError(t("deleteErrorOccurred"));
     } finally {
       setDeletingId(null);
     }
@@ -101,11 +104,11 @@ export function PromptSidebar({
         if (isCurrent) {
           const now = new Date();
           const daysRemaining = daysBetween(now, weekEnd);
-          daysInfo = `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""} remaining`;
+          daysInfo = t("daysRemaining", { count: daysRemaining });
         } else if (isNext) {
           const now = new Date();
           const daysUntil = daysBetween(now, weekStart);
-          daysInfo = `${daysUntil} day${daysUntil !== 1 ? "s" : ""} until next`;
+          daysInfo = t("daysUntil", { count: daysUntil });
         }
 
         return (
@@ -140,14 +143,16 @@ export function PromptSidebar({
             )}
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                {prompt._count.submissions} submission
-                {prompt._count.submissions !== 1 ? "s" : ""}
+                {prompt._count.submissions}{" "}
+                {prompt._count.submissions !== 1
+                  ? t("submissions")
+                  : t("submission")}
               </span>
               {canEdit && (
                 <div className="flex items-center gap-1">
                   {isEditing ? (
                     <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-800 dark:text-blue-200">
-                      Editing
+                      {t("editing")}
                     </span>
                   ) : (
                     <>
@@ -156,7 +161,7 @@ export function PromptSidebar({
                         onClick={() => onEditPrompt(prompt.id)}
                         className="rounded px-2 py-0.5 text-xs font-medium text-muted-foreground hover:bg-accent"
                       >
-                        Edit
+                        {t("edit")}
                       </button>
                       <button
                         type="button"
@@ -164,7 +169,7 @@ export function PromptSidebar({
                         disabled={deletingId === prompt.id}
                         className="rounded px-2 py-0.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-900/20"
                       >
-                        {deletingId === prompt.id ? "..." : "Delete"}
+                        {deletingId === prompt.id ? "..." : t("delete")}
                       </button>
                     </>
                   )}
@@ -177,16 +182,20 @@ export function PromptSidebar({
 
       <ConfirmModal
         isOpen={!!confirmDeleteId}
-        title="Delete Prompt"
+        title={t("deleteTitle")}
         message={
           error
             ? error
             : promptToDelete
-              ? `Are you sure you want to delete the prompt "${promptToDelete.word1} / ${promptToDelete.word2} / ${promptToDelete.word3}"? This action cannot be undone.`
-              : "Are you sure you want to delete this prompt?"
+              ? t("deleteMessage", {
+                  word1: promptToDelete.word1,
+                  word2: promptToDelete.word2,
+                  word3: promptToDelete.word3,
+                })
+              : t("deleteMessage", { word1: "", word2: "", word3: "" })
         }
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        confirmLabel={t("delete")}
+        cancelLabel={tCommon("cancel")}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         isLoading={!!deletingId}

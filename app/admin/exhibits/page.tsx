@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
@@ -30,6 +31,8 @@ export default async function AdminExhibitsPage({
   if (!session.user.isAdmin) {
     redirect("/");
   }
+
+  const t = await getTranslations("admin.exhibits");
 
   const params = await searchParams;
   const rawCurator = Array.isArray(params.curator)
@@ -120,14 +123,12 @@ export default async function AdminExhibitsPage({
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">
-            Manage Exhibits
+            {t("title")}
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Create and manage temporary exhibits
-          </p>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
         <Link href="/admin/exhibits/new">
-          <Button>Create New Exhibit</Button>
+          <Button>{t("createNew")}</Button>
         </Link>
       </div>
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
@@ -23,6 +24,8 @@ interface UsersListProps {
 
 export function UsersList({ users, currentUserId }: UsersListProps) {
   const router = useRouter();
+  const t = useTranslations("admin.users");
+  const tProfile = useTranslations("profile");
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [deleteModalUserId, setDeleteModalUserId] = useState<string | null>(
@@ -42,12 +45,12 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to update user");
+        throw new Error(data.error || t("updateError"));
       }
 
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : t("error"));
     } finally {
       setLoadingUserId(null);
     }
@@ -76,7 +79,7 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={user.image}
-                    alt={user.name || "User"}
+                    alt={user.name || tProfile("anonymous")}
                     className="h-12 w-12 rounded-full"
                   />
                 ) : (
@@ -89,11 +92,11 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="font-medium text-foreground truncate">
-                      {user.name || "No name"}
+                      {user.name || t("noName")}
                     </h3>
                     {isCurrentUser && (
                       <span className="flex-shrink-0 text-xs text-muted-foreground">
-                        (you)
+                        {t("you")}
                       </span>
                     )}
                   </div>
@@ -105,17 +108,19 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
 
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Joined</span>
+                  <span className="text-muted-foreground">{t("joined")}</span>
                   <span className="text-foreground">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Role</span>
+                  <span className="text-sm text-muted-foreground">
+                    {t("role")}
+                  </span>
                   {user.isAdmin ? (
-                    <Badge variant="default">Admin</Badge>
+                    <Badge variant="default">{t("admin")}</Badge>
                   ) : (
-                    <Badge variant="secondary">User</Badge>
+                    <Badge variant="secondary">{t("user")}</Badge>
                   )}
                 </div>
               </div>
@@ -123,7 +128,7 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
               <div className="mt-4 pt-4 border-t border-border">
                 {isCurrentUser ? (
                   <span className="text-xs text-muted-foreground">
-                    Cannot modify your own account
+                    {t("cannotModifyOwn")}
                   </span>
                 ) : (
                   <div className="flex gap-2">
@@ -134,10 +139,10 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
                       className="flex-1"
                     >
                       {isLoading
-                        ? "Updating..."
+                        ? t("updating")
                         : user.isAdmin
-                          ? "Remove Admin"
-                          : "Make Admin"}
+                          ? t("removeAdmin")
+                          : t("makeAdmin")}
                     </Button>
                     <Button
                       onClick={() => setDeleteModalUserId(user.id)}
@@ -146,7 +151,7 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
                       className="flex-1"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Delete User
+                      {t("deleteUser")}
                     </Button>
                   </div>
                 )}

@@ -1,14 +1,16 @@
+import { getTranslations } from "next-intl/server";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { getRouteByPath } from "@/lib/routes";
+import { getTranslatedRouteByPath } from "@/lib/routes";
 
 export default async function AboutPurposeBreadcrumb() {
-  const aboutRoute = getRouteByPath("/about");
+  const t = await getTranslations("navigation");
+  const aboutRoute = getTranslatedRouteByPath("/about", t);
 
   return (
     <Breadcrumb
       segments={[
         {
-          label: aboutRoute?.label || "About",
+          label: aboutRoute?.label || t("about"),
           href: "/about",
           icon: aboutRoute?.icon,
         },

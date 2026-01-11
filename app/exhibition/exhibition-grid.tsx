@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -74,7 +75,7 @@ export function ExhibitionGrid({
       const response = await fetch(`/api/exhibition?${params.toString()}`);
 
       if (!response.ok) {
-        throw new Error("Failed to load more work");
+        throw new Error("loadMoreError");
       }
 
       const data = await response.json();
@@ -84,7 +85,9 @@ export function ExhibitionGrid({
       setNextSkip((prev) => prev + (data.submissions?.length || 0));
     } catch (error) {
       setLoadError(
-        error instanceof Error ? error.message : "Failed to load more work",
+        error instanceof Error && error.message !== "loadMoreError"
+          ? error.message
+          : "loadMoreError",
       );
     } finally {
       setIsLoading(false);
@@ -123,6 +126,8 @@ function GridContent({
   onLoadMore: () => void;
   loadError: string | null;
 }) {
+  const t = useTranslations("exhibition");
+  const tProfile = useTranslations("profile");
   const [selectedSubmission, setSelectedSubmission] =
     useState<ExhibitionSubmission | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -164,11 +169,9 @@ function GridContent({
     return (
       <Card className="rounded-2xl border-dashed">
         <CardContent className="px-6 py-12 text-center">
-          <p className="text-sm text-muted-foreground">
-            No work matches these filters yet.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("noMatches")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Try removing a filter or searching with a different keyword.
+            {t("tryDifferentFilters")}
           </p>
         </CardContent>
       </Card>
@@ -198,7 +201,7 @@ function GridContent({
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <Image
                       src={submission.imageUrl}
-                      alt={submission.title || "Submission"}
+                      alt={submission.title || t("submissionAlt")}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -240,10 +243,10 @@ function GridContent({
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <div className="px-4 text-center">
                         <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
-                          {submission.title || "Untitled"}
+                          {submission.title || t("untitled")}
                         </h3>
                         <p className="text-sm font-medium text-white/90 drop-shadow-md">
-                          {submission.user.name || "Anonymous"}
+                          {submission.user.name || tProfile("anonymous")}
                         </p>
                       </div>
                     </div>
@@ -269,10 +272,10 @@ function GridContent({
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <div className="px-4 text-center">
                         <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
-                          {submission.title || "Untitled"}
+                          {submission.title || t("untitled")}
                         </h3>
                         <p className="text-sm font-medium text-white/90 drop-shadow-md">
-                          {submission.user.name || "Anonymous"}
+                          {submission.user.name || tProfile("anonymous")}
                         </p>
                       </div>
                     </div>
@@ -286,23 +289,23 @@ function GridContent({
 
       <div ref={sentinelRef} className="h-10" />
       <div className="mt-4 flex flex-col items-center gap-2 text-sm text-muted-foreground">
-        {isLoading && <span>Loading more work...</span>}
+        {isLoading && <span>{t("loadingMore")}</span>}
         {loadError && (
           <div className="flex items-center gap-3">
-            <span className="text-red-500 dark:text-red-400">{loadError}</span>
+            <span className="text-red-500 dark:text-red-400">
+              {loadError === "loadMoreError" ? t("loadMoreError") : loadError}
+            </span>
             <button
               type="button"
               onClick={onLoadMore}
               className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
             >
-              Retry
+              {t("retry")}
             </button>
           </div>
         )}
         {!hasMore && submissions.length > 0 && (
-          <span className="text-muted-foreground">
-            You&apos;ve reached the end.
-          </span>
+          <span className="text-muted-foreground">{t("reachedEnd")}</span>
         )}
       </div>
 

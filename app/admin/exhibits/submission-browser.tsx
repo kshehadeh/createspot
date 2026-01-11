@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import {
@@ -59,6 +60,9 @@ export function SubmissionBrowser({
   onSelect,
   excludeIds = [],
 }: SubmissionBrowserProps) {
+  const t = useTranslations("admin.exhibits");
+  const tCommon = useTranslations("common");
+  const tProfile = useTranslations("profile");
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -191,19 +195,19 @@ export function SubmissionBrowser({
       ];
       return words[submission.wordIndex - 1];
     }
-    return submission.category || "Portfolio";
+    return submission.category || tProfile("portfolio");
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-screen h-screen max-w-none max-h-none m-0 rounded-none overflow-hidden flex flex-col p-0 [&>button:last-child]:hidden">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle>Browse Submissions</DialogTitle>
+          <DialogTitle>{t("browseSubmissions")}</DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-hidden flex flex-col gap-4">
           <div className="flex flex-wrap gap-2 px-6 pt-6 pb-4">
             <Input
-              placeholder="Search..."
+              placeholder={t("search")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="flex-1 min-w-[200px]"
@@ -215,10 +219,10 @@ export function SubmissionBrowser({
               }
             >
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder={t("category")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">All Categories</SelectItem>
+                <SelectItem value="__all__">{t("allCategories")}</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
@@ -233,13 +237,13 @@ export function SubmissionBrowser({
               }
             >
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Tag" />
+                <SelectValue placeholder={t("tag")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">All Tags</SelectItem>
-                {tags.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    #{t}
+                <SelectItem value="__all__">{t("allTags")}</SelectItem>
+                {tags.map((tagValue) => (
+                  <SelectItem key={tagValue} value={tagValue}>
+                    #{tagValue}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -275,20 +279,20 @@ export function SubmissionBrowser({
                               </AvatarFallback>
                             </Avatar>
                             <span className="truncate">
-                              {selectedUser.name || "Anonymous"}
+                              {selectedUser.name || tProfile("anonymous")}
                             </span>
                           </div>
                         ) : (
-                          "Select Creator"
+                          t("selectCreator")
                         );
                       })()
-                    : "All Creators"}
+                    : t("allCreators")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80 p-0" align="start">
                 <div className="p-2 border-b">
                   <Input
-                    placeholder="Search by name or email..."
+                    placeholder={t("searchByNameOrEmail")}
                     value={userSearchQuery}
                     onChange={(e) => setUserSearchQuery(e.target.value)}
                     className="w-full"
@@ -307,17 +311,19 @@ export function SubmissionBrowser({
                         : "text-popover-foreground hover:bg-accent hover:text-accent-foreground"
                     }`}
                   >
-                    <span className="text-sm font-medium">All Creators</span>
+                    <span className="text-sm font-medium">
+                      {t("allCreators")}
+                    </span>
                   </button>
                   {usersLoading ? (
                     <div className="px-4 py-3 text-sm text-muted-foreground">
-                      Loading...
+                      {tCommon("loading")}
                     </div>
                   ) : users.length === 0 ? (
                     <div className="px-4 py-3 text-sm text-muted-foreground">
                       {userSearchQuery
-                        ? "No users found"
-                        : "No users available"}
+                        ? t("noUsersFound")
+                        : t("noUsersAvailable")}
                     </div>
                   ) : (
                     users.map((user) => {
@@ -352,7 +358,7 @@ export function SubmissionBrowser({
                             </Avatar>
                             <div className="min-w-0 flex-1">
                               <p className="truncate text-sm font-medium text-popover-foreground">
-                                {user.name || "Anonymous"}
+                                {user.name || tProfile("anonymous")}
                               </p>
                               <p className="truncate text-xs text-muted-foreground">
                                 {user.email}
@@ -382,7 +388,7 @@ export function SubmissionBrowser({
               </PopoverContent>
             </Popover>
             <Button onClick={loadSubmissions} disabled={loading}>
-              {loading ? "Loading..." : "Search"}
+              {loading ? tCommon("loading") : t("search")}
             </Button>
           </div>
           <div className="flex items-center justify-between px-6">
@@ -396,7 +402,7 @@ export function SubmissionBrowser({
                       size="sm"
                       onClick={handleDeselectAll}
                     >
-                      Deselect All
+                      {t("deselectAll")}
                     </Button>
                   ) : (
                     <Button
@@ -405,12 +411,13 @@ export function SubmissionBrowser({
                       size="sm"
                       onClick={handleSelectAll}
                     >
-                      Select All ({submissions.length})
+                      {t("selectAll", { count: submissions.length })}
                     </Button>
                   )}
                   {someSelected && (
                     <span className="text-sm text-muted-foreground">
-                      {selectedIds.size} of {submissions.length} selected
+                      {selectedIds.size} {t("of")} {submissions.length}{" "}
+                      {t("selected")}
                     </span>
                   )}
                 </>
@@ -420,11 +427,13 @@ export function SubmissionBrowser({
           <div className="flex-1 overflow-y-auto px-6">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <p className="text-muted-foreground">Loading...</p>
+                <p className="text-muted-foreground">{tCommon("loading")}</p>
               </div>
             ) : submissions.length === 0 ? (
               <div className="flex items-center justify-center py-12">
-                <p className="text-muted-foreground">No submissions found</p>
+                <p className="text-muted-foreground">
+                  {t("noSubmissionsFound")}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -466,7 +475,9 @@ export function SubmissionBrowser({
                               {word}
                             </span>
                             {isSelected && (
-                              <Badge variant="default">Selected</Badge>
+                              <Badge variant="default">
+                                {t("selectedBadge")}
+                              </Badge>
                             )}
                           </div>
                           {submission.title && (
@@ -475,7 +486,8 @@ export function SubmissionBrowser({
                             </p>
                           )}
                           <p className="text-xs text-muted-foreground truncate">
-                            by {submission.user.name || "Anonymous"}
+                            {t("by")}{" "}
+                            {submission.user.name || tProfile("anonymous")}
                           </p>
                         </div>
                       </div>
@@ -488,15 +500,15 @@ export function SubmissionBrowser({
           <div className="flex items-center justify-between border-t pt-4 px-6 pb-6">
             <p className="text-sm text-muted-foreground">
               {selectedIds.size > 0
-                ? `${selectedIds.size} selected`
-                : "No items selected"}
+                ? t("selectedCount", { count: selectedIds.size })
+                : t("noItemsSelected")}
             </p>
             <div className="flex gap-2">
               <Button variant="outline" onClick={onClose}>
-                Cancel
+                {tCommon("cancel")}
               </Button>
               <Button onClick={handleSelect} disabled={selectedIds.size === 0}>
-                Add Selected ({selectedIds.size})
+                {t("addSelected", { count: selectedIds.size })}
               </Button>
             </div>
           </div>

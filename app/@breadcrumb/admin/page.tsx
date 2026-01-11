@@ -1,14 +1,16 @@
+import { getTranslations } from "next-intl/server";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { getRouteByPath } from "@/lib/routes";
+import { getTranslatedRouteByPath } from "@/lib/routes";
 
 export default async function AdminBreadcrumb() {
-  const adminRoute = getRouteByPath("/admin");
+  const t = await getTranslations("navigation");
+  const adminRoute = getTranslatedRouteByPath("/admin", t);
 
   return (
     <Breadcrumb
       segments={[
         {
-          label: adminRoute?.label || "Admin",
+          label: adminRoute?.label || t("admin"),
           icon: adminRoute?.icon,
         },
       ]}

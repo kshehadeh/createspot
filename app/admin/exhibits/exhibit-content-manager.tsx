@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { SubmissionBrowser } from "./submission-browser";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ export function ExhibitContentManager({
   initialSubmissions,
 }: ExhibitContentManagerProps) {
   const router = useRouter();
+  const t = useTranslations("admin.exhibits");
   const [submissions, setSubmissions] = useState(initialSubmissions);
   const [isBrowserOpen, setIsBrowserOpen] = useState(false);
 
@@ -52,7 +54,7 @@ export function ExhibitContentManager({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to add submissions");
+        throw new Error(t("addError"));
       }
 
       router.refresh();
@@ -74,7 +76,7 @@ export function ExhibitContentManager({
       );
 
       if (!response.ok) {
-        throw new Error("Failed to remove submission");
+        throw new Error(t("removeError"));
       }
 
       router.refresh();
@@ -94,12 +96,12 @@ export function ExhibitContentManager({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save order");
+        throw new Error(t("reorderError"));
       }
 
       router.refresh();
     } catch {
-      throw new Error("Failed to save order");
+      throw new Error(t("reorderError"));
     }
   };
 
@@ -127,8 +129,10 @@ export function ExhibitContentManager({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Exhibit Content</h3>
-        <Button onClick={() => setIsBrowserOpen(true)}>Add Submissions</Button>
+        <h3 className="text-lg font-semibold">{t("exhibitContent")}</h3>
+        <Button onClick={() => setIsBrowserOpen(true)}>
+          {t("addSubmissions")}
+        </Button>
       </div>
 
       <PortfolioGrid

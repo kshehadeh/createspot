@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { FeaturedSubmissionSelector } from "@/components/featured-submission-selector";
 import { UserSelector } from "@/components/user-selector";
@@ -63,6 +64,8 @@ export function ExhibitFormSimple({
   exhibitId,
 }: ExhibitFormSimpleProps) {
   const router = useRouter();
+  const t = useTranslations("admin.exhibits");
+  const tCommon = useTranslations("common");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -195,13 +198,13 @@ export function ExhibitFormSimple({
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.error || "Failed to save exhibit");
+          throw new Error(data.error || t("saveError"));
         }
 
         router.push("/admin/exhibits");
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to save exhibit");
+        setError(err instanceof Error ? err.message : t("saveError"));
       } finally {
         setIsLoading(false);
       }
@@ -231,23 +234,23 @@ export function ExhibitFormSimple({
       )}
 
       <div>
-        <Label htmlFor="title">Title *</Label>
+        <Label htmlFor="title">{t("title")} *</Label>
         <Input
           id="title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Exhibit title"
+          placeholder={t("titlePlaceholder")}
           required
         />
       </div>
 
       <div>
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{t("description")}</Label>
         <RichTextEditor
           value={description}
           onChange={setDescription}
-          placeholder="Exhibit description (markdown supported)"
+          placeholder={t("descriptionPlaceholder")}
         />
       </div>
 
@@ -268,7 +271,7 @@ export function ExhibitFormSimple({
                   d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
                 />
               </svg>
-              Manage Content
+              {t("manageContent")}
             </Button>
           </Link>
         </div>
@@ -276,7 +279,7 @@ export function ExhibitFormSimple({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="startTime">Start Time *</Label>
+          <Label htmlFor="startTime">{t("startTime")} *</Label>
           <Input
             id="startTime"
             type="datetime-local"
@@ -286,7 +289,7 @@ export function ExhibitFormSimple({
           />
         </div>
         <div>
-          <Label htmlFor="endTime">End Time *</Label>
+          <Label htmlFor="endTime">{t("endTime")} *</Label>
           <Input
             id="endTime"
             type="datetime-local"
@@ -306,7 +309,7 @@ export function ExhibitFormSimple({
           className="h-4 w-4 rounded border-input"
         />
         <Label htmlFor="isActive" className="cursor-pointer">
-          Active (exhibit will be visible if within time range)
+          {t("active")}
         </Label>
       </div>
 
@@ -314,8 +317,8 @@ export function ExhibitFormSimple({
         users={usersList}
         selectedUserId={curatorId}
         onChange={setCuratorId}
-        label="Curator *"
-        description="Select the curator for this exhibit"
+        label={`${t("curator")} *`}
+        description={t("curatorDescription")}
         onSearch={handleUserSearch}
         loading={usersLoading}
       />
@@ -324,22 +327,22 @@ export function ExhibitFormSimple({
         users={usersList}
         selectedUserId={featuredArtistId}
         onChange={setFeaturedArtistId}
-        label="Featured Artist"
-        description="Optionally select a featured artist for this exhibit"
+        label={t("featuredArtist")}
+        description={t("featuredArtistDescription")}
         onSearch={handleUserSearch}
         loading={usersLoading}
       />
 
       <div>
-        <Label>Allowed View Types *</Label>
+        <Label>{t("allowedViewTypes")} *</Label>
         <p className="mb-3 text-xs text-muted-foreground">
-          Select which view types users can use to view this exhibit
+          {t("allowedViewTypesDescription")}
         </p>
         <div className="space-y-2">
           {[
-            { value: "gallery", label: "Grid" },
-            { value: "constellation", label: "Constellation (3D)" },
-            { value: "global", label: "Map" },
+            { value: "gallery", label: t("grid") },
+            { value: "constellation", label: t("constellation") },
+            { value: "global", label: t("map") },
           ].map((viewType) => (
             <div key={viewType.value} className="flex items-center gap-2">
               <input
@@ -369,9 +372,9 @@ export function ExhibitFormSimple({
           submissions={submissions}
           selectedSubmissionId={featuredSubmissionId}
           onChange={setFeaturedSubmissionId}
-          label="Featured Submission"
-          description="Select a submission to feature for this exhibit"
-          emptyMessage="No submissions available"
+          label={t("featuredSubmission")}
+          description={t("featuredSubmissionDescription")}
+          emptyMessage={t("noSubmissionsAvailable")}
         />
       )}
 
@@ -380,12 +383,12 @@ export function ExhibitFormSimple({
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
+              {t("saving")}
             </>
           ) : mode === "create" ? (
-            "Create Exhibit"
+            t("createExhibit")
           ) : (
-            "Update Exhibit"
+            t("updateExhibit")
           )}
         </Button>
         <Button
@@ -393,7 +396,7 @@ export function ExhibitFormSimple({
           variant="outline"
           onClick={() => router.push("/admin/exhibits")}
         >
-          Cancel
+          {tCommon("cancel")}
         </Button>
       </div>
     </form>

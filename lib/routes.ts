@@ -1,15 +1,24 @@
 import type { LucideIcon } from "lucide-react";
+import type { getTranslations } from "next-intl/server";
 import { Lock, Heart, User, Briefcase, LogOut, Users } from "lucide-react";
 import { EXHIBITION_CONFIGS } from "./exhibition-constants";
 import { Home } from "lucide-react";
 
 export interface RouteConfig {
   path: string;
-  label: string;
+  label: string; // Translation key (e.g., "navigation.home") or fallback text
   parentPath?: string;
   icon?: LucideIcon;
   isLink?: boolean; // If false, breadcrumb won't be a link (default: true)
 }
+
+/**
+ * Translation function type - compatible with both server and client translations
+ * Uses the return type of next-intl's getTranslations for proper type safety
+ */
+export type TranslationFunction = Awaited<
+  ReturnType<typeof getTranslations>
+>;
 
 /**
  * Centralized route configuration for the application.
@@ -19,37 +28,37 @@ const ROUTES: Record<string, RouteConfig> = {
   // Home
   home: {
     path: "/",
-    label: "Home",
+    label: "navigation.home",
     icon: Home,
   },
 
   // Exhibition routes
   exhibition: {
     path: "/exhibition",
-    label: "Exhibits",
+    label: "navigation.exhibits",
     isLink: false, // Root exhibit page is not a link in breadcrumbs
   },
   exhibitionPermanent: {
     path: "/exhibition/permanent",
-    label: "Permanent Collection",
+    label: "navigation.permanentCollection",
     parentPath: "/exhibition",
     // Note: This is a virtual route for breadcrumbs only - links to /exhibition
   },
   exhibitionGallery: {
     path: "/exhibition/gallery",
-    label: "Grid",
+    label: "navigation.grid",
     parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.gallery.icon,
   },
   exhibitionConstellation: {
     path: "/exhibition/constellation",
-    label: "Constellation",
+    label: "navigation.constellation",
     parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.constellation.icon,
   },
   exhibitionGlobal: {
     path: "/exhibition/global",
-    label: "Map",
+    label: "navigation.map",
     parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.global.icon,
   },
@@ -57,101 +66,144 @@ const ROUTES: Record<string, RouteConfig> = {
   // Prompt routes
   prompt: {
     path: "/prompt",
-    label: "Prompts",
+    label: "navigation.prompts",
     isLink: false, // Root prompt page is not a link in breadcrumbs
   },
   promptPlay: {
     path: "/prompt/play",
-    label: "Play",
+    label: "navigation.play",
     parentPath: "/prompt",
   },
   promptHistory: {
     path: "/prompt/history",
-    label: "History",
+    label: "navigation.history",
     parentPath: "/prompt",
   },
   promptThisWeek: {
     path: "/prompt/this-week",
-    label: "This Week",
+    label: "navigation.thisWeek",
     parentPath: "/prompt",
   },
 
   // Admin routes
   admin: {
     path: "/admin",
-    label: "Admin",
+    label: "navigation.admin",
     isLink: false, // Root admin page is not a link in breadcrumbs
     icon: Lock,
   },
   adminPrompts: {
     path: "/admin/prompts",
-    label: "Prompts",
+    label: "navigation.prompts",
     parentPath: "/admin",
   },
   adminUsers: {
     path: "/admin/users",
-    label: "Users",
+    label: "navigation.users",
     parentPath: "/admin",
   },
   adminExhibits: {
     path: "/admin/exhibits",
-    label: "Exhibits",
+    label: "navigation.exhibits",
     parentPath: "/admin",
   },
   adminExhibitsNew: {
     path: "/admin/exhibits/new",
-    label: "New",
+    label: "navigation.new",
     parentPath: "/admin/exhibits",
   },
 
   // Profile routes
   profile: {
     path: "/profile",
-    label: "Profile",
+    label: "navigation.profile",
     isLink: false,
     icon: User,
   },
   profileEdit: {
     path: "/profile/edit",
-    label: "Edit",
+    label: "navigation.edit",
     parentPath: "/profile",
   },
 
   // Portfolio routes
   portfolio: {
     path: "/portfolio",
-    label: "Portfolio",
+    label: "navigation.portfolio",
     icon: Briefcase,
     isLink: false,
   },
   portfolioEdit: {
     path: "/portfolio/edit",
-    label: "Edit",
+    label: "navigation.edit",
     parentPath: "/portfolio",
   },
 
   // Other routes
   creators: {
     path: "/creators",
-    label: "Creators",
+    label: "navigation.creators",
     icon: Users,
   },
   favorites: {
     path: "/favorites",
-    label: "Favorites",
+    label: "navigation.favorites",
     icon: Heart,
   },
   about: {
     path: "/about",
-    label: "About",
+    label: "navigation.about",
     isLink: false,
   },
   logout: {
     path: "/logout",
-    label: "Logout",
+    label: "navigation.logout",
     icon: LogOut,
   },
 };
+
+/**
+ * Translate a route label using a translation function.
+ * If the label is a translation key (contains a dot), it will be translated.
+ * Otherwise, it returns the label as-is (fallback).
+ *
+ * Note: The translation function should be scoped to the namespace (e.g., getTranslations("navigation"))
+ * and the label should be the full key (e.g., "navigation.home"). This function will extract
+ * the key part after the namespace.
+ */
+function translateLabel(label: string, t?: TranslationFunction): string {
+  if (!t) return label;
+
+  // Check if label is a translation key (contains a dot)
+  if (label.includes(".")) {
+    try {
+      // Extract the key part after the namespace (e.g., "home" from "navigation.home")
+      const key = label.split(".").slice(1).join(".");
+      return t(key);
+    } catch {
+      // If translation fails, return the key as fallback
+      return label;
+    }
+  }
+
+  // If not a translation key, return as-is
+  return label;
+}
+
+/**
+ * Translate a route configuration using a translation function.
+ */
+function translateRoute(
+  route: RouteConfig,
+  t?: TranslationFunction,
+): RouteConfig {
+  if (!t) return route;
+
+  return {
+    ...route,
+    label: translateLabel(route.label, t),
+  };
+}
 
 /**
  * Get route configuration by key
@@ -163,8 +215,19 @@ export function getRoute(key: keyof typeof ROUTES): RouteConfig {
 /**
  * Get route configuration by path
  */
-export function getRouteByPath(path: string): RouteConfig | undefined {
+function getRouteByPath(path: string): RouteConfig | undefined {
   return Object.values(ROUTES).find((route) => route.path === path);
+}
+
+/**
+ * Get translated route configuration by path
+ */
+export function getTranslatedRouteByPath(
+  path: string,
+  t?: TranslationFunction,
+): RouteConfig | undefined {
+  const route = getRouteByPath(path);
+  return route ? translateRoute(route, t) : undefined;
 }
 
 /**
@@ -174,6 +237,7 @@ export function getRouteByPath(path: string): RouteConfig | undefined {
  *
  * @param parentPath - The parent path to build breadcrumbs from (e.g., "/profile")
  * @param additionalSegments - Additional segments to append (e.g., dynamic user name)
+ * @param t - Optional translation function
  * @returns Array of breadcrumb segments
  */
 export function buildBreadcrumbFromParent(
@@ -183,6 +247,7 @@ export function buildBreadcrumbFromParent(
     href?: string;
     icon?: LucideIcon;
   }> = [],
+  t?: TranslationFunction,
 ): Array<{ label: string; href?: string; icon?: LucideIcon }> {
   const segments: Array<{ label: string; href?: string; icon?: LucideIcon }> =
     [];
@@ -208,7 +273,7 @@ export function buildBreadcrumbFromParent(
           ? "/exhibition"
           : currentRoute.path;
       segments.unshift({
-        label: currentRoute.label,
+        label: translateLabel(currentRoute.label, t),
         href, // Always a link when used as parent
         icon: currentRoute.icon,
       });
@@ -239,9 +304,14 @@ export function buildBreadcrumbFromParent(
 /**
  * Get breadcrumb segments for a given pathname.
  * Returns null if no breadcrumbs should be shown.
+ *
+ * @param pathname - The pathname to build breadcrumbs for
+ * @param t - Optional translation function
+ * @returns Array of breadcrumb segments or null
  */
 export function getBreadcrumbSegments(
   pathname: string,
+  t?: TranslationFunction,
 ): Array<{ label: string; href?: string; icon?: LucideIcon }> | null {
   // Homepage - no breadcrumbs
   if (pathname === "/") return null;
@@ -274,7 +344,7 @@ export function getBreadcrumbSegments(
             : currentRoute.path
           : undefined;
       segments.unshift({
-        label: currentRoute.label,
+        label: translateLabel(currentRoute.label, t),
         href,
         icon: currentRoute.icon,
       });
@@ -304,14 +374,25 @@ export function getBreadcrumbSegments(
     const parts = pathname.split("/").filter(Boolean);
     if (parts.length >= 2 && parts[0] === "exhibition") {
       return [
-        { label: "Exhibit", href: "/exhibition" },
+        {
+          label: t ? translateLabel("navigation.exhibit", t) : "Exhibit",
+          href: "/exhibition",
+        },
         { label: parts[1] }, // Will be replaced by actual exhibit title in specific breadcrumb files
       ];
     }
   }
 
   if (pathname.startsWith("/about/")) {
-    return [{ label: "About", href: "/about" }, { label: "Details" }];
+    return [
+      {
+        label: t ? translateLabel("navigation.about", t) : "About",
+        href: "/about",
+      },
+      {
+        label: t ? translateLabel("navigation.details", t) : "Details",
+      },
+    ];
   }
 
   // Default fallback - try to generate from path segments
@@ -323,8 +404,9 @@ export function getBreadcrumbSegments(
       const route = getRouteByPath(path);
 
       // Capitalize first letter if no route found
-      const label =
-        route?.label || segment.charAt(0).toUpperCase() + segment.slice(1);
+      const label = route?.label
+        ? translateLabel(route.label, t)
+        : segment.charAt(0).toUpperCase() + segment.slice(1);
       const href = isLast
         ? undefined
         : route?.isLink !== false

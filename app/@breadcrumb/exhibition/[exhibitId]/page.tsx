@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getExhibitById } from "@/lib/exhibits";
 import { Breadcrumb } from "@/components/breadcrumb";
 
@@ -11,12 +12,13 @@ export default async function ExhibitBreadcrumb({
   params,
 }: ExhibitBreadcrumbProps) {
   const { exhibitId } = await params;
+  const t = await getTranslations("navigation");
   const exhibit = await getExhibitById(exhibitId);
 
   return (
     <Breadcrumb
       segments={[
-        { label: "Exhibit", href: "/exhibition" },
+        { label: t("exhibit"), href: "/exhibition" },
         { label: exhibit?.title || "Unknown" },
       ]}
     />

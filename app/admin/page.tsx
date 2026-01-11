@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { PageLayout } from "@/components/page-layout";
 import {
@@ -25,28 +26,27 @@ export default async function AdminPage() {
     redirect("/");
   }
 
+  const t = await getTranslations("admin.dashboard");
+
   const adminCards = [
     {
       id: "prompts",
-      title: "Manage Prompts",
-      description:
-        "Create and manage weekly creative prompts. Set three-word prompts with date ranges and track submissions.",
+      title: t("managePrompts"),
+      description: t("managePromptsDescription"),
       href: "/admin/prompts",
       icon: Sparkles,
     },
     {
       id: "users",
-      title: "Manage Users",
-      description:
-        "View and manage user accounts. Monitor user activity and handle account administration tasks.",
+      title: t("manageUsers"),
+      description: t("manageUsersDescription"),
       href: "/admin/users",
       icon: Users,
     },
     {
       id: "exhibits",
-      title: "Manage Exhibits",
-      description:
-        "Create and curate exhibits. Organize submissions into themed collections and manage exhibit content.",
+      title: t("manageExhibits"),
+      description: t("manageExhibitsDescription"),
       href: "/admin/exhibits",
       icon: LayoutGrid,
     },
@@ -55,10 +55,8 @@ export default async function AdminPage() {
   return (
     <PageLayout>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-        <p className="mt-2 text-muted-foreground">
-          Manage prompts, users, and exhibits for the Create Spot community.
-        </p>
+        <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
+        <p className="mt-2 text-muted-foreground">{t("description")}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -83,7 +81,7 @@ export default async function AdminPage() {
               <CardContent>
                 <Button asChild className="w-full" variant="default">
                   <Link href={card.href}>
-                    Go to {card.title}
+                    {t("goTo", { title: card.title })}
                     <span className="ml-2" aria-hidden="true">
                       →
                     </span>

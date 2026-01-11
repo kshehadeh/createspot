@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
@@ -17,6 +18,8 @@ export default async function AdminUsersPage() {
     redirect("/");
   }
 
+  const t = await getTranslations("admin.users");
+
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -34,7 +37,7 @@ export default async function AdminUsersPage() {
       <section>
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-foreground">
-            All Users ({users.length})
+            {t("title", { count: users.length })}
           </h2>
         </div>
         <UsersList users={users} currentUserId={session.user.id} />

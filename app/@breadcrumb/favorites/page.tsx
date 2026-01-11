@@ -1,14 +1,16 @@
+import { getTranslations } from "next-intl/server";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { getRouteByPath } from "@/lib/routes";
+import { getTranslatedRouteByPath } from "@/lib/routes";
 
 export default async function FavoritesBreadcrumb() {
-  const favoritesRoute = getRouteByPath("/favorites");
+  const t = await getTranslations("navigation");
+  const favoritesRoute = getTranslatedRouteByPath("/favorites", t);
 
   return (
     <Breadcrumb
       segments={[
         {
-          label: favoritesRoute?.label || "Favorites",
+          label: favoritesRoute?.label || t("favorites"),
           icon: favoritesRoute?.icon,
         },
       ]}

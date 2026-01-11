@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
@@ -30,6 +31,8 @@ export default async function ExhibitContentPage({
   if (!exhibit) {
     redirect("/admin/exhibits");
   }
+
+  const t = await getTranslations("admin.exhibits");
 
   const exhibitSubmissions = await prisma.exhibitSubmission.findMany({
     where: { exhibitId },
@@ -64,10 +67,10 @@ export default async function ExhibitContentPage({
         <div className="flex items-start justify-between gap-4 mb-2">
           <div className="flex-1">
             <h1 className="text-2xl font-semibold text-foreground">
-              Manage Content: {exhibit.title}
+              {t("manageContentTitle", { title: exhibit.title })}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Add, remove, and reorder submissions in this exhibit
+              {t("manageContentDescription")}
             </p>
           </div>
           <Link href={`/admin/exhibits/${exhibitId}/edit`}>
@@ -85,7 +88,7 @@ export default async function ExhibitContentPage({
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
-              Back to Edit Exhibit
+              {t("backToEdit")}
             </Button>
           </Link>
         </div>

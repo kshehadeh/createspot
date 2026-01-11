@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import type { Prompt } from "@/app/generated/prisma/client";
 import { PromptForm } from "./prompt-form";
 import { PromptSidebar } from "./prompt-sidebar";
@@ -12,6 +13,7 @@ interface AdminPromptsProps {
 }
 
 export function AdminPrompts({ prompts }: AdminPromptsProps) {
+  const t = useTranslations("admin.prompts");
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
   const [editingPromptId, setEditingPromptId] = useState<string | null>(null);
   const [showHighlight, setShowHighlight] = useState(false);
@@ -78,7 +80,7 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
           } ${showHighlight ? "animate-glow-pulse" : ""}`}
         >
           <h2 className="mb-6 text-2xl font-semibold text-foreground">
-            Manage Prompts
+            {t("title")}
           </h2>
           <PromptForm
             prompts={prompts}
@@ -93,7 +95,7 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
             {/* Desktop Sidebar */}
             <aside className="hidden w-72 shrink-0 md:block">
               <h2 className="mb-4 text-lg font-semibold text-foreground">
-                Recent & Upcoming
+                {t("recentUpcoming")}
               </h2>
               <PromptSidebar
                 prompts={filteredPrompts}
@@ -115,17 +117,16 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
                     <>
                       <div className="flex-1">
                         <h3 className="text-sm font-semibold text-foreground">
-                          Recent & Upcoming
+                          {t("recentUpcoming")}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {filteredPrompts.length} prompt
-                          {filteredPrompts.length !== 1 ? "s" : ""}
+                          {t("promptCount", { count: filteredPrompts.length })}
                         </p>
                       </div>
                       <button
                         onClick={() => setIsMobileSidebarOpen(true)}
                         className="p-2 text-muted-foreground"
-                        aria-label="Expand sidebar"
+                        aria-label={t("expandSidebar")}
                       >
                         <svg
                           className="h-5 w-5"
@@ -145,12 +146,12 @@ export function AdminPrompts({ prompts }: AdminPromptsProps) {
                   ) : (
                     <>
                       <h2 className="text-lg font-semibold text-foreground">
-                        Recent & Upcoming
+                        {t("recentUpcoming")}
                       </h2>
                       <button
                         onClick={() => setIsMobileSidebarOpen(false)}
                         className="rounded-full p-2 text-muted-foreground hover:bg-accent"
-                        aria-label="Close sidebar"
+                        aria-label={t("closeSidebar")}
                       >
                         <svg
                           className="h-5 w-5"

@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   DndContext,
@@ -265,6 +266,8 @@ function SortablePortfolioItem({
   featuredSubmissionId,
   onSetFeatured,
 }: SortablePortfolioItemProps) {
+  const t = useTranslations("portfolio");
+  const tProfile = useTranslations("profile");
   const {
     attributes,
     listeners,
@@ -301,7 +304,7 @@ function SortablePortfolioItem({
         {item.imageUrl ? (
           <Image
             src={item.imageUrl}
-            alt={item.title || "Portfolio item"}
+            alt={item.title || t("portfolioItemAlt")}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -340,11 +343,11 @@ function SortablePortfolioItem({
         {/* Overlay information in lower left */}
         <div className="absolute bottom-0 left-0 max-w-[85%] bg-black/70 p-2.5 pr-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
-            {item.title || "Untitled"}
+            {item.title || t("untitled")}
           </h3>
           {mode === "exhibit" && item.user && (
             <p className="truncate text-xs text-white/80 mt-0.5">
-              by {item.user.name || "Anonymous"}
+              {t("by")} {item.user.name || tProfile("anonymous")}
             </p>
           )}
         </div>
@@ -402,11 +405,11 @@ function SortablePortfolioItem({
                   onClick={handleEdit}
                 >
                   <Pencil className="h-4 w-4" />
-                  <span className="sr-only">Edit</span>
+                  <span className="sr-only">{t("edit")}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Edit</p>
+                <p>{t("edit")}</p>
               </TooltipContent>
             </Tooltip>
           )}
@@ -429,14 +432,14 @@ function SortablePortfolioItem({
                   <Star
                     className={`h-4 w-4 ${featuredSubmissionId === item.id ? "fill-current" : ""}`}
                   />
-                  <span className="sr-only">Set as Featured</span>
+                  <span className="sr-only">{t("setAsFeatured")}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>
                   {featuredSubmissionId === item.id
-                    ? "Remove from Featured"
-                    : "Set as Featured"}
+                    ? t("removeFromFeatured")
+                    : t("setAsFeatured")}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -451,12 +454,12 @@ function SortablePortfolioItem({
               >
                 <Trash2 className="h-4 w-4" />
                 <span className="sr-only">
-                  {mode === "exhibit" ? "Remove" : "Delete"}
+                  {mode === "exhibit" ? t("remove") : t("delete")}
                 </span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{mode === "exhibit" ? "Remove" : "Delete"}</p>
+              <p>{mode === "exhibit" ? t("remove") : t("delete")}</p>
             </TooltipContent>
           </Tooltip>
         </CardContent>
@@ -503,6 +506,7 @@ function PortfolioGridContent({
   onSetFeatured?: (item: PortfolioItem) => void;
 }) {
   const router = useRouter();
+  const t = useTranslations("portfolio");
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
   const [removingItem, setRemovingItem] = useState<PortfolioItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -650,7 +654,7 @@ function PortfolioGridContent({
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
-                          alt={item.title || "Portfolio item"}
+                          alt={item.title || t("portfolioItemAlt")}
                           fill
                           className="object-cover transition-transform duration-300 group-hover:scale-105"
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -670,7 +674,7 @@ function PortfolioGridContent({
                       {/* Overlay information in lower left */}
                       <div className="absolute bottom-0 left-0 max-w-[85%] bg-black/70 p-2.5 pr-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                         <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
-                          {item.title || "Untitled"}
+                          {item.title || t("untitled")}
                         </h3>
                       </div>
 
@@ -718,7 +722,7 @@ function PortfolioGridContent({
               )}
               {isFeatured && (
                 <p className="mt-2 text-center text-xs font-medium text-muted-foreground">
-                  Featured
+                  {t("featured")}
                 </p>
               )}
             </motion.div>
@@ -753,14 +757,14 @@ function PortfolioGridContent({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            Saving order...
+            {t("savingOrder")}
           </div>
         )}
 
         {/* Drag hint when in edit mode */}
         {allowEdit && items.length > 1 && (
           <p className="mb-4 text-xs text-muted-foreground">
-            Drag items to reorder your portfolio
+            {t("dragToReorder")}
           </p>
         )}
 
@@ -790,16 +794,14 @@ function PortfolioGridContent({
             className="rounded-lg border border-dashed border-border py-12 text-center"
           >
             <p className="text-muted-foreground">
-              {isOwnProfile
-                ? "No portfolio items yet. Add your creative work to showcase it here."
-                : "No portfolio items to display."}
+              {isOwnProfile ? t("emptyOwnProfile") : t("emptyOtherProfile")}
             </p>
             {isOwnProfile && (
               <Link
                 href="/portfolio/edit"
                 className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
-                Add Portfolio Item
+                {t("addPortfolioItem")}
               </Link>
             )}
           </motion.div>
@@ -809,9 +811,11 @@ function PortfolioGridContent({
         {deletingItem && (
           <ConfirmModal
             isOpen={true}
-            title="Delete Portfolio Item"
-            message={`Are you sure you want to delete "${deletingItem.title || "this item"}" from your portfolio? This action cannot be undone.`}
-            confirmLabel="Delete"
+            title={t("deleteTitle")}
+            message={t("deleteMessage", {
+              title: deletingItem.title || "this item",
+            })}
+            confirmLabel={t("delete")}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setDeletingItem(null)}
             isLoading={isDeleting}
@@ -822,9 +826,11 @@ function PortfolioGridContent({
         {removingItem && (
           <ConfirmModal
             isOpen={true}
-            title="Remove from Exhibit"
-            message={`Are you sure you want to remove "${removingItem.title || "this item"}" from this exhibit? The submission will remain in the creator's portfolio.`}
-            confirmLabel="Remove"
+            title={t("removeFromExhibitTitle")}
+            message={t("removeFromExhibitMessage", {
+              title: removingItem.title || "this item",
+            })}
+            confirmLabel={t("remove")}
             onConfirm={handleRemoveConfirm}
             onCancel={() => setRemovingItem(null)}
             isLoading={isRemoving}

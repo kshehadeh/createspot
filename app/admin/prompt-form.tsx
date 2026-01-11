@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { Prompt } from "@/app/generated/prisma/client";
 import { formatDateRangeUTC } from "@/lib/date-utils";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -123,6 +124,8 @@ export function PromptForm({
   onModeChange,
 }: PromptFormProps) {
   const router = useRouter();
+  const t = useTranslations("admin.prompts");
+  const tCommon = useTranslations("common");
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -231,9 +234,12 @@ export function PromptForm({
         (Date.now() - lastUsed.getTime()) / (1000 * 60 * 60 * 24 * 30),
       );
       if (monthsAgo < 1) {
-        return `"${word}" was used less than a month ago`;
+        return t("wordUsedRecently", { word });
       }
-      return `"${word}" was used ${monthsAgo} month${monthsAgo === 1 ? "" : "s"} ago`;
+      return t("wordUsedMonthsAgo", {
+        word,
+        months: monthsAgo,
+      });
     }
     return null;
   }
@@ -244,15 +250,15 @@ export function PromptForm({
 
   const word1DictWarning =
     word1Invalid && mode === "create"
-      ? `"${word1}" may not be a valid dictionary word`
+      ? t("wordInvalid", { word: word1 })
       : null;
   const word2DictWarning =
     word2Invalid && mode === "create"
-      ? `"${word2}" may not be a valid dictionary word`
+      ? t("wordInvalid", { word: word2 })
       : null;
   const word3DictWarning =
     word3Invalid && mode === "create"
-      ? `"${word3}" may not be a valid dictionary word`
+      ? t("wordInvalid", { word: word3 })
       : null;
 
   const word1Warning = word1RecentWarning || word1DictWarning;
@@ -355,7 +361,7 @@ export function PromptForm({
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to delete prompt");
+        throw new Error(data.error || t("deleteError"));
       }
 
       setShowDeleteConfirm(false);
@@ -367,7 +373,7 @@ export function PromptForm({
       onModeChange?.("create");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : t("error"));
     } finally {
       setIsDeleting(false);
     }
@@ -413,7 +419,7 @@ export function PromptForm({
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to save prompt");
+        throw new Error(data.error || t("saveError"));
       }
 
       router.refresh();
@@ -424,7 +430,7 @@ export function PromptForm({
         setSelectedWeek("");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : t("error"));
     } finally {
       setIsLoading(false);
     }
@@ -438,7 +444,7 @@ export function PromptForm({
           onClick={() => handleModeChange("create")}
           variant={mode === "create" ? "default" : "outline"}
         >
-          Create New Prompt
+          {t("createNew")}
         </Button>
         <Button
           type="button"
@@ -446,16 +452,16 @@ export function PromptForm({
           disabled={editablePrompts.length === 0}
           variant={mode === "edit" ? "default" : "outline"}
         >
-          Edit Existing Prompt
+          {t("editExisting")}
         </Button>
       </div>
 
       {mode === "edit" && editablePrompts.length > 0 && (
         <div>
-          <Label htmlFor="promptSelect">Select Prompt to Edit</Label>
+          <Label htmlFor="promptSelect">{t("selectPrompt")}</Label>
           <Select value={selectedPromptId} onValueChange={handlePromptSelect}>
             <SelectTrigger id="promptSelect" className="w-full">
-              <SelectValue placeholder="Select a prompt..." />
+              <SelectValue placeholder={t("selectPromptPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {editablePrompts.map((prompt) => (
@@ -471,14 +477,14 @@ export function PromptForm({
             </SelectContent>
           </Select>
           <p className="mt-1 text-xs text-muted-foreground">
-            Only prompts without submissions can be edited
+            {t("onlyEditableNote")}
           </p>
         </div>
       )}
 
       {mode === "edit" && editablePrompts.length === 0 && (
         <div className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
-          All existing prompts have submissions and cannot be edited.
+          {t("allHaveSubmissions")}
         </div>
       )}
 
@@ -491,13 +497,13 @@ export function PromptForm({
 
         {hasSubmissions && mode === "edit" && (
           <div className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
-            This prompt has submissions and cannot be modified.
+            {t("hasSubmissionsWarning")}
           </div>
         )}
 
         {mode === "create" ? (
           <div>
-            <Label htmlFor="weekSelect">Week (Monday - Sunday)</Label>
+            <Label htmlFor="weekSelect">{t("week")}</Label>
             <Select
               value={selectedWeek}
               onValueChange={setSelectedWeek}
@@ -505,7 +511,7 @@ export function PromptForm({
               disabled={availableWeeks.length === 0}
             >
               <SelectTrigger id="weekSelect" className="w-full">
-                <SelectValue placeholder="Select a week..." />
+                <SelectValue placeholder={t("selectWeek")} />
               </SelectTrigger>
               <SelectContent>
                 {availableWeeks.map((week) => (
@@ -523,7 +529,7 @@ export function PromptForm({
           </div>
         ) : selectedPrompt ? (
           <div>
-            <Label>Week</Label>
+            <Label>{t("week")}</Label>
             <p className="rounded-lg border border-border bg-muted px-4 py-2 text-muted-foreground">
               {formatDateRangeUTC(
                 new Date(selectedPrompt.weekStart),
@@ -535,7 +541,7 @@ export function PromptForm({
 
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <Label htmlFor="word1">Word 1</Label>
+            <Label htmlFor="word1">{t("word1")}</Label>
             <div className="relative">
               <Input
                 type="text"
@@ -558,7 +564,7 @@ export function PromptForm({
                   onClick={() => fillRandomWord(1, setWord1)}
                   disabled={loadingRandomWord.has(1)}
                   className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2"
-                  title="Fill with random word"
+                  title={t("randomWord")}
                 >
                   {loadingRandomWord.has(1) ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -570,7 +576,9 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word1Checking ? (
-                <span className="text-muted-foreground">Checking...</span>
+                <span className="text-muted-foreground">
+                  {t("checkingWord")}
+                </span>
               ) : word1Warning ? (
                 <span className="text-amber-600 dark:text-amber-400">
                   {word1Warning}
@@ -579,7 +587,7 @@ export function PromptForm({
             </p>
           </div>
           <div>
-            <Label htmlFor="word2">Word 2</Label>
+            <Label htmlFor="word2">{t("word2")}</Label>
             <div className="relative">
               <Input
                 type="text"
@@ -602,7 +610,7 @@ export function PromptForm({
                   onClick={() => fillRandomWord(2, setWord2)}
                   disabled={loadingRandomWord.has(2)}
                   className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2"
-                  title="Fill with random word"
+                  title={t("randomWord")}
                 >
                   {loadingRandomWord.has(2) ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -614,7 +622,9 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word2Checking ? (
-                <span className="text-muted-foreground">Checking...</span>
+                <span className="text-muted-foreground">
+                  {t("checkingWord")}
+                </span>
               ) : word2Warning ? (
                 <span className="text-amber-600 dark:text-amber-400">
                   {word2Warning}
@@ -623,7 +633,7 @@ export function PromptForm({
             </p>
           </div>
           <div>
-            <Label htmlFor="word3">Word 3</Label>
+            <Label htmlFor="word3">{t("word3")}</Label>
             <div className="relative">
               <Input
                 type="text"
@@ -646,7 +656,7 @@ export function PromptForm({
                   onClick={() => fillRandomWord(3, setWord3)}
                   disabled={loadingRandomWord.has(3)}
                   className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2"
-                  title="Fill with random word"
+                  title={t("randomWord")}
                 >
                   {loadingRandomWord.has(3) ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -658,7 +668,9 @@ export function PromptForm({
             </div>
             <p className="mt-1 h-4 text-xs">
               {word3Checking ? (
-                <span className="text-muted-foreground">Checking...</span>
+                <span className="text-muted-foreground">
+                  {t("checkingWord")}
+                </span>
               ) : word3Warning ? (
                 <span className="text-amber-600 dark:text-amber-400">
                   {word3Warning}
@@ -679,10 +691,10 @@ export function PromptForm({
             }
           >
             {isLoading
-              ? "Saving..."
+              ? tCommon("saving")
               : mode === "edit"
-                ? "Update Prompt"
-                : "Create Prompt"}
+                ? t("save")
+                : t("save")}
           </Button>
           {mode === "edit" && selectedPromptId && !hasSubmissions && (
             <Button
@@ -691,7 +703,7 @@ export function PromptForm({
               disabled={isLoading || isDeleting}
               variant="destructive"
             >
-              {isDeleting ? "Deleting..." : "Delete Prompt"}
+              {isDeleting ? tCommon("loading") : t("delete")}
             </Button>
           )}
         </div>
@@ -699,14 +711,18 @@ export function PromptForm({
 
       <ConfirmModal
         isOpen={showDeleteConfirm}
-        title="Delete Prompt"
+        title={t("deleteTitle")}
         message={
           selectedPrompt
-            ? `Are you sure you want to delete the prompt "${selectedPrompt.word1} / ${selectedPrompt.word2} / ${selectedPrompt.word3}"? This action cannot be undone.`
-            : "Are you sure you want to delete this prompt?"
+            ? t("deleteMessage", {
+                word1: selectedPrompt.word1,
+                word2: selectedPrompt.word2,
+                word3: selectedPrompt.word3,
+              })
+            : t("deleteMessage", { word1: "", word2: "", word3: "" })
         }
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        confirmLabel={t("delete")}
+        cancelLabel={tCommon("cancel")}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         isLoading={isDeleting}

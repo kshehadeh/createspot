@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
@@ -14,6 +15,8 @@ export default async function NewExhibitPage() {
   if (!session?.user?.isAdmin) {
     redirect("/");
   }
+
+  const t = await getTranslations("admin.exhibits");
 
   // Get all users for curator selector
   const users = await prisma.user.findMany({
@@ -55,10 +58,10 @@ export default async function NewExhibitPage() {
         <div className="flex items-start justify-between gap-4 mb-2">
           <div className="flex-1">
             <h1 className="text-2xl font-semibold text-foreground">
-              Create New Exhibit
+              {t("createNew")}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Create a new temporary exhibit
+              {t("createDescription")}
             </p>
           </div>
           <Link href="/admin/exhibits">
@@ -76,7 +79,7 @@ export default async function NewExhibitPage() {
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
-              Back to Exhibits
+              {t("backToExhibits")}
             </Button>
           </Link>
         </div>

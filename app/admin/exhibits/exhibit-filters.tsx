@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Popover,
@@ -39,6 +40,8 @@ export function ExhibitFilters({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const t = useTranslations("admin.exhibits");
+  const tProfile = useTranslations("profile");
   const [searchValue, setSearchValue] = useState(initialQuery);
   const [isPending, startTransition] = useTransition();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -125,7 +128,7 @@ export function ExhibitFilters({
                 value={searchValue}
                 onChange={(event) => setSearchValue(event.target.value)}
                 className="h-10 w-full rounded-xl pl-10 pr-10 shadow-inner"
-                placeholder="Search by title"
+                placeholder={t("searchPlaceholder")}
               />
               {isPending && (
                 <div className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2">
@@ -135,7 +138,7 @@ export function ExhibitFilters({
             </div>
             <div className="flex gap-2">
               <Button type="submit" className="rounded-xl">
-                Search
+                {t("search")}
               </Button>
               <Popover open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
                 <PopoverTrigger asChild>
@@ -161,7 +164,7 @@ export function ExhibitFilters({
                         d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
                       />
                     </svg>
-                    Filters
+                    {t("filters")}
                     {activeFiltersCount > 0 && (
                       <Badge className="ml-1 bg-[hsl(var(--filter-active))] text-[hsl(var(--filter-active-foreground))]">
                         {activeFiltersCount}
@@ -173,7 +176,7 @@ export function ExhibitFilters({
                   <div className="space-y-6">
                     <div className="space-y-2">
                       <div className="text-sm font-semibold text-popover-foreground">
-                        Curator
+                        {t("curator")}
                       </div>
                       <Select
                         value={initialCurator || "__all__"}
@@ -184,13 +187,15 @@ export function ExhibitFilters({
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="All Curators" />
+                          <SelectValue placeholder={t("allCurators")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="__all__">All Curators</SelectItem>
+                          <SelectItem value="__all__">
+                            {t("allCurators")}
+                          </SelectItem>
                           {curators.map((curator) => (
                             <SelectItem key={curator.id} value={curator.id}>
-                              {curator.name || "Anonymous"}
+                              {curator.name || tProfile("anonymous")}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -199,7 +204,7 @@ export function ExhibitFilters({
 
                     <div className="space-y-2">
                       <div className="text-sm font-semibold text-popover-foreground">
-                        Status
+                        {t("status")}
                       </div>
                       <Select
                         value={initialStatus || "__all__"}
@@ -210,13 +215,19 @@ export function ExhibitFilters({
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="All Statuses" />
+                          <SelectValue placeholder={t("allStatuses")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="__all__">All Statuses</SelectItem>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="inactive">Inactive</SelectItem>
-                          <SelectItem value="upcoming">Upcoming</SelectItem>
+                          <SelectItem value="__all__">
+                            {t("allStatuses")}
+                          </SelectItem>
+                          <SelectItem value="active">{t("active")}</SelectItem>
+                          <SelectItem value="inactive">
+                            {t("inactive")}
+                          </SelectItem>
+                          <SelectItem value="upcoming">
+                            {t("upcoming")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -232,7 +243,7 @@ export function ExhibitFilters({
                           }}
                           className="w-full rounded-lg"
                         >
-                          Clear All Filters
+                          {t("clearAll")}
                         </Button>
                       </div>
                     )}
@@ -246,7 +257,7 @@ export function ExhibitFilters({
                   onClick={handleClear}
                   className="rounded-xl"
                 >
-                  Clear
+                  {t("clear")}
                 </Button>
               )}
             </div>

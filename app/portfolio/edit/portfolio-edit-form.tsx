@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
@@ -62,6 +63,8 @@ export function PortfolioEditForm({
   featuredSubmissionId: initialFeaturedSubmissionId,
 }: PortfolioEditFormProps) {
   const router = useRouter();
+  const t = useTranslations("portfolio");
+  const tProfile = useTranslations("profile");
   const [error, setError] = useState<string | null>(null);
 
   // Portfolio state
@@ -94,7 +97,7 @@ export function PortfolioEditForm({
       setPortfolioItems((prev) => prev.filter((p) => p.id !== item.id));
       router.refresh();
     } catch {
-      setError("Failed to delete portfolio item. Please try again.");
+      setError(t("deleteError"));
     }
   };
 
@@ -127,7 +130,7 @@ export function PortfolioEditForm({
       setFeaturedSubmissionId(newFeaturedId);
       router.refresh();
     } catch {
-      setError("Failed to set featured submission. Please try again.");
+      setError(t("setFeaturedError"));
     }
   };
 
@@ -139,7 +142,7 @@ export function PortfolioEditForm({
         submission.prompt.word3,
       ][submission.wordIndex - 1];
     }
-    return submission.category || "Portfolio";
+    return submission.category || tProfile("portfolio");
   };
 
   return (
@@ -171,14 +174,14 @@ export function PortfolioEditForm({
               d="M12 4v16m8-8H4"
             />
           </svg>
-          Add New Portfolio Item
+          {t("addNewItem")}
         </Button>
 
         {/* Portfolio Items Grid */}
         {portfolioItems.length > 0 && (
           <div>
             <h3 className="mb-4 text-sm font-medium text-foreground">
-              Your Portfolio Items ({portfolioItems.length})
+              {t("yourPortfolioItems", { count: portfolioItems.length })}
             </h3>
             <PortfolioGrid
               items={portfolioItems}
@@ -198,10 +201,10 @@ export function PortfolioEditForm({
         {submissions.filter((s) => !s.isPortfolio && s.prompt).length > 0 && (
           <div>
             <h3 className="mb-4 text-sm font-medium text-foreground">
-              Add Prompt Submissions to Portfolio
+              {t("addPromptSubmissions")}
             </h3>
             <p className="mb-4 text-xs text-muted-foreground">
-              Your prompt submissions can also be added to your portfolio
+              {t("addPromptSubmissionsDescription")}
             </p>
             <div className="space-y-2">
               {submissions
@@ -252,7 +255,7 @@ export function PortfolioEditForm({
                         onClick={() => setAddingToPortfolio(submission)}
                         className="shrink-0"
                       >
-                        Add to Portfolio
+                        {t("addToPortfolio")}
                       </Button>
                     </div>
                   );
@@ -266,10 +269,7 @@ export function PortfolioEditForm({
           submissions.filter((s) => !s.isPortfolio && s.prompt).length ===
             0 && (
             <div className="rounded-lg border border-dashed border-border py-12 text-center">
-              <p className="text-muted-foreground">
-                No portfolio items yet. Click the button above to add your first
-                portfolio item.
-              </p>
+              <p className="text-muted-foreground">{t("emptyState")}</p>
             </div>
           )}
       </div>

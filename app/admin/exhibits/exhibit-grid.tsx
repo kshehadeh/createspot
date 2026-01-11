@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,8 @@ interface ExhibitGridProps {
 
 export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
   const router = useRouter();
+  const t = useTranslations("admin.exhibits");
+  const tProfile = useTranslations("profile");
   const [deletingExhibitId, setDeletingExhibitId] = useState<string | null>(
     null,
   );
@@ -73,9 +76,7 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
   if (exhibits.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border py-12 text-center">
-        <p className="text-muted-foreground">
-          No exhibits found. Create your first exhibit to get started.
-        </p>
+        <p className="text-muted-foreground">{t("noExhibits")}</p>
       </div>
     );
   }
@@ -132,11 +133,11 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
                   <div className="absolute top-2 right-2">
                     {active ? (
                       <span className="rounded-full bg-green-500/90 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                        Active
+                        {t("active")}
                       </span>
                     ) : (
                       <span className="rounded-full bg-muted/90 px-2 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-                        {exhibit.isActive ? "Upcoming" : "Inactive"}
+                        {exhibit.isActive ? t("upcoming") : t("inactive")}
                       </span>
                     )}
                   </div>
@@ -147,8 +148,10 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
                       {exhibit.title}
                     </h3>
                     <p className="mt-1 truncate text-xs text-white/80">
-                      {exhibit._count.submissions} submission
-                      {exhibit._count.submissions !== 1 ? "s" : ""}
+                      {exhibit._count.submissions}{" "}
+                      {exhibit._count.submissions !== 1
+                        ? t("submissions")
+                        : t("submission")}
                     </p>
                   </div>
                 </div>
@@ -158,7 +161,7 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
                   {exhibit.curator.image ? (
                     <Image
                       src={exhibit.curator.image}
-                      alt={exhibit.curator.name || "Curator"}
+                      alt={exhibit.curator.name || t("curator")}
                       width={20}
                       height={20}
                       className="rounded-full"
@@ -167,20 +170,20 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
                     <div className="h-5 w-5 rounded-full bg-muted" />
                   )}
                   <span className="text-xs text-muted-foreground">
-                    {exhibit.curator.name || "Anonymous"}
+                    {exhibit.curator.name || tProfile("anonymous")}
                   </span>
                 </div>
                 <div className="flex gap-2">
                   <Link href={`/exhibition/${exhibit.id}`}>
                     <Button variant="outline" size="sm" className="h-9 w-9 p-0">
                       <Eye className="h-4 w-4" />
-                      <span className="sr-only">View</span>
+                      <span className="sr-only">{t("view")}</span>
                     </Button>
                   </Link>
                   <Link href={`/admin/exhibits/${exhibit.id}/edit`}>
                     <Button variant="outline" size="sm" className="h-9 w-9 p-0">
                       <Pencil className="h-4 w-4" />
-                      <span className="sr-only">Edit</span>
+                      <span className="sr-only">{t("edit")}</span>
                     </Button>
                   </Link>
                   <Button
@@ -190,7 +193,7 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
                     onClick={() => handleDeleteClick(exhibit.id)}
                   >
                     <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
+                    <span className="sr-only">{t("delete")}</span>
                   </Button>
                 </div>
               </CardContent>
@@ -202,9 +205,9 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
       {exhibitToDelete && (
         <ConfirmModal
           isOpen={true}
-          title="Delete Exhibit"
-          message={`Are you sure you want to delete "${exhibitToDelete.title}"? This action cannot be undone and will remove all submissions from this exhibit.`}
-          confirmLabel="Delete"
+          title={t("deleteTitle")}
+          message={t("deleteMessage", { title: exhibitToDelete.title })}
+          confirmLabel={t("delete")}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setDeletingExhibitId(null)}
           isLoading={isDeleting}

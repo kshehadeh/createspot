@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
+import { PageHeader } from "@/components/page-header";
 import { ExhibitionGrid } from "@/app/exhibition/exhibition-grid";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +35,8 @@ export default async function FavoritesPage() {
     redirect("/auth/signin");
   }
 
+  const t = await getTranslations("favorites");
+
   const favorites = await getFavorites(session.user.id);
 
   // Transform favorites data to match ExhibitionSubmission interface
@@ -51,14 +55,7 @@ export default async function FavoritesPage() {
 
   return (
     <PageLayout>
-      <section className="mb-12 text-center">
-        <h1 className="mb-4 text-3xl font-bold text-foreground">
-          Your Favorites
-        </h1>
-        <p className="text-muted-foreground">
-          Submissions you&apos;ve saved for later
-        </p>
-      </section>
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       {submissions.length > 0 ? (
         <ExhibitionGrid
@@ -68,14 +65,12 @@ export default async function FavoritesPage() {
         />
       ) : (
         <div className="text-center">
-          <p className="mb-4 text-muted-foreground">
-            You haven&apos;t favorited any submissions yet.
-          </p>
+          <p className="mb-4 text-muted-foreground">{t("empty")}</p>
           <Link
             href="/exhibition"
             className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Explore Exhibits
+            {t("exploreExhibits")}
           </Link>
         </div>
       )}
