@@ -72,6 +72,7 @@ model User {
   city                 String?
   stateProvince        String?
   country              String?
+  language             String       @default("en") // ISO 639-1 code: "en", "es"
   latitude             Float?
   longitude            Float?
   featuredSubmissionId String?      @unique

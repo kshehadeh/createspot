@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { getRoute } from "@/lib/routes";
 
 export function DashboardNavigation() {
   const pathname = usePathname();
+  const t = useTranslations("navigation");
   const exhibitionRoute = getRoute("exhibition");
   const promptRoute = getRoute("prompt");
   const creatorsRoute = getRoute("creators");
@@ -32,19 +34,19 @@ export function DashboardNavigation() {
         href={exhibitionRoute.path}
         className={linkClassName(exhibitionRoute.path)}
       >
-        {exhibitionRoute.label}
+        {t("exhibits")}
       </Link>
       <Link href={promptRoute.path} className={linkClassName(promptRoute.path)}>
-        {promptRoute.label}
+        {t("prompts")}
       </Link>
       <Link
         href={creatorsRoute.path}
         className={linkClassName(creatorsRoute.path)}
       >
-        {creatorsRoute.label}
+        {t("creators")}
       </Link>
       <Link href={aboutRoute.path} className={linkClassName(aboutRoute.path)}>
-        {aboutRoute.label}
+        {t("about")}
       </Link>
     </nav>
   );

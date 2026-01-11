@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { Badge } from "@/components/ui/badge";
@@ -18,9 +19,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Country, State, City } from "country-state-city";
-import { Briefcase, ArrowRight, Trash2 } from "lucide-react";
+import { Briefcase, ArrowRight, Trash2, Globe } from "lucide-react";
 import { normalizeUrl, isValidUrl } from "@/lib/utils";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
+import { locales, localeNames, type Locale } from "@/i18n/config";
 
 interface SubmissionOption {
   id: string;
@@ -50,6 +52,7 @@ interface ProfileEditFormProps {
   initialCity: string;
   initialStateProvince: string;
   initialCountry: string;
+  initialLanguage: string;
   initialFeaturedSubmissionId: string;
   submissions: SubmissionOption[];
   portfolioItemCount: number;
@@ -66,11 +69,14 @@ export function ProfileEditForm({
   initialCity,
   initialStateProvince,
   initialCountry,
+  initialLanguage,
   initialFeaturedSubmissionId,
   submissions,
   portfolioItemCount,
 }: ProfileEditFormProps) {
   const router = useRouter();
+  const t = useTranslations("profile");
+  const tCommon = useTranslations("common");
   const [name, setName] = useState(initialName || initialGoogleName || "");
   const [bio, setBio] = useState(initialBio);
   const [bioHasFocus, setBioHasFocus] = useState(false);
@@ -82,6 +88,7 @@ export function ProfileEditForm({
   const [city, setCity] = useState(initialCity);
   const [stateProvince, setStateProvince] = useState(initialStateProvince);
   const [country, setCountry] = useState(initialCountry);
+  const [language, setLanguage] = useState(initialLanguage || "en");
   const [featuredSubmissionId, setFeaturedSubmissionId] = useState(
     initialFeaturedSubmissionId,
   );
@@ -197,7 +204,7 @@ export function ProfileEditForm({
       }
       setError(null);
 
-      const toastId = showToast ? toast.loading("Saving...") : undefined;
+      const toastId = showToast ? toast.loading(tCommon("saving")) : undefined;
 
       // Use override values if provided, otherwise use current state
       const nameValue = overrides?.name !== undefined ? overrides.name : name;
@@ -244,7 +251,7 @@ export function ProfileEditForm({
         }
 
         if (showToast && toastId) {
-          toast.success("Profile saved", { id: toastId });
+          toast.success(t("profileSaved"), { id: toastId });
         }
 
         // Update initial values ref to track new baseline (excluding bio)
@@ -264,10 +271,10 @@ export function ProfileEditForm({
         router.refresh();
       } catch {
         if (showToast && toastId) {
-          toast.error("Failed to save profile. Please try again.", {
+          toast.error(t("profileSaveFailed"), {
             id: toastId,
           });
-          setError("Failed to save profile. Please try again.");
+          setError(t("profileSaveFailed"));
         }
       } finally {
         if (showToast) {
@@ -356,7 +363,7 @@ export function ProfileEditForm({
     setSaving(true);
     setError(null);
 
-    const toastId = toast.loading("Saving bio...");
+    const toastId = toast.loading(t("savingBio"));
 
     try {
       const response = await fetch("/api/profile", {
@@ -380,15 +387,15 @@ export function ProfileEditForm({
         throw new Error("Failed to save profile");
       }
 
-      toast.success("Bio saved", { id: toastId });
+      toast.success(t("bioSaved"), { id: toastId });
 
       initialValuesRef.current.bio = bio;
       setBioOriginalValue(bio);
 
       router.refresh();
     } catch {
-      toast.error("Failed to save bio. Please try again.", { id: toastId });
-      setError("Failed to save bio. Please try again.");
+      toast.error(t("bioSaveFailed"), { id: toastId });
+      setError(t("bioSaveFailed"));
     } finally {
       setSaving(false);
     }
@@ -498,9 +505,7 @@ export function ProfileEditForm({
 
     // Validate URL
     if (!normalized || !isValidUrl(normalized)) {
-      setWebsiteError(
-        "Please enter a valid URL (e.g., example.com or https://example.com)",
-      );
+      setWebsiteError(t("websiteError"));
       return;
     }
 
@@ -573,6 +578,40 @@ export function ProfileEditForm({
     [saveProfile],
   );
 
+  const handleLanguageChange = useCallback(
+    async (newLanguage: string) => {
+      if (newLanguage === language) return;
+
+      setLanguage(newLanguage);
+      const toastId = toast.loading(tCommon("loading"));
+
+      try {
+        const response = await fetch("/api/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            language: newLanguage,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update language");
+        }
+
+        toast.success(t("languageUpdated"), { id: toastId });
+
+        // Refresh the page to apply the new locale
+        window.location.reload();
+      } catch {
+        toast.error(t("languageUpdateFailed"), {
+          id: toastId,
+        });
+        setLanguage(language); // Revert on error
+      }
+    },
+    [language],
+  );
+
   const getSubmissionLabel = (submission: SubmissionOption): string => {
     if (submission.prompt && submission.wordIndex) {
       return [
@@ -581,7 +620,7 @@ export function ProfileEditForm({
         submission.prompt.word3,
       ][submission.wordIndex - 1];
     }
-    return submission.category || "Portfolio";
+    return submission.category || t("portfolioBadge");
   };
 
   return (
@@ -604,10 +643,10 @@ export function ProfileEditForm({
             </div>
             <div>
               <h3 className="text-sm font-medium text-foreground">
-                Manage Portfolio
+                {t("managePortfolio")}
               </h3>
               <p className="text-xs text-muted-foreground">
-                Add, edit, and organize your portfolio items
+                {t("managePortfolioDescription")}
               </p>
             </div>
           </div>
@@ -624,7 +663,7 @@ export function ProfileEditForm({
             htmlFor="name"
             className="mb-2 block text-sm font-medium text-foreground"
           >
-            Name
+            {t("name")}
           </label>
           <Input
             type="text"
@@ -632,20 +671,20 @@ export function ProfileEditForm({
             value={name}
             onChange={handleNameChange}
             onBlur={handleNameBlur}
-            placeholder="Your name"
+            placeholder={t("namePlaceholder")}
           />
         </div>
 
         <div>
           <label className="mb-2 block text-sm font-medium text-foreground">
-            Bio
+            {t("bio")}
           </label>
           <RichTextEditor
             value={bio}
             onChange={handleBioChange}
             onFocus={handleBioFocus}
             onBlur={handleBioBlur}
-            placeholder="Tell us about yourself..."
+            placeholder={t("bioPlaceholder")}
           />
           {bioHasFocus && (
             <div className="mt-3 flex gap-2">
@@ -655,7 +694,7 @@ export function ProfileEditForm({
                 onClick={handleBioSave}
                 disabled={saving || bio === bioOriginalValue}
               >
-                {saving ? "Saving..." : "Save"}
+                {saving ? tCommon("saving") : tCommon("save")}
               </Button>
               <Button
                 type="button"
@@ -664,11 +703,11 @@ export function ProfileEditForm({
                 onClick={handleBioCancel}
                 disabled={saving}
               >
-                Cancel
+                {tCommon("cancel")}
               </Button>
               {bio !== bioOriginalValue && (
                 <span className="flex items-center text-xs text-muted-foreground">
-                  Unsaved changes
+                  {tCommon("unsavedChanges")}
                 </span>
               )}
             </div>
@@ -676,11 +715,38 @@ export function ProfileEditForm({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-foreground">
-            Featured Piece
+          <label
+            htmlFor="language"
+            className="mb-2 block text-sm font-medium text-foreground"
+          >
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              {t("language")}
+            </div>
           </label>
           <p className="mb-3 text-xs text-muted-foreground">
-            Select a work to feature on your profile
+            {t("languageDescription")}
+          </p>
+          <Select value={language} onValueChange={handleLanguageChange}>
+            <SelectTrigger id="language" className="w-full sm:w-[200px]">
+              <SelectValue placeholder={t("selectLanguage")} />
+            </SelectTrigger>
+            <SelectContent>
+              {locales.map((locale) => (
+                <SelectItem key={locale} value={locale}>
+                  {localeNames[locale as Locale]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-foreground">
+            {t("featuredPiece")}
+          </label>
+          <p className="mb-3 text-xs text-muted-foreground">
+            {t("featuredPieceDescription")}
           </p>
           {submissions.length > 0 ? (
             <div className="relative" ref={dropdownRef}>
@@ -696,7 +762,11 @@ export function ProfileEditForm({
                     (s) => s.id === featuredSubmissionId,
                   );
                   if (!selected) {
-                    return <span className="text-muted-foreground">None</span>;
+                    return (
+                      <span className="text-muted-foreground">
+                        {tCommon("none")}
+                      </span>
+                    );
                   }
                   const word = getSubmissionLabel(selected);
                   return (
@@ -766,7 +836,9 @@ export function ProfileEditForm({
                           : "text-popover-foreground hover:bg-accent hover:text-accent-foreground"
                       }`}
                     >
-                      <span className="text-sm font-medium">None</span>
+                      <span className="text-sm font-medium">
+                        {tCommon("none")}
+                      </span>
                     </button>
                     {submissions.map((submission) => {
                       const word = getSubmissionLabel(submission);
@@ -811,12 +883,12 @@ export function ProfileEditForm({
                                 </span>
                                 {submission.isPortfolio && (
                                   <Badge className="bg-prompt/15 text-prompt-foreground hover:bg-prompt/25">
-                                    Portfolio
+                                    {t("portfolioBadge")}
                                   </Badge>
                                 )}
                                 {isSelected && (
                                   <span className="text-xs text-muted-foreground">
-                                    (Featured)
+                                    {t("featured")}
                                   </span>
                                 )}
                               </div>
@@ -835,10 +907,7 @@ export function ProfileEditForm({
               )}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              No work yet. Create a submission or add to your portfolio to
-              feature it.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("noWorkYet")}</p>
           )}
         </div>
 
@@ -848,7 +917,7 @@ export function ProfileEditForm({
               htmlFor="instagram"
               className="mb-2 block text-sm font-medium text-foreground"
             >
-              Instagram
+              {t("instagram")}
             </label>
             <div className="flex">
               <span className="inline-flex items-center rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
@@ -860,7 +929,7 @@ export function ProfileEditForm({
                 value={instagram}
                 onChange={handleInstagramChange}
                 onBlur={handleInstagramBlur}
-                placeholder="username"
+                placeholder={t("usernamePlaceholder")}
                 className="rounded-l-none rounded-r-lg"
               />
             </div>
@@ -871,7 +940,7 @@ export function ProfileEditForm({
               htmlFor="twitter"
               className="mb-2 block text-sm font-medium text-foreground"
             >
-              X (Twitter)
+              {t("twitter")}
             </label>
             <div className="flex">
               <span className="inline-flex items-center rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
@@ -883,7 +952,7 @@ export function ProfileEditForm({
                 value={twitter}
                 onChange={handleTwitterChange}
                 onBlur={handleTwitterBlur}
-                placeholder="username"
+                placeholder={t("usernamePlaceholder")}
                 className="rounded-l-none rounded-r-lg"
               />
             </div>
@@ -894,7 +963,7 @@ export function ProfileEditForm({
               htmlFor="linkedin"
               className="mb-2 block text-sm font-medium text-foreground"
             >
-              LinkedIn
+              {t("linkedin")}
             </label>
             <div className="flex">
               <span className="inline-flex items-center rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
@@ -906,7 +975,7 @@ export function ProfileEditForm({
                 value={linkedin}
                 onChange={handleLinkedinChange}
                 onBlur={handleLinkedinBlur}
-                placeholder="username"
+                placeholder={t("usernamePlaceholder")}
                 className="rounded-l-none rounded-r-lg"
               />
             </div>
@@ -917,7 +986,7 @@ export function ProfileEditForm({
               htmlFor="website"
               className="mb-2 block text-sm font-medium text-foreground"
             >
-              Website
+              {t("website")}
             </label>
             <Input
               type="url"
@@ -925,7 +994,7 @@ export function ProfileEditForm({
               value={website}
               onChange={handleWebsiteChange}
               onBlur={handleWebsiteBlur}
-              placeholder="https://example.com"
+              placeholder={t("websitePlaceholder")}
               className={
                 websiteError ? "border-red-500 focus-visible:ring-red-500" : ""
               }
@@ -939,18 +1008,20 @@ export function ProfileEditForm({
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-foreground">Location</h3>
+          <h3 className="text-sm font-medium text-foreground">
+            {t("location")}
+          </h3>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label
                 htmlFor="country"
                 className="mb-2 block text-sm font-medium text-foreground"
               >
-                Country
+                {t("country")}
               </label>
               <Select value={country} onValueChange={handleCountryChange}>
                 <SelectTrigger id="country">
-                  <SelectValue placeholder="Select country" />
+                  <SelectValue placeholder={t("selectCountry")} />
                 </SelectTrigger>
                 <SelectContent className="!max-h-[60vh]">
                   {Country.getAllCountries().map((c) => (
@@ -968,7 +1039,7 @@ export function ProfileEditForm({
                   htmlFor="state"
                   className="mb-2 block text-sm font-medium text-foreground"
                 >
-                  State/Province
+                  {t("stateProvince")}
                 </label>
                 <Select
                   value={stateProvince}
@@ -978,9 +1049,7 @@ export function ProfileEditForm({
                   <SelectTrigger id="state">
                     <SelectValue
                       placeholder={
-                        country
-                          ? "Select state/province"
-                          : "Select country first"
+                        country ? t("selectState") : t("selectCountryFirst")
                       }
                     />
                   </SelectTrigger>
@@ -1001,7 +1070,7 @@ export function ProfileEditForm({
                   htmlFor="city"
                   className="mb-2 block text-sm font-medium text-foreground"
                 >
-                  City
+                  {t("city")}
                 </label>
                 <Select
                   value={city}
@@ -1012,10 +1081,10 @@ export function ProfileEditForm({
                     <SelectValue
                       placeholder={
                         !country
-                          ? "Select country first"
+                          ? t("selectCountryFirst")
                           : !stateProvince
-                            ? "Select state/province first"
-                            : "Select city"
+                            ? t("selectStateFirst")
+                            : t("selectCity")
                       }
                     />
                   </SelectTrigger>
@@ -1039,7 +1108,7 @@ export function ProfileEditForm({
                   htmlFor="city"
                   className="mb-2 block text-sm font-medium text-foreground"
                 >
-                  City
+                  {t("city")}
                 </label>
                 <Input
                   type="text"
@@ -1047,7 +1116,7 @@ export function ProfileEditForm({
                   value={city}
                   onChange={handleCityChange}
                   onBlur={handleCityBlur}
-                  placeholder="Enter city"
+                  placeholder={t("enterCity")}
                   disabled={
                     !country || (availableStates.length > 0 && !stateProvince)
                   }
@@ -1062,10 +1131,10 @@ export function ProfileEditForm({
           <div className="space-y-4">
             <div>
               <h3 className="text-lg font-semibold text-destructive">
-                Danger Zone
+                {t("dangerZone")}
               </h3>
               <p className="text-sm text-muted-foreground">
-                Irreversible and destructive actions
+                {t("dangerZoneDescription")}
               </p>
             </div>
             <Button
@@ -1075,7 +1144,7 @@ export function ProfileEditForm({
               className="w-full sm:w-auto"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete Account
+              {t("deleteAccount")}
             </Button>
           </div>
         </div>

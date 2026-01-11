@@ -14,6 +14,7 @@ This document provides essential information for AI agents and developers workin
 - **Styling**: Tailwind CSS 4
 - **UI Components**: shadcn/ui (Radix UI primitives)
 - **Theme**: next-themes with user-controllable dark/light mode
+- **i18n**: next-intl with profile-based language preferences
 
 ## Quick Start
 
@@ -40,6 +41,7 @@ The app will be available at http://localhost:3000
 |----------|-------------|
 | [docs/DATABASE.md](docs/DATABASE.md) | Database schema, Prisma usage, migrations, image storage |
 | [docs/FRONTEND.md](docs/FRONTEND.md) | React components, theming, UI patterns |
+| [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md) | Translation system, i18n patterns, adding new languages |
 
 ## Project Structure
 
@@ -53,7 +55,13 @@ app/                    # Next.js App Router pages and API routes
 
 components/            # Shared React components
 ├── ui/               # shadcn/ui components (button, dialog, etc.)
+i18n/                  # Internationalization configuration
+├── config.ts         # Supported locales and utilities
+└── request.ts        # next-intl server configuration
 lib/                   # Utilities (auth, prisma, helpers)
+messages/              # Translation files
+├── en.json           # English translations
+└── es.json           # Spanish translations
 prisma/                # Database schema and migrations
 public/                # Static assets
 docs/                  # Developer documentation
@@ -203,6 +211,42 @@ bunx shadcn@latest add <component-name>
 ```
 
 This will add the component to `components/ui/` and update necessary dependencies.
+
+### Internationalization (i18n)
+
+The app uses **next-intl** for translations with profile-based language preferences.
+
+#### Server Components
+
+```tsx
+import { getTranslations } from "next-intl/server";
+
+export default async function Page() {
+  const t = await getTranslations("common");
+  return <button>{t("save")}</button>;
+}
+```
+
+#### Client Components
+
+```tsx
+"use client";
+import { useTranslations } from "next-intl";
+
+export function MyButton() {
+  const t = useTranslations("common");
+  return <button>{t("save")}</button>;
+}
+```
+
+#### Variables in Translations
+
+```tsx
+// In messages/en.json: "greeting": "Hello, {name}!"
+t("greeting", { name: "Sarah" }); // "Hello, Sarah!"
+```
+
+> See [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md) for complete i18n documentation.
 
 ### API Routes
 

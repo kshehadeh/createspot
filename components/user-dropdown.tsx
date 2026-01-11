@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,7 @@ interface UserDropdownProps {
 export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations("navigation");
   const profileRoute = getRoute("profile");
   const portfolioRoute = getRoute("portfolio");
   const favoritesRoute = getRoute("favorites");
@@ -49,7 +51,7 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
           </span>
         )}
         <Avatar className="h-8 w-8">
-          <AvatarImage src={image || undefined} alt={name || "User avatar"} />
+          <AvatarImage src={image || undefined} alt={name || t("userAvatar")} />
           <AvatarFallback className="bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
             {name?.charAt(0).toUpperCase() || "?"}
           </AvatarFallback>
@@ -68,7 +70,7 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
           </span>
         )}
         <Avatar className="h-8 w-8">
-          <AvatarImage src={image || undefined} alt={name || "User avatar"} />
+          <AvatarImage src={image || undefined} alt={name || t("userAvatar")} />
           <AvatarFallback className="bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
             {name?.charAt(0).toUpperCase() || "?"}
           </AvatarFallback>
@@ -83,7 +85,7 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
               className="flex items-center gap-2"
             >
               {profileRoute.icon && <profileRoute.icon className="h-4 w-4" />}
-              {profileRoute.label}
+              {t("profile")}
             </Link>
           </DropdownMenuItem>
         )}
@@ -96,14 +98,14 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
               {portfolioRoute.icon && (
                 <portfolioRoute.icon className="h-4 w-4" />
               )}
-              {portfolioRoute.label}
+              {t("portfolio")}
             </Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>
           <Link href={favoritesRoute.path} className="flex items-center gap-2">
             {favoritesRoute.icon && <favoritesRoute.icon className="h-4 w-4" />}
-            {favoritesRoute.label}
+            {t("favorites")}
           </Link>
         </DropdownMenuItem>
         {isAdmin && (
@@ -119,7 +121,7 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
                 )}
               >
                 {adminRoute.icon && <adminRoute.icon className="h-4 w-4" />}
-                {adminRoute.label}
+                {t("adminDashboard")}
               </Link>
             </DropdownMenuItem>
           </>
@@ -127,7 +129,7 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           {logoutRoute.icon && <logoutRoute.icon className="h-4 w-4" />}
-          {logoutRoute.label}
+          {t("logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

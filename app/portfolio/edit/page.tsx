@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default async function PortfolioEditPage() {
   const session = await auth();
+  const t = await getTranslations("profile");
 
   if (!session?.user?.id) {
     redirect("/");
@@ -76,10 +78,10 @@ export default async function PortfolioEditPage() {
             </div>
             <div>
               <h1 className="text-2xl font-semibold text-foreground">
-                Manage Portfolio
+                {t("managePortfolio")}
               </h1>
               <p className="text-sm text-muted-foreground">
-                Add, edit, and organize your portfolio items
+                {t("managePortfolioDescription")}
               </p>
             </div>
           </div>
@@ -88,13 +90,13 @@ export default async function PortfolioEditPage() {
               href={`/portfolio/${user.id}`}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Browse Portfolio →
+              {t("browsePortfolio")} →
             </Link>
             <Link
               href={`/profile/${user.id}`}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              View Profile →
+              {t("viewProfile")} →
             </Link>
           </div>
         </div>

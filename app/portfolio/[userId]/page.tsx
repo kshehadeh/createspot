@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
@@ -31,16 +32,17 @@ export async function generateMetadata({
 }: PortfolioPageProps): Promise<Metadata> {
   const { userId } = await params;
   const user = await getUser(userId);
+  const t = await getTranslations("profile");
 
   if (!user) {
     return {
-      title: "Portfolio Not Found | Create Spot",
+      title: `${t("portfolioNotFound")} | Create Spot`,
     };
   }
 
-  const creatorName = user.name || "Anonymous";
-  const pageTitle = `${creatorName}'s Portfolio | Create Spot`;
-  const description = `View ${creatorName}'s creative portfolio on Create Spot - a community for artists and creators.`;
+  const creatorName = user.name || t("anonymous");
+  const pageTitle = `${t("portfolioTitle", { name: creatorName })} | Create Spot`;
+  const description = t("portfolioDescription", { name: creatorName });
 
   // Generate absolute OG image URL
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
@@ -67,6 +69,7 @@ export async function generateMetadata({
 export default async function PortfolioPage({ params }: PortfolioPageProps) {
   const { userId } = await params;
   const session = await auth();
+  const t = await getTranslations("profile");
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -134,13 +137,15 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-semibold text-foreground truncate">
-                  {user.name ? `${user.name}'s Portfolio` : "Portfolio"}
+                  {user.name
+                    ? t("portfolioTitle", { name: user.name })
+                    : t("portfolio")}
                 </h1>
                 <PortfolioShareButton userId={user.id} />
               </div>
               <p className="text-sm text-muted-foreground">
-                {portfolioItems.length} work
-                {portfolioItems.length !== 1 ? "s" : ""}
+                {portfolioItems.length}{" "}
+                {portfolioItems.length !== 1 ? t("works") : t("work")}
               </p>
             </div>
           </div>
@@ -149,14 +154,14 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
               href={`/profile/${user.id}`}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              View Profile →
+              {t("viewProfile")} →
             </Link>
             {isOwnPortfolio && (
               <Link
                 href="/portfolio/edit"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
-                Manage Portfolio →
+                {t("managePortfolio")} →
               </Link>
             )}
           </div>
@@ -184,16 +189,14 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
       ) : (
         <div className="rounded-lg border border-dashed border-border py-16 text-center">
           <p className="text-muted-foreground">
-            {isOwnPortfolio
-              ? "Your portfolio is empty. Add some work to showcase it here."
-              : "No portfolio items to display yet."}
+            {isOwnPortfolio ? t("portfolioEmpty") : t("noPortfolioItems")}
           </p>
           {isOwnPortfolio && (
             <Link
               href="/portfolio/edit"
               className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Add Portfolio Item
+              {t("addPortfolioItem")}
             </Link>
           )}
         </div>

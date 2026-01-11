@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, startTransition } from "react";
 import { usePathname } from "next/navigation";
 import { signOut, signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { Button } from "./ui/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const t = useTranslations("navigation");
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -64,7 +66,7 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
         <button
           onClick={() => setIsCreateModalOpen(true)}
           className="flex items-center justify-center w-9 h-9 rounded-md text-foreground hover:bg-accent transition-colors md:hidden"
-          aria-label="Create"
+          aria-label={t("create")}
         >
           <span className="text-xl font-medium">+</span>
         </button>
@@ -73,7 +75,7 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="flex flex-col gap-1.5 p-2 text-foreground md:hidden"
-        aria-label="Toggle menu"
+        aria-label={t("toggleMenu")}
         aria-expanded={isMenuOpen}
       >
         <span
@@ -117,7 +119,7 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
             <button
               onClick={() => setIsMenuOpen(false)}
               className="p-2 text-muted-foreground hover:text-foreground"
-              aria-label="Close menu"
+              aria-label={t("closeMenu")}
             >
               <svg
                 className="h-6 w-6"
@@ -148,7 +150,7 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
                     }}
                     className="block w-full px-4 py-3 text-left text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   >
-                    Create
+                    {t("create")}
                   </button>
                 </div>
                 <MobileUserSection
@@ -167,7 +169,7 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
                   size="default"
                   className="w-full"
                 >
-                  Sign in
+                  {t("signIn")}
                 </Button>
               </div>
             )}
@@ -194,6 +196,7 @@ function MobileNavigationLinks({
   onLinkClick: () => void;
 }) {
   const pathname = usePathname();
+  const t = useTranslations("navigation");
   const exhibitionRoute = getRoute("exhibition");
   const promptRoute = getRoute("prompt");
   const creatorsRoute = getRoute("creators");
@@ -226,7 +229,7 @@ function MobileNavigationLinks({
           onClick={onLinkClick}
         >
           {exhibitionRoute.icon && <exhibitionRoute.icon className="h-5 w-5" />}
-          {exhibitionRoute.label}
+          {t("exhibits")}
         </Link>
       </div>
       <div className="mb-2">
@@ -239,7 +242,7 @@ function MobileNavigationLinks({
           onClick={onLinkClick}
         >
           {promptRoute.icon && <promptRoute.icon className="h-5 w-5" />}
-          {promptRoute.label}
+          {t("prompts")}
         </Link>
       </div>
       <div className="mb-2">
@@ -252,7 +255,7 @@ function MobileNavigationLinks({
           onClick={onLinkClick}
         >
           {creatorsRoute.icon && <creatorsRoute.icon className="h-5 w-5" />}
-          {creatorsRoute.label}
+          {t("creators")}
         </Link>
       </div>
       <div className="mb-2">
@@ -265,7 +268,7 @@ function MobileNavigationLinks({
           onClick={onLinkClick}
         >
           {aboutRoute.icon && <aboutRoute.icon className="h-5 w-5" />}
-          {aboutRoute.label}
+          {t("about")}
         </Link>
       </div>
     </>
@@ -282,6 +285,7 @@ function MobileUserSection({
 }) {
   const pathname = usePathname();
   const [isUserOpen, setIsUserOpen] = useState(false);
+  const t = useTranslations("navigation");
   const profileRoute = getRoute("profile");
   const portfolioRoute = getRoute("portfolio");
   const favoritesRoute = getRoute("favorites");
@@ -331,7 +335,7 @@ function MobileUserSection({
           {user.image ? (
             <Image
               src={user.image}
-              alt={user.name || "User avatar"}
+              alt={user.name || t("userAvatar")}
               width={40}
               height={40}
               className="rounded-full"
@@ -365,7 +369,7 @@ function MobileUserSection({
               onClick={onActionClick}
             >
               {profileRoute.icon && <profileRoute.icon className="h-5 w-5" />}
-              View Profile
+              {t("viewProfile")}
             </Link>
           )}
           {user.id && (
@@ -380,7 +384,7 @@ function MobileUserSection({
               {portfolioRoute.icon && (
                 <portfolioRoute.icon className="h-5 w-5" />
               )}
-              Browse Portfolio
+              {t("browsePortfolio")}
             </Link>
           )}
           <Link
@@ -392,7 +396,7 @@ function MobileUserSection({
             onClick={onActionClick}
           >
             {favoritesRoute.icon && <favoritesRoute.icon className="h-5 w-5" />}
-            {favoritesRoute.label}
+            {t("favorites")}
           </Link>
           {user.isAdmin && (
             <Link
@@ -404,14 +408,14 @@ function MobileUserSection({
               onClick={onActionClick}
             >
               {adminRoute.icon && <adminRoute.icon className="h-5 w-5" />}
-              Admin Dashboard
+              {t("adminDashboard")}
             </Link>
           )}
           <button
             onClick={handleLogout}
             className="w-full px-4 py-3 text-left text-base text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground rounded-lg"
           >
-            Logout
+            {t("logout")}
           </button>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getUserImageUrl } from "@/lib/user-image";
@@ -40,14 +41,15 @@ export async function generateMetadata({
 }: ProfilePageProps): Promise<Metadata> {
   const { userId } = await params;
   const user = await getUser(userId);
+  const t = await getTranslations("profile");
 
   if (!user) {
     return {
-      title: "Profile Not Found | Create Spot",
+      title: `${t("profileNotFound")} | Create Spot`,
     };
   }
 
-  const creatorName = user.name || "Anonymous";
+  const creatorName = user.name || t("anonymous");
   const pageTitle = `${creatorName} | Create Spot`;
 
   // Use bio if available, otherwise use generic description with creator indication
@@ -89,6 +91,7 @@ export default async function ProfilePage({
   const { userId } = await params;
   const paramsSearch = await searchParams;
   const session = await auth();
+  const t = await getTranslations("profile");
 
   // Check if public view is requested
   const viewParam = Array.isArray(paramsSearch.view)
@@ -262,12 +265,12 @@ export default async function ProfilePage({
       {/* Public View indicator - fixed below navbar */}
       {isOwnProfile && isPublicView && (
         <div className="fixed top-16 right-4 z-50 flex items-center gap-3 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-lg">
-          <span>Public View</span>
+          <span>{t("publicView")}</span>
           <Link
             href={`/profile/${user.id}`}
             className="text-white underline transition-opacity hover:opacity-80"
           >
-            Exit →
+            {t("exit")} →
           </Link>
         </div>
       )}
@@ -321,13 +324,14 @@ export default async function ProfilePage({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-semibold text-foreground truncate drop-shadow-sm">
-                    {user.name || "Anonymous"}
+                    {user.name || t("anonymous")}
                   </h1>
                   <ProfileShareButton userId={user.id} />
                 </div>
                 <div className="flex items-center gap-3">
                   <p className="text-sm text-foreground/90 drop-shadow-sm">
-                    {submissionCount} work{submissionCount !== 1 ? "s" : ""}
+                    {submissionCount}{" "}
+                    {submissionCount !== 1 ? t("works") : t("work")}
                   </p>
                   {hasSocialLinks && (
                     <SocialLinks
@@ -347,13 +351,13 @@ export default async function ProfilePage({
                   href={`/profile/${user.id}?view=public`}
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  View as Anonymous User →
+                  {t("viewAsAnonymous")} →
                 </Link>
                 <Link
                   href="/profile/edit"
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  Edit Profile →
+                  {t("editProfile")} →
                 </Link>
               </div>
             )}
@@ -398,13 +402,14 @@ export default async function ProfilePage({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-semibold text-foreground truncate">
-                    {user.name || "Anonymous"}
+                    {user.name || t("anonymous")}
                   </h1>
                   <ProfileShareButton userId={user.id} />
                 </div>
                 <div className="flex items-center gap-3">
                   <p className="text-sm text-muted-foreground">
-                    {submissionCount} work{submissionCount !== 1 ? "s" : ""}
+                    {submissionCount}{" "}
+                    {submissionCount !== 1 ? t("works") : t("work")}
                   </p>
                   {hasSocialLinks && (
                     <SocialLinks
@@ -424,13 +429,13 @@ export default async function ProfilePage({
                   href={`/profile/${user.id}?view=public`}
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  View as Anonymous User →
+                  {t("viewAsAnonymous")} →
                 </Link>
                 <Link
                   href="/profile/edit"
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  Edit Profile →
+                  {t("editProfile")} →
                 </Link>
               </div>
             )}
@@ -448,21 +453,21 @@ export default async function ProfilePage({
         <div className="mb-12">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-2xl font-semibold text-foreground">
-              Portfolio
+              {t("portfolio")}
             </h2>
             <div className="flex flex-col items-end gap-2">
               <Link
                 href={`/portfolio/${user.id}`}
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
-                Browse Portfolio →
+                {t("browsePortfolio")} →
               </Link>
               {effectiveIsOwnProfile && (
                 <Link
                   href="/portfolio/edit"
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  Manage Portfolio →
+                  {t("managePortfolio")} →
                 </Link>
               )}
             </div>
@@ -488,7 +493,7 @@ export default async function ProfilePage({
         {initialItems.length > 0 && (
           <div>
             <h2 className="mb-6 text-2xl font-semibold text-foreground">
-              Prompt Submissions
+              {t("promptSubmissions")}
             </h2>
             <HistoryList
               initialItems={initialItems.map((p) => ({
@@ -506,9 +511,7 @@ export default async function ProfilePage({
         {allPortfolioItems.length === 0 && initialItems.length === 0 && (
           <div className="rounded-lg border border-dashed border-border py-12 text-center">
             <p className="text-muted-foreground">
-              {effectiveIsOwnProfile
-                ? "You haven't added any work yet. Start by adding portfolio items or submitting to prompts."
-                : "No work to display yet."}
+              {effectiveIsOwnProfile ? t("noWorkYet") : t("noWorkToDisplay")}
             </p>
             {effectiveIsOwnProfile && (
               <div className="mt-4 flex justify-center gap-3">
@@ -516,13 +519,13 @@ export default async function ProfilePage({
                   href="/portfolio/edit"
                   className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
-                  Add Portfolio Item
+                  {t("addPortfolioItem")}
                 </Link>
                 <Link
                   href="/prompt/play"
                   className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
                 >
-                  Submit to Prompt
+                  {t("submitToPrompt")}
                 </Link>
               </div>
             )}

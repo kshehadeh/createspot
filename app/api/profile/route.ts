@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { geocodeLocation } from "@/lib/geocoding";
 import { normalizeUrl, isValidUrl } from "@/lib/utils";
+import { isValidLocale } from "@/i18n/config";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -53,6 +54,7 @@ export async function GET() {
       city: true,
       stateProvince: true,
       country: true,
+      language: true,
       latitude: true,
       longitude: true,
       featuredSubmissionId: true,
@@ -81,6 +83,7 @@ export async function PUT(request: NextRequest) {
     city,
     stateProvince,
     country,
+    language,
     featuredSubmissionId,
     profileImageUrl,
     profileImageFocalPoint,
@@ -95,6 +98,16 @@ export async function PUT(request: NextRequest) {
       // Invalid URL - reject the request
       return NextResponse.json(
         { error: "Invalid website URL" },
+        { status: 400 },
+      );
+    }
+  }
+
+  // Validate language if provided
+  if (language !== undefined && language !== null) {
+    if (typeof language !== "string" || !isValidLocale(language)) {
+      return NextResponse.json(
+        { error: "Invalid language code" },
         { status: 400 },
       );
     }
@@ -179,6 +192,7 @@ export async function PUT(request: NextRequest) {
   if (stateProvince !== undefined)
     updateData.stateProvince = stateProvince ?? null;
   if (country !== undefined) updateData.country = country ?? null;
+  if (language !== undefined) updateData.language = language ?? "en";
   if (featuredSubmissionId !== undefined)
     updateData.featuredSubmissionId = featuredSubmissionId ?? null;
   if (profileImageUrl !== undefined)
@@ -216,6 +230,7 @@ export async function PUT(request: NextRequest) {
       city: true,
       stateProvince: true,
       country: true,
+      language: true,
       latitude: true,
       longitude: true,
       featuredSubmissionId: true,
@@ -223,5 +238,17 @@ export async function PUT(request: NextRequest) {
     },
   });
 
-  return NextResponse.json({ user });
+  // Create response
+  const response = NextResponse.json({ user });
+
+  // Set locale cookie if language was updated
+  if (language !== undefined) {
+    response.cookies.set("NEXT_LOCALE", user.language, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      sameSite: "lax",
+    });
+  }
+
+  return response;
 }

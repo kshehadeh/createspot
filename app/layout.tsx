@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Permanent_Marker } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
@@ -61,21 +63,25 @@ export default async function RootLayout({
   breadcrumb?: React.ReactNode;
 }) {
   const session = await auth();
+  const locale = await getLocale();
+  const messages = await getMessages();
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${permanentMarker.variable} antialiased overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <SessionProvider>
-            <div className="flex min-h-screen flex-col bg-background">
-              <Header user={session?.user} />
-              {breadcrumb}
-              {children}
-            </div>
-            <Analytics />
-          </SessionProvider>
+          <NextIntlClientProvider messages={messages}>
+            <SessionProvider>
+              <div className="flex min-h-screen flex-col bg-background">
+                <Header user={session?.user} />
+                {breadcrumb}
+                {children}
+              </div>
+              <Analytics />
+            </SessionProvider>
+          </NextIntlClientProvider>
         </ThemeProvider>
         <Toaster />
       </body>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { CreateSpotLogo } from "./create-spot-logo";
 import { UserDropdown } from "./user-dropdown";
 import { DashboardNavigation } from "./navigation-links";
@@ -26,6 +27,7 @@ interface HeaderProps {
 
 export function Header({ user }: HeaderProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const t = useTranslations("navigation");
 
   return (
     <>
@@ -57,7 +59,7 @@ export function Header({ user }: HeaderProps) {
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                Create
+                {t("create")}
               </Button>
             )}
             <ThemeToggle />
@@ -74,7 +76,7 @@ export function Header({ user }: HeaderProps) {
                 variant="default"
                 size="default"
               >
-                Sign in
+                {t("signIn")}
               </Button>
             )}
           </div>
@@ -87,7 +89,7 @@ export function Header({ user }: HeaderProps) {
                 variant="default"
                 size="sm"
               >
-                Sign in
+                {t("signIn")}
               </Button>
             )}
             <MobileNavigation user={user} />

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ProfileEditPage() {
   const session = await auth();
+  const t = await getTranslations("profile");
 
   if (!session?.user?.id) {
     redirect("/");
@@ -29,6 +31,7 @@ export default async function ProfileEditPage() {
       city: true,
       stateProvince: true,
       country: true,
+      language: true,
       featuredSubmissionId: true,
       profileImageUrl: true,
       profileImageFocalPoint: true,
@@ -83,13 +86,13 @@ export default async function ProfileEditPage() {
               href={`/profile/${user.id}`}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              View Profile →
+              {t("viewProfile")} →
             </Link>
             <Link
               href={`/profile/${user.id}?view=public`}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              View as Anonymous User →
+              {t("viewAsAnonymous")} →
             </Link>
           </div>
         </div>
@@ -106,6 +109,7 @@ export default async function ProfileEditPage() {
         initialCity={user.city || ""}
         initialStateProvince={user.stateProvince || ""}
         initialCountry={user.country || ""}
+        initialLanguage={user.language || "en"}
         initialFeaturedSubmissionId={user.featuredSubmissionId || ""}
         submissions={submissions.map((s) => ({
           id: s.id,

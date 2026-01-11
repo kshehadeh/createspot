@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { ProfileImageModal } from "@/components/profile-image-modal";
@@ -22,6 +23,7 @@ export function ProfileHeader({
 }: ProfileHeaderProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const t = useTranslations("profile");
 
   const displayImage = getUserImageUrl(profileImageUrl, oauthImage);
 
@@ -45,7 +47,7 @@ export function ProfileHeader({
 
       router.refresh();
     } catch {
-      toast.error("Failed to save profile image");
+      toast.error(t("profileImageSaveFailed"));
     }
   };
 
@@ -56,14 +58,14 @@ export function ProfileHeader({
           type="button"
           onClick={() => setIsModalOpen(true)}
           className="group relative shrink-0 cursor-pointer transition-opacity hover:opacity-80"
-          aria-label="Edit profile image"
+          aria-label={t("editProfileImage")}
         >
           {displayImage ? (
             <div className="h-12 w-12 rounded-full md:h-16 md:w-16 ring-2 ring-background/50 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={displayImage}
-                alt={name || "Profile"}
+                alt={name || t("title")}
                 className="h-full w-full object-cover"
                 style={{
                   objectPosition: getObjectPositionStyle(
@@ -82,11 +84,9 @@ export function ProfileHeader({
         </button>
         <div>
           <h1 className="text-2xl font-semibold text-foreground">
-            {name || "Anonymous"}
+            {name || t("anonymous")}
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Edit your profile information
-          </p>
+          <p className="text-sm text-muted-foreground">{t("editSubtitle")}</p>
         </div>
       </div>
 
