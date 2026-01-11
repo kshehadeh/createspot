@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt } from "@/lib/prompts";
 import { prisma } from "@/lib/prisma";
@@ -9,6 +10,7 @@ import { SubmissionSlots } from "./submission-slots";
 export const dynamic = "force-dynamic";
 
 export default async function PlayPage() {
+  const t = await getTranslations("prompt.play");
   const session = await auth();
 
   if (!session?.user) {
@@ -24,16 +26,16 @@ export default async function PlayPage() {
         className="flex flex-col items-center justify-center text-center"
       >
         <h1 className="mb-4 text-2xl font-bold text-foreground">
-          No Active Prompt
+          {t("noActivePrompt")}
         </h1>
         <p className="mb-8 text-muted-foreground">
-          There&apos;s no prompt available this week. Check back soon!
+          {t("noActivePromptDescription")}
         </p>
         <Link
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground"
         >
-          Back to Home
+          {t("backToHome")}
         </Link>
       </PageLayout>
     );
@@ -73,13 +75,13 @@ export default async function PlayPage() {
       <section className="mb-12 text-center">
         <div className="mb-4 flex items-center justify-center gap-3">
           <p className="text-sm uppercase tracking-widest text-muted-foreground">
-            This week&apos;s prompt
+            {t("thisWeekPrompt")}
           </p>
           <Link
             href="/prompt"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            Learn more →
+            {t("learnMore")}
           </Link>
         </div>
         <div className="flex flex-wrap justify-center gap-4 sm:gap-8">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
 import { PageLayout } from "@/components/page-layout";
@@ -7,6 +8,7 @@ import { GalleryGrid } from "./gallery-grid";
 export const dynamic = "force-dynamic";
 
 export default async function ThisWeekPage() {
+  const t = await getTranslations("prompt.thisWeek");
   const session = await auth();
   const prompt = await getCurrentPrompt();
   const submissions = prompt ? await getPromptSubmissions(prompt.id) : [];
@@ -15,16 +17,16 @@ export default async function ThisWeekPage() {
     return (
       <PageLayout className="flex flex-col items-center justify-center text-center">
         <h1 className="mb-4 text-2xl font-bold text-foreground">
-          No Active Prompt
+          {t("noActivePrompt")}
         </h1>
         <p className="mb-8 text-muted-foreground">
-          There&apos;s no prompt available this week. Check back soon!
+          {t("noActivePromptDescription")}
         </p>
         <Link
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground"
         >
-          Back to Home
+          {t("backToHome")}
         </Link>
       </PageLayout>
     );
@@ -34,7 +36,7 @@ export default async function ThisWeekPage() {
     <PageLayout>
       <section className="mb-12 text-center">
         <p className="mb-4 text-sm uppercase tracking-widest text-muted-foreground">
-          This week&apos;s prompt
+          {t("thisWeekPrompt")}
         </p>
         <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
           {[prompt.word1, prompt.word2, prompt.word3].map((word, index) => (
@@ -62,14 +64,12 @@ export default async function ThisWeekPage() {
         />
       ) : (
         <div className="text-center">
-          <p className="text-muted-foreground">
-            No submissions yet. Be the first to share your interpretation!
-          </p>
+          <p className="text-muted-foreground">{t("noSubmissionsYet")}</p>
           <Link
             href="/prompt/play"
             className="mt-4 inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Create a submission
+            {t("createSubmission")}
           </Link>
         </div>
       )}

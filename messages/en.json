@@ -332,6 +332,61 @@
       "noUsersAvailable": "No users available"
     }
   },
+  "prompt": {
+    "title": "Weekly Prompts | Create Spot",
+    "description": "Challenge yourself with three new words every week. Create photos, artwork, or writing inspired by the prompts and share your unique interpretation.",
+    "thisWeekCreativeChallenge": "This Week's Creative Challenge",
+    "pickWordDescription": "Pick any word that sparks your imagination and create something unique — a photo, artwork, poem, or story.",
+    "noActivePrompt": "No active prompt this week. Check back soon!",
+    "startCreating": "Start Creating",
+    "startCreatingDescription": "Submit your interpretation of this week's words",
+    "createNow": "Create now",
+    "thisWeekGallery": "This Week's Gallery",
+    "thisWeekGalleryDescription": "See how others interpreted the same words",
+    "browseGallery": "Browse gallery",
+    "yourHistory": "Your History",
+    "yourHistoryDescription": "View all your past prompt submissions",
+    "viewHistory": "View history",
+    "readyToCreate": "Ready to Create?",
+    "readyToCreateDescription": "Sign in to submit your interpretation, track your history, and join our creative community.",
+    "justBrowsing": "Just Browsing?",
+    "justBrowsingDescription": "Explore this week's submissions and see how others brought these words to life.",
+    "browseThisWeekGallery": "Browse this week's gallery",
+    "howItWorks": "How It Works",
+    "chooseWord": "Choose a Word",
+    "chooseWordDescription": "Pick one that sparks your imagination — or challenge yourself with all three!",
+    "createSomething": "Create Something",
+    "createSomethingDescription": "Take a photo, make art, write a poem. There's no wrong way to interpret it.",
+    "shareDiscover": "Share & Discover",
+    "shareDiscoverDescription": "Submit to the gallery and see how others brought the same words to life.",
+    "tipsForGettingStarted": "Tips for Getting Started",
+    "thinkAbstractly": "Think abstractly.",
+    "thinkAbstractlyDescription": "The word \"light\" could mean sunlight, feeling light-hearted, or even enlightenment.",
+    "combineWords": "Combine words.",
+    "combineWordsDescription": "Try creating one piece that incorporates multiple prompt words for an extra challenge.",
+    "useWhatYouHave": "Use what you have.",
+    "useWhatYouHaveDescription": "You don't need fancy equipment. A phone camera or simple writing is perfect.",
+    "addExistingWork": "Add existing work.",
+    "addExistingWorkDescription": "If you have portfolio pieces that fit the prompt, you can link them directly!",
+    "play": {
+      "noActivePrompt": "No Active Prompt",
+      "noActivePromptDescription": "There's no prompt available this week. Check back soon!",
+      "backToHome": "Back to Home",
+      "thisWeekPrompt": "This week's prompt",
+      "learnMore": "Learn more →"
+    },
+    "thisWeek": {
+      "noActivePrompt": "No Active Prompt",
+      "noActivePromptDescription": "There's no prompt available this week. Check back soon!",
+      "backToHome": "Back to Home",
+      "thisWeekPrompt": "This week's prompt",
+      "noSubmissionsYet": "No submissions yet. Be the first to share your interpretation!",
+      "createSubmission": "Create a submission"
+    },
+    "history": {
+      "title": "Your Submission History"
+    }
+  },
   "footer": {
     "copyright": "© {year} Create Spot"
   }

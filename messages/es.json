@@ -332,6 +332,61 @@
       "noUsersAvailable": "No hay usuarios disponibles"
     }
   },
+  "prompt": {
+    "title": "Indicaciones Semanales | Create Spot",
+    "description": "Desafíate con tres palabras nuevas cada semana. Crea fotos, arte o escritura inspirada en las indicaciones y comparte tu interpretación única.",
+    "thisWeekCreativeChallenge": "Desafío Creativo de Esta Semana",
+    "pickWordDescription": "Elige cualquier palabra que despierte tu imaginación y crea algo único — una foto, arte, poema o historia.",
+    "noActivePrompt": "No hay indicación activa esta semana. ¡Vuelve pronto!",
+    "startCreating": "Comenzar a Crear",
+    "startCreatingDescription": "Envía tu interpretación de las palabras de esta semana",
+    "createNow": "Crear ahora",
+    "thisWeekGallery": "Galería de Esta Semana",
+    "thisWeekGalleryDescription": "Ve cómo otros interpretaron las mismas palabras",
+    "browseGallery": "Explorar galería",
+    "yourHistory": "Tu Historial",
+    "yourHistoryDescription": "Ver todas tus publicaciones de indicaciones pasadas",
+    "viewHistory": "Ver historial",
+    "readyToCreate": "¿Listo para Crear?",
+    "readyToCreateDescription": "Inicia sesión para enviar tu interpretación, rastrear tu historial y unirte a nuestra comunidad creativa.",
+    "justBrowsing": "¿Solo Navegando?",
+    "justBrowsingDescription": "Explora las publicaciones de esta semana y ve cómo otros dieron vida a estas palabras.",
+    "browseThisWeekGallery": "Explorar la galería de esta semana",
+    "howItWorks": "Cómo Funciona",
+    "chooseWord": "Elige una Palabra",
+    "chooseWordDescription": "Elige una que despierte tu imaginación — ¡o desafíate con las tres!",
+    "createSomething": "Crea Algo",
+    "createSomethingDescription": "Toma una foto, haz arte, escribe un poema. No hay forma incorrecta de interpretarlo.",
+    "shareDiscover": "Comparte y Descubre",
+    "shareDiscoverDescription": "Envía a la galería y ve cómo otros dieron vida a las mismas palabras.",
+    "tipsForGettingStarted": "Consejos para Empezar",
+    "thinkAbstractly": "Piensa de forma abstracta.",
+    "thinkAbstractlyDescription": "La palabra \"luz\" podría significar luz solar, sentirse ligero de corazón, o incluso iluminación.",
+    "combineWords": "Combina palabras.",
+    "combineWordsDescription": "Intenta crear una pieza que incorpore múltiples palabras de la indicación para un desafío extra.",
+    "useWhatYouHave": "Usa lo que tienes.",
+    "useWhatYouHaveDescription": "No necesitas equipo sofisticado. Una cámara de teléfono o escritura simple es perfecto.",
+    "addExistingWork": "Añade trabajo existente.",
+    "addExistingWorkDescription": "Si tienes piezas de portafolio que encajan con la indicación, ¡puedes vincularlas directamente!",
+    "play": {
+      "noActivePrompt": "No Hay Indicación Activa",
+      "noActivePromptDescription": "No hay indicación disponible esta semana. ¡Vuelve pronto!",
+      "backToHome": "Volver al Inicio",
+      "thisWeekPrompt": "Indicación de esta semana",
+      "learnMore": "Más información →"
+    },
+    "thisWeek": {
+      "noActivePrompt": "No Hay Indicación Activa",
+      "noActivePromptDescription": "No hay indicación disponible esta semana. ¡Vuelve pronto!",
+      "backToHome": "Volver al Inicio",
+      "thisWeekPrompt": "Indicación de esta semana",
+      "noSubmissionsYet": "Aún no hay publicaciones. ¡Sé el primero en compartir tu interpretación!",
+      "createSubmission": "Crear una publicación"
+    },
+    "history": {
+      "title": "Tu Historial de Publicaciones"
+    }
+  },
   "footer": {
     "copyright": "© {year} Create Spot"
   }

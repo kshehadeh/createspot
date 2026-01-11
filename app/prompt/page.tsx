@@ -1,129 +1,236 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt } from "@/lib/prompts";
 import { PageLayout } from "@/components/page-layout";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { StyledSignInButton } from "./styled-sign-in-button";
+import {
+  ImageIcon,
+  HistoryIcon,
+  SparklesIcon,
+  ArrowRightIcon,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Weekly Prompts | Create Spot",
-  description:
-    "Challenge yourself with three new words every week. Create photos, artwork, or writing inspired by the prompts and share your unique interpretation.",
-  openGraph: {
-    title: "Weekly Prompts | Create Spot",
-    description:
-      "Challenge yourself with three new words every week. Create photos, artwork, or writing inspired by the prompts.",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("prompt");
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      type: "website",
+    },
+  };
+}
 
 export default async function PromptsPage() {
+  const t = await getTranslations("prompt");
   const session = await auth();
   const currentPrompt = await getCurrentPrompt();
 
   return (
-    <PageLayout maxWidth="max-w-4xl">
-      {/* Hero Section */}
-      <section className="mb-16 text-center">
-        <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Three Words.
-          <span className="block text-violet-600 dark:text-violet-400">
-            Infinite Possibilities.
-          </span>
-        </h1>
-        <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground">
-          Every week, we share three carefully chosen words. Pick one (or more!)
-          and create something unique — a photo, artwork, poem, or story. See
-          how others interpret the same words and discover new perspectives.
+    <PageLayout maxWidth="max-w-5xl">
+      {/* Hero Section with Prominent Words */}
+      <section className="mb-12 text-center">
+        <p className="mb-6 text-sm font-medium uppercase tracking-widest text-muted-foreground">
+          {t("thisWeekCreativeChallenge")}
         </p>
-      </section>
 
-      {/* Current Prompt Preview - Just above How It Works */}
-      {currentPrompt && (
-        <div className="mb-16">
-          <Card className="rounded-2xl">
-            <CardContent className="p-8 text-center">
-              <p className="mb-4 text-sm uppercase tracking-widest text-muted-foreground">
-                This week&apos;s prompt
-              </p>
-              <div className="mb-6 flex flex-wrap justify-center gap-4 sm:gap-8">
-                {[
-                  currentPrompt.word1,
-                  currentPrompt.word2,
-                  currentPrompt.word3,
-                ].map((word, index) => (
+        {currentPrompt ? (
+          <>
+            {/* Large Prominent Words */}
+            <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6 md:gap-10">
+              {[
+                currentPrompt.word1,
+                currentPrompt.word2,
+                currentPrompt.word3,
+              ].map((word, index) => (
+                <div key={index} className="relative">
                   <span
-                    key={index}
-                    className={`inline-block text-3xl font-bold text-foreground sm:text-4xl rainbow-shimmer-${index + 1}`}
+                    className={`inline-block text-5xl font-black tracking-tight sm:text-6xl md:text-7xl lg:text-8xl rainbow-shimmer-${index + 1}`}
                   >
                     {word}
                   </span>
-                ))}
-              </div>
-              {/* Start Creating Button - Below Words */}
-              <div className="flex justify-center">
-                {session ? (
-                  <Button asChild>
-                    <Link href="/prompt/play">Start Creating</Link>
-                  </Button>
-                ) : (
-                  <StyledSignInButton />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+                  {index < 2 && (
+                    <span className="hidden text-4xl font-light text-muted-foreground/30 sm:inline-block sm:pl-6 md:pl-10 md:text-5xl lg:text-6xl">
+                      /
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
 
-      {/* How It Works Section */}
+            <p className="mx-auto mb-10 max-w-xl text-lg text-muted-foreground">
+              {t("pickWordDescription")}
+            </p>
+          </>
+        ) : (
+          <div className="mb-10">
+            <p className="text-xl text-muted-foreground">
+              {t("noActivePrompt")}
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* Main Action Cards */}
+      <section className="mb-16">
+        {session ? (
+          /* Logged In State - Show all options */
+          <div className="grid gap-4 sm:grid-cols-3">
+            {/* Start Creating Card */}
+            <Card className="group relative overflow-hidden rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100/50 transition-all hover:border-violet-300 hover:shadow-lg dark:border-violet-800 dark:from-violet-950/50 dark:to-violet-900/30 dark:hover:border-violet-700">
+              <Link href="/prompt/play" className="block">
+                <CardContent className="p-6">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-violet-200 text-violet-700 dark:bg-violet-800 dark:text-violet-300">
+                    <SparklesIcon className="h-6 w-6" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-foreground">
+                    {t("startCreating")}
+                  </h3>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    {t("startCreatingDescription")}
+                  </p>
+                  <div className="flex items-center text-sm font-medium text-violet-600 dark:text-violet-400">
+                    {t("createNow")}
+                    <ArrowRightIcon className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </CardContent>
+              </Link>
+            </Card>
+
+            {/* This Week's Gallery Card */}
+            <Card className="group relative overflow-hidden rounded-2xl border transition-all hover:border-amber-300 hover:shadow-lg dark:hover:border-amber-700">
+              <Link href="/prompt/this-week" className="block">
+                <CardContent className="p-6">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">
+                    <ImageIcon className="h-6 w-6" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-foreground">
+                    {t("thisWeekGallery")}
+                  </h3>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    {t("thisWeekGalleryDescription")}
+                  </p>
+                  <div className="flex items-center text-sm font-medium text-amber-600 dark:text-amber-400">
+                    {t("browseGallery")}
+                    <ArrowRightIcon className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </CardContent>
+              </Link>
+            </Card>
+
+            {/* Your History Card */}
+            <Card className="group relative overflow-hidden rounded-2xl border transition-all hover:border-rose-300 hover:shadow-lg dark:hover:border-rose-700">
+              <Link href="/prompt/history" className="block">
+                <CardContent className="p-6">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-400">
+                    <HistoryIcon className="h-6 w-6" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-foreground">
+                    {t("yourHistory")}
+                  </h3>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    {t("yourHistoryDescription")}
+                  </p>
+                  <div className="flex items-center text-sm font-medium text-rose-600 dark:text-rose-400">
+                    {t("viewHistory")}
+                    <ArrowRightIcon className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </CardContent>
+              </Link>
+            </Card>
+          </div>
+        ) : (
+          /* Not Logged In State - Show sign in prompt with gallery option */
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Sign In Card */}
+            <Card className="relative overflow-hidden rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100/50 dark:border-violet-800 dark:from-violet-950/50 dark:to-violet-900/30">
+              <CardContent className="p-8">
+                <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-violet-200 text-violet-700 dark:bg-violet-800 dark:text-violet-300">
+                  <SparklesIcon className="h-7 w-7" />
+                </div>
+                <h3 className="mb-3 text-2xl font-bold text-foreground">
+                  {t("readyToCreate")}
+                </h3>
+                <p className="mb-6 text-muted-foreground">
+                  {t("readyToCreateDescription")}
+                </p>
+                <StyledSignInButton />
+              </CardContent>
+            </Card>
+
+            {/* Browse Gallery Card */}
+            <Card className="group relative overflow-hidden rounded-2xl border transition-all hover:border-amber-300 hover:shadow-lg dark:hover:border-amber-700">
+              <Link href="/prompt/this-week" className="block h-full">
+                <CardContent className="flex h-full flex-col p-8">
+                  <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">
+                    <ImageIcon className="h-7 w-7" />
+                  </div>
+                  <h3 className="mb-3 text-2xl font-bold text-foreground">
+                    {t("justBrowsing")}
+                  </h3>
+                  <p className="mb-6 flex-grow text-muted-foreground">
+                    {t("justBrowsingDescription")}
+                  </p>
+                  <div className="flex items-center text-sm font-medium text-amber-600 dark:text-amber-400">
+                    {t("browseThisWeekGallery")}
+                    <ArrowRightIcon className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </CardContent>
+              </Link>
+            </Card>
+          </div>
+        )}
+      </section>
+
+      {/* How It Works Section - Simplified */}
       <section className="mb-16">
         <h2 className="mb-8 text-center text-2xl font-bold text-foreground">
-          How It Works
+          {t("howItWorks")}
         </h2>
         <div className="grid gap-6 sm:grid-cols-3">
           <Card className="rounded-xl">
             <CardContent className="p-6 text-center">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-2xl dark:bg-amber-900/30">
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-2xl font-bold dark:bg-amber-900/30">
                 1
               </div>
               <h3 className="mb-2 font-semibold text-foreground">
-                Choose a Word
+                {t("chooseWord")}
               </h3>
               <p className="text-sm text-muted-foreground">
-                Each week brings three new words. Pick one that sparks your
-                imagination — or challenge yourself with all three!
+                {t("chooseWordDescription")}
               </p>
             </CardContent>
           </Card>
           <Card className="rounded-xl">
             <CardContent className="p-6 text-center">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-2xl dark:bg-rose-900/30">
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-2xl font-bold dark:bg-rose-900/30">
                 2
               </div>
               <h3 className="mb-2 font-semibold text-foreground">
-                Create Something
+                {t("createSomething")}
               </h3>
               <p className="text-sm text-muted-foreground">
-                Take a photo, make art, write a story or poem. There&apos;s no
-                right or wrong way to interpret the prompt.
+                {t("createSomethingDescription")}
               </p>
             </CardContent>
           </Card>
           <Card className="rounded-xl">
             <CardContent className="p-6 text-center">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-2xl dark:bg-violet-900/30">
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-2xl font-bold dark:bg-violet-900/30">
                 3
               </div>
               <h3 className="mb-2 font-semibold text-foreground">
-                Share & Discover
+                {t("shareDiscover")}
               </h3>
               <p className="text-sm text-muted-foreground">
-                Submit your work to the gallery and see how others brought the
-                same words to life. Favorite the ones that inspire you!
+                {t("shareDiscoverDescription")}
               </p>
             </CardContent>
           </Card>
@@ -131,10 +238,10 @@ export default async function PromptsPage() {
       </section>
 
       {/* Tips Section */}
-      <section className="mb-16">
+      <section>
         <div className="rounded-2xl bg-gradient-to-br from-muted to-muted/50 p-8">
           <h2 className="mb-6 text-xl font-bold text-foreground">
-            Tips for Getting Started
+            {t("tipsForGettingStarted")}
           </h2>
           <ul className="space-y-4">
             <li className="flex gap-3">
@@ -142,9 +249,10 @@ export default async function PromptsPage() {
                 ✦
               </span>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Think abstractly.</strong>{" "}
-                The word &quot;light&quot; could mean sunlight, feeling
-                light-hearted, or even enlightenment.
+                <strong className="text-foreground">
+                  {t("thinkAbstractly")}
+                </strong>{" "}
+                {t("thinkAbstractlyDescription")}
               </span>
             </li>
             <li className="flex gap-3">
@@ -152,9 +260,8 @@ export default async function PromptsPage() {
                 ✦
               </span>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Combine words.</strong> Try
-                creating one piece that incorporates multiple prompt words for
-                an extra challenge.
+                <strong className="text-foreground">{t("combineWords")}</strong>{" "}
+                {t("combineWordsDescription")}
               </span>
             </li>
             <li className="flex gap-3">
@@ -162,9 +269,10 @@ export default async function PromptsPage() {
                 ✦
               </span>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Use what you have.</strong>{" "}
-                You don&apos;t need fancy equipment. A phone camera or simple
-                writing is perfect.
+                <strong className="text-foreground">
+                  {t("useWhatYouHave")}
+                </strong>{" "}
+                {t("useWhatYouHaveDescription")}
               </span>
             </li>
             <li className="flex gap-3">
@@ -172,26 +280,14 @@ export default async function PromptsPage() {
                 ✦
               </span>
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Add existing work.</strong>{" "}
-                If you have portfolio pieces that fit the prompt, you can link
-                them directly!
+                <strong className="text-foreground">
+                  {t("addExistingWork")}
+                </strong>{" "}
+                {t("addExistingWorkDescription")}
               </span>
             </li>
           </ul>
         </div>
-      </section>
-
-      {/* Gallery Link */}
-      <section className="text-center">
-        <p className="mb-4 text-muted-foreground">
-          Want to see what others have created?
-        </p>
-        <Link
-          href="/prompt/this-week"
-          className="inline-flex h-10 items-center justify-center rounded-full border border-border bg-card px-6 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-        >
-          Browse the Gallery
-        </Link>
       </section>
     </PageLayout>
   );

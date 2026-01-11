@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
@@ -7,6 +8,7 @@ import { HistoryList } from "./history-list";
 export const dynamic = "force-dynamic";
 
 export default async function HistoryPage() {
+  const t = await getTranslations("prompt.history");
   const session = await auth();
 
   if (!session?.user) {
@@ -39,7 +41,7 @@ export default async function HistoryPage() {
   return (
     <PageLayout maxWidth="max-w-5xl">
       <h1 className="mb-8 text-2xl font-semibold text-foreground">
-        Your Submission History
+        {t("title")}
       </h1>
       <HistoryList
         initialItems={initialItems.map((p) => ({

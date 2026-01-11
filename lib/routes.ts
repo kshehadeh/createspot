@@ -16,9 +16,7 @@ export interface RouteConfig {
  * Translation function type - compatible with both server and client translations
  * Uses the return type of next-intl's getTranslations for proper type safety
  */
-export type TranslationFunction = Awaited<
-  ReturnType<typeof getTranslations>
->;
+export type TranslationFunction = Awaited<ReturnType<typeof getTranslations>>;
 
 /**
  * Centralized route configuration for the application.
