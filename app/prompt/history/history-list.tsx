@@ -52,7 +52,7 @@ export function HistoryList({
     try {
       const params = new URLSearchParams({
         skip: items.length.toString(),
-        take: "10",
+        take: "5",
       });
       if (userId) params.set("userId", userId);
       const response = await fetch(`/api/history?${params}`);
@@ -80,7 +80,7 @@ export function HistoryList({
   if (items.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-muted-foreground">
           You haven&apos;t submitted any prompts yet.
         </p>
       </div>
@@ -88,69 +88,72 @@ export function HistoryList({
   }
 
   return (
-    <div className="space-y-0">
-      {items.map((prompt, index) => (
-        <div key={prompt.id}>
-          {index > 0 && (
-            <div className="border-t border-zinc-200 dark:border-zinc-800" />
-          )}
-          <div className="flex flex-col gap-6 py-6 md:flex-row md:items-center">
-            <div className="w-full shrink-0 md:w-48">
-              <p className="text-sm font-medium text-zinc-900 dark:text-white">
+    <div className="space-y-4">
+      {items.map((prompt) => (
+        <div
+          key={prompt.id}
+          className="rounded-lg border border-border bg-card p-3 md:p-4"
+        >
+          <div className="flex flex-col gap-6 md:flex-row md:items-center">
+            <div className="w-full shrink-0 md:w-48 md:sticky md:top-4 flex flex-col justify-center">
+              <p className="text-sm font-medium text-foreground">
                 {formatDateRangeUTC(
                   new Date(prompt.weekStart),
                   new Date(prompt.weekEnd),
                 )}
               </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {prompt.word1} &middot; {prompt.word2} &middot; {prompt.word3}
               </p>
             </div>
-            <div className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto overflow-y-hidden">
-              {prompt.submissions.map((submission, subIndex) => {
-                const word = submission.wordIndex
-                  ? getWordForIndex(prompt, submission.wordIndex)
-                  : "";
-                return (
-                  <div
-                    key={submission.id}
-                    className="flex shrink-0 items-center gap-4"
-                  >
-                    {subIndex > 0 && (
-                      <div className="h-12 w-px bg-zinc-200 dark:bg-zinc-700" />
-                    )}
+            <div className="flex min-w-0 flex-1 flex-wrap gap-6">
+              {[1, 2, 3].map((wordIndex) => {
+                const submission = prompt.submissions.find(
+                  (s) => s.wordIndex === wordIndex,
+                );
+                const word = getWordForIndex(prompt, wordIndex);
+
+                if (submission) {
+                  return (
                     <button
+                      key={submission.id}
                       type="button"
                       onClick={() => setSelected({ submission, word })}
-                      className="flex flex-col items-center gap-2 rounded-lg p-1 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 md:flex-row md:gap-3"
+                      className="flex flex-col items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent"
                     >
                       {submission.imageUrl ? (
-                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800 md:h-16 md:w-16">
+                        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
                           <Image
                             src={submission.imageUrl}
                             alt={submission.title || word}
                             fill
                             className="object-cover"
-                            sizes="64px"
+                            sizes="96px"
                           />
                         </div>
                       ) : submission.text ? (
                         <TextThumbnail
                           text={submission.text}
-                          className="h-16 w-16 shrink-0 rounded-lg"
+                          className="h-24 w-24 shrink-0 rounded-lg"
                         />
                       ) : null}
-                      <div className="min-w-0 text-center md:text-left">
-                        <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                          {word}
-                        </p>
-                        {submission.title && (
-                          <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-                            {submission.title}
-                          </p>
-                        )}
-                      </div>
+                      <p className="text-xs text-center text-foreground">
+                        {word}
+                      </p>
                     </button>
+                  );
+                }
+
+                // Missing submission - show placeholder
+                return (
+                  <div
+                    key={`missing-${wordIndex}`}
+                    className="flex flex-col items-center gap-3 rounded-lg p-2"
+                  >
+                    <div className="h-24 w-24 shrink-0 rounded-lg border-2 border-dashed border-border bg-muted/30" />
+                    <p className="text-xs text-center text-muted-foreground">
+                      {word}
+                    </p>
                   </div>
                 );
               })}
@@ -160,11 +163,11 @@ export function HistoryList({
       ))}
 
       {hasMore && (
-        <div className="border-t border-zinc-200 pt-6 text-center dark:border-zinc-800">
+        <div className="border-t border-border pt-6 text-center">
           <button
             onClick={loadMore}
             disabled={loading}
-            className="inline-flex h-10 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
           >
             {loading ? "Loading..." : "Load More"}
           </button>

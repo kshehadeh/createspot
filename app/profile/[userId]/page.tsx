@@ -165,7 +165,7 @@ export default async function ProfilePage({
       },
     },
     orderBy: { weekStart: "desc" },
-    take: 11,
+    take: 6,
     include: {
       submissions: {
         where: {
@@ -177,8 +177,8 @@ export default async function ProfilePage({
     },
   });
 
-  const hasMore = prompts.length > 10;
-  const initialItems = hasMore ? prompts.slice(0, 10) : prompts;
+  const hasMore = prompts.length > 5;
+  const initialItems = hasMore ? prompts.slice(0, 5) : prompts;
 
   // Count submissions - filter by share status in public view
   const submissionCount = await prisma.submission.count({

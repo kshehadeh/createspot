@@ -22,7 +22,7 @@ export default async function HistoryPage() {
       },
     },
     orderBy: { weekStart: "desc" },
-    take: 11,
+    take: 6,
     include: {
       submissions: {
         where: {
@@ -33,8 +33,8 @@ export default async function HistoryPage() {
     },
   });
 
-  const hasMore = prompts.length > 10;
-  const initialItems = hasMore ? prompts.slice(0, 10) : prompts;
+  const hasMore = prompts.length > 5;
+  const initialItems = hasMore ? prompts.slice(0, 5) : prompts;
 
   return (
     <PageLayout maxWidth="max-w-5xl">

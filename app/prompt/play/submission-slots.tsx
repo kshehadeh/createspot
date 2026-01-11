@@ -301,14 +301,14 @@ export function SubmissionSlots({
         <div className="flex justify-end">
           <button
             onClick={() => setShowClearModal(true)}
-            className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+            className="rounded-lg border border-destructive/50 px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
           >
             Clear
           </button>
         </div>
       )}
 
-      <div className="flex flex-col items-center gap-6 lg:flex-row lg:justify-center">
+      <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-center">
         {words.map((word, index) => {
           const wordIndex = index + 1;
           const submission = existingSubmissions[wordIndex];
@@ -316,71 +316,73 @@ export function SubmissionSlots({
           return (
             <div
               key={wordIndex}
-              className="w-full max-w-full rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 lg:max-w-[350px]"
+              className="flex w-full flex-col rounded-xl border border-border bg-card p-4 md:w-[350px]"
             >
-              <h3 className="mb-4 text-center text-lg font-semibold text-zinc-900 dark:text-white">
+              <h3 className="mb-4 text-center text-lg font-semibold text-foreground">
                 {word}
               </h3>
 
-              {submission ? (
-                <div className="space-y-4">
-                  {submission.imageUrl ? (
-                    <div className="relative aspect-square overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                      <Image
-                        src={submission.imageUrl}
-                        alt={submission.title || word}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 100vw, 33vw"
-                        style={{
-                          objectPosition: getObjectPositionStyle(
-                            submission.imageFocalPoint as {
-                              x: number;
-                              y: number;
-                            } | null,
-                          ),
-                        }}
+              <div className="flex flex-1 flex-col">
+                {submission ? (
+                  <div className="flex flex-1 flex-col space-y-4">
+                    {submission.imageUrl ? (
+                      <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+                        <Image
+                          src={submission.imageUrl}
+                          alt={submission.title || word}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 640px) 100vw, 33vw"
+                          style={{
+                            objectPosition: getObjectPositionStyle(
+                              submission.imageFocalPoint as {
+                                x: number;
+                                y: number;
+                              } | null,
+                            ),
+                          }}
+                        />
+                      </div>
+                    ) : submission.text ? (
+                      <TextThumbnail
+                        text={submission.text}
+                        className="aspect-square rounded-lg"
                       />
-                    </div>
-                  ) : submission.text ? (
-                    <TextThumbnail
-                      text={submission.text}
-                      className="aspect-square rounded-lg"
-                    />
-                  ) : null}
-                  {submission.title && (
-                    <p className="font-medium text-zinc-900 dark:text-white">
-                      {submission.title}
-                    </p>
-                  )}
+                    ) : null}
+                    {submission.title && (
+                      <p className="font-medium text-foreground">
+                        {submission.title}
+                      </p>
+                    )}
+                    <button
+                      onClick={() => openSlot(wordIndex)}
+                      className="mt-auto w-full rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                ) : (
                   <button
                     onClick={() => openSlot(wordIndex)}
-                    className="w-full rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    className="flex aspect-square w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
                   >
-                    Edit
+                    <svg
+                      className="mb-2 h-8 w-8"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    <span className="text-sm font-medium">Add submission</span>
                   </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => openSlot(wordIndex)}
-                  className="flex aspect-square w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 text-zinc-500 transition-colors hover:border-zinc-400 hover:text-zinc-600 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
-                >
-                  <svg
-                    className="mb-2 h-8 w-8"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                  <span className="text-sm font-medium">Add submission</span>
-                </button>
-              )}
+                )}
+              </div>
             </div>
           );
         })}
@@ -392,11 +394,11 @@ export function SubmissionSlots({
           onClick={closeSlot}
         >
           <div
-            className="my-auto max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 dark:bg-zinc-900"
+            className="my-auto max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-xl bg-card p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-6 flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">
+              <h3 className="text-xl font-semibold text-foreground">
                 {existingSubmissions[activeSlot]
                   ? "Edit submission"
                   : "New submission"}{" "}
@@ -404,7 +406,7 @@ export function SubmissionSlots({
               </h3>
               <button
                 onClick={closeSlot}
-                className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                className="text-muted-foreground transition-colors hover:text-foreground"
               >
                 <svg
                   className="h-6 w-6"
@@ -423,7 +425,7 @@ export function SubmissionSlots({
             </div>
 
             {error && (
-              <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+              <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
                 {error}
               </div>
             )}
@@ -434,15 +436,15 @@ export function SubmissionSlots({
               !selectedPortfolioId && (
                 <div className="mb-6">
                   {showPortfolioSelector ? (
-                    <div className="rounded-lg border border-zinc-200 dark:border-zinc-700">
-                      <div className="flex items-center justify-between border-b border-zinc-200 p-3 dark:border-zinc-700">
-                        <span className="text-sm font-medium text-zinc-900 dark:text-white">
+                    <div className="rounded-lg border border-border">
+                      <div className="flex items-center justify-between border-b border-border p-3">
+                        <span className="text-sm font-medium text-foreground">
                           Select from Portfolio
                         </span>
                         <button
                           type="button"
                           onClick={() => setShowPortfolioSelector(false)}
-                          className="text-xs text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                          className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                         >
                           Cancel
                         </button>
@@ -453,10 +455,10 @@ export function SubmissionSlots({
                             key={item.id}
                             type="button"
                             onClick={() => selectPortfolioItem(item)}
-                            className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                            className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent"
                           >
                             {item.imageUrl ? (
-                              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
                                 <Image
                                   src={item.imageUrl}
                                   alt={item.title || "Portfolio item"}
@@ -476,14 +478,14 @@ export function SubmissionSlots({
                                 className="h-10 w-10 shrink-0 rounded-lg"
                               />
                             ) : (
-                              <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
+                              <div className="h-10 w-10 shrink-0 rounded-lg bg-muted" />
                             )}
                             <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">
+                              <p className="truncate text-sm font-medium text-foreground">
                                 {item.title || "Untitled"}
                               </p>
                               {item.category && (
-                                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                <span className="text-xs text-muted-foreground">
                                   {item.category}
                                 </span>
                               )}
@@ -496,7 +498,7 @@ export function SubmissionSlots({
                     <button
                       type="button"
                       onClick={() => setShowPortfolioSelector(true)}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 py-3 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
+                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-secondary py-3 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/80"
                     >
                       <svg
                         className="h-4 w-4"
@@ -519,8 +521,8 @@ export function SubmissionSlots({
 
             {/* Selected Portfolio Item Indicator */}
             {selectedPortfolioId && (
-              <div className="mb-4 flex items-center justify-between rounded-lg border border-emerald-300 bg-emerald-50 p-3 dark:border-emerald-700 dark:bg-emerald-900/20">
-                <span className="text-sm text-emerald-700 dark:text-emerald-400">
+              <div className="mb-4 flex items-center justify-between rounded-lg border border-border bg-secondary p-3">
+                <span className="text-sm text-secondary-foreground">
                   Using portfolio item
                 </span>
                 <button
@@ -529,14 +531,14 @@ export function SubmissionSlots({
                     setSelectedPortfolioId(null);
                     setFormData({ title: "", text: "", imageUrl: "" });
                   }}
-                  className="text-xs text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                  className="text-xs text-secondary-foreground transition-colors hover:text-foreground"
                 >
                   Clear
                 </button>
               </div>
             )}
 
-            <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mb-4 text-sm text-muted-foreground">
               Submit a photo, artwork, text, or any combination. At least one is
               required.
             </p>
@@ -545,7 +547,7 @@ export function SubmissionSlots({
               <div>
                 <label
                   htmlFor="title"
-                  className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                  className="mb-2 block text-sm font-medium text-foreground"
                 >
                   Title (optional)
                 </label>
@@ -557,17 +559,17 @@ export function SubmissionSlots({
                     setFormData((prev) => ({ ...prev, title: e.target.value }));
                     if (selectedPortfolioId) setSelectedPortfolioId(null);
                   }}
-                  className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                  className="w-full rounded-lg border border-input bg-background px-4 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Image/Artwork (optional)
                 </label>
                 {formData.imageUrl ? (
                   <div className="relative">
-                    <div className="relative aspect-video overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                    <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
                       <Image
                         src={formData.imageUrl}
                         alt="Preview"
@@ -609,9 +611,9 @@ export function SubmissionSlots({
                     )}
                   </div>
                 ) : (
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 py-8 transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600">
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border py-8 transition-colors hover:border-foreground/20">
                     <svg
-                      className="mb-2 h-8 w-8 text-zinc-400"
+                      className="mb-2 h-8 w-8 text-muted-foreground"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -623,7 +625,7 @@ export function SubmissionSlots({
                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                    <span className="text-sm text-muted-foreground">
                       {isUploading
                         ? "Uploading..."
                         : "Click to upload photo or artwork"}
@@ -640,7 +642,7 @@ export function SubmissionSlots({
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Text (optional)
                 </label>
                 <RichTextEditor
@@ -657,7 +659,7 @@ export function SubmissionSlots({
                 <button
                   type="button"
                   onClick={closeSlot}
-                  className="flex-1 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
                 >
                   Cancel
                 </button>
@@ -669,7 +671,7 @@ export function SubmissionSlots({
                       !formData.text &&
                       !selectedPortfolioId)
                   }
-                  className="flex-1 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+                  className="flex-1 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
                 >
                   {isSaving ? "Saving..." : "Save"}
                 </button>

@@ -21,7 +21,7 @@ export function DashboardNavigation() {
   };
 
   const linkClassName = (path: string) => {
-    return `rounded-md px-2 py-1 text-sm transition-colors ${
+    return `rounded-md px-2 py-1 text-sm transition-colors whitespace-nowrap overflow-hidden text-ellipsis max-w-full ${
       isActive(path)
         ? "bg-accent text-accent-foreground font-medium"
         : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
