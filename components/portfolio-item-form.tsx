@@ -117,6 +117,7 @@ export function PortfolioItemForm({
         body: JSON.stringify({
           fileType: file.type,
           fileSize: file.size,
+          type: "submission",
         }),
       });
 

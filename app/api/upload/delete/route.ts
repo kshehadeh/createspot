@@ -42,8 +42,14 @@ export async function POST(request: NextRequest) {
     const key = imageUrl.slice(publicUrlPrefix.length + 1); // +1 for the trailing slash
 
     // Security: Only allow users to delete their own files
-    // Files are stored as {userId}/{uuid}.{ext}
-    if (!key.startsWith(`${session.user.id}/`)) {
+    // Support both old format ({userId}/{uuid}.{ext}) and new format
+    // (submissions/{userId}/{uuid}.{ext} or profiles/{userId}/{uuid}.{ext})
+    const userId = session.user.id;
+    const isOldFormat = key.startsWith(`${userId}/`);
+    const isNewSubmissionFormat = key.startsWith(`submissions/${userId}/`);
+    const isNewProfileFormat = key.startsWith(`profiles/${userId}/`);
+
+    if (!isOldFormat && !isNewSubmissionFormat && !isNewProfileFormat) {
       return NextResponse.json(
         { error: "Not authorized to delete this file" },
         { status: 403 },

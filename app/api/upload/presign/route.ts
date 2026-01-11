@@ -20,6 +20,7 @@ const s3Client = new S3Client({
 interface PresignRequest {
   fileType: string;
   fileSize: number;
+  type?: "submission" | "profile";
 }
 
 export async function POST(request: NextRequest) {
@@ -31,11 +32,18 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as PresignRequest;
-    const { fileType, fileSize } = body;
+    const { fileType, fileSize, type = "submission" } = body;
 
     if (!fileType || typeof fileSize !== "number") {
       return NextResponse.json(
         { error: "fileType and fileSize are required" },
+        { status: 400 },
+      );
+    }
+
+    if (type !== "submission" && type !== "profile") {
+      return NextResponse.json(
+        { error: "Invalid type. Must be 'submission' or 'profile'" },
         { status: 400 },
       );
     }
@@ -62,7 +70,8 @@ export async function POST(request: NextRequest) {
     }
 
     const fileExtension = fileType.split("/")[1];
-    const fileName = `${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
+    const folder = type === "profile" ? "profiles" : "submissions";
+    const fileName = `${folder}/${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
 
     const putCommand = new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,

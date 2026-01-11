@@ -18,6 +18,8 @@ async function deleteImageFromR2(imageUrl: string): Promise<void> {
   const publicUrl = process.env.R2_PUBLIC_URL;
   if (!publicUrl || !imageUrl.startsWith(publicUrl)) return;
 
+  // Extract key, supporting both old format ({userId}/{uuid}.{ext})
+  // and new format (submissions/{userId}/{uuid}.{ext} or profiles/{userId}/{uuid}.{ext})
   const key = imageUrl.replace(`${publicUrl}/`, "");
   try {
     await s3Client.send(

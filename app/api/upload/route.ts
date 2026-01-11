@@ -25,9 +25,17 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
+    const type = (formData.get("type") as string | null) || "submission";
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    if (type !== "submission" && type !== "profile") {
+      return NextResponse.json(
+        { error: "Invalid type. Must be 'submission' or 'profile'" },
+        { status: 400 },
+      );
     }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
@@ -49,7 +57,8 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const fileExtension = file.type.split("/")[1];
-    const fileName = `${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
+    const folder = type === "profile" ? "profiles" : "submissions";
+    const fileName = `${folder}/${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
 
     await s3Client.send(
       new PutObjectCommand({

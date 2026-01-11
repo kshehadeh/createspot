@@ -224,6 +224,7 @@ export function ProfileEditForm({
         body: JSON.stringify({
           fileType: file.type,
           fileSize: file.size,
+          type: "profile",
         }),
       });
 

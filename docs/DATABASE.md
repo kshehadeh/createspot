@@ -492,7 +492,10 @@ await fetch(presignedUrl, {
    - File type must be: JPEG, PNG, WebP, or GIF
    - Maximum size: 10MB
 3. **Generate Presigned URL**:
-   - Creates unique filename: `{userId}/{uuid}.{extension}`
+   - Accepts optional `type` parameter: `"submission"` (default) or `"profile"`
+   - Creates unique filename based on type:
+     - Submissions: `submissions/{userId}/{uuid}.{extension}`
+     - Profiles: `profiles/{userId}/{uuid}.{extension}`
    - Signs a PUT request valid for 5 minutes
 4. **Returns**: Presigned URL and final public URL
 
@@ -510,15 +513,35 @@ await prisma.submission.upsert({
 
 ## File Organization
 
-Files are organized by user ID in R2:
+Files are organized by type and user ID in R2:
 
 ```
 bucket/
-├── user_abc123/
-│   ├── 550e8400-e29b-41d4-a716-446655440000.jpeg
-│   └── 6ba7b810-9dad-11d1-80b4-00c04fd430c8.png
-├── user_def456/
-│   └── ...
+├── submissions/
+│   ├── user_abc123/
+│   │   ├── 550e8400-e29b-41d4-a716-446655440000.jpeg
+│   │   └── 6ba7b810-9dad-11d1-80b4-00c04fd430c8.png
+│   └── user_def456/
+│       └── ...
+└── profiles/
+    ├── user_abc123/
+    │   └── profile-image-uuid.jpeg
+    └── user_def456/
+        └── ...
+```
+
+**Folder Structure:**
+- `submissions/{userId}/{uuid}.{ext}` - Submission images (including portfolio items)
+- `profiles/{userId}/{uuid}.{ext}` - User profile images
+
+**Migration Note:** Files uploaded before the folder restructure may still be in the old format (`{userId}/{uuid}.{ext}`). The system supports both old and new formats for backward compatibility. To migrate existing files, use the migration script:
+
+```bash
+# Preview migration (dry run)
+bun run scripts/migrate-r2-folders.ts
+
+# Execute migration
+bun run scripts/migrate-r2-folders.ts --execute
 ```
 
 ## Security Considerations
