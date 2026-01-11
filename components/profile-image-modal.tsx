@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { User, Upload, Crosshair, Trash2, Pencil } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +38,7 @@ export function ProfileImageModal({
   currentFocalPoint,
   onSave,
 }: ProfileImageModalProps) {
+  const t = useTranslations("modals.profileImage");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
@@ -51,12 +53,12 @@ export function ProfileImageModal({
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setError("Please select an image file");
+      setError(t("selectImageFile"));
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      setError("Image must be less than 10MB");
+      setError(t("imageTooLarge"));
       return;
     }
 
@@ -108,14 +110,10 @@ export function ProfileImageModal({
 
       // Save new image URL (reset focal point when uploading new image)
       await onSave(publicUrl, null);
-      toast.success("Profile image uploaded");
+      toast.success(t("imageUploaded"));
       onClose();
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to upload image. Please try again.",
-      );
+      setError(err instanceof Error ? err.message : t("uploadFailed"));
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -140,11 +138,11 @@ export function ProfileImageModal({
 
       // Clear image URL and focal point
       await onSave(null, null);
-      toast.success("Profile image removed");
+      toast.success(t("imageRemoved"));
       setIsDeleteConfirmOpen(false);
       onClose();
     } catch {
-      setError("Failed to remove image. Please try again.");
+      setError(t("removeFailed"));
     } finally {
       setUploading(false);
     }
@@ -155,10 +153,10 @@ export function ProfileImageModal({
 
     try {
       await onSave(currentImageUrl, focalPoint);
-      toast.success("Focal point updated");
+      toast.success(t("focalPointUpdated"));
       setIsFocalPointModalOpen(false);
     } catch {
-      setError("Failed to update focal point. Please try again.");
+      setError(t("focalPointFailed"));
     }
   };
 
@@ -167,10 +165,8 @@ export function ProfileImageModal({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col md:max-h-[90vh] h-screen md:h-auto md:rounded-lg md:m-4 md:max-w-2xl md:translate-x-[-50%] md:translate-y-[-50%] md:left-[50%] md:top-[50%] w-full m-0 rounded-none left-0 top-0 translate-x-0 translate-y-0">
           <DialogHeader className="flex-shrink-0">
-            <DialogTitle>Profile Image</DialogTitle>
-            <DialogDescription>
-              Upload, adjust, or remove your profile image
-            </DialogDescription>
+            <DialogTitle>{t("title")}</DialogTitle>
+            <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto space-y-4 min-h-0">
@@ -223,7 +219,7 @@ export function ProfileImageModal({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                {hasUploadedImage ? "Processing..." : "Uploading..."}
+                {hasUploadedImage ? t("processing") : t("uploading")}
               </div>
             )}
 
@@ -247,12 +243,12 @@ export function ProfileImageModal({
               {hasUploadedImage ? (
                 <>
                   <Pencil className="mr-2 h-4 w-4" />
-                  Change
+                  {t("change")}
                 </>
               ) : (
                 <>
                   <Upload className="mr-2 h-4 w-4" />
-                  Upload
+                  {t("upload")}
                 </>
               )}
             </Button>
@@ -267,7 +263,7 @@ export function ProfileImageModal({
                   className="flex-1"
                 >
                   <Crosshair className="mr-2 h-4 w-4" />
-                  Adjust
+                  {t("adjust")}
                 </Button>
 
                 <Button
@@ -278,7 +274,7 @@ export function ProfileImageModal({
                   className="flex-1"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Remove
+                  {t("remove")}
                 </Button>
               </>
             )}
@@ -301,10 +297,9 @@ export function ProfileImageModal({
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={isDeleteConfirmOpen}
-        title="Remove Profile Image"
-        message="Are you sure you want to remove your profile image? This action cannot be undone."
-        confirmLabel="Remove"
-        cancelLabel="Cancel"
+        title={t("removeTitle")}
+        message={t("removeMessage")}
+        confirmLabel={t("remove")}
         onConfirm={handleRemoveImage}
         onCancel={() => setIsDeleteConfirmOpen(false)}
         isLoading={uploading}

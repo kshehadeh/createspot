@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { Badge } from "@/components/ui/badge";
@@ -30,17 +31,6 @@ interface FeaturedSubmissionSelectorProps {
   emptyMessage?: string;
 }
 
-function getSubmissionLabel(submission: SubmissionOption): string {
-  if (submission.prompt && submission.wordIndex) {
-    return [
-      submission.prompt.word1,
-      submission.prompt.word2,
-      submission.prompt.word3,
-    ][submission.wordIndex - 1];
-  }
-  return submission.category || "Portfolio";
-}
-
 export function FeaturedSubmissionSelector({
   submissions,
   selectedSubmissionId,
@@ -49,8 +39,23 @@ export function FeaturedSubmissionSelector({
   description = "Select a work to feature",
   emptyMessage = "No work available yet.",
 }: FeaturedSubmissionSelectorProps) {
+  const tCategories = useTranslations("categories");
+  const tProfile = useTranslations("profile");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const getSubmissionLabel = (submission: SubmissionOption): string => {
+    if (submission.prompt && submission.wordIndex) {
+      return [
+        submission.prompt.word1,
+        submission.prompt.word2,
+        submission.prompt.word3,
+      ][submission.wordIndex - 1];
+    }
+    return submission.category
+      ? tCategories(submission.category)
+      : tProfile("portfolio");
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

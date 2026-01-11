@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Crosshair } from "lucide-react";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -24,24 +25,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CATEGORIES } from "@/lib/categories";
-
-const SHARE_STATUS_OPTIONS = [
-  {
-    value: "PUBLIC",
-    label: "Public",
-    description: "Visible everywhere (galleries, profile pages, etc.)",
-  },
-  {
-    value: "PROFILE",
-    label: "Profile Only",
-    description: "Only visible on your profile page",
-  },
-  {
-    value: "PRIVATE",
-    label: "Private",
-    description: "Only visible to you",
-  },
-];
 
 interface SubmissionData {
   id: string;
@@ -70,6 +53,9 @@ export function PortfolioItemForm({
   setIsPortfolio = false,
 }: PortfolioItemFormProps) {
   const router = useRouter();
+  const t = useTranslations("modals.portfolioItemForm");
+  const tCommon = useTranslations("common");
+  const tCategories = useTranslations("categories");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState(initialData?.title || "");
@@ -97,12 +83,12 @@ export function PortfolioItemForm({
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setError("Please select an image file");
+      setError(t("errors.selectImageFile"));
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      setError("Image must be less than 10MB");
+      setError(t("errors.imageTooLarge"));
       return;
     }
 
@@ -141,11 +127,7 @@ export function PortfolioItemForm({
 
       setImageUrl(publicUrl);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to upload image. Please try again.",
-      );
+      setError(err instanceof Error ? err.message : t("errors.uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -174,7 +156,7 @@ export function PortfolioItemForm({
     e.preventDefault();
 
     if (!imageUrl && !text) {
-      setError("Please add an image or text");
+      setError(t("errors.addImageOrText"));
       return;
     }
 
@@ -203,7 +185,7 @@ export function PortfolioItemForm({
         });
 
         if (!response.ok) {
-          throw new Error("Failed to create portfolio item");
+          throw new Error(t("errors.createFailed"));
         }
       } else if (initialData) {
         const response = await fetch(`/api/submissions/${initialData.id}`, {
@@ -222,7 +204,7 @@ export function PortfolioItemForm({
         });
 
         if (!response.ok) {
-          throw new Error("Failed to update portfolio item");
+          throw new Error(t("errors.updateFailed"));
         }
       }
 
@@ -245,7 +227,7 @@ export function PortfolioItemForm({
         router.refresh();
       }
     } catch {
-      setError("Failed to save portfolio item. Please try again.");
+      setError(t("errors.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -260,18 +242,18 @@ export function PortfolioItemForm({
       )}
 
       <div>
-        <Label htmlFor="title">Title</Label>
+        <Label htmlFor="title">{t("title")}</Label>
         <Input
           id="title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Give your work a title"
+          placeholder={t("titlePlaceholder")}
         />
       </div>
 
       <div>
-        <Label>Image</Label>
+        <Label>{t("image")}</Label>
         {imageUrl ? (
           <div className="relative">
             <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
@@ -299,8 +281,11 @@ export function PortfolioItemForm({
                   </TooltipTrigger>
                   <TooltipContent>
                     {imageFocalPoint
-                      ? `Focal Point: ${imageFocalPoint.x.toFixed(0)}%, ${imageFocalPoint.y.toFixed(0)}%`
-                      : "Set Focal Point"}
+                      ? t("focalPoint", {
+                          x: imageFocalPoint.x.toFixed(0),
+                          y: imageFocalPoint.y.toFixed(0),
+                        })
+                      : t("setFocalPoint")}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -360,7 +345,7 @@ export function PortfolioItemForm({
                   />
                 </svg>
                 <span className="text-sm text-muted-foreground">
-                  Uploading...
+                  {t("uploading")}
                 </span>
               </div>
             ) : (
@@ -379,10 +364,10 @@ export function PortfolioItemForm({
                   />
                 </svg>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Click to upload an image
+                  {t("clickToUpload")}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground/70">
-                  PNG, JPG, GIF up to 10MB
+                  {t("uploadFormat")}
                 </p>
               </>
             )}
@@ -391,16 +376,16 @@ export function PortfolioItemForm({
       </div>
 
       <div>
-        <Label>Text / Description</Label>
+        <Label>{t("textDescription")}</Label>
         <RichTextEditor
           value={text}
           onChange={setText}
-          placeholder="Add a description or creative writing..."
+          placeholder={t("textPlaceholder")}
         />
       </div>
 
       <div>
-        <Label>Category</Label>
+        <Label>{t("category")}</Label>
         <Select
           value={category || "__none__"}
           onValueChange={(value) =>
@@ -408,13 +393,13 @@ export function PortfolioItemForm({
           }
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select a category" />
+            <SelectValue placeholder={t("categoryPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__none__">None</SelectItem>
+            <SelectItem value="__none__">{t("categoryNone")}</SelectItem>
             {CATEGORIES.map((cat) => (
               <SelectItem key={cat} value={cat}>
-                {cat}
+                {tCategories(cat)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -422,7 +407,7 @@ export function PortfolioItemForm({
       </div>
 
       <div>
-        <Label>Tags</Label>
+        <Label>{t("tags")}</Label>
         <div className="flex min-h-[42px] flex-wrap items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 focus-within:border-ring focus-within:outline-none focus-within:ring-2 focus-within:ring-ring">
           {tags.map((tag, index) => (
             <span
@@ -437,7 +422,7 @@ export function PortfolioItemForm({
                   tagInputRef.current?.focus();
                 }}
                 className="ml-0.5 rounded hover:bg-secondary/80"
-                aria-label={`Remove ${tag}`}
+                aria-label={t("removeTag", { tag })}
               >
                 <svg
                   className="h-3.5 w-3.5"
@@ -479,19 +464,33 @@ export function PortfolioItemForm({
                 setTags(tags.slice(0, -1));
               }
             }}
-            placeholder={tags.length === 0 ? "Type a tag and press space" : ""}
+            placeholder={tags.length === 0 ? t("tagPlaceholderEmpty") : ""}
             className="flex-1 min-w-[120px] border-0 bg-transparent px-0 py-1 text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Type a tag and press space to add it
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">{t("tagHelper")}</p>
       </div>
 
       <div>
-        <Label>Visibility</Label>
+        <Label>{t("visibility")}</Label>
         <div className="space-y-2">
-          {SHARE_STATUS_OPTIONS.map((option) => (
+          {[
+            {
+              value: "PUBLIC",
+              label: t("shareStatus.public"),
+              description: t("shareStatus.publicDescription"),
+            },
+            {
+              value: "PROFILE",
+              label: t("shareStatus.profileOnly"),
+              description: t("shareStatus.profileOnlyDescription"),
+            },
+            {
+              value: "PRIVATE",
+              label: t("shareStatus.private"),
+              description: t("shareStatus.privateDescription"),
+            },
+          ].map((option) => (
             <label
               key={option.value}
               className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
@@ -528,14 +527,14 @@ export function PortfolioItemForm({
       <div className="flex gap-3">
         <Button type="submit" disabled={saving || uploading}>
           {saving
-            ? "Saving..."
+            ? t("saving")
             : mode === "create"
-              ? "Add to Portfolio"
-              : "Save Changes"}
+              ? t("addToPortfolio")
+              : t("saveChanges")}
         </Button>
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
+            {tCommon("cancel")}
           </Button>
         )}
       </div>
@@ -543,9 +542,9 @@ export function PortfolioItemForm({
       {/* Remove Image Confirmation Modal */}
       <ConfirmModal
         isOpen={showRemoveImageConfirm}
-        title="Remove Image"
-        message="Are you sure you want to remove this image from your submission? This action cannot be undone."
-        confirmLabel="Remove"
+        title={t("removeImageTitle")}
+        message={t("removeImageMessage")}
+        confirmLabel={t("removeImage")}
         onConfirm={() => {
           handleRemoveImage();
           setShowRemoveImageConfirm(false);

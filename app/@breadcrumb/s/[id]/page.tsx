@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/breadcrumb";
 
@@ -11,6 +12,8 @@ export default async function SubmissionBreadcrumb({
   params,
 }: SubmissionBreadcrumbProps) {
   const { id } = await params;
+  const tSubmission = await getTranslations("submission");
+  const tExhibition = await getTranslations("exhibition");
   const submission = await prisma.submission.findUnique({
     where: { id },
     select: { title: true },
@@ -19,8 +22,8 @@ export default async function SubmissionBreadcrumb({
   return (
     <Breadcrumb
       segments={[
-        { label: "Submission" },
-        { label: submission?.title || "Untitled" },
+        { label: tSubmission("label") },
+        { label: submission?.title || tExhibition("untitled") },
       ]}
     />
   );

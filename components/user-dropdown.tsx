@@ -16,15 +16,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
+import { getUserImageUrl } from "@/lib/user-image";
 
 interface UserDropdownProps {
   id?: string;
   name?: string | null;
   image?: string | null;
+  profileImageUrl?: string | null;
   isAdmin?: boolean;
 }
 
-export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
+export function UserDropdown({
+  id,
+  name,
+  image,
+  profileImageUrl,
+  isAdmin,
+}: UserDropdownProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const t = useTranslations("navigation");
@@ -41,17 +49,23 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
     setMounted(true);
   }, []);
 
+  // Get the preferred image URL (profileImageUrl > image > null)
+  const displayImage = getUserImageUrl(profileImageUrl, image);
+
   // Render a placeholder during SSR to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className="flex items-center gap-2 border-l border-zinc-200 pl-4 outline-none dark:border-zinc-700">
+      <div className="flex items-center gap-2 border-l border-border pl-4 outline-none">
         {name && (
           <span className="hidden text-sm text-foreground lg:inline">
             {name}
           </span>
         )}
         <Avatar className="h-8 w-8">
-          <AvatarImage src={image || undefined} alt={name || t("userAvatar")} />
+          <AvatarImage
+            src={displayImage || undefined}
+            alt={name || t("userAvatar")}
+          />
           <AvatarFallback className="bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
             {name?.charAt(0).toUpperCase() || "?"}
           </AvatarFallback>
@@ -63,14 +77,17 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-2 border-l border-zinc-200 pl-4 outline-none dark:border-zinc-700">
+      <DropdownMenuTrigger className="flex items-center gap-2 border-l border-border pl-4 outline-none">
         {name && (
           <span className="hidden text-sm text-foreground lg:inline">
             {name}
           </span>
         )}
         <Avatar className="h-8 w-8">
-          <AvatarImage src={image || undefined} alt={name || t("userAvatar")} />
+          <AvatarImage
+            src={displayImage || undefined}
+            alt={name || t("userAvatar")}
+          />
           <AvatarFallback className="bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
             {name?.charAt(0).toUpperCase() || "?"}
           </AvatarFallback>

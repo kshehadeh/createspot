@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +36,8 @@ export function DeleteAccountModal({
   onSuccess,
 }: DeleteAccountModalProps) {
   const router = useRouter();
+  const t = useTranslations("modals.deleteAccount");
+  const tCommon = useTranslations("common");
   const [step, setStep] = useState<1 | 2>(1);
   const [confirmationText, setConfirmationText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -76,9 +79,7 @@ export function DeleteAccountModal({
       const response = await fetch("/api/user/delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          targetUserId ? { userId: targetUserId } : {},
-        ),
+        body: JSON.stringify(targetUserId ? { userId: targetUserId } : {}),
       });
 
       if (!response.ok) {
@@ -88,8 +89,8 @@ export function DeleteAccountModal({
 
       toast.success(
         isAdminDelete
-          ? `Successfully deleted ${targetUserName || "user"}'s account`
-          : "Account deleted successfully",
+          ? t("accountDeletedAdmin", { name: targetUserName || "user" })
+          : t("accountDeleted"),
       );
 
       if (isAdminDelete) {
@@ -105,11 +106,7 @@ export function DeleteAccountModal({
         await signOut({ callbackUrl: "/" });
       }
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to delete account. Please try again.",
-      );
+      toast.error(error instanceof Error ? error.message : t("deleteFailed"));
       setIsDeleting(false);
     }
   };
@@ -128,43 +125,47 @@ export function DeleteAccountModal({
           <AlertDialogTitle>
             {step === 1
               ? isAdminDelete
-                ? `Delete ${targetUserName || "User"}'s Account`
-                : "Delete Your Account"
+                ? t("titleAdmin", { name: targetUserName || "User" })
+                : t("title")
               : isAdminDelete
-                ? `Final Confirmation: Delete ${targetUserName || "User"}`
-                : "Final Confirmation"}
+                ? t("finalConfirmationAdmin", {
+                    name: targetUserName || "User",
+                  })
+                : t("finalConfirmation")}
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
             {step === 1 ? (
               <div className="space-y-2">
                 <div>
                   {isAdminDelete
-                    ? `Are you sure you want to delete ${targetUserName || "this user"}'s account? This action cannot be undone.`
-                    : "Are you sure you want to delete your account? This action cannot be undone."}
+                    ? t("messageAdmin", { name: targetUserName || "this user" })
+                    : t("message")}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  This will permanently delete:
+                  {t("willDelete")}
                 </div>
                 <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                  <li>The user account</li>
-                  <li>All submissions and portfolio items</li>
-                  <li>All uploaded images</li>
-                  <li>All favorites and related data</li>
+                  <li>{t("userAccount")}</li>
+                  <li>{t("allSubmissions")}</li>
+                  <li>{t("allImages")}</li>
+                  <li>{t("allFavorites")}</li>
                 </ul>
               </div>
             ) : (
               <div className="space-y-4">
                 <div>
                   {isAdminDelete
-                    ? `This will permanently delete ${targetUserName || "this user"}'s account and all their data. Type 'DELETE' to confirm.`
-                    : "This will permanently delete your account and all your data. Type 'DELETE' to confirm."}
+                    ? t("finalMessageAdmin", {
+                        name: targetUserName || "this user",
+                      })
+                    : t("finalMessage")}
                 </div>
                 <div className="space-y-2">
                   <label
                     htmlFor="confirmation-input"
                     className="text-sm font-medium text-foreground"
                   >
-                    Type DELETE to confirm:
+                    {t("typeToConfirm")}
                   </label>
                   <Input
                     id="confirmation-input"
@@ -188,7 +189,7 @@ export function DeleteAccountModal({
               onClick={step === 1 ? handleStep1Cancel : handleStep2Cancel}
               disabled={isDeleting}
             >
-              Cancel
+              {tCommon("cancel")}
             </Button>
           </AlertDialogCancel>
           {step === 1 ? (
@@ -197,7 +198,7 @@ export function DeleteAccountModal({
               onClick={handleStep1Confirm}
               disabled={isDeleting}
             >
-              Continue
+              {t("continue")}
             </Button>
           ) : (
             <AlertDialogAction asChild>
@@ -207,10 +208,10 @@ export function DeleteAccountModal({
                 disabled={isConfirmDisabled || isDeleting}
               >
                 {isDeleting
-                  ? "Deleting..."
+                  ? t("deleting")
                   : isAdminDelete
-                    ? "Delete User"
-                    : "Delete My Account"}
+                    ? t("deleteUser")
+                    : t("deleteMyAccount")}
               </Button>
             </AlertDialogAction>
           )}

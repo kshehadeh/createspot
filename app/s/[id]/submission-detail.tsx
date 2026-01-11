@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ExpandableText } from "@/components/expandable-text";
 import { SubmissionImage } from "@/components/submission-image";
 import { ShareButton } from "@/components/share-button";
@@ -53,6 +54,10 @@ export function SubmissionDetail({
   isLoggedIn,
   isOwner = false,
 }: SubmissionDetailProps) {
+  const tCategories = useTranslations("categories");
+  const tExhibition = useTranslations("exhibition");
+  const tSubmission = useTranslations("submission");
+  const tProfile = useTranslations("profile");
   const [mobileView, setMobileView] = useState<"image" | "text">("image");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -87,10 +92,10 @@ export function SubmissionDetail({
               {/* Title and user name */}
               <div className="flex flex-col gap-1">
                 <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl">
-                  {submission.title || "Untitled"}
+                  {submission.title || tExhibition("untitled")}
                   {submission.category && (
                     <span className="ml-2 text-base font-normal text-muted-foreground sm:text-lg">
-                      ({submission.category})
+                      ({tCategories(submission.category)})
                     </span>
                   )}
                 </h1>
@@ -99,7 +104,7 @@ export function SubmissionDetail({
                     href={`/profile/${submission.user.id}`}
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    {submission.user.name || "Anonymous"}
+                    {submission.user.name || tProfile("anonymous")}
                   </Link>
                   {(submission.user.instagram ||
                     submission.user.twitter ||
@@ -138,7 +143,7 @@ export function SubmissionDetail({
                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                       />
                     </svg>
-                    Edit
+                    {tSubmission("edit")}
                   </Button>
                 )}
                 <ShareButton
@@ -183,7 +188,7 @@ export function SubmissionDetail({
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                Image
+                {tSubmission("image")}
               </button>
               <button
                 onClick={() => setMobileView("text")}
@@ -193,7 +198,7 @@ export function SubmissionDetail({
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                Text
+                {tSubmission("text")}
               </button>
             </div>
           )}
@@ -211,7 +216,7 @@ export function SubmissionDetail({
               >
                 <SubmissionImage
                   imageUrl={submission.imageUrl!}
-                  alt={submission.title || "Submission"}
+                  alt={submission.title || tSubmission("submissionAlt")}
                   imageFocalPoint={submission.imageFocalPoint}
                   tags={submission.tags}
                   onExpand={() => setIsLightboxOpen(true)}

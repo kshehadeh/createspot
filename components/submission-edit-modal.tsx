@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +38,7 @@ export function SubmissionEditModal({
   mode = "edit",
 }: SubmissionEditModalProps) {
   const router = useRouter();
+  const t = useTranslations("modals.submissionEdit");
 
   const handleSuccess = (data?: SubmissionData) => {
     onSuccess?.(data);
@@ -45,17 +47,15 @@ export function SubmissionEditModal({
   };
 
   const getTitle = () => {
-    if (mode === "add-to-portfolio") return "Add to Portfolio";
-    if (mode === "create") return "Add Portfolio Item";
-    return "Edit Submission";
+    if (mode === "add-to-portfolio") return t("addToPortfolioTitle");
+    if (mode === "create") return t("createTitle");
+    return t("editTitle");
   };
 
   const getDescription = () => {
-    if (mode === "add-to-portfolio")
-      return "Edit your submission details and add it to your portfolio.";
-    if (mode === "create")
-      return "Create a new portfolio item by adding an image or text, along with details about your work.";
-    return "Update your submission details below.";
+    if (mode === "add-to-portfolio") return t("addToPortfolioDescription");
+    if (mode === "create") return t("createDescription");
+    return t("editDescription");
   };
 
   return (

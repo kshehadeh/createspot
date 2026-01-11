@@ -146,6 +146,22 @@
     "retry": "Reintentar",
     "reachedEnd": "Has llegado al final."
   },
+  "submission": {
+    "label": "Publicación",
+    "edit": "Editar",
+    "image": "Imagen",
+    "text": "Texto",
+    "submissionAlt": "Publicación"
+  },
+  "categories": {
+    "Photography": "Fotografía",
+    "Writing": "Escritura",
+    "Digital Art": "Arte Digital",
+    "Illustration": "Ilustración",
+    "Mixed Media": "Medios Mixtos",
+    "Design": "Diseño",
+    "Other": "Otro"
+  },
   "portfolio": {
     "addNewItem": "Añadir Nuevo Elemento al Portafolio",
     "yourPortfolioItems": "Tus Elementos del Portafolio ({count})",
@@ -389,5 +405,115 @@
   },
   "footer": {
     "copyright": "© {year} Create Spot"
+  },
+  "modals": {
+    "deleteAccount": {
+      "title": "Eliminar Tu Cuenta",
+      "titleAdmin": "Eliminar la Cuenta de {name}",
+      "finalConfirmation": "Confirmación Final",
+      "finalConfirmationAdmin": "Confirmación Final: Eliminar {name}",
+      "message": "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.",
+      "messageAdmin": "¿Estás seguro de que quieres eliminar la cuenta de {name}? Esta acción no se puede deshacer.",
+      "willDelete": "Esto eliminará permanentemente:",
+      "userAccount": "La cuenta de usuario",
+      "allSubmissions": "Todas las publicaciones y elementos del portafolio",
+      "allImages": "Todas las imágenes subidas",
+      "allFavorites": "Todos los favoritos y datos relacionados",
+      "finalMessage": "Esto eliminará permanentemente tu cuenta y todos tus datos. Escribe 'DELETE' para confirmar.",
+      "finalMessageAdmin": "Esto eliminará permanentemente la cuenta de {name} y todos sus datos. Escribe 'DELETE' para confirmar.",
+      "typeToConfirm": "Escribe DELETE para confirmar:",
+      "continue": "Continuar",
+      "deleting": "Eliminando...",
+      "deleteMyAccount": "Eliminar Mi Cuenta",
+      "deleteUser": "Eliminar Usuario",
+      "accountDeleted": "Cuenta eliminada exitosamente",
+      "accountDeletedAdmin": "Cuenta de {name} eliminada exitosamente",
+      "deleteFailed": "Error al eliminar la cuenta. Por favor, inténtalo de nuevo."
+    },
+    "focalPoint": {
+      "title": "Establecer Punto Focal de la Imagen",
+      "description": "Haz clic en cualquier parte de la imagen para establecer el punto focal. Esto determina qué parte de la imagen se centrará cuando se muestre en espacios restringidos.",
+      "clickToSet": "Haz clic para establecer el punto focal",
+      "preview": "Vista Previa",
+      "focalPointLabel": "Punto focal: {x}%, {y}%",
+      "previewDescription": "Así es como aparecerá la imagen cuando se recorte.",
+      "saveFocalPoint": "Guardar Punto Focal"
+    },
+    "submissionEdit": {
+      "addToPortfolioTitle": "Añadir al Portafolio",
+      "addToPortfolioDescription": "Edita los detalles de tu publicación y añádela a tu portafolio.",
+      "createTitle": "Añadir Elemento al Portafolio",
+      "createDescription": "Crea un nuevo elemento del portafolio añadiendo una imagen o texto, junto con detalles sobre tu trabajo.",
+      "editTitle": "Editar Publicación",
+      "editDescription": "Actualiza los detalles de tu publicación a continuación."
+    },
+    "confirm": {
+      "defaultDelete": "Eliminar",
+      "defaultDeleting": "Eliminando..."
+    },
+    "profileImage": {
+      "title": "Imagen de Perfil",
+      "description": "Sube, ajusta o elimina tu imagen de perfil",
+      "upload": "Subir",
+      "change": "Cambiar",
+      "adjust": "Ajustar",
+      "remove": "Eliminar",
+      "uploading": "Subiendo...",
+      "processing": "Procesando...",
+      "removeTitle": "Eliminar Imagen de Perfil",
+      "removeMessage": "¿Estás seguro de que quieres eliminar tu imagen de perfil? Esta acción no se puede deshacer.",
+      "imageUploaded": "Imagen de perfil subida",
+      "imageRemoved": "Imagen de perfil eliminada",
+      "focalPointUpdated": "Punto focal actualizado",
+      "uploadFailed": "Error al subir la imagen. Por favor, inténtalo de nuevo.",
+      "removeFailed": "Error al eliminar la imagen. Por favor, inténtalo de nuevo.",
+      "focalPointFailed": "Error al actualizar el punto focal. Por favor, inténtalo de nuevo.",
+      "selectImageFile": "Por favor selecciona un archivo de imagen",
+      "imageTooLarge": "La imagen debe ser menor a 10MB"
+    },
+    "portfolioItemForm": {
+      "title": "Título",
+      "titlePlaceholder": "Dale un título a tu trabajo",
+      "image": "Imagen",
+      "textDescription": "Texto / Descripción",
+      "textPlaceholder": "Añade una descripción o escritura creativa...",
+      "category": "Categoría",
+      "categoryPlaceholder": "Selecciona una categoría",
+      "categoryNone": "Ninguno",
+      "tags": "Etiquetas",
+      "tagPlaceholder": "Escribe una etiqueta y presiona espacio",
+      "tagPlaceholderEmpty": "Escribe una etiqueta y presiona espacio para añadirla",
+      "tagHelper": "Escribe una etiqueta y presiona espacio para añadirla",
+      "removeTag": "Eliminar {tag}",
+      "visibility": "Visibilidad",
+      "shareStatus": {
+        "public": "Público",
+        "publicDescription": "Visible en todas partes (galerías, páginas de perfil, etc.)",
+        "profileOnly": "Solo Perfil",
+        "profileOnlyDescription": "Solo visible en tu página de perfil",
+        "private": "Privado",
+        "privateDescription": "Solo visible para ti"
+      },
+      "uploading": "Subiendo...",
+      "clickToUpload": "Haz clic para subir una imagen",
+      "uploadFormat": "PNG, JPG, GIF hasta 10MB",
+      "setFocalPoint": "Establecer Punto Focal",
+      "focalPoint": "Punto Focal: {x}%, {y}%",
+      "saving": "Guardando...",
+      "addToPortfolio": "Añadir al Portafolio",
+      "saveChanges": "Guardar Cambios",
+      "removeImage": "Eliminar Imagen",
+      "removeImageTitle": "Eliminar Imagen",
+      "removeImageMessage": "¿Estás seguro de que quieres eliminar esta imagen de tu publicación? Esta acción no se puede deshacer.",
+      "errors": {
+        "selectImageFile": "Por favor selecciona un archivo de imagen",
+        "imageTooLarge": "La imagen debe ser menor a 10MB",
+        "addImageOrText": "Por favor añade una imagen o texto",
+        "uploadFailed": "Error al subir la imagen. Por favor, inténtalo de nuevo.",
+        "createFailed": "Error al crear el elemento del portafolio",
+        "updateFailed": "Error al actualizar el elemento del portafolio",
+        "saveFailed": "Error al guardar el elemento del portafolio. Por favor, inténtalo de nuevo."
+      }
+    }
   }
 }

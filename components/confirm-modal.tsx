@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,12 +28,17 @@ export function ConfirmModal({
   isOpen,
   title,
   message,
-  confirmLabel = "Delete",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   onCancel,
   isLoading = false,
 }: ConfirmModalProps) {
+  const t = useTranslations("modals.confirm");
+  const tCommon = useTranslations("common");
+  const defaultConfirmLabel = confirmLabel ?? t("defaultDelete");
+  const defaultCancelLabel = cancelLabel ?? tCommon("cancel");
+
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <AlertDialogContent>
@@ -43,7 +49,7 @@ export function ConfirmModal({
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
             <Button variant="outline" onClick={onCancel} disabled={isLoading}>
-              {cancelLabel}
+              {defaultCancelLabel}
             </Button>
           </AlertDialogCancel>
           <AlertDialogAction asChild>
@@ -52,7 +58,7 @@ export function ConfirmModal({
               onClick={onConfirm}
               disabled={isLoading}
             >
-              {isLoading ? "Deleting..." : confirmLabel}
+              {isLoading ? t("defaultDeleting") : defaultConfirmLabel}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

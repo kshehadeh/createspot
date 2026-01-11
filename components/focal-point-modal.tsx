@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,8 @@ export function FocalPointModal({
   onSave,
   previewAspectRatio = "circle",
 }: FocalPointModalProps) {
+  const t = useTranslations("modals.focalPoint");
+  const tCommon = useTranslations("common");
   const [focalPoint, setFocalPoint] = useState<{ x: number; y: number }>(
     initialFocalPoint || { x: 50, y: 50 },
   );
@@ -75,20 +78,14 @@ export function FocalPointModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Set Image Focal Point</DialogTitle>
-          <DialogDescription>
-            Click anywhere on the image to set the focal point. This determines
-            which part of the image will be centered when displayed in
-            constrained spaces.
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Main image with click handler */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Click to set focal point
-            </label>
+            <label className="text-sm font-medium">{t("clickToSet")}</label>
             <div
               ref={imageContainerRef}
               className="relative aspect-video w-full cursor-crosshair overflow-hidden rounded-lg border bg-muted"
@@ -126,14 +123,16 @@ export function FocalPointModal({
               )}
             </div>
             <p className="text-xs text-muted-foreground">
-              Focal point: {focalPoint.x.toFixed(1)}%, {focalPoint.y.toFixed(1)}
-              %
+              {t("focalPointLabel", {
+                x: focalPoint.x.toFixed(1),
+                y: focalPoint.y.toFixed(1),
+              })}
             </p>
           </div>
 
           {/* Preview pane */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Preview</label>
+            <label className="text-sm font-medium">{t("preview")}</label>
             <div
               className={`relative overflow-hidden rounded-lg border bg-muted ${
                 previewAspectRatio === "circle"
@@ -152,16 +151,16 @@ export function FocalPointModal({
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              This is how the image will appear when cropped.
+              {t("previewDescription")}
             </p>
           </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel}>
-            Cancel
+            {tCommon("cancel")}
           </Button>
-          <Button onClick={handleSave}>Save Focal Point</Button>
+          <Button onClick={handleSave}>{t("saveFocalPoint")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

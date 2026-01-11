@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Popover,
@@ -31,6 +32,7 @@ export function ExhibitionFilters({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const tCategories = useTranslations("categories");
   const [searchValue, setSearchValue] = useState(initialQuery);
   const [isPending, startTransition] = useTransition();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -179,7 +181,7 @@ export function ExhibitionFilters({
                           {categories.map((categoryName) => (
                             <FilterPill
                               key={categoryName}
-                              label={categoryName}
+                              label={tCategories(categoryName)}
                               isActive={initialCategory === categoryName}
                               onClick={() => {
                                 updateParams({

@@ -18,6 +18,7 @@ interface HeaderUser {
   id?: string;
   name?: string | null;
   image?: string | null;
+  profileImageUrl?: string | null;
   isAdmin?: boolean;
 }
 
@@ -68,6 +69,7 @@ export function Header({ user }: HeaderProps) {
                 id={user.id}
                 name={user.name}
                 image={user.image}
+                profileImageUrl={user.profileImageUrl}
                 isAdmin={user.isAdmin}
               />
             ) : (

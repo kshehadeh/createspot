@@ -10,12 +10,14 @@ import { Button } from "./ui/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { cn } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
+import { getUserImageUrl } from "@/lib/user-image";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 interface MobileNavigationUser {
   id?: string;
   name?: string | null;
   image?: string | null;
+  profileImageUrl?: string | null;
   isAdmin?: boolean;
 }
 
@@ -332,19 +334,25 @@ function MobileUserSection({
         aria-expanded={isUserOpen}
       >
         <div className="flex items-center gap-3">
-          {user.image ? (
-            <Image
-              src={user.image}
-              alt={user.name || t("userAvatar")}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
-              {user.name?.charAt(0).toUpperCase() || "?"}
-            </div>
-          )}
+          {(() => {
+            const displayImage = getUserImageUrl(
+              user.profileImageUrl,
+              user.image,
+            );
+            return displayImage ? (
+              <Image
+                src={displayImage}
+                alt={user.name || t("userAvatar")}
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
+                {user.name?.charAt(0).toUpperCase() || "?"}
+              </div>
+            );
+          })()}
           {user.name && (
             <span className="text-sm font-medium text-foreground">
               {user.name}

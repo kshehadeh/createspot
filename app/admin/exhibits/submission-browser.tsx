@@ -63,6 +63,7 @@ export function SubmissionBrowser({
   const t = useTranslations("admin.exhibits");
   const tCommon = useTranslations("common");
   const tProfile = useTranslations("profile");
+  const tCategories = useTranslations("categories");
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -225,7 +226,7 @@ export function SubmissionBrowser({
                 <SelectItem value="__all__">{t("allCategories")}</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
-                    {cat}
+                    {tCategories(cat)}
                   </SelectItem>
                 ))}
               </SelectContent>

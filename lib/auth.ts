@@ -33,12 +33,13 @@ export const { handlers, signIn, auth } = NextAuth({
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        // Fetch isAdmin from database
+        // Fetch isAdmin and profileImageUrl from database
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { isAdmin: true },
+          select: { isAdmin: true, profileImageUrl: true },
         });
         session.user.isAdmin = dbUser?.isAdmin ?? false;
+        session.user.profileImageUrl = dbUser?.profileImageUrl ?? null;
       }
       return session;
     },

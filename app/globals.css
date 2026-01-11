@@ -24,8 +24,8 @@
     --filter-active-foreground: 38 92% 20%;
     --filter-active-background: 38 92% 96%;
     --filter-active-hover: 38 92% 94%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+    --border: 240 5.9% 80%;
+    --input: 240 5.9% 80%;
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
     --navbar-height: calc(4rem + 5px); /* 4rem for navbar height + 5px for border and margin */
@@ -54,8 +54,8 @@
     --filter-active-foreground: 0 0% 98%;
     --filter-active-background: 38 92% 8%;
     --filter-active-hover: 38 92% 12%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 3.7% 16%;
+    --input: 240 3.7% 16%;
     --ring: 240 4.9% 83.9%;
   }
 }

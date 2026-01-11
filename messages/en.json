@@ -146,6 +146,22 @@
     "retry": "Retry",
     "reachedEnd": "You've reached the end."
   },
+  "submission": {
+    "label": "Submission",
+    "edit": "Edit",
+    "image": "Image",
+    "text": "Text",
+    "submissionAlt": "Submission"
+  },
+  "categories": {
+    "Photography": "Photography",
+    "Writing": "Writing",
+    "Digital Art": "Digital Art",
+    "Illustration": "Illustration",
+    "Mixed Media": "Mixed Media",
+    "Design": "Design",
+    "Other": "Other"
+  },
   "portfolio": {
     "addNewItem": "Add New Portfolio Item",
     "yourPortfolioItems": "Your Portfolio Items ({count})",
@@ -389,5 +405,115 @@
   },
   "footer": {
     "copyright": "© {year} Create Spot"
+  },
+  "modals": {
+    "deleteAccount": {
+      "title": "Delete Your Account",
+      "titleAdmin": "Delete {name}'s Account",
+      "finalConfirmation": "Final Confirmation",
+      "finalConfirmationAdmin": "Final Confirmation: Delete {name}",
+      "message": "Are you sure you want to delete your account? This action cannot be undone.",
+      "messageAdmin": "Are you sure you want to delete {name}'s account? This action cannot be undone.",
+      "willDelete": "This will permanently delete:",
+      "userAccount": "The user account",
+      "allSubmissions": "All submissions and portfolio items",
+      "allImages": "All uploaded images",
+      "allFavorites": "All favorites and related data",
+      "finalMessage": "This will permanently delete your account and all your data. Type 'DELETE' to confirm.",
+      "finalMessageAdmin": "This will permanently delete {name}'s account and all their data. Type 'DELETE' to confirm.",
+      "typeToConfirm": "Type DELETE to confirm:",
+      "continue": "Continue",
+      "deleting": "Deleting...",
+      "deleteMyAccount": "Delete My Account",
+      "deleteUser": "Delete User",
+      "accountDeleted": "Account deleted successfully",
+      "accountDeletedAdmin": "Successfully deleted {name}'s account",
+      "deleteFailed": "Failed to delete account. Please try again."
+    },
+    "focalPoint": {
+      "title": "Set Image Focal Point",
+      "description": "Click anywhere on the image to set the focal point. This determines which part of the image will be centered when displayed in constrained spaces.",
+      "clickToSet": "Click to set focal point",
+      "preview": "Preview",
+      "focalPointLabel": "Focal point: {x}%, {y}%",
+      "previewDescription": "This is how the image will appear when cropped.",
+      "saveFocalPoint": "Save Focal Point"
+    },
+    "submissionEdit": {
+      "addToPortfolioTitle": "Add to Portfolio",
+      "addToPortfolioDescription": "Edit your submission details and add it to your portfolio.",
+      "createTitle": "Add Portfolio Item",
+      "createDescription": "Create a new portfolio item by adding an image or text, along with details about your work.",
+      "editTitle": "Edit Submission",
+      "editDescription": "Update your submission details below."
+    },
+    "confirm": {
+      "defaultDelete": "Delete",
+      "defaultDeleting": "Deleting..."
+    },
+    "profileImage": {
+      "title": "Profile Image",
+      "description": "Upload, adjust, or remove your profile image",
+      "upload": "Upload",
+      "change": "Change",
+      "adjust": "Adjust",
+      "remove": "Remove",
+      "uploading": "Uploading...",
+      "processing": "Processing...",
+      "removeTitle": "Remove Profile Image",
+      "removeMessage": "Are you sure you want to remove your profile image? This action cannot be undone.",
+      "imageUploaded": "Profile image uploaded",
+      "imageRemoved": "Profile image removed",
+      "focalPointUpdated": "Focal point updated",
+      "uploadFailed": "Failed to upload image. Please try again.",
+      "removeFailed": "Failed to remove image. Please try again.",
+      "focalPointFailed": "Failed to update focal point. Please try again.",
+      "selectImageFile": "Please select an image file",
+      "imageTooLarge": "Image must be less than 10MB"
+    },
+    "portfolioItemForm": {
+      "title": "Title",
+      "titlePlaceholder": "Give your work a title",
+      "image": "Image",
+      "textDescription": "Text / Description",
+      "textPlaceholder": "Add a description or creative writing...",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "categoryNone": "None",
+      "tags": "Tags",
+      "tagPlaceholder": "Type a tag and press space",
+      "tagPlaceholderEmpty": "Type a tag and press space to add it",
+      "tagHelper": "Type a tag and press space to add it",
+      "removeTag": "Remove {tag}",
+      "visibility": "Visibility",
+      "shareStatus": {
+        "public": "Public",
+        "publicDescription": "Visible everywhere (galleries, profile pages, etc.)",
+        "profileOnly": "Profile Only",
+        "profileOnlyDescription": "Only visible on your profile page",
+        "private": "Private",
+        "privateDescription": "Only visible to you"
+      },
+      "uploading": "Uploading...",
+      "clickToUpload": "Click to upload an image",
+      "uploadFormat": "PNG, JPG, GIF up to 10MB",
+      "setFocalPoint": "Set Focal Point",
+      "focalPoint": "Focal Point: {x}%, {y}%",
+      "saving": "Saving...",
+      "addToPortfolio": "Add to Portfolio",
+      "saveChanges": "Save Changes",
+      "removeImage": "Remove Image",
+      "removeImageTitle": "Remove Image",
+      "removeImageMessage": "Are you sure you want to remove this image from your submission? This action cannot be undone.",
+      "errors": {
+        "selectImageFile": "Please select an image file",
+        "imageTooLarge": "Image must be less than 10MB",
+        "addImageOrText": "Please add an image or text",
+        "uploadFailed": "Failed to upload image. Please try again.",
+        "createFailed": "Failed to create portfolio item",
+        "updateFailed": "Failed to update portfolio item",
+        "saveFailed": "Failed to save portfolio item. Please try again."
+      }
+    }
   }
 }
