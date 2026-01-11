@@ -154,7 +154,13 @@ export default async function GalleryExhibitionPage({
       />
 
       <ExhibitionGrid
-        submissions={submissions}
+        submissions={submissions.map((submission) => ({
+          ...submission,
+          imageFocalPoint: submission.imageFocalPoint as
+            | { x: number; y: number }
+            | null
+            | undefined,
+        }))}
         isLoggedIn={!!session?.user}
         initialHasMore={hasMore}
       />

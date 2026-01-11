@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getUserImageUrl } from "@/lib/user-image";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 import { PageLayout } from "@/components/page-layout";
+import { ProfileImageViewer } from "@/components/profile-image-viewer";
 import { HistoryList } from "@/app/prompt/history/history-list";
 import { SocialLinks } from "./social-links";
 import { PortfolioGrid } from "@/components/portfolio-grid";
@@ -99,6 +102,8 @@ export default async function ProfilePage({
       id: true,
       name: true,
       image: true,
+      profileImageUrl: true,
+      profileImageFocalPoint: true,
       bio: true,
       instagram: true,
       twitter: true,
@@ -233,6 +238,10 @@ export default async function ProfilePage({
       id: featuredSubmission.id,
       title: featuredSubmission.title,
       imageUrl: featuredSubmission.imageUrl,
+      imageFocalPoint: featuredSubmission.imageFocalPoint as {
+        x: number;
+        y: number;
+      } | null,
       text: featuredSubmission.text,
       isPortfolio: featuredSubmission.isPortfolio,
       portfolioOrder: featuredSubmission.portfolioOrder,
@@ -270,28 +279,45 @@ export default async function ProfilePage({
             style={{
               backgroundImage: `url(${featuredSubmission.imageUrl})`,
               backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundPosition: getObjectPositionStyle(
+                featuredSubmission.imageFocalPoint as {
+                  x: number;
+                  y: number;
+                } | null,
+              ),
             }}
           />
           {/* Semi-opaque overlay for public view with featured image */}
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
 
-          <div className="relative flex items-start justify-between gap-4 p-6 max-w-5xl mx-auto">
+          <div className="relative flex flex-col gap-3 p-6 max-w-5xl mx-auto md:flex-row md:items-start md:justify-between md:gap-4">
             <div className="flex items-center gap-4 min-w-0 flex-1">
-              {user.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.image}
-                  alt={user.name || "User"}
-                  className="hidden h-16 w-16 rounded-full md:block ring-2 ring-background/50"
-                />
-              ) : (
-                <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-muted md:flex ring-2 ring-background/50">
-                  <span className="text-2xl font-medium text-muted-foreground">
-                    {user.name?.charAt(0) || "?"}
-                  </span>
-                </div>
-              )}
+              {(() => {
+                const displayImage = getUserImageUrl(
+                  user.profileImageUrl,
+                  user.image,
+                );
+                return displayImage ? (
+                  <ProfileImageViewer
+                    profileImageUrl={user.profileImageUrl}
+                    oauthImage={user.image}
+                    profileImageFocalPoint={
+                      user.profileImageFocalPoint as {
+                        x: number;
+                        y: number;
+                      } | null
+                    }
+                    name={user.name}
+                    className="h-12 w-12 rounded-full md:h-16 md:w-16 ring-2 ring-background/50 object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="h-12 w-12 flex items-center justify-center rounded-full bg-muted md:h-16 md:w-16 ring-2 ring-background/50 shrink-0">
+                    <span className="text-xl font-medium text-muted-foreground md:text-2xl">
+                      {user.name?.charAt(0) || "?"}
+                    </span>
+                  </div>
+                );
+              })()}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-semibold text-foreground truncate drop-shadow-sm">
@@ -315,24 +341,22 @@ export default async function ProfilePage({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-2 shrink-0">
-              {isOwnProfile && !isPublicView && (
+            {isOwnProfile && !isPublicView && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 md:flex-col md:items-end md:gap-2 md:shrink-0">
                 <Link
                   href={`/profile/${user.id}?view=public`}
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   View as Anonymous User →
                 </Link>
-              )}
-              {isOwnProfile && !isPublicView && (
                 <Link
                   href="/profile/edit"
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Edit Profile →
                 </Link>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {user.bio && (
@@ -343,22 +367,34 @@ export default async function ProfilePage({
         </div>
       ) : (
         <div className="mb-8 w-full min-w-0">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
             <div className="flex items-center gap-4 min-w-0 flex-1">
-              {user.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.image}
-                  alt={user.name || "User"}
-                  className="hidden h-16 w-16 rounded-full md:block"
-                />
-              ) : (
-                <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-muted md:flex">
-                  <span className="text-2xl font-medium text-muted-foreground">
-                    {user.name?.charAt(0) || "?"}
-                  </span>
-                </div>
-              )}
+              {(() => {
+                const displayImage = getUserImageUrl(
+                  user.profileImageUrl,
+                  user.image,
+                );
+                return displayImage ? (
+                  <ProfileImageViewer
+                    profileImageUrl={user.profileImageUrl}
+                    oauthImage={user.image}
+                    profileImageFocalPoint={
+                      user.profileImageFocalPoint as {
+                        x: number;
+                        y: number;
+                      } | null
+                    }
+                    name={user.name}
+                    className="h-12 w-12 rounded-full md:h-16 md:w-16 object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="h-12 w-12 flex items-center justify-center rounded-full bg-muted md:h-16 md:w-16 shrink-0">
+                    <span className="text-xl font-medium text-muted-foreground md:text-2xl">
+                      {user.name?.charAt(0) || "?"}
+                    </span>
+                  </div>
+                );
+              })()}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-semibold text-foreground truncate">
@@ -382,24 +418,22 @@ export default async function ProfilePage({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-2 shrink-0">
-              {isOwnProfile && !isPublicView && (
+            {isOwnProfile && !isPublicView && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 md:flex-col md:items-end md:gap-2 md:shrink-0">
                 <Link
                   href={`/profile/${user.id}?view=public`}
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   View as Anonymous User →
                 </Link>
-              )}
-              {isOwnProfile && !isPublicView && (
                 <Link
                   href="/profile/edit"
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Edit Profile →
                 </Link>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {user.bio && <ExpandableBio html={user.bio} className="mt-4" />}
@@ -434,7 +468,13 @@ export default async function ProfilePage({
             </div>
           </div>
           <PortfolioGrid
-            items={allPortfolioItems}
+            items={allPortfolioItems.map((item) => ({
+              ...item,
+              imageFocalPoint: item.imageFocalPoint as
+                | { x: number; y: number }
+                | null
+                | undefined,
+            }))}
             isLoggedIn={isLoggedIn}
             isOwnProfile={effectiveIsOwnProfile}
             featuredSubmissionId={featuredSubmission?.id}

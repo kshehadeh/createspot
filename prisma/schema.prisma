@@ -61,6 +61,8 @@ model User {
   emailVerified        DateTime?
   name                 String?
   image                String?
+  profileImageUrl      String?      // Custom profile image uploaded by user
+  profileImageFocalPoint Json?      // {"x": 50, "y": 30} where x,y are 0-100 percentages
   isAdmin              Boolean      @default(false)
   bio                  String?      @db.Text
   instagram            String?
@@ -113,6 +115,7 @@ model Submission {
   wordIndex      Int?        // Nullable for portfolio-only items (1, 2, or 3 when set)
   title          String?
   imageUrl       String?
+  imageFocalPoint Json?      // {"x": 50, "y": 30} where x,y are 0-100 percentages
   text           String?     @db.Text // Sanitized HTML
   isPortfolio    Boolean     @default(false) // Show in portfolio section
   portfolioOrder Int?        // Custom ordering for portfolio items (lower = first)

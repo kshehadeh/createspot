@@ -36,12 +36,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getCategoryIcon } from "@/lib/categories";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 import { Pencil, Trash2, Star } from "lucide-react";
 
 interface PortfolioItem {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   isPortfolio: boolean;
   portfolioOrder: number | null;
@@ -303,6 +305,9 @@ function SortablePortfolioItem({
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            style={{
+              objectPosition: getObjectPositionStyle(item.imageFocalPoint),
+            }}
           />
         ) : item.text ? (
           <TextThumbnail text={item.text} className="h-full w-full" />
@@ -649,6 +654,11 @@ function PortfolioGridContent({
                           fill
                           className="object-cover transition-transform duration-300 group-hover:scale-105"
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          style={{
+                            objectPosition: getObjectPositionStyle(
+                              item.imageFocalPoint,
+                            ),
+                          }}
                         />
                       ) : item.text ? (
                         <TextThumbnail

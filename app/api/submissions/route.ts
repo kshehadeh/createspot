@@ -106,12 +106,35 @@ export async function POST(request: NextRequest) {
     wordIndex,
     title,
     imageUrl,
+    imageFocalPoint,
     text,
     isPortfolio,
     tags,
     category,
     shareStatus,
   } = body;
+
+  // Validate focal point if provided
+  if (imageFocalPoint !== undefined && imageFocalPoint !== null) {
+    if (
+      typeof imageFocalPoint !== "object" ||
+      typeof imageFocalPoint.x !== "number" ||
+      typeof imageFocalPoint.y !== "number"
+    ) {
+      return NextResponse.json(
+        { error: "Invalid focal point format. Must be {x: number, y: number}" },
+        { status: 400 },
+      );
+    }
+
+    const { x, y } = imageFocalPoint;
+    if (x < 0 || x > 100 || y < 0 || y > 100) {
+      return NextResponse.json(
+        { error: "Focal point coordinates must be between 0 and 100" },
+        { status: 400 },
+      );
+    }
+  }
 
   // Portfolio-only item (no prompt association)
   if (!promptId && isPortfolio) {
@@ -137,6 +160,7 @@ export async function POST(request: NextRequest) {
         wordIndex: null,
         title: title || null,
         imageUrl: imageUrl || null,
+        imageFocalPoint: imageFocalPoint !== undefined ? imageFocalPoint : null,
         text: text || null,
         isPortfolio: true,
         tags: tags || [],
@@ -205,6 +229,10 @@ export async function POST(request: NextRequest) {
     update: {
       title,
       imageUrl,
+      imageFocalPoint:
+        imageFocalPoint !== undefined
+          ? imageFocalPoint
+          : (existingSubmission?.imageFocalPoint ?? null),
       text,
       isPortfolio: isPortfolio ?? existingSubmission?.isPortfolio ?? false,
       tags: tags ?? existingSubmission?.tags ?? [],
@@ -217,6 +245,7 @@ export async function POST(request: NextRequest) {
       wordIndex,
       title,
       imageUrl,
+      imageFocalPoint: imageFocalPoint ?? null,
       text,
       isPortfolio: isPortfolio ?? false,
       tags: tags ?? [],

@@ -121,6 +121,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const {
     title,
     imageUrl,
+    imageFocalPoint,
     text,
     isPortfolio,
     tags,
@@ -129,6 +130,28 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     wordIndex,
     shareStatus,
   } = body;
+
+  // Validate focal point if provided
+  if (imageFocalPoint !== undefined && imageFocalPoint !== null) {
+    if (
+      typeof imageFocalPoint !== "object" ||
+      typeof imageFocalPoint.x !== "number" ||
+      typeof imageFocalPoint.y !== "number"
+    ) {
+      return NextResponse.json(
+        { error: "Invalid focal point format. Must be {x: number, y: number}" },
+        { status: 400 },
+      );
+    }
+
+    const { x, y } = imageFocalPoint;
+    if (x < 0 || x > 100 || y < 0 || y > 100) {
+      return NextResponse.json(
+        { error: "Focal point coordinates must be between 0 and 100" },
+        { status: 400 },
+      );
+    }
+  }
 
   // If linking to a prompt, validate it
   if (promptId !== undefined && promptId !== null) {
@@ -175,6 +198,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   if (title !== undefined) updateData.title = title;
   if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+  if (imageFocalPoint !== undefined)
+    updateData.imageFocalPoint = imageFocalPoint;
   if (text !== undefined) updateData.text = text;
   if (isPortfolio !== undefined) updateData.isPortfolio = isPortfolio;
   if (tags !== undefined) updateData.tags = tags;

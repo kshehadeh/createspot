@@ -7,11 +7,13 @@ import type { Submission } from "@/app/generated/prisma/client";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { ConfirmModal } from "@/components/confirm-modal";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 
 interface PortfolioItem {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   category: string | null;
 }
@@ -329,6 +331,14 @@ export function SubmissionSlots({
                         fill
                         className="object-cover"
                         sizes="(max-width: 640px) 100vw, 33vw"
+                        style={{
+                          objectPosition: getObjectPositionStyle(
+                            submission.imageFocalPoint as {
+                              x: number;
+                              y: number;
+                            } | null,
+                          ),
+                        }}
                       />
                     </div>
                   ) : submission.text ? (
@@ -452,6 +462,11 @@ export function SubmissionSlots({
                                   fill
                                   className="object-cover"
                                   sizes="40px"
+                                  style={{
+                                    objectPosition: getObjectPositionStyle(
+                                      item.imageFocalPoint,
+                                    ),
+                                  }}
                                 />
                               </div>
                             ) : item.text ? (

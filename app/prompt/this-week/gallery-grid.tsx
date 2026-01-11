@@ -8,12 +8,14 @@ import { TextThumbnail } from "@/components/text-thumbnail";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 
 interface Submission {
   id: string;
   wordIndex: number | null;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   user: {
     id: string;
@@ -135,6 +137,11 @@ function GalleryContent({
                     fill
                     className="object-cover"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    style={{
+                      objectPosition: getObjectPositionStyle(
+                        submission.imageFocalPoint,
+                      ),
+                    }}
                   />
                   {isLoggedIn && (
                     <FavoriteButton

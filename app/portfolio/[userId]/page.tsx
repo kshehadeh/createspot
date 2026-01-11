@@ -166,7 +166,13 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
       {/* Portfolio Grid */}
       {portfolioItems.length > 0 ? (
         <PortfolioGrid
-          items={portfolioItems}
+          items={portfolioItems.map((item) => ({
+            ...item,
+            imageFocalPoint: item.imageFocalPoint as {
+              x: number;
+              y: number;
+            } | null,
+          }))}
           isLoggedIn={isLoggedIn}
           isOwnProfile={isOwnPortfolio}
           user={{

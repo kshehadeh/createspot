@@ -18,6 +18,7 @@ interface SubmissionDetailProps {
     id: string;
     title: string | null;
     imageUrl: string | null;
+    imageFocalPoint?: { x: number; y: number } | null;
     text: string | null;
     wordIndex: number | null;
     category: string | null;
@@ -211,6 +212,7 @@ export function SubmissionDetail({
                 <SubmissionImage
                   imageUrl={submission.imageUrl!}
                   alt={submission.title || "Submission"}
+                  imageFocalPoint={submission.imageFocalPoint}
                   tags={submission.tags}
                   onExpand={() => setIsLightboxOpen(true)}
                 />
@@ -268,6 +270,7 @@ export function SubmissionDetail({
             id: submission.id,
             title: submission.title,
             imageUrl: submission.imageUrl,
+            imageFocalPoint: submission.imageFocalPoint,
             text: submission.text,
             tags: submission.tags,
             category: submission.category,
@@ -280,6 +283,7 @@ export function SubmissionDetail({
                 ...prev,
                 title: updatedData.title,
                 imageUrl: updatedData.imageUrl,
+                imageFocalPoint: updatedData.imageFocalPoint,
                 text: updatedData.text,
                 tags: updatedData.tags,
                 category: updatedData.category,

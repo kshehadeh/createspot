@@ -223,7 +223,15 @@ export default async function Home() {
             {/* Right: Recent Submissions Carousel (appears below on mobile) */}
             {recentWork.length > 0 && (
               <div className="flex w-full flex-col lg:w-[40%] lg:max-w-md lg:flex-shrink-0">
-                <RecentSubmissionsCarousel submissions={recentWork} />
+                <RecentSubmissionsCarousel
+                  submissions={recentWork.map((s) => ({
+                    ...s,
+                    imageFocalPoint: s.imageFocalPoint as {
+                      x: number;
+                      y: number;
+                    } | null,
+                  }))}
+                />
               </div>
             )}
           </div>

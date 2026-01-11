@@ -9,12 +9,14 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ExhibitionSubmission {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   tags: string[];
   category: string | null;
@@ -200,6 +202,11 @@ function GridContent({
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      style={{
+                        objectPosition: getObjectPositionStyle(
+                          submission.imageFocalPoint,
+                        ),
+                      }}
                     />
                     {isLoggedIn && (
                       <div

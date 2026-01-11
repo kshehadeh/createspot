@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { prisma } from "@/lib/prisma";
+import sharp from "sharp";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -109,7 +110,80 @@ export default async function OpenGraphImage({ params }: RouteParams) {
       const imageResponse = await fetch(submission.imageUrl);
       if (imageResponse.ok) {
         const arrayBuffer = await imageResponse.arrayBuffer();
-        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        const buffer = Buffer.from(arrayBuffer);
+
+        // Get image metadata first (need to rotate to get correct dimensions)
+        const rotatedBuffer = await sharp(buffer).rotate().toBuffer();
+        const metadata = await sharp(rotatedBuffer).metadata();
+        const originalWidth = metadata.width || 1;
+        const originalHeight = metadata.height || 1;
+
+        // Get focal point
+        const focalPoint = submission.imageFocalPoint as {
+          x: number;
+          y: number;
+        } | null;
+
+        // Target aspect ratio for OG image
+        const targetAspectRatio = size.width / size.height; // 1200/630 = ~1.905
+        const originalAspectRatio = originalWidth / originalHeight;
+
+        let processedBuffer: Buffer;
+
+        if (focalPoint) {
+          // Calculate crop dimensions to match target aspect ratio
+          let cropWidth: number;
+          let cropHeight: number;
+
+          if (originalAspectRatio > targetAspectRatio) {
+            // Original is wider - crop width
+            cropHeight = originalHeight;
+            cropWidth = cropHeight * targetAspectRatio;
+          } else {
+            // Original is taller - crop height
+            cropWidth = originalWidth;
+            cropHeight = cropWidth / targetAspectRatio;
+          }
+
+          // Ensure crop doesn't exceed image bounds
+          cropWidth = Math.min(cropWidth, originalWidth);
+          cropHeight = Math.min(cropHeight, originalHeight);
+
+          // Calculate crop position to center on focal point
+          // Focal point is in percentages (0-100), convert to pixels
+          const focalX = (focalPoint.x / 100) * originalWidth;
+          const focalY = (focalPoint.y / 100) * originalHeight;
+
+          // Position crop so focal point is centered
+          let left = focalX - cropWidth / 2;
+          let top = focalY - cropHeight / 2;
+
+          // Clamp to image bounds
+          left = Math.max(0, Math.min(left, originalWidth - cropWidth));
+          top = Math.max(0, Math.min(top, originalHeight - cropHeight));
+
+          // Extract and resize using fresh sharp instance
+          processedBuffer = await sharp(rotatedBuffer)
+            .extract({
+              left: Math.round(left),
+              top: Math.round(top),
+              width: Math.round(cropWidth),
+              height: Math.round(cropHeight),
+            })
+            .resize(size.width, size.height, {
+              fit: "cover",
+            })
+            .toBuffer();
+        } else {
+          // No focal point - just resize to cover
+          processedBuffer = await sharp(rotatedBuffer)
+            .resize(size.width, size.height, {
+              fit: "cover",
+            })
+            .toBuffer();
+        }
+
+        const base64 = processedBuffer.toString("base64");
         const contentType =
           imageResponse.headers.get("content-type") || "image/jpeg";
         const imageDataUrl = `data:${contentType};base64,${base64}`;
@@ -123,7 +197,7 @@ export default async function OpenGraphImage({ params }: RouteParams) {
               position: "relative",
             }}
           >
-            {/* Background image with explicit dimensions */}
+            {/* Background image cropped with focal point via sharp */}
             <img
               src={imageDataUrl}
               alt={title}

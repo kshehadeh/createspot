@@ -50,7 +50,13 @@ export default async function ThisWeekPage() {
 
       {submissions.length > 0 ? (
         <GalleryGrid
-          submissions={submissions}
+          submissions={submissions.map((s) => ({
+            ...s,
+            imageFocalPoint: s.imageFocalPoint as {
+              x: number;
+              y: number;
+            } | null,
+          }))}
           words={[prompt.word1, prompt.word2, prompt.word3]}
           isLoggedIn={!!session?.user}
         />

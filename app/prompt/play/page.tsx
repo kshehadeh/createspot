@@ -102,6 +102,7 @@ export default async function PlayPage() {
           id: p.id,
           title: p.title,
           imageUrl: p.imageUrl,
+          imageFocalPoint: p.imageFocalPoint as { x: number; y: number } | null,
           text: p.text,
           category: p.category,
         }))}

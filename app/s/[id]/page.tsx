@@ -17,6 +17,7 @@ async function getSubmission(id: string) {
       id: true,
       title: true,
       imageUrl: true,
+      imageFocalPoint: true,
       text: true,
       wordIndex: true,
       category: true,
@@ -137,7 +138,13 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
 
   return (
     <SubmissionDetail
-      submission={submission}
+      submission={{
+        ...submission,
+        imageFocalPoint: submission.imageFocalPoint as
+          | { x: number; y: number }
+          | null
+          | undefined,
+      }}
       isLoggedIn={!!session?.user}
       isOwner={isOwner}
     />

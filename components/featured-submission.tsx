@@ -4,12 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 
 interface FeaturedSubmissionProps {
   submission: {
     id: string;
     title: string | null;
     imageUrl: string | null;
+    imageFocalPoint?: { x: number; y: number } | null;
     text: string | null;
     wordIndex: number | null;
     prompt: {
@@ -56,6 +58,11 @@ export function FeaturedSubmission({ submission }: FeaturedSubmissionProps) {
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 1024px) 100vw, 33vw"
+            style={{
+              objectPosition: getObjectPositionStyle(
+                submission.imageFocalPoint,
+              ),
+            }}
           />
           {hasText && (
             <div className="absolute left-2 bottom-2 z-10 flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">

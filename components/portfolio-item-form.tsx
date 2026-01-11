@@ -3,8 +3,10 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Crosshair } from "lucide-react";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { ConfirmModal } from "@/components/confirm-modal";
+import { FocalPointModal } from "@/components/focal-point-modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { CATEGORIES } from "@/lib/categories";
 
 const SHARE_STATUS_OPTIONS = [
@@ -39,6 +47,7 @@ interface SubmissionData {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   tags: string[];
   category: string | null;
@@ -77,6 +86,11 @@ export function PortfolioItemForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showRemoveImageConfirm, setShowRemoveImageConfirm] = useState(false);
+  const [imageFocalPoint, setImageFocalPoint] = useState<{
+    x: number;
+    y: number;
+  } | null>(initialData?.imageFocalPoint || null);
+  const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -149,6 +163,7 @@ export function PortfolioItemForm({
       }
     }
     setImageUrl("");
+    setImageFocalPoint(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -177,6 +192,7 @@ export function PortfolioItemForm({
           body: JSON.stringify({
             title: title || null,
             imageUrl: imageUrl || null,
+            imageFocalPoint: imageFocalPoint || null,
             text: text || null,
             isPortfolio: true,
             tags: trimmedTags,
@@ -195,6 +211,7 @@ export function PortfolioItemForm({
           body: JSON.stringify({
             title: title || null,
             imageUrl: imageUrl || null,
+            imageFocalPoint: imageFocalPoint || null,
             text: text || null,
             tags: trimmedTags,
             category: category || null,
@@ -215,6 +232,7 @@ export function PortfolioItemForm({
               id: initialData.id,
               title: title || null,
               imageUrl: imageUrl || null,
+              imageFocalPoint: imageFocalPoint || null,
               text: text || null,
               tags: trimmedTags,
               category: category || null,
@@ -264,27 +282,48 @@ export function PortfolioItemForm({
                 sizes="(max-width: 640px) 100vw, 512px"
               />
             </div>
-            <Button
-              type="button"
-              variant="destructive"
-              size="icon"
-              onClick={() => setShowRemoveImageConfirm(true)}
-              className="absolute top-2 right-2"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="absolute top-2 right-2 flex gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="icon"
+                      onClick={() => setIsFocalPointModalOpen(true)}
+                      className="bg-black/50 text-white hover:bg-black/70"
+                    >
+                      <Crosshair className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {imageFocalPoint
+                      ? `Focal Point: ${imageFocalPoint.x.toFixed(0)}%, ${imageFocalPoint.y.toFixed(0)}%`
+                      : "Set Focal Point"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                onClick={() => setShowRemoveImageConfirm(true)}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </Button>
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </Button>
+            </div>
           </div>
         ) : (
           <div
@@ -512,6 +551,18 @@ export function PortfolioItemForm({
         }}
         onCancel={() => setShowRemoveImageConfirm(false)}
       />
+
+      {/* Focal Point Modal */}
+      {imageUrl && (
+        <FocalPointModal
+          isOpen={isFocalPointModalOpen}
+          onClose={() => setIsFocalPointModalOpen(false)}
+          imageUrl={imageUrl}
+          initialFocalPoint={imageFocalPoint}
+          onSave={setImageFocalPoint}
+          previewAspectRatio="square"
+        />
+      )}
     </form>
   );
 }

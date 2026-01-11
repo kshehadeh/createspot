@@ -1,12 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 import { Maximize2 } from "lucide-react";
 
 interface SubmissionImageProps {
   imageUrl: string;
   alt: string;
   tags?: string[];
+  /** Focal point for image cropping */
+  imageFocalPoint?: { x: number; y: number } | null;
   /** Height classes for the container. Defaults to submission detail heights. */
   heightClasses?: string;
   /** Additional wrapper classes */
@@ -19,6 +22,7 @@ export function SubmissionImage({
   imageUrl,
   alt,
   tags = [],
+  imageFocalPoint,
   heightClasses = "h-[65vh] sm:h-[72vh] md:h-[80vh]",
   className = "",
   onExpand,
@@ -29,7 +33,12 @@ export function SubmissionImage({
       onClick={onExpand}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={imageUrl} alt={alt} className="h-full w-full object-cover" />
+      <img
+        src={imageUrl}
+        alt={alt}
+        className="h-full w-full object-cover"
+        style={{ objectPosition: getObjectPositionStyle(imageFocalPoint) }}
+      />
       {onExpand && (
         <Button
           variant="ghost"

@@ -14,6 +14,7 @@ interface SubmissionData {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   tags: string[];
   category: string | null;

@@ -111,6 +111,7 @@ export {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogFooter,
   DialogTitle,
   DialogDescription,
   VisuallyHidden,

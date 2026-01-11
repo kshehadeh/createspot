@@ -7,11 +7,13 @@ import { TextThumbnail } from "@/components/text-thumbnail";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { Button } from "@/components/ui/button";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 
 interface SubmissionOption {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   wordIndex: number | null;
   isPortfolio: boolean;
@@ -29,6 +31,7 @@ interface PortfolioItem {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   isPortfolio: boolean;
   portfolioOrder: number | null;
@@ -105,11 +108,15 @@ export function PortfolioEditForm({
 
   const handleSetFeatured = async (item: PortfolioItem) => {
     try {
+      // If the item is already featured, remove it (set to null)
+      // Otherwise, set it as featured
+      const newFeaturedId = featuredSubmissionId === item.id ? null : item.id;
+
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          featuredSubmissionId: item.id,
+          featuredSubmissionId: newFeaturedId,
         }),
       });
 
@@ -117,7 +124,7 @@ export function PortfolioEditForm({
         throw new Error("Failed to set featured submission");
       }
 
-      setFeaturedSubmissionId(item.id);
+      setFeaturedSubmissionId(newFeaturedId);
       router.refresh();
     } catch {
       setError("Failed to set featured submission. Please try again.");
@@ -215,6 +222,11 @@ export function PortfolioEditForm({
                             fill
                             className="object-cover"
                             sizes="40px"
+                            style={{
+                              objectPosition: getObjectPositionStyle(
+                                submission.imageFocalPoint,
+                              ),
+                            }}
                           />
                         </div>
                       ) : submission.text ? (
@@ -271,6 +283,7 @@ export function PortfolioEditForm({
             id: editingItem.id,
             title: editingItem.title,
             imageUrl: editingItem.imageUrl,
+            imageFocalPoint: editingItem.imageFocalPoint,
             text: editingItem.text,
             tags: editingItem.tags,
             category: editingItem.category,
@@ -286,6 +299,7 @@ export function PortfolioEditForm({
                         ...item,
                         title: updatedData.title,
                         imageUrl: updatedData.imageUrl,
+                        imageFocalPoint: updatedData.imageFocalPoint,
                         text: updatedData.text,
                         tags: updatedData.tags,
                         category: updatedData.category,
@@ -322,6 +336,7 @@ export function PortfolioEditForm({
             id: addingToPortfolio.id,
             title: addingToPortfolio.title,
             imageUrl: addingToPortfolio.imageUrl,
+            imageFocalPoint: addingToPortfolio.imageFocalPoint,
             text: addingToPortfolio.text,
             tags: addingToPortfolio.tags,
             category: addingToPortfolio.category,
@@ -336,6 +351,7 @@ export function PortfolioEditForm({
                   id: updatedData.id,
                   title: updatedData.title,
                   imageUrl: updatedData.imageUrl,
+                  imageFocalPoint: updatedData.imageFocalPoint,
                   text: updatedData.text,
                   isPortfolio: true,
                   portfolioOrder: null,

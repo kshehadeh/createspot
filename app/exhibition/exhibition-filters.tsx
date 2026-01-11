@@ -96,7 +96,7 @@ export function ExhibitionFilters({
 
   return (
     <Card className="mb-8 rounded-2xl border-0 shadow-none">
-      <CardContent className="p-6">
+      <CardContent className="px-0 py-6">
         <form onSubmit={handleSearch}>
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
             <div className="relative flex-1">

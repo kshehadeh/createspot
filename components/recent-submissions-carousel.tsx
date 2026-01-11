@@ -6,11 +6,13 @@ import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getObjectPositionStyle } from "@/lib/image-utils";
 
 interface Submission {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
   user: {
     id: string;
@@ -87,6 +89,11 @@ export function RecentSubmissionsCarousel({
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(max-width: 1024px) 100vw, 40vw"
+                    style={{
+                      objectPosition: getObjectPositionStyle(
+                        submission.imageFocalPoint,
+                      ),
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                   <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 transition-opacity group-hover:opacity-100">
