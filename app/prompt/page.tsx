@@ -50,7 +50,7 @@ export default async function PromptsPage() {
                 currentPrompt.word2,
                 currentPrompt.word3,
               ].map((word, index) => (
-                <div key={index} className="relative">
+                <div key={index} className="relative flex items-center whitespace-nowrap">
                   <span
                     className={`inline-block text-5xl font-black tracking-tight sm:text-6xl md:text-7xl lg:text-8xl rainbow-shimmer-${index + 1}`}
                   >
