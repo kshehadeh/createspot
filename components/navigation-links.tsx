@@ -8,6 +8,7 @@ export function DashboardNavigation() {
   const pathname = usePathname();
   const exhibitionRoute = getRoute("exhibition");
   const promptRoute = getRoute("prompt");
+  const creatorsRoute = getRoute("creators");
   const aboutRoute = getRoute("about");
 
   const isActive = (path: string) => {
@@ -35,6 +36,12 @@ export function DashboardNavigation() {
       </Link>
       <Link href={promptRoute.path} className={linkClassName(promptRoute.path)}>
         {promptRoute.label}
+      </Link>
+      <Link
+        href={creatorsRoute.path}
+        className={linkClassName(creatorsRoute.path)}
+      >
+        {creatorsRoute.label}
       </Link>
       <Link href={aboutRoute.path} className={linkClassName(aboutRoute.path)}>
         {aboutRoute.label}

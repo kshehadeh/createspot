@@ -196,6 +196,7 @@ function MobileNavigationLinks({
   const pathname = usePathname();
   const exhibitionRoute = getRoute("exhibition");
   const promptRoute = getRoute("prompt");
+  const creatorsRoute = getRoute("creators");
   const aboutRoute = getRoute("about");
 
   const isActive = (path: string) => {
@@ -239,6 +240,19 @@ function MobileNavigationLinks({
         >
           {promptRoute.icon && <promptRoute.icon className="h-5 w-5" />}
           {promptRoute.label}
+        </Link>
+      </div>
+      <div className="mb-2">
+        <Link
+          href={creatorsRoute.path}
+          className={cn(
+            linkClassName(creatorsRoute.path),
+            "flex items-center gap-2",
+          )}
+          onClick={onLinkClick}
+        >
+          {creatorsRoute.icon && <creatorsRoute.icon className="h-5 w-5" />}
+          {creatorsRoute.label}
         </Link>
       </div>
       <div className="mb-2">

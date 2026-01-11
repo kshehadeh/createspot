@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Lock, Heart, User, Briefcase, LogOut } from "lucide-react";
+import { Lock, Heart, User, Briefcase, LogOut, Users } from "lucide-react";
 import { EXHIBITION_CONFIGS } from "./exhibition-constants";
 import { Home } from "lucide-react";
 
@@ -131,6 +131,11 @@ const ROUTES: Record<string, RouteConfig> = {
   },
 
   // Other routes
+  creators: {
+    path: "/creators",
+    label: "Creators",
+    icon: Users,
+  },
   favorites: {
     path: "/favorites",
     label: "Favorites",

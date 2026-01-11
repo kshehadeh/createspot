@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
+import { ProfileHeader } from "./profile-header";
 import { ProfileEditForm } from "./profile-edit-form";
 
 export const dynamic = "force-dynamic";
@@ -66,30 +67,17 @@ export default async function ProfileEditPage() {
     <PageLayout maxWidth="max-w-5xl" className="w-full">
       <div className="mb-8">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
-          <div className="flex items-center gap-4">
-            {user.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.image}
-                alt={user.name || "User"}
-                className="h-12 w-12 rounded-full md:h-16 md:w-16 object-cover shrink-0"
-              />
-            ) : (
-              <div className="h-12 w-12 flex items-center justify-center rounded-full bg-muted md:h-16 md:w-16 shrink-0">
-                <span className="text-xl font-medium text-muted-foreground md:text-2xl">
-                  {user.name?.charAt(0) || "?"}
-                </span>
-              </div>
-            )}
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">
-                {user.name || "Anonymous"}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Edit your profile information
-              </p>
-            </div>
-          </div>
+          <ProfileHeader
+            profileImageUrl={user.profileImageUrl}
+            oauthImage={user.image}
+            profileImageFocalPoint={
+              user.profileImageFocalPoint as {
+                x: number;
+                y: number;
+              } | null
+            }
+            name={user.name}
+          />
           <div className="flex flex-wrap gap-x-4 gap-y-1 md:flex-col md:items-end md:gap-2 md:shrink-0">
             <Link
               href={`/profile/${user.id}`}
@@ -119,10 +107,6 @@ export default async function ProfileEditPage() {
         initialStateProvince={user.stateProvince || ""}
         initialCountry={user.country || ""}
         initialFeaturedSubmissionId={user.featuredSubmissionId || ""}
-        initialProfileImageUrl={user.profileImageUrl || ""}
-        initialProfileImageFocalPoint={
-          user.profileImageFocalPoint as { x: number; y: number } | null
-        }
         submissions={submissions.map((s) => ({
           id: s.id,
           title: s.title,

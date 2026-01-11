@@ -18,16 +18,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Country, State, City } from "country-state-city";
-import { Briefcase, ArrowRight, Crosshair, Trash2 } from "lucide-react";
+import { Briefcase, ArrowRight } from "lucide-react";
 import { normalizeUrl, isValidUrl } from "@/lib/utils";
-import { FocalPointModal } from "@/components/focal-point-modal";
-import { getObjectPositionStyle } from "@/lib/image-utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface SubmissionOption {
   id: string;
@@ -58,8 +50,6 @@ interface ProfileEditFormProps {
   initialStateProvince: string;
   initialCountry: string;
   initialFeaturedSubmissionId: string;
-  initialProfileImageUrl: string;
-  initialProfileImageFocalPoint: { x: number; y: number } | null;
   submissions: SubmissionOption[];
   portfolioItemCount: number;
 }
@@ -76,8 +66,6 @@ export function ProfileEditForm({
   initialStateProvince,
   initialCountry,
   initialFeaturedSubmissionId,
-  initialProfileImageUrl,
-  initialProfileImageFocalPoint,
   submissions,
   portfolioItemCount,
 }: ProfileEditFormProps) {
@@ -96,24 +84,11 @@ export function ProfileEditForm({
   const [featuredSubmissionId, setFeaturedSubmissionId] = useState(
     initialFeaturedSubmissionId,
   );
-  const [profileImageUrl, setProfileImageUrl] = useState(
-    initialProfileImageUrl || "",
-  );
-  const [uploadingProfileImage, setUploadingProfileImage] = useState(false);
-  const [profileImageError, setProfileImageError] = useState<string | null>(
-    null,
-  );
-  const [profileImageFocalPoint, setProfileImageFocalPoint] = useState<{
-    x: number;
-    y: number;
-  } | null>(initialProfileImageFocalPoint);
-  const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [websiteError, setWebsiteError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const profileImageInputRef = useRef<HTMLInputElement>(null);
 
   // Track initial values to detect changes
   const initialValuesRef = useRef({
@@ -127,8 +102,6 @@ export function ProfileEditForm({
     stateProvince: initialStateProvince,
     country: initialCountry,
     featuredSubmissionId: initialFeaturedSubmissionId,
-    profileImageUrl: initialProfileImageUrl || "",
-    profileImageFocalPoint: initialProfileImageFocalPoint,
   });
 
   // Debounce timer ref
@@ -196,94 +169,6 @@ export function ProfileEditForm({
     };
   }, [isDropdownOpen]);
 
-  // Profile image upload handler
-  const handleProfileImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setProfileImageError("Please select an image file");
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      setProfileImageError("Image must be less than 10MB");
-      return;
-    }
-
-    setUploadingProfileImage(true);
-    setProfileImageError(null);
-
-    try {
-      // Get presigned URL
-      const presignResponse = await fetch("/api/upload/presign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileType: file.type,
-          fileSize: file.size,
-          type: "profile",
-        }),
-      });
-
-      if (!presignResponse.ok) {
-        const data = await presignResponse.json().catch(() => null);
-        throw new Error(data?.error || "Failed to get upload URL");
-      }
-
-      const { presignedUrl, publicUrl } = await presignResponse.json();
-
-      // Upload to R2
-      const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      setProfileImageUrl(publicUrl);
-      // Auto-save the profile image URL - explicitly pass the new URL
-      await saveProfile(false, { profileImageUrl: publicUrl });
-      toast.success("Profile image uploaded and saved");
-    } catch (err) {
-      setProfileImageError(
-        err instanceof Error
-          ? err.message
-          : "Failed to upload image. Please try again.",
-      );
-    } finally {
-      setUploadingProfileImage(false);
-    }
-  };
-
-  // Profile image removal handler
-  const handleRemoveProfileImage = async () => {
-    const oldImageUrl = profileImageUrl;
-    setProfileImageUrl("");
-    if (profileImageInputRef.current) {
-      profileImageInputRef.current.value = "";
-    }
-    // Delete from R2
-    if (oldImageUrl) {
-      try {
-        await fetch("/api/upload/delete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageUrl: oldImageUrl }),
-        });
-      } catch {
-        // Ignore deletion errors
-      }
-    }
-    // Auto-save to clear profile image URL
-    await saveProfile(false, { profileImageUrl: "" });
-  };
-
   // Auto-save function (excludes bio which is handled separately)
   const saveProfile = useCallback(
     async (
@@ -298,8 +183,6 @@ export function ProfileEditForm({
         city?: string;
         stateProvince?: string;
         country?: string;
-        profileImageUrl?: string;
-        profileImageFocalPoint?: { x: number; y: number } | null;
       },
     ) => {
       if (saveTimerRef.current) {
@@ -335,14 +218,6 @@ export function ProfileEditForm({
           : stateProvince;
       const countryValue =
         overrides?.country !== undefined ? overrides.country : country;
-      const profileImageUrlValue =
-        overrides?.profileImageUrl !== undefined
-          ? overrides.profileImageUrl
-          : profileImageUrl;
-      const profileImageFocalPointValue =
-        overrides?.profileImageFocalPoint !== undefined
-          ? overrides.profileImageFocalPoint
-          : profileImageFocalPoint;
 
       try {
         const response = await fetch("/api/profile", {
@@ -359,8 +234,6 @@ export function ProfileEditForm({
             stateProvince: stateProvinceValue || null,
             country: countryValue || null,
             featuredSubmissionId: featuredId || null,
-            profileImageUrl: profileImageUrlValue || null,
-            profileImageFocalPoint: profileImageFocalPointValue || null,
           }),
         });
 
@@ -384,8 +257,6 @@ export function ProfileEditForm({
           stateProvince: stateProvinceValue,
           country: countryValue,
           featuredSubmissionId: featuredId,
-          profileImageUrl: profileImageUrlValue,
-          profileImageFocalPoint: profileImageFocalPointValue,
         };
 
         router.refresh();
@@ -412,17 +283,9 @@ export function ProfileEditForm({
       stateProvince,
       country,
       featuredSubmissionId,
-      profileImageUrl,
-      profileImageFocalPoint,
       router,
     ],
   );
-
-  // Handle focal point save from modal
-  const handleFocalPointSave = async (focalPoint: { x: number; y: number }) => {
-    setProfileImageFocalPoint(focalPoint);
-    await saveProfile(false, { profileImageFocalPoint: focalPoint });
-  };
 
   // Debounced auto-save - only saves if there are actual changes
   const debouncedSave = useCallback(() => {
@@ -754,149 +617,21 @@ export function ProfileEditForm({
           </div>
         </Link>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="name"
-              className="mb-2 block text-sm font-medium text-foreground"
-            >
-              Name
-            </label>
-            <Input
-              type="text"
-              id="name"
-              value={name}
-              onChange={handleNameChange}
-              onBlur={handleNameBlur}
-              placeholder="Your name"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-foreground">
-              Profile Image
-            </label>
-            {profileImageError && (
-              <div className="mb-3 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-                {profileImageError}
-              </div>
-            )}
-            {profileImageUrl ? (
-              <TooltipProvider>
-                <div className="flex items-start gap-3">
-                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-muted">
-                    <Image
-                      src={profileImageUrl}
-                      alt="Profile"
-                      fill
-                      className="object-cover"
-                      sizes="96px"
-                      style={{
-                        objectPosition: getObjectPositionStyle(
-                          profileImageFocalPoint,
-                        ),
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => setIsFocalPointModalOpen(true)}
-                          disabled={uploadingProfileImage}
-                        >
-                          <Crosshair className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {profileImageFocalPoint
-                          ? `Adjust Focal Point (${profileImageFocalPoint.x.toFixed(0)}%, ${profileImageFocalPoint.y.toFixed(0)}%)`
-                          : "Set Focal Point"}
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          onClick={handleRemoveProfileImage}
-                          disabled={uploadingProfileImage}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Remove Image</TooltipContent>
-                    </Tooltip>
-                  </div>
-                </div>
-              </TooltipProvider>
-            ) : (
-              <div
-                onClick={() => profileImageInputRef.current?.click()}
-                className="cursor-pointer rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/50"
-              >
-                <input
-                  ref={profileImageInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfileImageUpload}
-                  className="hidden"
-                />
-                {uploadingProfileImage ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <svg
-                      className="h-5 w-5 animate-spin text-muted-foreground"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <span className="text-sm text-muted-foreground">
-                      Uploading...
-                    </span>
-                  </div>
-                ) : (
-                  <>
-                    <svg
-                      className="mx-auto h-6 w-6 text-muted-foreground"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Upload image
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Max 10MB
-                    </p>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
+        <div>
+          <label
+            htmlFor="name"
+            className="mb-2 block text-sm font-medium text-foreground"
+          >
+            Name
+          </label>
+          <Input
+            type="text"
+            id="name"
+            value={name}
+            onChange={handleNameChange}
+            onBlur={handleNameBlur}
+            placeholder="Your name"
+          />
         </div>
 
         <div>
@@ -1320,15 +1055,6 @@ export function ProfileEditForm({
           </div>
         </div>
       </div>
-
-      <FocalPointModal
-        isOpen={isFocalPointModalOpen}
-        onClose={() => setIsFocalPointModalOpen(false)}
-        imageUrl={profileImageUrl}
-        initialFocalPoint={profileImageFocalPoint}
-        onSave={handleFocalPointSave}
-        previewAspectRatio="circle"
-      />
     </div>
   );
 }

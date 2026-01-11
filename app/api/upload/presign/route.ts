@@ -82,7 +82,9 @@ export async function POST(request: NextRequest) {
     });
 
     // Log for debugging (remove in production if needed)
-    console.log(`[Presign] Generating presigned URL for Key: ${fileName}, type: ${type}`);
+    console.log(
+      `[Presign] Generating presigned URL for Key: ${fileName}, type: ${type}`,
+    );
 
     const presignedUrl = await getSignedUrl(s3Client, putCommand, {
       expiresIn: PRESIGN_EXPIRES_IN,
