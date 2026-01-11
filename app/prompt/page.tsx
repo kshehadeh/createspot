@@ -44,7 +44,7 @@ export default async function PromptsPage() {
         {currentPrompt ? (
           <>
             {/* Large Prominent Words */}
-            <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6 md:gap-10">
+            <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:flex-nowrap sm:gap-6 md:gap-10">
               {[
                 currentPrompt.word1,
                 currentPrompt.word2,
