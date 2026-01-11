@@ -18,8 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Country, State, City } from "country-state-city";
-import { Briefcase, ArrowRight } from "lucide-react";
+import { Briefcase, ArrowRight, Trash2 } from "lucide-react";
 import { normalizeUrl, isValidUrl } from "@/lib/utils";
+import { DeleteAccountModal } from "@/components/delete-account-modal";
 
 interface SubmissionOption {
   id: string;
@@ -88,6 +89,7 @@ export function ProfileEditForm({
   const [error, setError] = useState<string | null>(null);
   const [websiteError, setWebsiteError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Track initial values to detect changes
@@ -1054,7 +1056,35 @@ export function ProfileEditForm({
             )}
           </div>
         </div>
+
+        {/* Danger Zone */}
+        <div className="mt-12 pt-8 border-t border-destructive/20">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-destructive">
+                Danger Zone
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Irreversible and destructive actions
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="w-full sm:w-auto"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Account
+            </Button>
+          </div>
+        </div>
       </div>
+
+      <DeleteAccountModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      />
     </div>
   );
 }

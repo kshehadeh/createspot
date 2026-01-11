@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { DeleteAccountModal } from "@/components/delete-account-modal";
 
 interface User {
   id: string;
@@ -23,6 +25,9 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
   const router = useRouter();
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deleteModalUserId, setDeleteModalUserId] = useState<string | null>(
+    null,
+  );
 
   async function toggleAdmin(userId: string, currentIsAdmin: boolean) {
     setLoadingUserId(userId);
@@ -121,24 +126,52 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
                     Cannot modify your own account
                   </span>
                 ) : (
-                  <Button
-                    onClick={() => toggleAdmin(user.id, user.isAdmin)}
-                    disabled={isLoading}
-                    variant={user.isAdmin ? "secondary" : "default"}
-                    className="w-full"
-                  >
-                    {isLoading
-                      ? "Updating..."
-                      : user.isAdmin
-                        ? "Remove Admin"
-                        : "Make Admin"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => toggleAdmin(user.id, user.isAdmin)}
+                      disabled={isLoading}
+                      variant={user.isAdmin ? "secondary" : "default"}
+                      className="flex-1"
+                    >
+                      {isLoading
+                        ? "Updating..."
+                        : user.isAdmin
+                          ? "Remove Admin"
+                          : "Make Admin"}
+                    </Button>
+                    <Button
+                      onClick={() => setDeleteModalUserId(user.id)}
+                      disabled={isLoading}
+                      variant="destructive"
+                      className="flex-1"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete User
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Delete User Modal */}
+      {deleteModalUserId && (
+        <DeleteAccountModal
+          isOpen={true}
+          onClose={() => setDeleteModalUserId(null)}
+          isAdminDelete={true}
+          targetUserId={deleteModalUserId}
+          targetUserName={
+            users.find((u) => u.id === deleteModalUserId)?.name || undefined
+          }
+          onSuccess={() => {
+            setDeleteModalUserId(null);
+            router.refresh();
+          }}
+        />
+      )}
     </div>
   );
 }

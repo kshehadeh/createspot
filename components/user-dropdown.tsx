@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -24,6 +25,7 @@ interface UserDropdownProps {
 
 export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const profileRoute = getRoute("profile");
   const portfolioRoute = getRoute("portfolio");
   const favoritesRoute = getRoute("favorites");
@@ -32,6 +34,30 @@ export function UserDropdown({ id, name, image, isAdmin }: UserDropdownProps) {
   const handleLogout = () => {
     signOut();
   };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Render a placeholder during SSR to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-2 border-l border-zinc-200 pl-4 outline-none dark:border-zinc-700">
+        {name && (
+          <span className="hidden text-sm text-foreground lg:inline">
+            {name}
+          </span>
+        )}
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={image || undefined} alt={name || "User avatar"} />
+          <AvatarFallback className="bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+            {name?.charAt(0).toUpperCase() || "?"}
+          </AvatarFallback>
+        </Avatar>
+        <ChevronDown className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+      </div>
+    );
+  }
 
   return (
     <DropdownMenu>

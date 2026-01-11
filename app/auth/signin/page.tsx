@@ -1,5 +1,5 @@
 import { signIn } from "@/lib/auth";
-import { Logo } from "@/components/logo";
+import { CreateSpotLogo } from "@/components/create-spot-logo";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function SignInPage() {
@@ -8,8 +8,14 @@ export default function SignInPage() {
       <Card className="w-full max-w-md rounded-xl shadow-lg">
         <CardContent className="p-8">
           <div className="mb-6 flex items-center justify-center gap-2 text-foreground">
-            <Logo className="h-6 w-10" />
-            <h1 className="text-2xl font-normal">Sign in to Prompts</h1>
+            <CreateSpotLogo
+              className="h-6 w-auto"
+              base="currentColor"
+              highlight="rgb(161 161 170)"
+            />
+            <h1 className="text-2xl font-normal font-permanent-marker">
+              Create Spot
+            </h1>
           </div>
           <p className="mb-8 text-center text-muted-foreground">
             Join our creative community and share your interpretations of the
