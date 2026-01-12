@@ -116,6 +116,20 @@ export function ProfileEditForm({
   // Debounce timer ref
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Ref to hold current form state values (for stable saveProfile callback)
+  const formStateRef = useRef({
+    name: initialName || initialGoogleName || "",
+    bio: initialBio,
+    instagram: initialInstagram,
+    twitter: initialTwitter,
+    linkedin: initialLinkedin,
+    website: initialWebsite,
+    city: initialCity,
+    stateProvince: initialStateProvince,
+    country: initialCountry,
+    featuredSubmissionId: initialFeaturedSubmissionId,
+  });
+
   // Get available states/provinces for selected country
   const availableStates = useMemo(
     () => (country ? State.getStatesOfCountry(country) : []),
@@ -206,27 +220,43 @@ export function ProfileEditForm({
 
       const toastId = showToast ? toast.loading(tCommon("saving")) : undefined;
 
-      // Use override values if provided, otherwise use current state
-      const nameValue = overrides?.name !== undefined ? overrides.name : name;
+      // Use override values if provided, otherwise use current state from ref
+      const nameValue =
+        overrides?.name !== undefined
+          ? overrides.name
+          : formStateRef.current.name;
       const featuredId =
         overrides?.featuredSubmissionId !== undefined
           ? overrides.featuredSubmissionId
-          : featuredSubmissionId;
+          : formStateRef.current.featuredSubmissionId;
       const instagramValue =
-        overrides?.instagram !== undefined ? overrides.instagram : instagram;
+        overrides?.instagram !== undefined
+          ? overrides.instagram
+          : formStateRef.current.instagram;
       const twitterValue =
-        overrides?.twitter !== undefined ? overrides.twitter : twitter;
+        overrides?.twitter !== undefined
+          ? overrides.twitter
+          : formStateRef.current.twitter;
       const linkedinValue =
-        overrides?.linkedin !== undefined ? overrides.linkedin : linkedin;
+        overrides?.linkedin !== undefined
+          ? overrides.linkedin
+          : formStateRef.current.linkedin;
       const websiteValue =
-        overrides?.website !== undefined ? overrides.website : website;
-      const cityValue = overrides?.city !== undefined ? overrides.city : city;
+        overrides?.website !== undefined
+          ? overrides.website
+          : formStateRef.current.website;
+      const cityValue =
+        overrides?.city !== undefined
+          ? overrides.city
+          : formStateRef.current.city;
       const stateProvinceValue =
         overrides?.stateProvince !== undefined
           ? overrides.stateProvince
-          : stateProvince;
+          : formStateRef.current.stateProvince;
       const countryValue =
-        overrides?.country !== undefined ? overrides.country : country;
+        overrides?.country !== undefined
+          ? overrides.country
+          : formStateRef.current.country;
 
       try {
         const response = await fetch("/api/profile", {
@@ -282,8 +312,14 @@ export function ProfileEditForm({
         }
       }
     },
-    [
+    [router, t, tCommon],
+  );
+
+  // Sync formStateRef with current state values
+  useEffect(() => {
+    formStateRef.current = {
       name,
+      bio,
       instagram,
       twitter,
       linkedin,
@@ -292,9 +328,19 @@ export function ProfileEditForm({
       stateProvince,
       country,
       featuredSubmissionId,
-      router,
-    ],
-  );
+    };
+  }, [
+    name,
+    bio,
+    instagram,
+    twitter,
+    linkedin,
+    website,
+    city,
+    stateProvince,
+    country,
+    featuredSubmissionId,
+  ]);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -334,16 +380,17 @@ export function ProfileEditForm({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name || null,
-          bio: bio || null,
-          instagram: instagram || null,
-          twitter: twitter || null,
-          linkedin: linkedin || null,
-          website: website || null,
-          city: city || null,
-          stateProvince: stateProvince || null,
-          country: country || null,
-          featuredSubmissionId: featuredSubmissionId || null,
+          name: formStateRef.current.name || null,
+          bio: formStateRef.current.bio || null,
+          instagram: formStateRef.current.instagram || null,
+          twitter: formStateRef.current.twitter || null,
+          linkedin: formStateRef.current.linkedin || null,
+          website: formStateRef.current.website || null,
+          city: formStateRef.current.city || null,
+          stateProvince: formStateRef.current.stateProvince || null,
+          country: formStateRef.current.country || null,
+          featuredSubmissionId:
+            formStateRef.current.featuredSubmissionId || null,
         }),
       });
 
@@ -353,8 +400,8 @@ export function ProfileEditForm({
 
       toast.success(t("bioSaved"), { id: toastId });
 
-      initialValuesRef.current.bio = bio;
-      setBioOriginalValue(bio);
+      initialValuesRef.current.bio = formStateRef.current.bio;
+      setBioOriginalValue(formStateRef.current.bio);
 
       router.refresh();
     } catch {
@@ -363,19 +410,7 @@ export function ProfileEditForm({
     } finally {
       setSaving(false);
     }
-  }, [
-    name,
-    bio,
-    instagram,
-    twitter,
-    linkedin,
-    website,
-    city,
-    stateProvince,
-    country,
-    featuredSubmissionId,
-    router,
-  ]);
+  }, [router, t]);
 
   const handleBioCancel = useCallback(() => {
     setBio(bioOriginalValue);
