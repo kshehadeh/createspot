@@ -296,42 +296,6 @@ export function ProfileEditForm({
     ],
   );
 
-  // Debounced auto-save - only saves if there are actual changes
-  const debouncedSave = useCallback(() => {
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-    }
-    saveTimerRef.current = setTimeout(() => {
-      // Check if there are actual changes before saving (excluding location fields)
-      const hasActualChanges =
-        name !== initialValuesRef.current.name ||
-        instagram !== initialValuesRef.current.instagram ||
-        twitter !== initialValuesRef.current.twitter ||
-        linkedin !== initialValuesRef.current.linkedin ||
-        website !== initialValuesRef.current.website ||
-        featuredSubmissionId !== initialValuesRef.current.featuredSubmissionId;
-
-      if (hasActualChanges) {
-        saveProfile(true, {
-          name,
-          instagram,
-          twitter,
-          linkedin,
-          website,
-          featuredSubmissionId,
-        });
-      }
-    }, 500);
-  }, [
-    name,
-    instagram,
-    twitter,
-    linkedin,
-    website,
-    featuredSubmissionId,
-    saveProfile,
-  ]);
-
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
@@ -421,9 +385,8 @@ export function ProfileEditForm({
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setName(e.target.value);
-      debouncedSave();
     },
-    [debouncedSave],
+    [],
   );
 
   const handleNameBlur = useCallback(() => {
@@ -435,9 +398,8 @@ export function ProfileEditForm({
   const handleInstagramChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setInstagram(e.target.value);
-      debouncedSave();
     },
-    [debouncedSave],
+    [],
   );
 
   const handleInstagramBlur = useCallback(() => {
@@ -449,9 +411,8 @@ export function ProfileEditForm({
   const handleTwitterChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTwitter(e.target.value);
-      debouncedSave();
     },
-    [debouncedSave],
+    [],
   );
 
   const handleTwitterBlur = useCallback(() => {
@@ -463,9 +424,8 @@ export function ProfileEditForm({
   const handleLinkedinChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setLinkedin(e.target.value);
-      debouncedSave();
     },
-    [debouncedSave],
+    [],
   );
 
   const handleLinkedinBlur = useCallback(() => {
@@ -482,9 +442,8 @@ export function ProfileEditForm({
       if (websiteError) {
         setWebsiteError(null);
       }
-      debouncedSave();
     },
-    [debouncedSave, websiteError],
+    [websiteError],
   );
 
   const handleWebsiteBlur = useCallback(() => {
@@ -540,20 +499,43 @@ export function ProfileEditForm({
     }
   }, [city, country, stateProvince, saveProfile]);
 
-  const handleCountryChange = useCallback((value: string) => {
-    setCountry(value);
-  }, []);
+  const handleCountryChange = useCallback(
+    (value: string) => {
+      setCountry(value);
+      // Save country on change (Select doesn't have blur)
+      if (value !== initialValuesRef.current.country) {
+        saveProfile(true, {
+          country: value,
+          stateProvince: "", // Reset state when country changes
+          city: "", // Reset city when country changes
+        });
+        setStateProvince("");
+        setCity("");
+      }
+    },
+    [saveProfile],
+  );
 
-  const handleStateProvinceChange = useCallback((value: string) => {
-    setStateProvince(value);
-  }, []);
+  const handleStateProvinceChange = useCallback(
+    (value: string) => {
+      setStateProvince(value);
+      // Save state on change (Select doesn't have blur)
+      if (value !== initialValuesRef.current.stateProvince) {
+        saveProfile(true, {
+          country,
+          stateProvince: value,
+          city: "", // Reset city when state changes
+        });
+        setCity("");
+      }
+    },
+    [country, saveProfile],
+  );
 
   const handleCitySelectChange = useCallback(
     (value: string) => {
       setCity(value);
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
+      // Save immediately when selecting from dropdown (dropdowns don't have blur)
       if (value !== initialValuesRef.current.city) {
         saveProfile(true, {
           country,

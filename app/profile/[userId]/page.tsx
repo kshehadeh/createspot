@@ -15,6 +15,8 @@ import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { ProfileShareButton } from "@/components/profile-share-button";
+import { Eye, Pencil, Briefcase } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -346,19 +348,21 @@ export default async function ProfilePage({
               </div>
             </div>
             {isOwnProfile && !isPublicView && (
-              <div className="flex flex-wrap gap-x-4 gap-y-1 md:flex-col md:items-end md:gap-2 md:shrink-0">
-                <Link
-                  href={`/profile/${user.id}?view=public`}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {t("viewAsAnonymous")} →
-                </Link>
-                <Link
-                  href="/profile/edit"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {t("editProfile")} →
-                </Link>
+              <div className="flex flex-row flex-wrap items-end justify-end gap-2 md:shrink-0">
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/profile/${user.id}?view=public`}>
+                    <Eye className="h-4 w-4" />
+                    <span className="hidden md:inline">
+                      {t("viewAsAnonymous")}
+                    </span>
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/profile/edit">
+                    <Pencil className="h-4 w-4" />
+                    <span className="hidden md:inline">{t("editProfile")}</span>
+                  </Link>
+                </Button>
               </div>
             )}
           </div>
@@ -424,19 +428,21 @@ export default async function ProfilePage({
               </div>
             </div>
             {isOwnProfile && !isPublicView && (
-              <div className="flex flex-wrap gap-x-4 gap-y-1 md:flex-col md:items-end md:gap-2 md:shrink-0">
-                <Link
-                  href={`/profile/${user.id}?view=public`}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {t("viewAsAnonymous")} →
-                </Link>
-                <Link
-                  href="/profile/edit"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {t("editProfile")} →
-                </Link>
+              <div className="flex flex-row flex-wrap items-end justify-end gap-2 md:shrink-0">
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/profile/${user.id}?view=public`}>
+                    <Eye className="h-4 w-4" />
+                    <span className="hidden md:inline">
+                      {t("viewAsAnonymous")}
+                    </span>
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/profile/edit">
+                    <Pencil className="h-4 w-4" />
+                    <span className="hidden md:inline">{t("editProfile")}</span>
+                  </Link>
+                </Button>
               </div>
             )}
           </div>
@@ -455,20 +461,24 @@ export default async function ProfilePage({
             <h2 className="text-2xl font-semibold text-foreground">
               {t("portfolio")}
             </h2>
-            <div className="flex flex-col items-end gap-2">
-              <Link
-                href={`/portfolio/${user.id}`}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {t("browsePortfolio")} →
-              </Link>
-              {effectiveIsOwnProfile && (
-                <Link
-                  href="/portfolio/edit"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {t("managePortfolio")} →
+            <div className="flex flex-row flex-wrap items-end justify-end gap-2">
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/portfolio/${user.id}`}>
+                  <Briefcase className="h-4 w-4" />
+                  <span className="hidden md:inline">
+                    {t("browsePortfolio")}
+                  </span>
                 </Link>
+              </Button>
+              {effectiveIsOwnProfile && (
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/portfolio/edit">
+                    <Pencil className="h-4 w-4" />
+                    <span className="hidden md:inline">
+                      {t("managePortfolio")}
+                    </span>
+                  </Link>
+                </Button>
               )}
             </div>
           </div>

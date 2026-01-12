@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Analytics {
   uniqueVisitors: number;
@@ -16,6 +17,7 @@ interface ProfileAnalyticsProps {
 }
 
 export function ProfileAnalytics({ userId }: ProfileAnalyticsProps) {
+  const t = useTranslations("profile");
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ export function ProfileAnalytics({ userId }: ProfileAnalyticsProps) {
 
   const stats = [
     {
-      label: "Profile Views",
+      label: t("profileViews"),
       value: analytics.uniqueVisitors,
       icon: (
         <svg
@@ -84,7 +86,7 @@ export function ProfileAnalytics({ userId }: ProfileAnalyticsProps) {
       ),
     },
     {
-      label: "Total Favorites",
+      label: t("totalFavorites"),
       value: analytics.totalFavorites,
       icon: (
         <svg
@@ -103,7 +105,7 @@ export function ProfileAnalytics({ userId }: ProfileAnalyticsProps) {
       ),
     },
     {
-      label: "Work Views",
+      label: t("workViews"),
       value: analytics.totalViews,
       icon: (
         <svg
@@ -122,7 +124,7 @@ export function ProfileAnalytics({ userId }: ProfileAnalyticsProps) {
       ),
     },
     {
-      label: "Total Works",
+      label: t("totalWorks"),
       value: analytics.totalWorkCount,
       icon: (
         <svg

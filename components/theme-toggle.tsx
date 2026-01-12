@@ -22,7 +22,10 @@ export function ThemeToggle() {
   }
 
   const toggleTheme = () => {
-    if (theme === "system") {
+    // Handle undefined theme (happens before next-themes initializes on first render)
+    // If theme is undefined, start from system and go to light
+    // Otherwise, cycle through: system -> light -> dark -> system
+    if (!theme || theme === "system") {
       setTheme("light");
     } else if (theme === "light") {
       setTheme("dark");

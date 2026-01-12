@@ -4,8 +4,11 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
+import { PageHeader } from "@/components/page-header";
 import { ProfileHeader } from "./profile-header";
 import { ProfileEditForm } from "./profile-edit-form";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +72,7 @@ export default async function ProfileEditPage() {
   return (
     <PageLayout maxWidth="max-w-5xl" className="w-full">
       <div className="mb-8">
-        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
+        <div className="flex items-start gap-4">
           <ProfileHeader
             profileImageUrl={user.profileImageUrl}
             oauthImage={user.image}
@@ -80,20 +83,33 @@ export default async function ProfileEditPage() {
               } | null
             }
             name={user.name}
+            showText={false}
           />
-          <div className="flex flex-wrap gap-x-4 gap-y-1 md:flex-col md:items-end md:gap-2 md:shrink-0">
-            <Link
-              href={`/profile/${user.id}`}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("viewProfile")} →
-            </Link>
-            <Link
-              href={`/profile/${user.id}?view=public`}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("viewAsAnonymous")} →
-            </Link>
+          <div className="flex-1 min-w-0">
+            <PageHeader
+              title={user.name || t("anonymous")}
+              subtitle={t("editSubtitle")}
+              rightContent={
+                <div className="flex flex-row flex-wrap items-end justify-end gap-2">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/profile/${user.id}`}>
+                      <Eye className="h-4 w-4" />
+                      <span className="hidden md:inline">
+                        {t("viewProfile")}
+                      </span>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/profile/${user.id}?view=public`}>
+                      <Eye className="h-4 w-4" />
+                      <span className="hidden md:inline">
+                        {t("viewAsAnonymous")}
+                      </span>
+                    </Link>
+                  </Button>
+                </div>
+              }
+            />
           </div>
         </div>
       </div>

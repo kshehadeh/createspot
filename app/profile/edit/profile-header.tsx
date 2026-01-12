@@ -13,6 +13,7 @@ interface ProfileHeaderProps {
   oauthImage: string | null;
   profileImageFocalPoint: { x: number; y: number } | null;
   name: string | null;
+  showText?: boolean;
 }
 
 export function ProfileHeader({
@@ -20,6 +21,7 @@ export function ProfileHeader({
   oauthImage,
   profileImageFocalPoint,
   name,
+  showText = true,
 }: ProfileHeaderProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,12 +84,14 @@ export function ProfileHeader({
             </div>
           )}
         </button>
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">
-            {name || t("anonymous")}
-          </h1>
-          <p className="text-sm text-muted-foreground">{t("editSubtitle")}</p>
-        </div>
+        {showText && (
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              {name || t("anonymous")}
+            </h1>
+            <p className="text-sm text-muted-foreground">{t("editSubtitle")}</p>
+          </div>
+        )}
       </div>
 
       <ProfileImageModal

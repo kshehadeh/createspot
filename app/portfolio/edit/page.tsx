@@ -4,8 +4,10 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
+import { PageHeader } from "@/components/page-header";
 import { PortfolioEditForm } from "./portfolio-edit-form";
-import { Briefcase } from "lucide-react";
+import { Briefcase, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -70,37 +72,26 @@ export default async function PortfolioEditPage() {
 
   return (
     <PageLayout maxWidth="max-w-5xl" className="w-full">
-      <div className="mb-8">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-              <Briefcase className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">
-                {t("managePortfolio")}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {t("managePortfolioDescription")}
-              </p>
-            </div>
+      <PageHeader
+        title={t("managePortfolio")}
+        subtitle={t("managePortfolioDescription")}
+        rightContent={
+          <div className="flex flex-row flex-wrap items-end justify-end gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/portfolio/${user.id}`}>
+                <Briefcase className="h-4 w-4" />
+                <span className="hidden md:inline">{t("browsePortfolio")}</span>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/profile/${user.id}`}>
+                <Eye className="h-4 w-4" />
+                <span className="hidden md:inline">{t("viewProfile")}</span>
+              </Link>
+            </Button>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <Link
-              href={`/portfolio/${user.id}`}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("browsePortfolio")} →
-            </Link>
-            <Link
-              href={`/profile/${user.id}`}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("viewProfile")} →
-            </Link>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       <PortfolioEditForm
         featuredSubmissionId={user.featuredSubmissionId}

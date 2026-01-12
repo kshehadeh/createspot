@@ -1,6 +1,7 @@
 {
   "common": {
     "save": "Guardar",
+    "saving": "Guardando...",
     "cancel": "Cancelar",
     "loading": "Cargando...",
     "delete": "Eliminar",
@@ -74,7 +75,7 @@
     "portfolioBadge": "Portafolio",
     "featured": "(Destacado)",
     "viewProfile": "Ver Perfil",
-    "viewAsAnonymous": "Ver como Usuario Anónimo",
+    "viewAsAnonymous": "Ver Perfil Público",
     "editSubtitle": "Edita la información de tu perfil",
     "anonymous": "Anónimo",
     "editProfileImage": "Editar imagen de perfil",
@@ -96,7 +97,11 @@
     "portfolioTitle": "Portafolio de {name}",
     "portfolioDescription": "Ver el portafolio creativo de {name} en Create Spot - una comunidad para artistas y creadores.",
     "portfolioEmpty": "Tu portafolio está vacío. Añade algunos trabajos para mostrarlos aquí.",
-    "noPortfolioItems": "Aún no hay elementos en el portafolio para mostrar."
+    "noPortfolioItems": "Aún no hay elementos en el portafolio para mostrar.",
+    "profileViews": "Vistas del Perfil",
+    "totalFavorites": "Favoritos Totales",
+    "workViews": "Vistas de Trabajos",
+    "totalWorks": "Trabajos Totales"
   },
   "navigation": {
     "home": "Inicio",

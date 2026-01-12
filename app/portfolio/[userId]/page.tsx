@@ -5,8 +5,11 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
+import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { PortfolioShareButton } from "@/components/portfolio-share-button";
+import { Eye, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -118,52 +121,59 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
     <PageLayout maxWidth="max-w-6xl">
       {/* Header */}
       <div className="mb-8 w-full">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-4 min-w-0 flex-1">
-            {user.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.image}
-                alt={user.name || "User"}
-                className="h-12 w-12 rounded-full"
-              />
-            ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                <span className="text-lg font-medium text-muted-foreground">
-                  {user.name?.charAt(0) || "?"}
-                </span>
-              </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-semibold text-foreground truncate">
-                  {user.name
-                    ? t("portfolioTitle", { name: user.name })
-                    : t("portfolio")}
-                </h1>
-                <PortfolioShareButton userId={user.id} />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {portfolioItems.length}{" "}
-                {portfolioItems.length !== 1 ? t("works") : t("work")}
-              </p>
+        <div className="flex items-start gap-4">
+          {user.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.image}
+              alt={user.name || "User"}
+              className="h-12 w-12 rounded-full shrink-0"
+            />
+          ) : (
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted shrink-0">
+              <span className="text-lg font-medium text-muted-foreground">
+                {user.name?.charAt(0) || "?"}
+              </span>
             </div>
-          </div>
-          <div className="flex flex-col items-end gap-2 shrink-0">
-            <Link
-              href={`/profile/${user.id}`}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("viewProfile")} →
-            </Link>
-            {isOwnPortfolio && (
-              <Link
-                href="/portfolio/edit"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {t("managePortfolio")} →
-              </Link>
-            )}
+          )}
+          <div className="flex-1 min-w-0">
+            <PageHeader
+              title={
+                <div className="flex items-center gap-3">
+                  <span className="truncate">
+                    {user.name
+                      ? t("portfolioTitle", { name: user.name })
+                      : t("portfolio")}
+                  </span>
+                  <PortfolioShareButton userId={user.id} />
+                </div>
+              }
+              subtitle={`${portfolioItems.length} ${
+                portfolioItems.length !== 1 ? t("works") : t("work")
+              }`}
+              rightContent={
+                <div className="flex flex-row flex-wrap items-end justify-end gap-2">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/profile/${user.id}`}>
+                      <Eye className="h-4 w-4" />
+                      <span className="hidden md:inline">
+                        {t("viewProfile")}
+                      </span>
+                    </Link>
+                  </Button>
+                  {isOwnPortfolio && (
+                    <Button asChild variant="outline" size="sm">
+                      <Link href="/portfolio/edit">
+                        <Pencil className="h-4 w-4" />
+                        <span className="hidden md:inline">
+                          {t("managePortfolio")}
+                        </span>
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              }
+            />
           </div>
         </div>
       </div>
