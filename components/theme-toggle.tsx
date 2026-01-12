@@ -2,11 +2,11 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Monitor } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -15,37 +15,54 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-9 w-9">
-        <Sun className="h-4 w-4" />
-      </Button>
+      <div className="flex h-9 items-center rounded-full border border-border bg-secondary px-1">
+        <div className="flex h-7 w-7 items-center justify-center">
+          <Sun className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </div>
     );
   }
 
-  const toggleTheme = () => {
-    // Handle undefined theme (happens before next-themes initializes on first render)
-    // If theme is undefined, start from system and go to light
-    // Otherwise, cycle through: system -> light -> dark -> system
-    if (!theme || theme === "system") {
-      setTheme("light");
-    } else if (theme === "light") {
-      setTheme("dark");
-    } else {
-      setTheme("system");
-    }
-  };
-
-  // Use resolvedTheme to show the actual theme (handles system theme)
-  const isDark = resolvedTheme === "dark";
+  const currentTheme = theme || "system";
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggleTheme}
-      className="h-9 w-9"
-      aria-label="Toggle theme"
-    >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </Button>
+    <div className="flex h-9 items-center rounded-full border border-border bg-secondary px-1">
+      <button
+        onClick={() => setTheme("dark")}
+        className={cn(
+          "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+          currentTheme === "dark"
+            ? "bg-white text-black shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        )}
+        aria-label="Dark theme"
+      >
+        <Moon className="h-4 w-4" />
+      </button>
+      <button
+        onClick={() => setTheme("light")}
+        className={cn(
+          "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+          currentTheme === "light"
+            ? "bg-white text-black shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        )}
+        aria-label="Light theme"
+      >
+        <Sun className="h-4 w-4" />
+      </button>
+      <button
+        onClick={() => setTheme("system")}
+        className={cn(
+          "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+          currentTheme === "system"
+            ? "bg-white text-black shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        )}
+        aria-label="System theme"
+      >
+        <Monitor className="h-4 w-4" />
+      </button>
+    </div>
   );
 }
