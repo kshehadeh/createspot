@@ -33,7 +33,7 @@ export function ThemeToggle() {
           "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
           currentTheme === "dark"
             ? "bg-white text-black shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            : "text-muted-foreground hover:text-foreground",
         )}
         aria-label="Dark theme"
       >
@@ -45,7 +45,7 @@ export function ThemeToggle() {
           "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
           currentTheme === "light"
             ? "bg-white text-black shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            : "text-muted-foreground hover:text-foreground",
         )}
         aria-label="Light theme"
       >
@@ -57,7 +57,7 @@ export function ThemeToggle() {
           "flex h-7 w-7 items-center justify-center rounded-full transition-colors",
           currentTheme === "system"
             ? "bg-white text-black shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
+            : "text-muted-foreground hover:text-foreground",
         )}
         aria-label="System theme"
       >
