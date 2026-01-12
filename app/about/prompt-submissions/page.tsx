@@ -1,33 +1,35 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { Card, CardContent } from "@/components/ui/card";
 
-export const metadata: Metadata = {
-  title: "Prompt Submissions | Create Spot",
-  description:
-    "Learn how prompt submissions work, including text and image options, titles, and how to clear or remove submissions.",
-  openGraph: {
-    title: "Prompt Submissions | Create Spot",
-    description:
-      "Learn how prompt submissions work, including text and image options, titles, and how to clear or remove submissions.",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("aboutPromptSubmissions");
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      type: "website",
+    },
+  };
+}
 
-export default function PromptSubmissionsPage() {
+export default async function PromptSubmissionsPage() {
+  const t = await getTranslations("aboutPromptSubmissions");
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
       <section className="mb-12 text-center">
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-          About Prompts
+          {t("aboutPrompts")}
         </p>
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Build a prompt submission your way.
+          {t("mainTitle")}
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Each prompt is flexible: share visuals, text, or both, and decide what
-          you want the community to see.
+          {t("mainDescription")}
         </p>
       </section>
 
@@ -35,17 +37,14 @@ export default function PromptSubmissionsPage() {
         <Card className="rounded-3xl border-none bg-linear-to-br from-fuchsia-50/50 to-white shadow-sm dark:from-fuchsia-950/10 dark:to-transparent">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              What you can submit
+              {t("whatYouCanSubmit.title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              Each submission can include{" "}
+              {t("whatYouCanSubmit.description")}{" "}
               <strong className="text-foreground">
-                a visual, text, or both
+                {t("whatYouCanSubmit.visualOrText")}
               </strong>
-              . If you upload an image, it becomes the primary visual in the
-              gallery. If you submit text without an image, it appears as a text
-              card. When you include both, the image leads while the text is
-              shown alongside the full submission view.
+              . {t("whatYouCanSubmit.fullDescription")}
             </p>
           </CardContent>
         </Card>
@@ -53,13 +52,14 @@ export default function PromptSubmissionsPage() {
         <Card className="rounded-3xl border-none bg-linear-to-br from-violet-50/50 to-white shadow-sm dark:from-violet-950/10 dark:to-transparent">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              Titles in the gallery
+              {t("titlesInGallery.title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              You can add a <strong className="text-foreground">title</strong>{" "}
-              to your submission. That title appears in the gallery and on the
-              submission detail page, helping viewers understand your intent at
-              a glance.
+              {t("titlesInGallery.description")}{" "}
+              <strong className="text-foreground">
+                {t("titlesInGallery.titleWord")}
+              </strong>{" "}
+              {t("titlesInGallery.fullDescription")}
             </p>
           </CardContent>
         </Card>
@@ -67,17 +67,18 @@ export default function PromptSubmissionsPage() {
         <Card className="rounded-3xl border-none bg-linear-to-br from-cyan-50/50 to-white shadow-sm dark:from-cyan-950/10 dark:to-transparent">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              Clearing and removing submissions
+              {t("clearingRemoving.title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              You can{" "}
-              <strong className="text-foreground">clear all submissions</strong>{" "}
-              for the current prompt or{" "}
+              {t("clearingRemoving.description")}{" "}
               <strong className="text-foreground">
-                remove individual submissions
+                {t("clearingRemoving.clearAll")}
               </strong>{" "}
-              whenever you want to refine what you share. This makes it easy to
-              refresh your prompt entries without losing momentum.
+              {t("clearingRemoving.forCurrentPrompt")}{" "}
+              <strong className="text-foreground">
+                {t("clearingRemoving.removeIndividual")}
+              </strong>{" "}
+              {t("clearingRemoving.fullDescription")}
             </p>
           </CardContent>
         </Card>
@@ -88,7 +89,7 @@ export default function PromptSubmissionsPage() {
           href="/about"
           className="inline-flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground underline underline-offset-4 decoration-muted-foreground/30"
         >
-          ← Back to About
+          {t("backToAbout")}
         </Link>
       </div>
     </PageLayout>

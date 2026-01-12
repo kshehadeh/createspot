@@ -406,6 +406,170 @@
   "footer": {
     "copyright": "© {year} Create Spot"
   },
+  "home": {
+    "title": "Create Spot",
+    "description": "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
+    "heroTitle": "A home for your",
+    "heroTitleHighlight": "creativity",
+    "heroDescription": "A home for photographers, painters, illustrators, writers, sculptors, and anyone else who wants to create. Build your portfolio, share your creative journey, and get inspired by weekly prompts.",
+    "learnMore": "Learn more →",
+    "exhibits": "Exhibits",
+    "exhibitsDescription": "Explore all exhibits — browse, orbit in 3D, and travel the globe.",
+    "prompts": "Prompts",
+    "promptsDescription": "Three words a week. Pick one and create something new.",
+    "yourPortfolio": "Your Portfolio",
+    "yourPortfolioDescription": "Turn your creative work into a portfolio you can share.",
+    "open": "Open",
+    "missionStatement": "A place for creatives to",
+    "missionExhibit": "exhibit their work",
+    "missionCreate": "create more",
+    "missionSupport": "support fellow humans"
+  },
+  "about": {
+    "title": "About | Create Spot",
+    "description": "Learn why Create Spot exists, how portfolios and sharing work, and how weekly prompts connect to your creative journey.",
+    "aboutCreateSpot": "About Create Spot",
+    "mainTitle": "A home for",
+    "mainTitleHighlight": "creative",
+    "mainTitleSuffix": "momentum.",
+    "mainDescription": "We built",
+    "mainDescriptionHighlight": "Create Spot",
+    "mainDescriptionSuffix": "to help creatives stay inspired, share their work in thoughtful ways, and grow a body of work that feels alive.",
+    "purpose": {
+      "title": "Purpose",
+      "description": "Create Spot exists to give creatives",
+      "inspired": "a place to get inspired",
+      "toCreateMore": "to create more and",
+      "exhibit": "exhibit their work in interesting ways",
+      "weBelieve": "We believe creative energy grows when it is",
+      "sparked": "both sparked and shared",
+      "overTime": "Over time, we will keep building",
+      "building": "new ways to inspire and new ways to share",
+      "fresh": "so your practice stays fresh.",
+      "readMore": "Read more about our purpose →"
+    },
+    "organization": {
+      "title": "How the site is organized",
+      "yourPortfolioIs": "Your portfolio is",
+      "personalSpace": "your personal space",
+      "youCanBuild": "You can build it over time,",
+      "curate": "curate the pieces that represent you best",
+      "shareResults": ", and share the results when you want to be seen. When you submit new work, it becomes",
+      "partOfPortfolio": "part of your portfolio",
+      "sharedPublicly": "and can be shared publicly through the exhibitions and galleries.",
+      "learnMore": "Learn more about portfolios and sharing →"
+    },
+    "promptInspiration": {
+      "title": "Prompt inspiration",
+      "weeklyPrompts": "Weekly prompts are designed to",
+      "sparkMomentum": "spark momentum",
+      "usePrompt": ". Use the three-word prompt to create something new or connect an existing portfolio piece that fits the theme. Every prompt submission can live in",
+      "yourPortfolio": "your portfolio",
+      "soInspiration": ", so your inspiration and your body of work",
+      "stayConnected": "stay connected",
+      "learnMore": "Learn more about prompt submissions →"
+    }
+  },
+  "aboutPurpose": {
+    "title": "Purpose | Create Spot",
+    "description": "Why creative work matters in an automated world, and how observation, awe, and creation keep us human.",
+    "whyWeCreate": "Why We Create",
+    "mainTitle": "Humanity is the point.",
+    "mainDescription": "In a world where automation is everywhere, what we make is proof that we are still here, still feeling, still paying attention.",
+    "whyCreationMatters": {
+      "title": "Why creation matters now",
+      "description": "As automation becomes more prevalent, the value of our work is not just in output but in",
+      "humanMeaning": "human meaning",
+      "ourPerspective": ". Our perspective, emotion, and lived experience make technology worthwhile. The tools can scale, but",
+      "purpose": "our humanity gives it purpose"
+    },
+    "aweKeepsUsAlive": {
+      "title": "Awe keeps us alive",
+      "description": "Awe belongs in everyday life. It is the spark that makes us look closer, feel deeper, and",
+      "notice": "notice what others might miss",
+      "thingsInspire": ". The things that inspire us are essential, and the",
+      "creativeOutput": "creative output they ignite",
+      "isJustAsImportant": "is just as important."
+    },
+    "creativeCycle": {
+      "title": "The creative cycle",
+      "description": "",
+      "observation": "Observation, Awe, Creation",
+      "cycleDescription": "is a cycle that makes life worth living. Each feeds the next, and the loop gets stronger when we share our work and support each other. Let's keep that cycle going together."
+    },
+    "backToAbout": "← Back to About"
+  },
+  "aboutPromptSubmissions": {
+    "title": "Prompt Submissions | Create Spot",
+    "description": "Learn how prompt submissions work, including text and image options, titles, and how to clear or remove submissions.",
+    "aboutPrompts": "About Prompts",
+    "mainTitle": "Build a prompt submission your way.",
+    "mainDescription": "Each prompt is flexible: share visuals, text, or both, and decide what you want the community to see.",
+    "whatYouCanSubmit": {
+      "title": "What you can submit",
+      "description": "Each submission can include",
+      "visualOrText": "a visual, text, or both",
+      "fullDescription": "If you upload an image, it becomes the primary visual in the gallery. If you submit text without an image, it appears as a text card. When you include both, the image leads while the text is shown alongside the full submission view."
+    },
+    "titlesInGallery": {
+      "title": "Titles in the gallery",
+      "description": "You can add a",
+      "titleWord": "title",
+      "fullDescription": "to your submission. That title appears in the gallery and on the submission detail page, helping viewers understand your intent at a glance."
+    },
+    "clearingRemoving": {
+      "title": "Clearing and removing submissions",
+      "description": "You can",
+      "clearAll": "clear all submissions",
+      "forCurrentPrompt": "for the current prompt or",
+      "removeIndividual": "remove individual submissions",
+      "fullDescription": "whenever you want to refine what you share. This makes it easy to refresh your prompt entries without losing momentum."
+    },
+    "backToAbout": "← Back to About"
+  },
+  "aboutPortfolios": {
+    "title": "Portfolios & Sharing | Create Spot",
+    "description": "Learn how sharing levels work, how portfolio links and previews are generated, and how to feature your work on Create Spot.",
+    "aboutPortfolios": "About Portfolios",
+    "mainTitle": "Share your work with the right audience.",
+    "mainDescription": "Portfolios let you collect your work, control visibility, and share links with confidence. Here's how the system works in detail.",
+    "sharingLevels": {
+      "title": "Sharing levels",
+      "description": "Every portfolio item uses a share status so you can decide",
+      "whoGetsToSee": "who gets to see it",
+      "private": "Private",
+      "privateDescription": "Only you can see it in your profile editor.",
+      "profile": "Profile",
+      "profileDescription": "Visible on your public profile, but not in galleries.",
+      "public": "Public",
+      "publicDescription": "Visible on your profile and in public galleries.",
+      "note": "Note: if you link a portfolio item to a prompt, it becomes",
+      "publicNote": "public",
+      "noteSuffix": "so it can appear with other prompt submissions."
+    },
+    "portfolioLinks": {
+      "title": "Portfolio links and preview images",
+      "description": "Your public portfolio lives at",
+      "profileLink": "/profile/your-id",
+      "pieceLink": "/s/id",
+      "fullDescription": "and each individual piece has its own shareable link at",
+      "previewDescription": "When you share your profile link, we automatically generate a preview image that highlights your work. If you have a featured image that is shareable, it becomes the preview. Otherwise we build a grid from your most recent portfolio images."
+    },
+    "featuredWork": {
+      "title": "Featured work",
+      "description": "You can select a",
+      "featuredSubmission": "featured submission",
+      "fullDescription": "in your profile settings to spotlight a single piece at the top of your profile. Featured work also powers your profile preview image as long as it is set to",
+      "profileOrPublic": "Profile",
+      "or": "or",
+      "public": "Public"
+    },
+    "promptsAndPortfolios": {
+      "title": "Prompts and portfolios together",
+      "description": "Prompt submissions can be added to your portfolio, and portfolio pieces can be linked to prompts. This keeps your weekly inspiration connected to your long-term body of work while maintaining a single, consistent archive."
+    },
+    "backToAbout": "← Back to About"
+  },
   "modals": {
     "deleteAccount": {
       "title": "Delete Your Account",

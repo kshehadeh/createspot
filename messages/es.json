@@ -406,6 +406,170 @@
   "footer": {
     "copyright": "© {year} Create Spot"
   },
+  "home": {
+    "title": "Create Spot",
+    "description": "Una comunidad creativa para artistas y escritores para compartir su trabajo, construir portafolios y participar en indicaciones creativas semanales.",
+    "heroTitle": "Un hogar para tu",
+    "heroTitleHighlight": "creatividad",
+    "heroDescription": "Un hogar para fotógrafos, pintores, ilustradores, escritores, escultores y cualquier otra persona que quiera crear. Construye tu portafolio, comparte tu viaje creativo e inspírate con indicaciones semanales.",
+    "learnMore": "Más información →",
+    "exhibits": "Exposiciones",
+    "exhibitsDescription": "Explora todas las exposiciones — navega, orbita en 3D y viaja por el mundo.",
+    "prompts": "Indicaciones",
+    "promptsDescription": "Tres palabras a la semana. Elige una y crea algo nuevo.",
+    "yourPortfolio": "Tu Portafolio",
+    "yourPortfolioDescription": "Convierte tu trabajo creativo en un portafolio que puedas compartir.",
+    "open": "Abrir",
+    "missionStatement": "Un lugar para creativos para",
+    "missionExhibit": "exhibir su trabajo",
+    "missionCreate": "crear más",
+    "missionSupport": "apoyar a otros humanos"
+  },
+  "about": {
+    "title": "Acerca de | Create Spot",
+    "description": "Aprende por qué existe Create Spot, cómo funcionan los portafolios y el intercambio, y cómo las indicaciones semanales se conectan con tu viaje creativo.",
+    "aboutCreateSpot": "Acerca de Create Spot",
+    "mainTitle": "Un hogar para el",
+    "mainTitleHighlight": "impulso",
+    "mainTitleSuffix": "creativo.",
+    "mainDescription": "Construimos",
+    "mainDescriptionHighlight": "Create Spot",
+    "mainDescriptionSuffix": "para ayudar a los creativos a mantenerse inspirados, compartir su trabajo de manera reflexiva y hacer crecer un cuerpo de trabajo que se sienta vivo.",
+    "purpose": {
+      "title": "Propósito",
+      "description": "Create Spot existe para dar a los creativos",
+      "inspired": "un lugar para inspirarse",
+      "toCreateMore": "para crear más y",
+      "exhibit": "exhibir su trabajo de maneras interesantes",
+      "weBelieve": "Creemos que la energía creativa crece cuando es",
+      "sparked": "tanto encendido como compartido",
+      "overTime": "Con el tiempo, seguiremos construyendo",
+      "building": "nuevas formas de inspirar y nuevas formas de compartir",
+      "fresh": "para que tu práctica se mantenga fresca.",
+      "readMore": "Lee más sobre nuestro propósito →"
+    },
+    "organization": {
+      "title": "Cómo está organizado el sitio",
+      "yourPortfolioIs": "Tu portafolio es",
+      "personalSpace": "tu espacio personal",
+      "youCanBuild": "Puedes construirlo con el tiempo,",
+      "curate": "curar las piezas que mejor te representan",
+      "shareResults": ", y compartir los resultados cuando quieras ser visto. Cuando envías un nuevo trabajo, se convierte en",
+      "partOfPortfolio": "parte de tu portafolio",
+      "sharedPublicly": "y puede ser compartido públicamente a través de las exposiciones y galerías.",
+      "learnMore": "Aprende más sobre portafolios e intercambio →"
+    },
+    "promptInspiration": {
+      "title": "Inspiración de indicaciones",
+      "weeklyPrompts": "Las indicaciones semanales están diseñadas para",
+      "sparkMomentum": "generar impulso",
+      "usePrompt": ". Usa la indicación de tres palabras para crear algo nuevo o conectar una pieza de portafolio existente que encaje con el tema. Cada publicación de indicación puede vivir en",
+      "yourPortfolio": "tu portafolio",
+      "soInspiration": ", por lo que tu inspiración y tu cuerpo de trabajo",
+      "stayConnected": "permanecen conectados",
+      "learnMore": "Aprende más sobre las publicaciones de indicaciones →"
+    }
+  },
+  "aboutPurpose": {
+    "title": "Propósito | Create Spot",
+    "description": "Por qué el trabajo creativo importa en un mundo automatizado, y cómo la observación, el asombro y la creación nos mantienen humanos.",
+    "whyWeCreate": "Por Qué Creamos",
+    "mainTitle": "La humanidad es el punto.",
+    "mainDescription": "En un mundo donde la automatización está en todas partes, lo que hacemos es prueba de que todavía estamos aquí, todavía sintiendo, todavía prestando atención.",
+    "whyCreationMatters": {
+      "title": "Por qué la creación importa ahora",
+      "description": "A medida que la automatización se vuelve más prevalente, el valor de nuestro trabajo no está solo en la producción sino en",
+      "humanMeaning": "el significado humano",
+      "ourPerspective": ". Nuestra perspectiva, emoción y experiencia vivida hacen que la tecnología valga la pena. Las herramientas pueden escalar, pero",
+      "purpose": "nuestra humanidad le da propósito"
+    },
+    "aweKeepsUsAlive": {
+      "title": "El asombro nos mantiene vivos",
+      "description": "El asombro pertenece a la vida cotidiana. Es la chispa que nos hace mirar más de cerca, sentir más profundamente y",
+      "notice": "notar lo que otros podrían perder",
+      "thingsInspire": ". Las cosas que nos inspiran son esenciales, y",
+      "creativeOutput": "la producción creativa que encienden",
+      "isJustAsImportant": "es igual de importante."
+    },
+    "creativeCycle": {
+      "title": "El ciclo creativo",
+      "description": "",
+      "observation": "Observación, Asombro, Creación",
+      "cycleDescription": "es un ciclo que hace que la vida valga la pena vivir. Cada uno alimenta al siguiente, y el ciclo se fortalece cuando compartimos nuestro trabajo y nos apoyamos mutuamente. Mantengamos ese ciclo en marcha juntos."
+    },
+    "backToAbout": "← Volver a Acerca de"
+  },
+  "aboutPromptSubmissions": {
+    "title": "Publicaciones de Indicaciones | Create Spot",
+    "description": "Aprende cómo funcionan las publicaciones de indicaciones, incluyendo opciones de texto e imagen, títulos y cómo limpiar o eliminar publicaciones.",
+    "aboutPrompts": "Acerca de las Indicaciones",
+    "mainTitle": "Construye una publicación de indicación a tu manera.",
+    "mainDescription": "Cada indicación es flexible: comparte visuales, texto o ambos, y decide qué quieres que la comunidad vea.",
+    "whatYouCanSubmit": {
+      "title": "Lo que puedes enviar",
+      "description": "Cada publicación puede incluir",
+      "visualOrText": "un visual, texto o ambos",
+      "fullDescription": "Si subes una imagen, se convierte en el visual principal en la galería. Si envías texto sin imagen, aparece como una tarjeta de texto. Cuando incluyes ambos, la imagen lidera mientras el texto se muestra junto a la vista completa de la publicación."
+    },
+    "titlesInGallery": {
+      "title": "Títulos en la galería",
+      "description": "Puedes añadir un",
+      "titleWord": "título",
+      "fullDescription": "a tu publicación. Ese título aparece en la galería y en la página de detalles de la publicación, ayudando a los espectadores a entender tu intención de un vistazo."
+    },
+    "clearingRemoving": {
+      "title": "Limpiar y eliminar publicaciones",
+      "description": "Puedes",
+      "clearAll": "limpiar todas las publicaciones",
+      "forCurrentPrompt": "para la indicación actual o",
+      "removeIndividual": "eliminar publicaciones individuales",
+      "fullDescription": "siempre que quieras refinar lo que compartes. Esto facilita actualizar tus entradas de indicaciones sin perder impulso."
+    },
+    "backToAbout": "← Volver a Acerca de"
+  },
+  "aboutPortfolios": {
+    "title": "Portafolios e Intercambio | Create Spot",
+    "description": "Aprende cómo funcionan los niveles de intercambio, cómo se generan los enlaces y vistas previas del portafolio, y cómo destacar tu trabajo en Create Spot.",
+    "aboutPortfolios": "Acerca de los Portafolios",
+    "mainTitle": "Comparte tu trabajo con la audiencia correcta.",
+    "mainDescription": "Los portafolios te permiten recopilar tu trabajo, controlar la visibilidad y compartir enlaces con confianza. Así es como funciona el sistema en detalle.",
+    "sharingLevels": {
+      "title": "Niveles de intercambio",
+      "description": "Cada elemento del portafolio usa un estado de intercambio para que puedas decidir",
+      "whoGetsToSee": "quién puede verlo",
+      "private": "Privado",
+      "privateDescription": "Solo tú puedes verlo en tu editor de perfil.",
+      "profile": "Perfil",
+      "profileDescription": "Visible en tu perfil público, pero no en las galerías.",
+      "public": "Público",
+      "publicDescription": "Visible en tu perfil y en las galerías públicas.",
+      "note": "Nota: si vinculas un elemento del portafolio a una indicación, se vuelve",
+      "publicNote": "público",
+      "noteSuffix": "para que pueda aparecer con otras publicaciones de indicaciones."
+    },
+    "portfolioLinks": {
+      "title": "Enlaces del portafolio e imágenes de vista previa",
+      "description": "Tu portafolio público vive en",
+      "profileLink": "/profile/your-id",
+      "pieceLink": "/s/id",
+      "fullDescription": "y cada pieza individual tiene su propio enlace compartible en",
+      "previewDescription": "Cuando compartes el enlace de tu perfil, generamos automáticamente una imagen de vista previa que destaca tu trabajo. Si tienes una imagen destacada que es compartible, se convierte en la vista previa. De lo contrario, construimos una cuadrícula a partir de tus imágenes de portafolio más recientes."
+    },
+    "featuredWork": {
+      "title": "Trabajo destacado",
+      "description": "Puedes seleccionar una",
+      "featuredSubmission": "publicación destacada",
+      "fullDescription": "en la configuración de tu perfil para destacar una sola pieza en la parte superior de tu perfil. El trabajo destacado también impulsa la imagen de vista previa de tu perfil siempre que esté configurado como",
+      "profileOrPublic": "Perfil",
+      "or": "o",
+      "public": "Público"
+    },
+    "promptsAndPortfolios": {
+      "title": "Indicaciones y portafolios juntos",
+      "description": "Las publicaciones de indicaciones pueden añadirse a tu portafolio, y las piezas del portafolio pueden vincularse a indicaciones. Esto mantiene tu inspiración semanal conectada a tu cuerpo de trabajo a largo plazo mientras mantiene un archivo único y consistente."
+    },
+    "backToAbout": "← Volver a Acerca de"
+  },
   "modals": {
     "deleteAccount": {
       "title": "Eliminar Tu Cuenta",

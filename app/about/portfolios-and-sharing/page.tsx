@@ -1,33 +1,35 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { Card, CardContent } from "@/components/ui/card";
 
-export const metadata: Metadata = {
-  title: "Portfolios & Sharing | Create Spot",
-  description:
-    "Learn how sharing levels work, how portfolio links and previews are generated, and how to feature your work on Create Spot.",
-  openGraph: {
-    title: "Portfolios & Sharing | Create Spot",
-    description:
-      "Learn how sharing levels work, how portfolio links and previews are generated, and how to feature your work on Create Spot.",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("aboutPortfolios");
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      type: "website",
+    },
+  };
+}
 
-export default function PortfoliosAndSharingPage() {
+export default async function PortfoliosAndSharingPage() {
+  const t = await getTranslations("aboutPortfolios");
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
       <section className="mb-12 text-center">
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-          About Portfolios
+          {t("aboutPortfolios")}
         </p>
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Share your work with the right audience.
+          {t("mainTitle")}
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Portfolios let you collect your work, control visibility, and share
-          links with confidence. Here&apos;s how the system works in detail.
+          {t("mainDescription")}
         </p>
       </section>
 
@@ -35,36 +37,41 @@ export default function PortfoliosAndSharingPage() {
         <Card className="rounded-3xl border-none bg-linear-to-br from-orange-50/50 to-white shadow-sm dark:from-orange-950/10 dark:to-transparent">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              Sharing levels
+              {t("sharingLevels.title")}
             </h2>
             <p className="mb-4 text-base leading-relaxed text-muted-foreground">
-              Every portfolio item uses a share status so you can decide{" "}
-              <strong className="text-foreground">who gets to see it</strong>.
+              {t("sharingLevels.description")}{" "}
+              <strong className="text-foreground">
+                {t("sharingLevels.whoGetsToSee")}
+              </strong>
+              .
             </p>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-xl border border-orange-100/50 bg-white/50 p-4 text-sm text-muted-foreground dark:border-orange-900/20 dark:bg-black/20">
-                <p className="font-semibold text-foreground">Private</p>
-                <p className="mt-1">
-                  Only you can see it in your profile editor.
+                <p className="font-semibold text-foreground">
+                  {t("sharingLevels.private")}
                 </p>
+                <p className="mt-1">{t("sharingLevels.privateDescription")}</p>
               </div>
               <div className="rounded-xl border border-orange-100/50 bg-white/50 p-4 text-sm text-muted-foreground dark:border-orange-900/20 dark:bg-black/20">
-                <p className="font-semibold text-foreground">Profile</p>
-                <p className="mt-1">
-                  Visible on your public profile, but not in galleries.
+                <p className="font-semibold text-foreground">
+                  {t("sharingLevels.profile")}
                 </p>
+                <p className="mt-1">{t("sharingLevels.profileDescription")}</p>
               </div>
               <div className="rounded-xl border border-orange-100/50 bg-white/50 p-4 text-sm text-muted-foreground dark:border-orange-900/20 dark:bg-black/20">
-                <p className="font-semibold text-foreground">Public</p>
-                <p className="mt-1">
-                  Visible on your profile and in public galleries.
+                <p className="font-semibold text-foreground">
+                  {t("sharingLevels.public")}
                 </p>
+                <p className="mt-1">{t("sharingLevels.publicDescription")}</p>
               </div>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Note: if you link a portfolio item to a prompt, it becomes{" "}
-              <strong className="text-foreground">public</strong> so it can
-              appear with other prompt submissions.
+              {t("sharingLevels.note")}{" "}
+              <strong className="text-foreground">
+                {t("sharingLevels.publicNote")}
+              </strong>{" "}
+              {t("sharingLevels.noteSuffix")}
             </p>
           </CardContent>
         </Card>
@@ -72,17 +79,19 @@ export default function PortfoliosAndSharingPage() {
         <Card className="rounded-3xl border-none bg-linear-to-br from-pink-50/50 to-white shadow-sm dark:from-pink-950/10 dark:to-transparent">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              Portfolio links and preview images
+              {t("portfolioLinks.title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              Your public portfolio lives at{" "}
-              <strong className="text-foreground">/profile/your-id</strong>, and
-              each individual piece has its own shareable link at{" "}
-              <strong className="text-foreground">/s/id</strong>. When you share
-              your profile link, we automatically generate a preview image that
-              highlights your work. If you have a featured image that is
-              shareable, it becomes the preview. Otherwise we build a grid from
-              your most recent portfolio images.
+              {t("portfolioLinks.description")}{" "}
+              <strong className="text-foreground">
+                {t("portfolioLinks.profileLink")}
+              </strong>
+              , and
+              {t("portfolioLinks.fullDescription")}{" "}
+              <strong className="text-foreground">
+                {t("portfolioLinks.pieceLink")}
+              </strong>
+              . {t("portfolioLinks.previewDescription")}
             </p>
           </CardContent>
         </Card>
@@ -90,16 +99,22 @@ export default function PortfoliosAndSharingPage() {
         <Card className="rounded-3xl border-none bg-linear-to-br from-teal-50/50 to-white shadow-sm dark:from-teal-950/10 dark:to-transparent">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              Featured work
+              {t("featuredWork.title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              You can select a{" "}
-              <strong className="text-foreground">featured submission</strong>{" "}
-              in your profile settings to spotlight a single piece at the top of
-              your profile. Featured work also powers your profile preview image
-              as long as it is set to{" "}
-              <strong className="text-foreground">Profile</strong> or{" "}
-              <strong className="text-foreground">Public</strong>.
+              {t("featuredWork.description")}{" "}
+              <strong className="text-foreground">
+                {t("featuredWork.featuredSubmission")}
+              </strong>{" "}
+              {t("featuredWork.fullDescription")}{" "}
+              <strong className="text-foreground">
+                {t("featuredWork.profileOrPublic")}
+              </strong>{" "}
+              {t("featuredWork.or")}{" "}
+              <strong className="text-foreground">
+                {t("featuredWork.public")}
+              </strong>
+              .
             </p>
           </CardContent>
         </Card>
@@ -107,13 +122,10 @@ export default function PortfoliosAndSharingPage() {
         <Card className="rounded-3xl border-none bg-linear-to-br from-indigo-50/50 to-white shadow-sm dark:from-indigo-950/10 dark:to-transparent">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              Prompts and portfolios together
+              {t("promptsAndPortfolios.title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              Prompt submissions can be added to your portfolio, and portfolio
-              pieces can be linked to prompts. This keeps your weekly
-              inspiration connected to your long-term body of work while
-              maintaining a single, consistent archive.
+              {t("promptsAndPortfolios.description")}
             </p>
           </CardContent>
         </Card>
@@ -124,7 +136,7 @@ export default function PortfoliosAndSharingPage() {
           href="/about"
           className="inline-flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground underline underline-offset-4 decoration-muted-foreground/30"
         >
-          ← Back to About
+          {t("backToAbout")}
         </Link>
       </div>
     </PageLayout>

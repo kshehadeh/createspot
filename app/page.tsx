@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -15,21 +16,19 @@ import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carou
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("home");
   return {
-    title: "Create Spot",
-    description:
-      "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
+    title: t("title"),
+    description: t("description"),
     openGraph: {
-      title: "Create Spot",
-      description:
-        "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
+      title: t("title"),
+      description: t("description"),
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: "Create Spot",
-      description:
-        "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
+      title: t("title"),
+      description: t("description"),
     },
   };
 }
@@ -53,6 +52,8 @@ async function getRecentWork() {
 }
 
 export default async function Home() {
+  const t = await getTranslations("home");
+  const tFooter = await getTranslations("footer");
   const session = await auth();
   const recentWork = await getRecentWork();
 
@@ -98,10 +99,9 @@ export default async function Home() {
   };
 
   const descriptions: Record<HeroCardId, string> = {
-    exhibits:
-      "Explore all exhibits — browse, orbit in 3D, and travel the globe.",
-    prompt: "Three words a week. Pick one and create something new.",
-    portfolio: "Turn your creative work into a portfolio you can share.",
+    exhibits: t("exhibitsDescription"),
+    prompt: t("promptsDescription"),
+    portfolio: t("yourPortfolioDescription"),
   };
 
   const heroCards: Array<{
@@ -112,16 +112,16 @@ export default async function Home() {
   }> = [
     {
       id: "exhibits",
-      title: "Exhibits",
+      title: t("exhibits"),
       href: "/exhibition",
       icon: LayoutGrid,
     },
-    { id: "prompt", title: "Prompts", href: "/prompt", icon: Sparkles },
+    { id: "prompt", title: t("prompts"), href: "/prompt", icon: Sparkles },
     ...(session?.user
       ? [
           {
             id: "portfolio" as const,
-            title: "Your Portfolio",
+            title: t("yourPortfolio"),
             href: "/portfolio/edit",
             icon: Briefcase,
           },
@@ -140,23 +140,19 @@ export default async function Home() {
             <div className="flex flex-1 flex-col items-start gap-5 text-left">
               <div className="w-full">
                 <h1 className="mb-6 text-5xl font-bold tracking-tight text-foreground sm:text-7xl">
-                  Where{" "}
-                  <span className="font-permanent-marker">creativity</span>
-                  <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
-                    finds its home
+                  {t("heroTitle")}{" "}
+                  <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent font-permanent-marker">
+                    {t("heroTitleHighlight")}
                   </span>
                 </h1>
                 <p className="max-w-2xl text-lg text-muted-foreground">
-                  A home for photographers, painters, illustrators, writers,
-                  sculptors, and anyone else who wants to create. Build your
-                  portfolio, share your creative journey, and get inspired by
-                  weekly prompts.
+                  {t("heroDescription")}
                 </p>
                 <Link
                   href="/about"
                   className="mt-3 inline-block text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  Learn more →
+                  {t("learnMore")}
                 </Link>
               </div>
               <div className="w-full">
@@ -208,7 +204,7 @@ export default async function Home() {
                             </CardHeader>
                             <CardContent className="px-4 pb-4 pt-0">
                               <div className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 transition-colors group-hover:text-foreground">
-                                Open <span aria-hidden>→</span>
+                                {t("open")} <span aria-hidden>→</span>
                               </div>
                             </CardContent>
                           </div>
@@ -242,17 +238,17 @@ export default async function Home() {
       <section className="px-6 pb-8 pt-0 sm:pb-12 sm:pt-2">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-2xl leading-relaxed text-muted-foreground sm:text-3xl sm:leading-relaxed md:text-4xl md:leading-relaxed lg:text-5xl lg:leading-relaxed">
-            A place for creatives to{" "}
-            <strong className="rainbow-sheen">exhibit their work</strong>, find
-            inspiration to{" "}
-            <strong className="rainbow-sheen">create more</strong>, and{" "}
-            <strong className="rainbow-sheen">support fellow humans</strong>.
+            {t("missionStatement")}{" "}
+            <strong className="rainbow-sheen">{t("missionExhibit")}</strong>,
+            find inspiration to{" "}
+            <strong className="rainbow-sheen">{t("missionCreate")}</strong>, and{" "}
+            <strong className="rainbow-sheen">{t("missionSupport")}</strong>.
           </p>
         </div>
       </section>
 
       <footer className="px-6 py-8 text-center text-sm text-muted-foreground">
-        &copy; {new Date().getFullYear()} Create Spot
+        {tFooter("copyright", { year: new Date().getFullYear() })}
       </footer>
     </main>
   );
