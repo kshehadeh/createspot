@@ -221,7 +221,21 @@
       "makeAdmin": "Hacer Admin",
       "deleteUser": "Eliminar Usuario",
       "updateError": "Error al actualizar usuario",
-      "error": "Ocurrió un error"
+      "error": "Ocurrió un error",
+      "viewStats": "Ver Estadísticas",
+      "userStats": "Estadísticas del Usuario",
+      "totalWorks": "Trabajos Totales",
+      "totalStorage": "Almacenamiento Total",
+      "storageBreakdown": "Desglose de Almacenamiento",
+      "submissionStorage": "Publicaciones",
+      "profileStorage": "Perfil",
+      "noSubmissions": "Aún no hay publicaciones",
+      "loadingStats": "Cargando estadísticas...",
+      "statsError": "Error al cargar estadísticas",
+      "workTitle": "Título",
+      "workDate": "Fecha",
+      "workSize": "Tamaño",
+      "untitled": "Sin título"
     },
     "prompts": {
       "title": "Gestionar Indicaciones",
@@ -262,8 +276,8 @@
       "checkingWord": "Verificando palabra..."
     },
     "exhibits": {
-      "title": "Gestionar Exposiciones",
-      "description": "Crear y gestionar exposiciones temporales",
+      "pageTitle": "Gestionar Exposiciones",
+      "subtitle": "Ver, buscar y filtrar todas las exposiciones temporales. Crear nuevas exposiciones, editar las existentes y gestionar su contenido y configuración.",
       "createNew": "Crear Nueva Exposición",
       "createDescription": "Crear una nueva exposición temporal",
       "backToExhibits": "Volver a Exposiciones",

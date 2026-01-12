@@ -221,7 +221,21 @@
       "makeAdmin": "Make Admin",
       "deleteUser": "Delete User",
       "updateError": "Failed to update user",
-      "error": "An error occurred"
+      "error": "An error occurred",
+      "viewStats": "View Stats",
+      "userStats": "User Statistics",
+      "totalWorks": "Total Works",
+      "totalStorage": "Total Storage",
+      "storageBreakdown": "Storage Breakdown",
+      "submissionStorage": "Submissions",
+      "profileStorage": "Profile",
+      "noSubmissions": "No submissions yet",
+      "loadingStats": "Loading statistics...",
+      "statsError": "Failed to load statistics",
+      "workTitle": "Title",
+      "workDate": "Date",
+      "workSize": "Size",
+      "untitled": "Untitled"
     },
     "prompts": {
       "title": "Manage Prompts",
@@ -262,8 +276,8 @@
       "checkingWord": "Checking word..."
     },
     "exhibits": {
-      "title": "Manage Exhibits",
-      "description": "Create and manage temporary exhibits",
+      "pageTitle": "Manage Exhibits",
+      "subtitle": "View, search, and filter all temporary exhibits. Create new exhibits, edit existing ones, and manage their content and settings.",
       "createNew": "Create New Exhibit",
       "createDescription": "Create a new temporary exhibit",
       "backToExhibits": "Back to Exhibits",

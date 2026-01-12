@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { BarChart3, Trash2 } from "lucide-react";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
+import { UserStatsModal } from "./user-stats-modal";
 
 interface User {
   id: string;
@@ -31,6 +32,7 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
   const [deleteModalUserId, setDeleteModalUserId] = useState<string | null>(
     null,
   );
+  const [statsModalUserId, setStatsModalUserId] = useState<string | null>(null);
 
   async function toggleAdmin(userId: string, currentIsAdmin: boolean) {
     setLoadingUserId(userId);
@@ -125,7 +127,15 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-border">
+              <div className="mt-4 pt-4 border-t border-border space-y-2">
+                <Button
+                  onClick={() => setStatsModalUserId(user.id)}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  {t("viewStats")}
+                </Button>
                 {isCurrentUser ? (
                   <span className="text-xs text-muted-foreground">
                     {t("cannotModifyOwn")}
@@ -175,6 +185,16 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
             setDeleteModalUserId(null);
             router.refresh();
           }}
+        />
+      )}
+
+      {/* User Stats Modal */}
+      {statsModalUserId && (
+        <UserStatsModal
+          userId={statsModalUserId}
+          userName={users.find((u) => u.id === statsModalUserId)?.name || null}
+          isOpen={true}
+          onClose={() => setStatsModalUserId(null)}
         />
       )}
     </div>

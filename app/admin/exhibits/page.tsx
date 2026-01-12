@@ -123,9 +123,9 @@ export default async function AdminExhibitsPage({
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">
-            {t("title")}
+            {t("pageTitle")}
           </h1>
-          <p className="text-sm text-muted-foreground">{t("description")}</p>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
         <Link href="/admin/exhibits/new">
           <Button>{t("createNew")}</Button>
