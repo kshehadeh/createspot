@@ -44,24 +44,18 @@ export default async function PromptsPage() {
         {currentPrompt ? (
           <>
             {/* Large Prominent Words */}
-            <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:flex-nowrap sm:gap-6 md:gap-10">
+            <div className="mb-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-10">
               {[
                 currentPrompt.word1,
                 currentPrompt.word2,
                 currentPrompt.word3,
               ].map((word, index) => (
-                <div key={index} className="relative flex items-center whitespace-nowrap">
-                  <span
-                    className={`inline-block text-5xl font-black tracking-tight sm:text-6xl md:text-7xl lg:text-8xl rainbow-shimmer-${index + 1}`}
-                  >
-                    {word}
-                  </span>
-                  {index < 2 && (
-                    <span className="hidden text-4xl font-light text-muted-foreground/30 sm:inline-block sm:pl-6 md:pl-10 md:text-5xl lg:text-6xl">
-                      /
-                    </span>
-                  )}
-                </div>
+                <span
+                  key={index}
+                  className={`inline-block text-5xl font-black tracking-tight sm:text-6xl md:text-7xl lg:text-8xl rainbow-shimmer-${index + 1}`}
+                >
+                  {word}
+                </span>
               ))}
             </div>
 
