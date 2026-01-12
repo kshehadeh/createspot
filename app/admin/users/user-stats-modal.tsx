@@ -84,30 +84,31 @@ export function UserStatsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
           <DialogTitle>
             {t("userStats")}: {userName || t("noName")}
           </DialogTitle>
         </DialogHeader>
 
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <span className="ml-2 text-muted-foreground">
-              {t("loadingStats")}
-            </span>
-          </div>
-        )}
+        <div className="overflow-y-auto flex-1 min-h-0 px-6 pb-6">
+          {loading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <span className="ml-2 text-muted-foreground">
+                {t("loadingStats")}
+              </span>
+            </div>
+          )}
 
-        {error && (
-          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+              {error}
+            </div>
+          )}
 
-        {stats && !loading && (
-          <div className="space-y-6">
+          {stats && !loading && (
+            <div className="space-y-6">
             {/* Storage Overview */}
             <div className="rounded-lg border border-border bg-muted/50 p-4">
               <h3 className="flex items-center gap-2 text-sm font-medium text-foreground mb-4">
@@ -189,7 +190,7 @@ export function UserStatsModal({
                           </td>
                           <td className="px-4 py-2 text-right">
                             {item.formattedSize ? (
-                              <Badge variant="secondary">
+                              <Badge variant="secondary" className="whitespace-nowrap">
                                 {item.formattedSize}
                               </Badge>
                             ) : (
@@ -204,7 +205,8 @@ export function UserStatsModal({
               )}
             </div>
           </div>
-        )}
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
