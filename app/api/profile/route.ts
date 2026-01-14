@@ -59,6 +59,11 @@ export async function GET() {
       longitude: true,
       featuredSubmissionId: true,
       profileImageUrl: true,
+      // Image protection settings
+      enableWatermark: true,
+      watermarkPosition: true,
+      protectFromDownload: true,
+      protectFromAI: true,
     },
   });
 
@@ -87,6 +92,11 @@ export async function PUT(request: NextRequest) {
     featuredSubmissionId,
     profileImageUrl,
     profileImageFocalPoint,
+    // Image protection settings
+    enableWatermark,
+    watermarkPosition,
+    protectFromDownload,
+    protectFromAI,
   } = body;
 
   // Normalize and validate website URL
@@ -150,6 +160,17 @@ export async function PUT(request: NextRequest) {
     }
   }
 
+  // Validate watermark position if provided
+  const validWatermarkPositions = ["bottom-right", "bottom-left", "top-right", "top-left"];
+  if (watermarkPosition !== undefined && watermarkPosition !== null) {
+    if (!validWatermarkPositions.includes(watermarkPosition)) {
+      return NextResponse.json(
+        { error: "Invalid watermark position. Must be one of: bottom-right, bottom-left, top-right, top-left" },
+        { status: 400 },
+      );
+    }
+  }
+
   // Get current user data to check for changes and handle image deletion
   const currentUser = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -199,6 +220,15 @@ export async function PUT(request: NextRequest) {
     updateData.profileImageUrl = profileImageUrl ?? null;
   if (profileImageFocalPoint !== undefined)
     updateData.profileImageFocalPoint = profileImageFocalPoint;
+  // Image protection settings
+  if (enableWatermark !== undefined)
+    updateData.enableWatermark = enableWatermark ?? false;
+  if (watermarkPosition !== undefined)
+    updateData.watermarkPosition = watermarkPosition ?? "bottom-right";
+  if (protectFromDownload !== undefined)
+    updateData.protectFromDownload = protectFromDownload ?? true;
+  if (protectFromAI !== undefined)
+    updateData.protectFromAI = protectFromAI ?? true;
 
   // Handle coordinates: only update if location changed
   if (locationChanged) {
@@ -235,6 +265,11 @@ export async function PUT(request: NextRequest) {
       longitude: true,
       featuredSubmissionId: true,
       profileImageUrl: true,
+      // Image protection settings
+      enableWatermark: true,
+      watermarkPosition: true,
+      protectFromDownload: true,
+      protectFromAI: true,
     },
   });
 

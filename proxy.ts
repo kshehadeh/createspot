@@ -31,8 +31,31 @@ function getPreferredLocale(acceptLanguage: string | null): string {
   return defaultLocale;
 }
 
+// Paths that contain user-created content that should have AI opt-out headers
+const AI_PROTECTED_PATHS = [
+  "/s/",           // Submission detail pages
+  "/profile/",     // Profile pages
+  "/this-week",    // Gallery pages
+  "/prompt/",      // Prompt-related pages
+  "/portfolio/",   // Portfolio pages
+  "/exhibit/",     // Exhibit pages
+];
+
 export function proxy(request: NextRequest) {
   const response = NextResponse.next();
+  const pathname = request.nextUrl.pathname;
+
+  // Add AI opt-out headers to protected paths
+  const shouldAddAIHeaders = AI_PROTECTED_PATHS.some((path) =>
+    pathname.startsWith(path),
+  );
+
+  if (shouldAddAIHeaders) {
+    // X-Robots-Tag header to tell crawlers not to index for AI training
+    // noai - General AI training opt-out
+    // noimageai - Specifically for image AI training
+    response.headers.set("X-Robots-Tag", "noai, noimageai");
+  }
 
   // Check if locale cookie exists
   const localeCookie = request.cookies.get(LOCALE_COOKIE)?.value;

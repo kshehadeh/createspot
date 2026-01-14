@@ -82,17 +82,45 @@ export function ProfileImageModal({
         throw new Error(data?.error || "Failed to get upload URL");
       }
 
-      const { presignedUrl, publicUrl } = await presignResponse.json();
+      const presignData = await presignResponse.json();
 
-      // Upload to R2
-      const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
+      let finalPublicUrl: string;
 
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
+      // Check if server requires server-side upload (shouldn't happen for profile images)
+      if (presignData.useServerUpload) {
+        // Fall back to server-side upload route
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", "profile");
+
+        const serverUploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!serverUploadResponse.ok) {
+          const errorData = await serverUploadResponse.json().catch(() => null);
+          throw new Error(errorData?.error || "Server upload failed");
+        }
+
+        const { imageUrl } = await serverUploadResponse.json();
+        finalPublicUrl = imageUrl;
+      } else {
+        // Use presigned URL for direct upload to R2
+        const { presignedUrl, publicUrl } = presignData;
+
+        // Upload to R2
+        const uploadResponse = await fetch(presignedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload image");
+        }
+
+        finalPublicUrl = publicUrl;
       }
 
       // Delete old image if replacing
@@ -109,7 +137,7 @@ export function ProfileImageModal({
       }
 
       // Save new image URL (reset focal point when uploading new image)
-      await onSave(publicUrl, null);
+      await onSave(finalPublicUrl, null);
       toast.success(t("imageUploaded"));
       onClose();
     } catch (err) {

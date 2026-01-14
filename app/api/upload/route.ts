@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import {
+  applyWatermarkWithMargin,
+  addImageMetadata,
+  isValidWatermarkPosition,
+  type WatermarkPosition,
+} from "@/lib/watermark";
 import crypto from "crypto";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+// GIF doesn't support watermarking well with Sharp, so we skip it
+const WATERMARKABLE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const s3Client = new S3Client({
   region: "auto",
@@ -55,7 +64,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    let buffer: Buffer = Buffer.from(await file.arrayBuffer());
+
+    // Fetch user's protection settings for submissions only
+    if (type === "submission") {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: {
+          name: true,
+          enableWatermark: true,
+          watermarkPosition: true,
+          protectFromAI: true,
+        },
+      });
+
+      if (user) {
+        // Apply watermark if enabled and file type supports it
+        if (user.enableWatermark && WATERMARKABLE_TYPES.includes(file.type)) {
+          const position = isValidWatermarkPosition(user.watermarkPosition)
+            ? user.watermarkPosition
+            : "bottom-right";
+
+          try {
+            buffer = await applyWatermarkWithMargin(buffer, {
+              position: position as WatermarkPosition,
+              opacity: 0.5,
+              sizeRatio: 0.12,
+              marginRatio: 0.2,
+            });
+          } catch (watermarkError) {
+            console.error("Watermark application failed:", watermarkError);
+            // Continue without watermark if it fails
+          }
+        }
+
+        // Add copyright metadata if AI protection is enabled
+        if (user.protectFromAI && WATERMARKABLE_TYPES.includes(file.type)) {
+          try {
+            buffer = await addImageMetadata(
+              buffer,
+              user.name || "CreateSpot User",
+            );
+          } catch (metadataError) {
+            console.error("Metadata injection failed:", metadataError);
+            // Continue without metadata if it fails
+          }
+        }
+      }
+    }
+
     const fileExtension = file.type.split("/")[1];
     const folder = type === "profile" ? "profiles" : "submissions";
     const fileName = `${folder}/${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;

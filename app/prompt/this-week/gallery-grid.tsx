@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +9,12 @@ import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { getObjectPositionStyle } from "@/lib/image-utils";
+
+// Prevent right-click context menu on images
+const handleContextMenu = (e: React.MouseEvent) => {
+  e.preventDefault();
+  return false;
+};
 
 interface Submission {
   id: string;
@@ -130,18 +136,22 @@ function GalleryContent({
               onClick={() => setSelectedSubmission(submission)}
             >
               {submission.imageUrl ? (
-                <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                <div
+                  className="protected-image-wrapper relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800"
+                  onContextMenu={handleContextMenu}
+                >
                   <Image
                     src={submission.imageUrl}
                     alt={submission.title || "Submission"}
                     fill
-                    className="object-cover"
+                    className="object-cover select-none"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     style={{
                       objectPosition: getObjectPositionStyle(
                         submission.imageFocalPoint,
                       ),
                     }}
+                    draggable={false}
                   />
                   {isLoggedIn && (
                     <FavoriteButton

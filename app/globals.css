@@ -253,3 +253,15 @@ body {
   color: hsl(var(--foreground)) !important;
   background: hsl(var(--accent)) !important;
 }
+
+/* Image protection styles */
+.protected-image-wrapper {
+  position: relative;
+}
+
+.protected-image-wrapper img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}

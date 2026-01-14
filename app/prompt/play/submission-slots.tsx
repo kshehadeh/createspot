@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { Submission } from "@/app/generated/prisma/client";
@@ -24,6 +25,7 @@ interface SubmissionSlotsProps {
   words: string[];
   existingSubmissions: Record<number, Submission>;
   portfolioItems: PortfolioItem[];
+  watermarkEnabled?: boolean;
 }
 
 export function SubmissionSlots({
@@ -31,6 +33,7 @@ export function SubmissionSlots({
   words,
   existingSubmissions,
   portfolioItems,
+  watermarkEnabled = false,
 }: SubmissionSlotsProps) {
   const router = useRouter();
   const t = useTranslations("upload");
@@ -170,32 +173,60 @@ export function SubmissionSlots({
         throw new Error(data.error || "Failed to get upload URL");
       }
 
-      const { presignedUrl, publicUrl } = await presignResponse.json();
+      const presignData = await presignResponse.json();
 
-      // Step 2: Upload directly to R2 using presigned URL
-      const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
+      let finalPublicUrl: string;
 
-      if (!uploadResponse.ok) {
-        // Check for CORS errors specifically
-        if (uploadResponse.status === 0 || uploadResponse.status === 403) {
+      // Check if server requires server-side upload (e.g., for watermarking)
+      if (presignData.useServerUpload) {
+        // Fall back to server-side upload route
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", "submission");
+
+        const serverUploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!serverUploadResponse.ok) {
+          const errorData = await serverUploadResponse.json();
+          throw new Error(errorData.error || "Server upload failed");
+        }
+
+        const { imageUrl } = await serverUploadResponse.json();
+        finalPublicUrl = imageUrl;
+      } else {
+        // Use presigned URL for direct upload to R2
+        const { presignedUrl, publicUrl } = presignData;
+
+        // Step 2: Upload directly to R2 using presigned URL
+        const uploadResponse = await fetch(presignedUrl, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          // Check for CORS errors specifically
+          if (uploadResponse.status === 0 || uploadResponse.status === 403) {
+            throw new Error(
+              "CORS error: Please configure CORS on your R2 bucket to allow uploads from this origin. See docs/DATABASE.md for instructions.",
+            );
+          }
           throw new Error(
-            "CORS error: Please configure CORS on your R2 bucket to allow uploads from this origin. See docs/DATABASE.md for instructions.",
+            `Upload to storage failed: ${uploadResponse.status} ${uploadResponse.statusText}`,
           );
         }
-        throw new Error(
-          `Upload to storage failed: ${uploadResponse.status} ${uploadResponse.statusText}`,
-        );
+
+        finalPublicUrl = publicUrl;
       }
 
       // Track this upload for potential cleanup
-      setUploadedImages((prev) => [...prev, publicUrl]);
-      setFormData((prev) => ({ ...prev, imageUrl: publicUrl }));
+      setUploadedImages((prev) => [...prev, finalPublicUrl]);
+      setFormData((prev) => ({ ...prev, imageUrl: finalPublicUrl }));
       // Clear portfolio selection since user is uploading new content
       setSelectedPortfolioId(null);
     } catch (err) {
@@ -640,6 +671,32 @@ export function SubmissionSlots({
                       className="hidden"
                     />
                   </label>
+                )}
+                {watermarkEnabled && (
+                  <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <svg
+                      className="h-3.5 w-3.5 shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
+                    </svg>
+                    <span>
+                      {t("watermarkEnabled")}{" "}
+                      <Link
+                        href="/profile/edit"
+                        className="underline hover:text-foreground"
+                      >
+                        {t("changeSettings")}
+                      </Link>
+                    </span>
+                  </div>
                 )}
               </div>
 

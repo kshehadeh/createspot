@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { Maximize2 } from "lucide-react";
@@ -16,6 +17,8 @@ interface SubmissionImageProps {
   className?: string;
   /** Callback when expand button is clicked */
   onExpand?: () => void;
+  /** Whether to enable download protection. Default: true */
+  protectionEnabled?: boolean;
 }
 
 export function SubmissionImage({
@@ -26,19 +29,52 @@ export function SubmissionImage({
   heightClasses = "h-[65vh] sm:h-[72vh] md:h-[80vh]",
   className = "",
   onExpand,
+  protectionEnabled = true,
 }: SubmissionImageProps) {
+  // Prevent right-click context menu
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      if (protectionEnabled) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    [protectionEnabled],
+  );
+
+  // Prevent drag start
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      if (protectionEnabled) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    [protectionEnabled],
+  );
+
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-xl ${heightClasses} ${className} ${onExpand ? "cursor-pointer" : ""}`}
+      className={`protected-image-wrapper relative w-full overflow-hidden rounded-xl ${heightClasses} ${className} ${onExpand ? "cursor-pointer" : ""}`}
       onClick={onExpand}
+      onContextMenu={handleContextMenu}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={imageUrl}
         alt={alt}
-        className="h-full w-full object-cover"
-        style={{ objectPosition: getObjectPositionStyle(imageFocalPoint) }}
+        className={`h-full w-full object-cover ${protectionEnabled ? "select-none" : ""}`}
+        style={{
+          objectPosition: getObjectPositionStyle(imageFocalPoint),
+          ...(protectionEnabled ? { WebkitUserSelect: "none", userSelect: "none" } : {}),
+        }}
+        draggable={!protectionEnabled}
+        onDragStart={handleDragStart}
       />
+      {/* Transparent overlay to intercept clicks when protected */}
+      {protectionEnabled && (
+        <div className="absolute inset-0 z-[5]" aria-hidden="true" />
+      )}
       {onExpand && (
         <Button
           variant="ghost"

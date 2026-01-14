@@ -40,6 +40,12 @@ import { getCategoryIcon } from "@/lib/categories";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { Pencil, Trash2, Star } from "lucide-react";
 
+// Prevent right-click context menu on images for download protection
+const handleImageContextMenu = (e: React.MouseEvent) => {
+  e.preventDefault();
+  return false;
+};
+
 interface PortfolioItem {
   id: string;
   title: string | null;
@@ -298,19 +304,21 @@ function SortablePortfolioItem({
       } hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)]`}
     >
       <div
-        className="relative aspect-square cursor-pointer overflow-hidden bg-muted"
+        className="protected-image-wrapper relative aspect-square cursor-pointer overflow-hidden bg-muted"
         onClick={onClick}
+        onContextMenu={handleImageContextMenu}
       >
         {item.imageUrl ? (
           <Image
             src={item.imageUrl}
             alt={item.title || t("portfolioItemAlt")}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-300 group-hover:scale-105 select-none"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             style={{
               objectPosition: getObjectPositionStyle(item.imageFocalPoint),
             }}
+            draggable={false}
           />
         ) : item.text ? (
           <TextThumbnail text={item.text} className="h-full w-full" />
@@ -642,7 +650,7 @@ function PortfolioGridContent({
                     className={`group relative overflow-hidden border-0 rounded-none transition-shadow duration-300 hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)] ${isFeatured ? "ring-2 ring-amber-400/50" : ""}`}
                   >
                     <div
-                      className="relative aspect-square cursor-pointer overflow-hidden bg-muted"
+                      className="protected-image-wrapper relative aspect-square cursor-pointer overflow-hidden bg-muted"
                       onClick={() => {
                         if (item.imageUrl) {
                           setSelectedSubmission(item);
@@ -650,19 +658,21 @@ function PortfolioGridContent({
                           router.push(`/s/${item.id}`);
                         }
                       }}
+                      onContextMenu={handleImageContextMenu}
                     >
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
                           alt={item.title || t("portfolioItemAlt")}
                           fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-cover transition-transform duration-300 group-hover:scale-105 select-none"
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                           style={{
                             objectPosition: getObjectPositionStyle(
                               item.imageFocalPoint,
                             ),
                           }}
+                          draggable={false}
                         />
                       ) : item.text ? (
                         <TextThumbnail

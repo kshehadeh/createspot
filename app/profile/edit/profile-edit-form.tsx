@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Country, State, City } from "country-state-city";
-import { Briefcase, ArrowRight, Trash2, Globe } from "lucide-react";
+import { Briefcase, ArrowRight, Trash2, Globe, Shield, AlertTriangle } from "lucide-react";
 import { normalizeUrl, isValidUrl } from "@/lib/utils";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
 import { locales, localeNames, type Locale } from "@/i18n/config";
@@ -54,6 +54,11 @@ interface ProfileEditFormProps {
   initialCountry: string;
   initialLanguage: string;
   initialFeaturedSubmissionId: string;
+  // Image protection settings
+  initialEnableWatermark: boolean;
+  initialWatermarkPosition: string;
+  initialProtectFromDownload: boolean;
+  initialProtectFromAI: boolean;
   submissions: SubmissionOption[];
   portfolioItemCount: number;
 }
@@ -71,6 +76,10 @@ export function ProfileEditForm({
   initialCountry,
   initialLanguage,
   initialFeaturedSubmissionId,
+  initialEnableWatermark,
+  initialWatermarkPosition,
+  initialProtectFromDownload,
+  initialProtectFromAI,
   submissions,
   portfolioItemCount,
 }: ProfileEditFormProps) {
@@ -92,6 +101,11 @@ export function ProfileEditForm({
   const [featuredSubmissionId, setFeaturedSubmissionId] = useState(
     initialFeaturedSubmissionId,
   );
+  // Image protection settings
+  const [enableWatermark, setEnableWatermark] = useState(initialEnableWatermark);
+  const [watermarkPosition, setWatermarkPosition] = useState(initialWatermarkPosition);
+  const [protectFromDownload, setProtectFromDownload] = useState(initialProtectFromDownload);
+  const [protectFromAI, setProtectFromAI] = useState(initialProtectFromAI);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [websiteError, setWebsiteError] = useState<string | null>(null);
@@ -629,6 +643,67 @@ export function ProfileEditForm({
     [language],
   );
 
+  // Image protection settings handlers
+  const saveProtectionSettings = useCallback(
+    async (settings: {
+      enableWatermark?: boolean;
+      watermarkPosition?: string;
+      protectFromDownload?: boolean;
+      protectFromAI?: boolean;
+    }) => {
+      const toastId = toast.loading(tCommon("saving"));
+      try {
+        const response = await fetch("/api/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(settings),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save protection settings");
+        }
+
+        toast.success(t("protectionSettingsSaved"), { id: toastId });
+        router.refresh();
+      } catch {
+        toast.error(t("protectionSettingsFailed"), { id: toastId });
+      }
+    },
+    [router, t, tCommon],
+  );
+
+  const handleEnableWatermarkChange = useCallback(
+    (checked: boolean) => {
+      setEnableWatermark(checked);
+      saveProtectionSettings({ enableWatermark: checked });
+    },
+    [saveProtectionSettings],
+  );
+
+  const handleWatermarkPositionChange = useCallback(
+    (value: string) => {
+      setWatermarkPosition(value);
+      saveProtectionSettings({ watermarkPosition: value });
+    },
+    [saveProtectionSettings],
+  );
+
+  const handleProtectFromDownloadChange = useCallback(
+    (checked: boolean) => {
+      setProtectFromDownload(checked);
+      saveProtectionSettings({ protectFromDownload: checked });
+    },
+    [saveProtectionSettings],
+  );
+
+  const handleProtectFromAIChange = useCallback(
+    (checked: boolean) => {
+      setProtectFromAI(checked);
+      saveProtectionSettings({ protectFromAI: checked });
+    },
+    [saveProtectionSettings],
+  );
+
   const getSubmissionLabel = (submission: SubmissionOption): string => {
     if (submission.prompt && submission.wordIndex) {
       return [
@@ -1140,6 +1215,128 @@ export function ProfileEditForm({
                 />
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Image Protection Settings */}
+        <div className="mt-8 pt-8 border-t border-border">
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                <Shield className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  {t("imageProtection")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("imageProtectionDescription")}
+                </p>
+              </div>
+            </div>
+
+            {/* Watermark Setting */}
+            <div className="space-y-4 rounded-lg border border-border p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground">
+                    {t("enableWatermark")}
+                  </label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t("enableWatermarkDescription")}
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enableWatermark}
+                    onChange={(e) => handleEnableWatermarkChange(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+
+              {enableWatermark && (
+                <>
+                  {/* Warning Banner */}
+                  <div className="flex gap-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-amber-800 dark:text-amber-200">
+                      <p className="font-medium">{t("watermarkWarningTitle")}</p>
+                      <p className="text-xs mt-1 text-amber-700 dark:text-amber-300">
+                        {t("watermarkWarningDescription")}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Watermark Position */}
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-foreground">
+                      {t("watermarkPosition")}
+                    </label>
+                    <Select value={watermarkPosition} onValueChange={handleWatermarkPositionChange}>
+                      <SelectTrigger className="w-full sm:w-[200px]">
+                        <SelectValue placeholder={t("selectPosition")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="bottom-right">{t("bottomRight")}</SelectItem>
+                        <SelectItem value="bottom-left">{t("bottomLeft")}</SelectItem>
+                        <SelectItem value="top-right">{t("topRight")}</SelectItem>
+                        <SelectItem value="top-left">{t("topLeft")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Download Protection */}
+            <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-4">
+              <div className="flex-1">
+                <label className="text-sm font-medium text-foreground">
+                  {t("preventDownloads")}
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("preventDownloadsDescription")}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={protectFromDownload}
+                  onChange={(e) => handleProtectFromDownloadChange(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+
+            {/* AI Training Protection */}
+            <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-4">
+              <div className="flex-1">
+                <label className="text-sm font-medium text-foreground">
+                  {t("preventAITraining")}
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("preventAITrainingDescription")}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={protectFromAI}
+                  onChange={(e) => handleProtectFromAIChange(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+
+            {/* Disclaimer */}
+            <p className="text-xs text-muted-foreground">
+              {t("protectionDisclaimer")}
+            </p>
           </div>
         </div>
 

@@ -33,6 +33,8 @@ interface SubmissionLightboxProps {
   isOpen: boolean;
   /** Hide the "Go To Submission" button (e.g., when already on the submission page) */
   hideGoToSubmission?: boolean;
+  /** Whether to enable download protection. Default: true */
+  protectionEnabled?: boolean;
 }
 
 export function SubmissionLightbox({
@@ -40,6 +42,7 @@ export function SubmissionLightbox({
   onClose,
   isOpen,
   hideGoToSubmission = false,
+  protectionEnabled = true,
 }: SubmissionLightboxProps) {
   const [zoomState, setZoomState] = useState<{
     isActive: boolean;
@@ -100,6 +103,28 @@ export function SubmissionLightbox({
   const handleImageMouseLeave = useCallback(() => {
     setZoomState((prev) => ({ ...prev, isActive: false }));
   }, []);
+
+  // Prevent right-click context menu
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      if (protectionEnabled) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    [protectionEnabled],
+  );
+
+  // Prevent drag start
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      if (protectionEnabled) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    [protectionEnabled],
+  );
 
   // Calculate zoom preview position and background
   const ZOOM_SQUARE_SIZE = 200;
@@ -266,7 +291,8 @@ export function SubmissionLightbox({
           {hasImage && (
             <div
               ref={imageContainerRef}
-              className="relative flex h-full w-full flex-1 items-center justify-center overflow-hidden touch-none"
+              className="protected-image-wrapper relative flex h-full w-full flex-1 items-center justify-center overflow-hidden touch-none"
+              onContextMenu={handleContextMenu}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -274,11 +300,16 @@ export function SubmissionLightbox({
                 src={submission.imageUrl!}
                 alt={submission.title || "Submission"}
                 className="max-h-[100dvh] max-w-[100vw] h-auto w-auto object-contain select-none"
-                style={{ maxHeight: "100dvh", maxWidth: "100vw" }}
+                style={{
+                  maxHeight: "100dvh",
+                  maxWidth: "100vw",
+                  ...(protectionEnabled ? { WebkitUserSelect: "none", userSelect: "none" } : {}),
+                }}
                 onLoad={() => setImageLoaded(true)}
                 onMouseMove={handleImageMouseMove}
                 onMouseLeave={handleImageMouseLeave}
-                draggable={false}
+                draggable={!protectionEnabled}
+                onDragStart={handleDragStart}
               />
 
               {/* Zoom square overlay */}

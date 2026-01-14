@@ -41,6 +41,12 @@ export default async function PlayPage() {
     );
   }
 
+  // Fetch user's watermark settings
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { enableWatermark: true },
+  });
+
   const submissions = await prisma.submission.findMany({
     where: {
       userId: session.user.id,
@@ -108,6 +114,7 @@ export default async function PlayPage() {
           text: p.text,
           category: p.category,
         }))}
+        watermarkEnabled={user?.enableWatermark ?? false}
       />
     </PageLayout>
   );

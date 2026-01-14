@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,8 @@ interface ImageLightboxProps {
   imageUrl: string;
   alt: string;
   focalPoint?: { x: number; y: number } | null;
+  /** Whether to enable download protection. Default: true */
+  protectionEnabled?: boolean;
 }
 
 export function ImageLightbox({
@@ -24,7 +27,30 @@ export function ImageLightbox({
   imageUrl,
   alt,
   focalPoint,
+  protectionEnabled = true,
 }: ImageLightboxProps) {
+  // Prevent right-click context menu
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      if (protectionEnabled) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    [protectionEnabled],
+  );
+
+  // Prevent drag start
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      if (protectionEnabled) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    [protectionEnabled],
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       {/* Full screen on mobile, 95vw/vh on desktop */}
@@ -33,9 +59,10 @@ export function ImageLightbox({
           <DialogTitle>{alt}</DialogTitle>
         </VisuallyHidden>
         <div
-          className="relative flex items-center justify-center w-full h-full min-h-0 md:p-4 box-border"
+          className="protected-image-wrapper relative flex items-center justify-center w-full h-full min-h-0 md:p-4 box-border"
           style={{ maxHeight: "100vh", maxWidth: "100vw" }}
           onClick={onClose}
+          onContextMenu={handleContextMenu}
         >
           {/* Close button */}
           <Button
@@ -57,8 +84,10 @@ export function ImageLightbox({
             className="h-full w-full object-cover md:max-h-[calc(95vh-2rem)] md:max-w-[calc(95vw-2rem)] md:h-auto md:w-auto md:object-contain select-none"
             style={{
               objectPosition: getObjectPositionStyle(focalPoint),
+              ...(protectionEnabled ? { WebkitUserSelect: "none", userSelect: "none" } : {}),
             }}
-            draggable={false}
+            draggable={!protectionEnabled}
+            onDragStart={handleDragStart}
             onClick={(e) => e.stopPropagation()}
           />
         </div>

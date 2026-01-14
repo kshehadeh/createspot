@@ -101,7 +101,26 @@
     "profileViews": "Vistas del Perfil",
     "totalFavorites": "Favoritos Totales",
     "workViews": "Vistas de Trabajos",
-    "totalWorks": "Trabajos Totales"
+    "totalWorks": "Trabajos Totales",
+    "imageProtection": "Protección de Imágenes",
+    "imageProtectionDescription": "Controla cómo se protegen tus imágenes del uso no autorizado",
+    "enableWatermark": "Añadir marca de agua a las publicaciones",
+    "enableWatermarkDescription": "Añade un logotipo semitransparente de CreateSpot en la esquina de tus imágenes subidas",
+    "watermarkWarningTitle": "Las marcas de agua son permanentes",
+    "watermarkWarningDescription": "Las marcas de agua se aplican al subir. Para eliminar o cambiar la posición de la marca de agua, deberás volver a subir tu imagen desde el archivo original. ¡Guarda tus archivos originales!",
+    "watermarkPosition": "Posición de la Marca de Agua",
+    "selectPosition": "Seleccionar posición",
+    "bottomRight": "Abajo Derecha",
+    "bottomLeft": "Abajo Izquierda",
+    "topRight": "Arriba Derecha",
+    "topLeft": "Arriba Izquierda",
+    "preventDownloads": "Prevenir descargas fáciles",
+    "preventDownloadsDescription": "Dificulta hacer clic derecho y guardar imágenes (usuarios determinados aún pueden encontrar formas de evitarlo)",
+    "preventAITraining": "Solicitar que los modelos de IA no entrenen con mi trabajo",
+    "preventAITrainingDescription": "Añade señales a tus imágenes solicitando que las empresas de IA las excluyan de los datos de entrenamiento (las principales empresas de IA generalmente respetan esto)",
+    "protectionSettingsSaved": "Configuración de protección guardada",
+    "protectionSettingsFailed": "Error al guardar la configuración de protección. Por favor, inténtalo de nuevo.",
+    "protectionDisclaimer": "Nota: Estas protecciones son disuasorios, no prevención absoluta. Los usuarios determinados aún pueden hacer capturas de pantalla o usar herramientas de desarrollador."
   },
   "navigation": {
     "home": "Inicio",
@@ -428,7 +447,9 @@
     "terms": "Términos de Servicio"
   },
   "upload": {
-    "ownershipNotice": "Conservas todos los derechos sobre tu contenido. Create Spot no tiene derechos sobre tus publicaciones."
+    "ownershipNotice": "Conservas todos los derechos sobre tu contenido. Create Spot no tiene derechos sobre tus publicaciones.",
+    "watermarkEnabled": "Se aplicará marca de agua a las subidas.",
+    "changeSettings": "Cambiar ajustes"
   },
   "terms": {
     "title": "Términos de Servicio | Create Spot",

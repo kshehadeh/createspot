@@ -101,7 +101,26 @@
     "profileViews": "Profile Views",
     "totalFavorites": "Total Favorites",
     "workViews": "Work Views",
-    "totalWorks": "Total Works"
+    "totalWorks": "Total Works",
+    "imageProtection": "Image Protection",
+    "imageProtectionDescription": "Control how your images are protected from unauthorized use",
+    "enableWatermark": "Add watermark to submissions",
+    "enableWatermarkDescription": "Adds a semi-transparent CreateSpot logo to the corner of your uploaded images",
+    "watermarkWarningTitle": "Watermarks are permanent",
+    "watermarkWarningDescription": "Watermarks are applied when you upload. To remove or change the watermark position, you'll need to re-upload your image from the original file. Keep your original files safe!",
+    "watermarkPosition": "Watermark Position",
+    "selectPosition": "Select position",
+    "bottomRight": "Bottom Right",
+    "bottomLeft": "Bottom Left",
+    "topRight": "Top Right",
+    "topLeft": "Top Left",
+    "preventDownloads": "Prevent easy downloads",
+    "preventDownloadsDescription": "Makes it harder to right-click and save images (determined users can still find ways around this)",
+    "preventAITraining": "Request AI models not train on my work",
+    "preventAITrainingDescription": "Adds signals to your images requesting AI companies exclude them from training data (major AI companies generally respect this)",
+    "protectionSettingsSaved": "Protection settings saved",
+    "protectionSettingsFailed": "Failed to save protection settings. Please try again.",
+    "protectionDisclaimer": "Note: These protections are deterrents, not absolute prevention. Determined users can still screenshot or use developer tools."
   },
   "navigation": {
     "home": "Home",
@@ -428,7 +447,9 @@
     "terms": "Terms of Service"
   },
   "upload": {
-    "ownershipNotice": "You retain all rights to your content. Create Spot has no rights to your submissions."
+    "ownershipNotice": "You retain all rights to your content. Create Spot has no rights to your submissions.",
+    "watermarkEnabled": "Watermark will be applied to uploads.",
+    "changeSettings": "Change settings"
   },
   "terms": {
     "title": "Terms of Service | Create Spot",

@@ -38,6 +38,11 @@ export default async function ProfileEditPage() {
       featuredSubmissionId: true,
       profileImageUrl: true,
       profileImageFocalPoint: true,
+      // Image protection settings
+      enableWatermark: true,
+      watermarkPosition: true,
+      protectFromDownload: true,
+      protectFromAI: true,
     },
   });
 
@@ -127,6 +132,11 @@ export default async function ProfileEditPage() {
         initialCountry={user.country || ""}
         initialLanguage={user.language || "en"}
         initialFeaturedSubmissionId={user.featuredSubmissionId || ""}
+        // Image protection settings
+        initialEnableWatermark={user.enableWatermark}
+        initialWatermarkPosition={user.watermarkPosition}
+        initialProtectFromDownload={user.protectFromDownload}
+        initialProtectFromAI={user.protectFromAI}
         submissions={submissions.map((s) => ({
           id: s.id,
           title: s.title,

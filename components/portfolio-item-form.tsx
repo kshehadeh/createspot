@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Crosshair } from "lucide-react";
@@ -78,6 +79,23 @@ export function PortfolioItemForm({
     y: number;
   } | null>(initialData?.imageFocalPoint || null);
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
+  const [watermarkEnabled, setWatermarkEnabled] = useState(false);
+
+  // Fetch watermark setting on mount
+  useEffect(() => {
+    const fetchWatermarkSetting = async () => {
+      try {
+        const response = await fetch("/api/profile");
+        if (response.ok) {
+          const data = await response.json();
+          setWatermarkEnabled(data.enableWatermark ?? false);
+        }
+      } catch {
+        // Silently fail - watermark indicator is not critical
+      }
+    };
+    fetchWatermarkSetting();
+  }, []);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -113,20 +131,48 @@ export function PortfolioItemForm({
         throw new Error(data?.error || "Failed to get upload URL");
       }
 
-      const { presignedUrl, publicUrl } = await presignResponse.json();
+      const presignData = await presignResponse.json();
 
-      // Upload to R2
-      const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
+      let finalPublicUrl: string;
 
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
+      // Check if server requires server-side upload (e.g., for watermarking)
+      if (presignData.useServerUpload) {
+        // Fall back to server-side upload route
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", "submission");
+
+        const serverUploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!serverUploadResponse.ok) {
+          const errorData = await serverUploadResponse.json().catch(() => null);
+          throw new Error(errorData?.error || "Server upload failed");
+        }
+
+        const { imageUrl } = await serverUploadResponse.json();
+        finalPublicUrl = imageUrl;
+      } else {
+        // Use presigned URL for direct upload to R2
+        const { presignedUrl, publicUrl } = presignData;
+
+        // Upload to R2
+        const uploadResponse = await fetch(presignedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload image");
+        }
+
+        finalPublicUrl = publicUrl;
       }
 
-      setImageUrl(publicUrl);
+      setImageUrl(finalPublicUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("errors.uploadFailed"));
     } finally {
@@ -372,6 +418,32 @@ export function PortfolioItemForm({
                 </p>
               </>
             )}
+          </div>
+        )}
+        {watermarkEnabled && (
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <svg
+              className="h-3.5 w-3.5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+              />
+            </svg>
+            <span>
+              {tUpload("watermarkEnabled")}{" "}
+              <Link
+                href="/profile/edit"
+                className="underline hover:text-foreground"
+              >
+                {tUpload("changeSettings")}
+              </Link>
+            </span>
           </div>
         )}
       </div>
