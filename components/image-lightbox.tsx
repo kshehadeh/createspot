@@ -84,7 +84,9 @@ export function ImageLightbox({
             className="h-full w-full object-cover md:max-h-[calc(95vh-2rem)] md:max-w-[calc(95vw-2rem)] md:h-auto md:w-auto md:object-contain select-none"
             style={{
               objectPosition: getObjectPositionStyle(focalPoint),
-              ...(protectionEnabled ? { WebkitUserSelect: "none", userSelect: "none" } : {}),
+              ...(protectionEnabled
+                ? { WebkitUserSelect: "none", userSelect: "none" }
+                : {}),
             }}
             draggable={!protectionEnabled}
             onDragStart={handleDragStart}

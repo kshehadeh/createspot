@@ -19,26 +19,6 @@ interface WatermarkOptions {
 }
 
 /**
- * Maps position string to Sharp gravity value
- */
-function positionToGravity(
-  position: WatermarkPosition,
-): "southeast" | "southwest" | "northeast" | "northwest" {
-  switch (position) {
-    case "bottom-right":
-      return "southeast";
-    case "bottom-left":
-      return "southwest";
-    case "top-right":
-      return "northeast";
-    case "top-left":
-      return "northwest";
-    default:
-      return "southeast";
-  }
-}
-
-/**
  * Creates a semi-transparent watermark SVG with the CreateSpot logo
  */
 async function createWatermarkSvg(
@@ -46,9 +26,12 @@ async function createWatermarkSvg(
   opacity: number,
 ): Promise<Buffer> {
   // Read the white logo SVG
-  const logoPath = path.join(process.cwd(), "marketing/createspot-logo-white.svg");
+  const logoPath = path.join(
+    process.cwd(),
+    "marketing/createspot-logo-white.svg",
+  );
   let logoSvg: string;
-  
+
   try {
     logoSvg = await fs.readFile(logoPath, "utf-8");
   } catch {
@@ -75,12 +58,12 @@ async function createWatermarkSvg(
   const viewBoxMatch = logoSvg.match(/viewBox="([^"]+)"/);
   const originalViewBox = viewBoxMatch ? viewBoxMatch[1] : "0 0 729 796";
   const [, , origWidth, origHeight] = originalViewBox.split(" ").map(Number);
-  
+
   // Calculate dimensions maintaining aspect ratio
   const aspectRatio = origWidth / origHeight;
   let width: number;
   let height: number;
-  
+
   if (aspectRatio > 1) {
     width = size;
     height = size / aspectRatio;
@@ -101,67 +84,6 @@ async function createWatermarkSvg(
 }
 
 /**
- * Applies a watermark to an image buffer
- * 
- * @param imageBuffer - The original image as a buffer
- * @param options - Watermark configuration options
- * @returns The watermarked image as a buffer
- */
-export async function applyWatermark(
-  imageBuffer: Buffer,
-  options: WatermarkOptions,
-): Promise<Buffer> {
-  const {
-    position,
-    opacity = 0.5,
-    sizeRatio = 0.12,
-    marginRatio = 0.15,
-  } = options;
-
-  // Get image metadata
-  const image = sharp(imageBuffer);
-  const metadata = await image.metadata();
-  
-  if (!metadata.width || !metadata.height) {
-    throw new Error("Unable to read image dimensions");
-  }
-
-  // Calculate watermark size based on the shorter dimension
-  const shorterDimension = Math.min(metadata.width, metadata.height);
-  const watermarkSize = Math.round(shorterDimension * sizeRatio);
-  const margin = Math.round(watermarkSize * marginRatio);
-
-  // Create the watermark SVG
-  const watermarkBuffer = await createWatermarkSvg(watermarkSize, opacity);
-
-  // Resize the watermark to ensure it fits
-  const resizedWatermark = await sharp(watermarkBuffer)
-    .resize(watermarkSize, watermarkSize, {
-      fit: "inside",
-      withoutEnlargement: true,
-    })
-    .png()
-    .toBuffer();
-
-  // Calculate position offset based on margin
-  const gravity = positionToGravity(position);
-  
-  // Composite the watermark onto the image
-  const result = await image
-    .composite([
-      {
-        input: resizedWatermark,
-        gravity,
-        // Add margin by using tile offset
-        tile: false,
-      },
-    ])
-    .toBuffer();
-
-  return result;
-}
-
-/**
  * Applies a watermark with margin by creating a padded composite
  */
 export async function applyWatermarkWithMargin(
@@ -178,7 +100,7 @@ export async function applyWatermarkWithMargin(
   // Get image metadata
   const image = sharp(imageBuffer);
   const metadata = await image.metadata();
-  
+
   if (!metadata.width || !metadata.height) {
     throw new Error("Unable to read image dimensions");
   }

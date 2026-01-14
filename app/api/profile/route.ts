@@ -161,11 +161,19 @@ export async function PUT(request: NextRequest) {
   }
 
   // Validate watermark position if provided
-  const validWatermarkPositions = ["bottom-right", "bottom-left", "top-right", "top-left"];
+  const validWatermarkPositions = [
+    "bottom-right",
+    "bottom-left",
+    "top-right",
+    "top-left",
+  ];
   if (watermarkPosition !== undefined && watermarkPosition !== null) {
     if (!validWatermarkPositions.includes(watermarkPosition)) {
       return NextResponse.json(
-        { error: "Invalid watermark position. Must be one of: bottom-right, bottom-left, top-right, top-left" },
+        {
+          error:
+            "Invalid watermark position. Must be one of: bottom-right, bottom-left, top-right, top-left",
+        },
         { status: 400 },
       );
     }

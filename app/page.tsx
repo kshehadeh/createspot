@@ -249,7 +249,9 @@ export default async function Home() {
 
       <footer className="px-6 py-8 text-center text-sm text-muted-foreground">
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
-          <span>{tFooter("copyright", { year: new Date().getFullYear() })}</span>
+          <span>
+            {tFooter("copyright", { year: new Date().getFullYear() })}
+          </span>
           <span className="hidden sm:inline">|</span>
           <Link
             href="/terms"

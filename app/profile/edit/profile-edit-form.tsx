@@ -19,7 +19,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Country, State, City } from "country-state-city";
-import { Briefcase, ArrowRight, Trash2, Globe, Shield, AlertTriangle } from "lucide-react";
+import {
+  Briefcase,
+  ArrowRight,
+  Trash2,
+  Globe,
+  Shield,
+  AlertTriangle,
+} from "lucide-react";
 import { normalizeUrl, isValidUrl } from "@/lib/utils";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
 import { locales, localeNames, type Locale } from "@/i18n/config";
@@ -102,9 +109,15 @@ export function ProfileEditForm({
     initialFeaturedSubmissionId,
   );
   // Image protection settings
-  const [enableWatermark, setEnableWatermark] = useState(initialEnableWatermark);
-  const [watermarkPosition, setWatermarkPosition] = useState(initialWatermarkPosition);
-  const [protectFromDownload, setProtectFromDownload] = useState(initialProtectFromDownload);
+  const [enableWatermark, setEnableWatermark] = useState(
+    initialEnableWatermark,
+  );
+  const [watermarkPosition, setWatermarkPosition] = useState(
+    initialWatermarkPosition,
+  );
+  const [protectFromDownload, setProtectFromDownload] = useState(
+    initialProtectFromDownload,
+  );
   const [protectFromAI, setProtectFromAI] = useState(initialProtectFromAI);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1250,7 +1263,9 @@ export function ProfileEditForm({
                   <input
                     type="checkbox"
                     checked={enableWatermark}
-                    onChange={(e) => handleEnableWatermarkChange(e.target.checked)}
+                    onChange={(e) =>
+                      handleEnableWatermarkChange(e.target.checked)
+                    }
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
@@ -1263,7 +1278,9 @@ export function ProfileEditForm({
                   <div className="flex gap-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3">
                     <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-amber-800 dark:text-amber-200">
-                      <p className="font-medium">{t("watermarkWarningTitle")}</p>
+                      <p className="font-medium">
+                        {t("watermarkWarningTitle")}
+                      </p>
                       <p className="text-xs mt-1 text-amber-700 dark:text-amber-300">
                         {t("watermarkWarningDescription")}
                       </p>
@@ -1275,14 +1292,23 @@ export function ProfileEditForm({
                     <label className="mb-2 block text-sm font-medium text-foreground">
                       {t("watermarkPosition")}
                     </label>
-                    <Select value={watermarkPosition} onValueChange={handleWatermarkPositionChange}>
+                    <Select
+                      value={watermarkPosition}
+                      onValueChange={handleWatermarkPositionChange}
+                    >
                       <SelectTrigger className="w-full sm:w-[200px]">
                         <SelectValue placeholder={t("selectPosition")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="bottom-right">{t("bottomRight")}</SelectItem>
-                        <SelectItem value="bottom-left">{t("bottomLeft")}</SelectItem>
-                        <SelectItem value="top-right">{t("topRight")}</SelectItem>
+                        <SelectItem value="bottom-right">
+                          {t("bottomRight")}
+                        </SelectItem>
+                        <SelectItem value="bottom-left">
+                          {t("bottomLeft")}
+                        </SelectItem>
+                        <SelectItem value="top-right">
+                          {t("topRight")}
+                        </SelectItem>
                         <SelectItem value="top-left">{t("topLeft")}</SelectItem>
                       </SelectContent>
                     </Select>
@@ -1305,7 +1331,9 @@ export function ProfileEditForm({
                 <input
                   type="checkbox"
                   checked={protectFromDownload}
-                  onChange={(e) => handleProtectFromDownloadChange(e.target.checked)}
+                  onChange={(e) =>
+                    handleProtectFromDownloadChange(e.target.checked)
+                  }
                   className="sr-only peer"
                 />
                 <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>

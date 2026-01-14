@@ -66,7 +66,9 @@ export function SubmissionImage({
         className={`h-full w-full object-cover ${protectionEnabled ? "select-none" : ""}`}
         style={{
           objectPosition: getObjectPositionStyle(imageFocalPoint),
-          ...(protectionEnabled ? { WebkitUserSelect: "none", userSelect: "none" } : {}),
+          ...(protectionEnabled
+            ? { WebkitUserSelect: "none", userSelect: "none" }
+            : {}),
         }}
         draggable={!protectionEnabled}
         onDragStart={handleDragStart}

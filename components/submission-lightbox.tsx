@@ -303,7 +303,9 @@ export function SubmissionLightbox({
                 style={{
                   maxHeight: "100dvh",
                   maxWidth: "100vw",
-                  ...(protectionEnabled ? { WebkitUserSelect: "none", userSelect: "none" } : {}),
+                  ...(protectionEnabled
+                    ? { WebkitUserSelect: "none", userSelect: "none" }
+                    : {}),
                 }}
                 onLoad={() => setImageLoaded(true)}
                 onMouseMove={handleImageMouseMove}

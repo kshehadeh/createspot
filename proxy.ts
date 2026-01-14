@@ -33,12 +33,12 @@ function getPreferredLocale(acceptLanguage: string | null): string {
 
 // Paths that contain user-created content that should have AI opt-out headers
 const AI_PROTECTED_PATHS = [
-  "/s/",           // Submission detail pages
-  "/profile/",     // Profile pages
-  "/this-week",    // Gallery pages
-  "/prompt/",      // Prompt-related pages
-  "/portfolio/",   // Portfolio pages
-  "/exhibit/",     // Exhibit pages
+  "/s/", // Submission detail pages
+  "/profile/", // Profile pages
+  "/this-week", // Gallery pages
+  "/prompt/", // Prompt-related pages
+  "/portfolio/", // Portfolio pages
+  "/exhibit/", // Exhibit pages
 ];
 
 export function proxy(request: NextRequest) {
