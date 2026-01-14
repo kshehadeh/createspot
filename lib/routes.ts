@@ -155,7 +155,7 @@ const ROUTES: Record<string, RouteConfig> = {
   },
   terms: {
     path: "/terms",
-    label: "footer.terms",
+    label: "navigation.terms",
     isLink: false,
   },
   logout: {
