@@ -423,7 +423,55 @@
     }
   },
   "footer": {
-    "copyright": "© {year} Create Spot"
+    "copyright": "© {year} Create Spot",
+    "terms": "Términos de Servicio"
+  },
+  "upload": {
+    "ownershipNotice": "Conservas todos los derechos sobre tu contenido. Create Spot no tiene derechos sobre tus publicaciones."
+  },
+  "terms": {
+    "title": "Términos de Servicio | Create Spot",
+    "description": "Términos de Servicio para Create Spot - una plataforma de comunidad creativa.",
+    "pageTitle": "Términos de Servicio",
+    "lastUpdated": "Última actualización: {date}",
+    "contentOwnership": {
+      "title": "Propiedad del Contenido",
+      "paragraph1": "Conservas todos los derechos, título e interés en cualquier contenido que subas, envíes o publiques en Create Spot, incluyendo pero no limitado a imágenes, texto, obras de arte y otras obras creativas (colectivamente, \"Tu Contenido\").",
+      "paragraph2": "Create Spot no reclama ningún derecho de propiedad sobre Tu Contenido. Al subir o enviar contenido a Create Spot, no otorgas a Create Spot ningún derecho de propiedad, licencia o derechos sobre Tu Contenido más allá de lo necesario para proporcionar y operar el servicio.",
+      "paragraph3": "Otorgas a Create Spot una licencia limitada, no exclusiva, mundial y libre de regalías para mostrar, almacenar y distribuir Tu Contenido únicamente con el propósito de operar la plataforma Create Spot y proporcionar servicios a ti y a otros usuarios. Esta licencia termina cuando eliminas Tu Contenido de la plataforma.",
+      "paragraph4": "Puedes eliminar Tu Contenido de Create Spot en cualquier momento. Al eliminar, Create Spot dejará de mostrar Tu Contenido, sujeto a retrasos técnicos razonables y cualquier copia en caché o archivada que pueda existir por un tiempo limitado.",
+      "paragraph5": "Declaras y garantizas que eres propietario o tienes los derechos, licencias y permisos necesarios para subir y compartir Tu Contenido en Create Spot, y que Tu Contenido no infringe los derechos de ningún tercero."
+    },
+    "userResponsibilities": {
+      "title": "Responsabilidades del Usuario",
+      "paragraph1": "Eres responsable de todo el contenido que subas, envíes o publiques en Create Spot.",
+      "paragraph2": "Aceptas no subir, enviar o publicar contenido que:",
+      "bullet1": "Viole cualquier ley o regulación aplicable",
+      "bullet2": "Infrinja los derechos de propiedad intelectual de otros",
+      "bullet3": "Contenga material dañino, abusivo u ofensivo",
+      "bullet4": "Viole la privacidad o derechos de otros",
+      "paragraph3": "Eres responsable de mantener la seguridad de tu cuenta y de todas las actividades que ocurran bajo tu cuenta."
+    },
+    "serviceUsage": {
+      "title": "Uso del Servicio",
+      "paragraph1": "Create Spot proporciona una plataforma para que los usuarios compartan trabajo creativo, construyan portafolios y participen en indicaciones creativas semanales.",
+      "paragraph2": "Nos reservamos el derecho de modificar, suspender o discontinuar cualquier aspecto del servicio en cualquier momento, con o sin aviso.",
+      "paragraph3": "Podemos eliminar contenido que viole estos Términos o nuestras pautas de la comunidad, pero no tenemos la obligación de monitorear o revisar el contenido del usuario."
+    },
+    "limitationOfLiability": {
+      "title": "Limitación de Responsabilidad",
+      "paragraph1": "Create Spot se proporciona \"tal cual\" sin garantías de ningún tipo, ya sean expresas o implícitas.",
+      "paragraph2": "En la medida máxima permitida por la ley, Create Spot no será responsable de ningún daño indirecto, incidental, especial, consecuente o punitivo que surja de o esté relacionado con tu uso del servicio."
+    },
+    "changesToTerms": {
+      "title": "Cambios a los Términos",
+      "paragraph1": "Nos reservamos el derecho de modificar estos Términos de Servicio en cualquier momento. Notificaremos a los usuarios de cualquier cambio material publicando los términos actualizados en esta página.",
+      "paragraph2": "Tu uso continuo de Create Spot después de cualquier cambio en estos Términos constituye la aceptación de los términos modificados."
+    },
+    "contact": {
+      "title": "Contacto",
+      "paragraph1": "Si tienes alguna pregunta sobre estos Términos de Servicio, por favor contáctanos a través de los canales apropiados."
+    }
   },
   "home": {
     "title": "Create Spot",

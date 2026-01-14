@@ -248,7 +248,16 @@ export default async function Home() {
       </section>
 
       <footer className="px-6 py-8 text-center text-sm text-muted-foreground">
-        {tFooter("copyright", { year: new Date().getFullYear() })}
+        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
+          <span>{tFooter("copyright", { year: new Date().getFullYear() })}</span>
+          <span className="hidden sm:inline">|</span>
+          <Link
+            href="/terms"
+            className="transition-colors hover:text-foreground underline underline-offset-4"
+          >
+            {tFooter("terms")}
+          </Link>
+        </div>
       </footer>
     </main>
   );

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { Submission } from "@/app/generated/prisma/client";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
@@ -32,6 +33,7 @@ export function SubmissionSlots({
   portfolioItems,
 }: SubmissionSlotsProps) {
   const router = useRouter();
+  const t = useTranslations("upload");
   const [activeSlot, setActiveSlot] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -653,6 +655,23 @@ export function SubmissionSlots({
                   }}
                   placeholder="Write your submission..."
                 />
+              </div>
+
+              <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
+                <svg
+                  className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{t("ownershipNotice")}</span>
               </div>
 
               <div className="flex gap-3">

@@ -423,7 +423,55 @@
     }
   },
   "footer": {
-    "copyright": "© {year} Create Spot"
+    "copyright": "© {year} Create Spot",
+    "terms": "Terms of Service"
+  },
+  "upload": {
+    "ownershipNotice": "You retain all rights to your content. Create Spot has no rights to your submissions."
+  },
+  "terms": {
+    "title": "Terms of Service | Create Spot",
+    "description": "Terms of Service for Create Spot - a creative community platform.",
+    "pageTitle": "Terms of Service",
+    "lastUpdated": "Last updated: {date}",
+    "contentOwnership": {
+      "title": "Content Ownership",
+      "paragraph1": "You retain all rights, title, and interest in any content you upload, submit, or post to Create Spot, including but not limited to images, text, artwork, and other creative works (collectively, \"Your Content\").",
+      "paragraph2": "Create Spot does not claim any ownership rights in Your Content. By uploading or submitting content to Create Spot, you do not grant Create Spot any ownership, license, or rights to Your Content beyond what is necessary to provide and operate the service.",
+      "paragraph3": "You grant Create Spot a limited, non-exclusive, worldwide, royalty-free license to display, store, and distribute Your Content solely for the purpose of operating the Create Spot platform and providing services to you and other users. This license terminates when you remove Your Content from the platform.",
+      "paragraph4": "You may remove Your Content from Create Spot at any time. Upon removal, Create Spot will cease displaying Your Content, subject to reasonable technical delays and any cached or archived copies that may exist for a limited time.",
+      "paragraph5": "You represent and warrant that you own or have the necessary rights, licenses, and permissions to upload and share Your Content on Create Spot, and that Your Content does not infringe upon the rights of any third party."
+    },
+    "userResponsibilities": {
+      "title": "User Responsibilities",
+      "paragraph1": "You are responsible for all content you upload, submit, or post to Create Spot.",
+      "paragraph2": "You agree not to upload, submit, or post content that:",
+      "bullet1": "Violates any applicable laws or regulations",
+      "bullet2": "Infringes upon the intellectual property rights of others",
+      "bullet3": "Contains harmful, abusive, or offensive material",
+      "bullet4": "Violates the privacy or rights of others",
+      "paragraph3": "You are responsible for maintaining the security of your account and for all activities that occur under your account."
+    },
+    "serviceUsage": {
+      "title": "Service Usage",
+      "paragraph1": "Create Spot provides a platform for users to share creative work, build portfolios, and participate in weekly creative prompts.",
+      "paragraph2": "We reserve the right to modify, suspend, or discontinue any aspect of the service at any time, with or without notice.",
+      "paragraph3": "We may remove content that violates these Terms or our community guidelines, but we are under no obligation to monitor or review user content."
+    },
+    "limitationOfLiability": {
+      "title": "Limitation of Liability",
+      "paragraph1": "Create Spot is provided \"as is\" without warranties of any kind, either express or implied.",
+      "paragraph2": "To the fullest extent permitted by law, Create Spot shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or relating to your use of the service."
+    },
+    "changesToTerms": {
+      "title": "Changes to Terms",
+      "paragraph1": "We reserve the right to modify these Terms of Service at any time. We will notify users of any material changes by posting the updated terms on this page.",
+      "paragraph2": "Your continued use of Create Spot after any changes to these Terms constitutes acceptance of the modified terms."
+    },
+    "contact": {
+      "title": "Contact",
+      "paragraph1": "If you have any questions about these Terms of Service, please contact us through the appropriate channels."
+    }
   },
   "home": {
     "title": "Create Spot",
