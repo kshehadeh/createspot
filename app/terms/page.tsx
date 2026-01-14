@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
+import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TermsPage() {
   const t = await getTranslations("terms");
-  const lastUpdatedDate = new Date("2024-01-01").toLocaleDateString("en-US", {
+  const lastUpdatedDate = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -26,14 +27,10 @@ export default async function TermsPage() {
 
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
-      <section className="mb-14 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          {t("pageTitle")}
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground">
-          {t("lastUpdated", { date: lastUpdatedDate })}
-        </p>
-      </section>
+      <PageHeader
+        title={t("pageTitle")}
+        subtitle={t("lastUpdated", { date: lastUpdatedDate })}
+      />
 
       <div className="space-y-8">
         {/* Content Ownership */}
