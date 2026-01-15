@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { getCurrentPrompt } from "@/lib/prompts";
 import { PageLayout } from "@/components/page-layout";
 import { Card, CardContent } from "@/components/ui/card";
+import { ThemedCard } from "@/components/themed-card";
 import { StyledSignInButton } from "./styled-sign-in-button";
 import {
   ImageIcon,
@@ -78,7 +79,10 @@ export default async function PromptsPage() {
           /* Logged In State - Show all options */
           <div className="grid gap-4 sm:grid-cols-3">
             {/* Start Creating Card */}
-            <Card className="group relative overflow-hidden rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100/50 transition-all hover:border-violet-300 hover:shadow-lg dark:border-violet-800 dark:from-violet-950/50 dark:to-violet-900/30 dark:hover:border-violet-700">
+            <ThemedCard
+              variant="violet"
+              className="group relative overflow-hidden rounded-2xl border-2 transition-all hover:shadow-lg"
+            >
               <Link href="/prompt/play" className="block">
                 <CardContent className="p-6">
                   <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-violet-200 text-violet-700 dark:bg-violet-800 dark:text-violet-300">
@@ -96,10 +100,10 @@ export default async function PromptsPage() {
                   </div>
                 </CardContent>
               </Link>
-            </Card>
+            </ThemedCard>
 
             {/* This Week's Gallery Card */}
-            <Card className="group relative overflow-hidden rounded-2xl border transition-all hover:border-amber-300 hover:shadow-lg dark:hover:border-amber-700">
+            <Card className="group relative overflow-hidden rounded-2xl border bg-card transition-all hover:border-amber-300 hover:shadow-lg dark:border-border dark:bg-card dark:hover:border-amber-700">
               <Link href="/prompt/this-week" className="block">
                 <CardContent className="p-6">
                   <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">
@@ -120,7 +124,7 @@ export default async function PromptsPage() {
             </Card>
 
             {/* Your History Card */}
-            <Card className="group relative overflow-hidden rounded-2xl border transition-all hover:border-rose-300 hover:shadow-lg dark:hover:border-rose-700">
+            <Card className="group relative overflow-hidden rounded-2xl border bg-card transition-all hover:border-rose-300 hover:shadow-lg dark:border-border dark:bg-card dark:hover:border-rose-700">
               <Link href="/prompt/history" className="block">
                 <CardContent className="p-6">
                   <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-400">
@@ -144,7 +148,10 @@ export default async function PromptsPage() {
           /* Not Logged In State - Show sign in prompt with gallery option */
           <div className="grid gap-6 md:grid-cols-2">
             {/* Sign In Card */}
-            <Card className="relative overflow-hidden rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100/50 dark:border-violet-800 dark:from-violet-950/50 dark:to-violet-900/30">
+            <ThemedCard
+              variant="violet"
+              className="relative overflow-hidden rounded-2xl border-2"
+            >
               <CardContent className="p-8">
                 <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-violet-200 text-violet-700 dark:bg-violet-800 dark:text-violet-300">
                   <SparklesIcon className="h-7 w-7" />
@@ -157,10 +164,10 @@ export default async function PromptsPage() {
                 </p>
                 <StyledSignInButton />
               </CardContent>
-            </Card>
+            </ThemedCard>
 
             {/* Browse Gallery Card */}
-            <Card className="group relative overflow-hidden rounded-2xl border transition-all hover:border-amber-300 hover:shadow-lg dark:hover:border-amber-700">
+            <Card className="group relative overflow-hidden rounded-2xl border bg-card transition-all hover:border-amber-300 hover:shadow-lg dark:border-border dark:bg-card dark:hover:border-amber-700">
               <Link href="/prompt/this-week" className="block h-full">
                 <CardContent className="flex h-full flex-col p-8">
                   <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">
@@ -189,7 +196,7 @@ export default async function PromptsPage() {
           {t("howItWorks")}
         </h2>
         <div className="grid gap-6 sm:grid-cols-3">
-          <Card className="rounded-xl">
+          <Card className="rounded-xl bg-card dark:bg-card">
             <CardContent className="p-6 text-center">
               <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-2xl font-bold dark:bg-amber-900/30">
                 1
@@ -202,7 +209,7 @@ export default async function PromptsPage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="rounded-xl">
+          <Card className="rounded-xl bg-card dark:bg-card">
             <CardContent className="p-6 text-center">
               <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-2xl font-bold dark:bg-rose-900/30">
                 2
@@ -215,7 +222,7 @@ export default async function PromptsPage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="rounded-xl">
+          <Card className="rounded-xl bg-card dark:bg-card">
             <CardContent className="p-6 text-center">
               <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-2xl font-bold dark:bg-violet-900/30">
                 3

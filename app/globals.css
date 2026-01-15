@@ -284,6 +284,14 @@ body {
   );
 }
 
+/* iOS Safari dark mode support for cards */
+@media (prefers-color-scheme: dark) {
+  /* Ensure card backgrounds use dark mode */
+  [class*="bg-card"]:not([class*="bg-gradient"]) {
+    background-color: hsl(240 10% 3.9%) !important;
+  }
+}
+
 /* Image protection styles */
 .protected-image-wrapper {
   position: relative;
