@@ -254,6 +254,36 @@ body {
   background: hsl(var(--accent)) !important;
 }
 
+/* Hero background with iOS Safari dark mode support */
+.hero-background {
+  background: linear-gradient(
+    to bottom right,
+    rgb(255 251 235) 0%,
+    rgb(255 241 242) 50%,
+    rgb(245 243 255) 100%
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  .hero-background {
+    background: linear-gradient(
+      to bottom right,
+      rgb(120 53 15 / 0.2) 0%,
+      rgb(77 2 24 / 0.2) 50%,
+      rgb(76 29 149 / 0.2) 100%
+    );
+  }
+}
+
+.dark .hero-background {
+  background: linear-gradient(
+    to bottom right,
+    rgb(120 53 15 / 0.2) 0%,
+    rgb(77 2 24 / 0.2) 50%,
+    rgb(76 29 149 / 0.2) 100%
+  );
+}
+
 /* Image protection styles */
 .protected-image-wrapper {
   position: relative;

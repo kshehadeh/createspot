@@ -133,7 +133,7 @@ export default async function Home() {
     <main className="flex-1">
       {/* Hero Section */}
       <section className="relative overflow-hidden px-6 py-14 sm:py-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-rose-50 to-violet-50 dark:from-amber-950/20 dark:via-rose-950/20 dark:to-violet-950/20" />
+        <div className="absolute inset-0 hero-background" />
         <div className="relative mx-auto max-w-6xl">
           <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-stretch lg:gap-12">
             {/* Left: Hero content */}
