@@ -19,13 +19,13 @@ export function ThemedCard({
   useEffect(() => {
     // Check system preference
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    
+
     const updateTheme = () => {
       const htmlHasDark = document.documentElement.classList.contains("dark");
       const systemPrefersDark = mediaQuery.matches;
       setIsDark(htmlHasDark || systemPrefersDark);
     };
-    
+
     updateTheme();
 
     // Listen for system preference changes
@@ -49,7 +49,7 @@ export function ThemedCard({
     // Use dark style if isDark is true, light style otherwise
     // Default to light style during SSR (isDark === null)
     const useDarkStyle = isDark === true;
-    
+
     const style: React.CSSProperties = useDarkStyle
       ? {
           background:
