@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import { Card } from "@/components/ui/card";
 
 interface ThemedCardProps {
@@ -14,41 +15,20 @@ export function ThemedCard({
   className = "",
   variant = "default",
 }: ThemedCardProps) {
-  const [isDark, setIsDark] = useState<boolean | null>(null);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check system preference
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const updateTheme = () => {
-      const htmlHasDark = document.documentElement.classList.contains("dark");
-      const systemPrefersDark = mediaQuery.matches;
-      setIsDark(htmlHasDark || systemPrefersDark);
-    };
-
-    updateTheme();
-
-    // Listen for system preference changes
-    const mediaHandler = () => updateTheme();
-    mediaQuery.addEventListener("change", mediaHandler);
-
-    // Also observe class changes on html element
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => {
-      mediaQuery.removeEventListener("change", mediaHandler);
-      observer.disconnect();
-    };
+    setMounted(true);
   }, []);
 
+  // Use resolvedTheme which accounts for system preference when theme is "system"
+  const isDark = mounted && (resolvedTheme === "dark");
+
   if (variant === "violet") {
-    // Use dark style if isDark is true, light style otherwise
-    // Default to light style during SSR (isDark === null)
-    const useDarkStyle = isDark === true;
+    // Use dark style if resolvedTheme is dark, light style otherwise
+    // Default to light style during SSR (when not mounted)
+    const useDarkStyle = isDark;
 
     const style: React.CSSProperties = useDarkStyle
       ? {
@@ -57,13 +37,16 @@ export function ThemedCard({
           borderColor: "rgba(76, 29, 149, 0.8)",
         }
       : {
-          background:
-            "linear-gradient(to bottom right, rgb(245, 243, 255) 0%, rgba(237, 233, 254, 0.5) 100%)",
-          borderColor: "rgb(221, 214, 254)",
+          background: "#ffffff",
+          borderColor: "rgba(139, 92, 246, 0.5)",
         };
 
+    const cardClassName = useDarkStyle
+      ? className
+      : `${className} !bg-white`.trim();
+
     return (
-      <Card className={className} style={style}>
+      <Card className={cardClassName} style={style}>
         {children}
       </Card>
     );
