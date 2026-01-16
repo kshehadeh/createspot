@@ -73,9 +73,16 @@ export async function POST(request: NextRequest) {
     featuredSubmissionId,
   } = body;
 
-  if (!title || !startTime || !endTime || !curatorId) {
+  if (!title || !startTime || !curatorId) {
     return NextResponse.json(
       { error: "Missing required fields" },
+      { status: 400 },
+    );
+  }
+
+  if (endTime && new Date(startTime) >= new Date(endTime)) {
+    return NextResponse.json(
+      { error: "End time must be after start time" },
       { status: 400 },
     );
   }
@@ -87,7 +94,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const validViewTypes = ["gallery", "constellation", "global"];
+  const validViewTypes = ["gallery", "constellation"];
   const invalidTypes = allowedViewTypes.filter(
     (type: string) => !validViewTypes.includes(type),
   );
@@ -112,7 +119,7 @@ export async function POST(request: NextRequest) {
       title,
       description: description || null,
       startTime: new Date(startTime),
-      endTime: new Date(endTime),
+      endTime: endTime ? new Date(endTime) : null,
       isActive: isActive ?? true,
       curatorId,
       allowedViewTypes,

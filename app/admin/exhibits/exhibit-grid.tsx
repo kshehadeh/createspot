@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Eye, Pencil, Trash2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -22,7 +22,7 @@ interface Exhibit {
     text: string | null;
   } | null;
   startTime: Date;
-  endTime: Date;
+  endTime: Date | null;
   isActive: boolean;
   curator: {
     id: string;
@@ -156,23 +156,13 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
                   </div>
                 </div>
               </Link>
-              <CardContent className="p-3 space-y-3">
-                <div className="flex items-center gap-2">
-                  {exhibit.curator.image ? (
-                    <Image
-                      src={exhibit.curator.image}
-                      alt={exhibit.curator.name || t("curator")}
-                      width={20}
-                      height={20}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="h-5 w-5 rounded-full bg-muted" />
-                  )}
-                  <span className="text-xs text-muted-foreground">
-                    {exhibit.curator.name || tProfile("anonymous")}
-                  </span>
-                </div>
+              <CardContent className="p-3">
+                <span className="text-xs text-muted-foreground">
+                  {t("curator")}:{" "}
+                  {exhibit.curator.name || tProfile("anonymous")}
+                </span>
+              </CardContent>
+              <CardFooter className="p-3 pt-0">
                 <div className="flex gap-2">
                   <Link href={`/exhibition/${exhibit.id}`}>
                     <Button variant="outline" size="sm" className="h-9 w-9 p-0">
@@ -196,7 +186,7 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
                     <span className="sr-only">{t("delete")}</span>
                   </Button>
                 </div>
-              </CardContent>
+              </CardFooter>
             </Card>
           );
         })}

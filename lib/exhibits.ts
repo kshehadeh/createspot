@@ -5,7 +5,7 @@ export interface ExhibitWithDetails {
   title: string;
   description: string | null;
   startTime: Date;
-  endTime: Date;
+  endTime: Date | null;
   isActive: boolean;
   curatorId: string;
   featuredArtistId: string | null;
@@ -40,7 +40,7 @@ export async function getCurrentExhibits(): Promise<ExhibitWithDetails[]> {
     where: {
       isActive: true,
       startTime: { lte: now },
-      endTime: { gte: now },
+      OR: [{ endTime: { gte: now } }, { endTime: null }],
     },
     include: {
       curator: {

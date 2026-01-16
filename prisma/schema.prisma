@@ -195,7 +195,7 @@ model Exhibit {
   title             String
   description       String?  @db.Text
   startTime         DateTime
-  endTime           DateTime
+  endTime           DateTime?
   isActive          Boolean  @default(true)
   curatorId         String
   featuredArtistId  String?

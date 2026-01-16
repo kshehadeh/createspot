@@ -23,7 +23,7 @@ export function ThemedCard({
   }, []);
 
   // Use resolvedTheme which accounts for system preference when theme is "system"
-  const isDark = mounted && (resolvedTheme === "dark");
+  const isDark = mounted && resolvedTheme === "dark";
 
   if (variant === "violet") {
     // Use dark style if resolvedTheme is dark, light style otherwise

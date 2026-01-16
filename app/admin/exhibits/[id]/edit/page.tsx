@@ -118,22 +118,9 @@ export default async function EditExhibitPage({
               {t("editDescription")}
             </p>
           </div>
-          <Link href="/admin/exhibits">
-            <Button variant="ghost" size="sm">
-              <svg
-                className="mr-2 h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              {t("backToExhibits")}
+          <Link href={`/exhibition/${exhibit.id}`}>
+            <Button variant="outline" size="sm">
+              View Exhibit
             </Button>
           </Link>
         </div>

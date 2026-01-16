@@ -10,6 +10,7 @@ import { UserSelector } from "@/components/user-selector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
 
 interface SubmissionOption {
@@ -40,7 +41,7 @@ interface Exhibit {
   title: string;
   description: string | null;
   startTime: Date;
-  endTime: Date;
+  endTime: Date | null;
   isActive: boolean;
   curatorId: string;
   featuredArtistId: string | null;
@@ -69,27 +70,37 @@ export function ExhibitFormSimple({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper function to round to the nearest hour
+  const roundToHour = (date: Date, hour: number): Date => {
+    const result = new Date(date);
+    result.setHours(hour, 0, 0, 0);
+    return result;
+  };
+
   const [title, setTitle] = useState(exhibit?.title || "");
   const [description, setDescription] = useState(exhibit?.description || "");
+  const now = new Date();
+  const defaultStart = roundToHour(now, 9); // 9am
+  const defaultEnd = roundToHour(now, 17); // 5pm
+
   const [startTime, setStartTime] = useState(
     exhibit
       ? new Date(exhibit.startTime).toISOString().slice(0, 16)
-      : new Date().toISOString().slice(0, 16),
+      : defaultStart.toISOString().slice(0, 16),
   );
   const [endTime, setEndTime] = useState(
-    exhibit
+    exhibit?.endTime
       ? new Date(exhibit.endTime).toISOString().slice(0, 16)
-      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .slice(0, 16),
+      : defaultEnd.toISOString().slice(0, 16),
   );
+  const [noEndDate, setNoEndDate] = useState(exhibit?.endTime === null);
   const [isActive, setIsActive] = useState(exhibit?.isActive ?? true);
   const [curatorId, setCuratorId] = useState(exhibit?.curatorId || "");
   const [featuredArtistId, setFeaturedArtistId] = useState(
     exhibit?.featuredArtistId || "",
   );
   const [allowedViewTypes, setAllowedViewTypes] = useState<string[]>(
-    exhibit?.allowedViewTypes || ["gallery", "constellation", "global"],
+    exhibit?.allowedViewTypes || ["gallery", "constellation"],
   );
   const [featuredSubmissionId, setFeaturedSubmissionId] = useState(
     exhibit?.featuredSubmissionId || "",
@@ -149,12 +160,12 @@ export function ExhibitFormSimple({
         return;
       }
 
-      if (!startTime || !endTime) {
-        setError("Start time and end time are required");
+      if (!startTime || (!endTime && !noEndDate)) {
+        setError("Start time is required");
         return;
       }
 
-      if (new Date(startTime) >= new Date(endTime)) {
+      if (endTime && new Date(startTime) >= new Date(endTime)) {
         setError("End time must be after start time");
         return;
       }
@@ -176,7 +187,7 @@ export function ExhibitFormSimple({
           title: title.trim(),
           description: description.trim() || null,
           startTime,
-          endTime,
+          endTime: noEndDate ? null : endTime,
           isActive,
           curatorId,
           allowedViewTypes,
@@ -214,6 +225,7 @@ export function ExhibitFormSimple({
       description,
       startTime,
       endTime,
+      noEndDate,
       isActive,
       curatorId,
       featuredArtistId,
@@ -289,14 +301,32 @@ export function ExhibitFormSimple({
           />
         </div>
         <div>
-          <Label htmlFor="endTime">{t("endTime")} *</Label>
-          <Input
-            id="endTime"
-            type="datetime-local"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            required
-          />
+          <Label htmlFor="endTime">{t("endTime")}</Label>
+          <div className="space-y-2">
+            <Input
+              id="endTime"
+              type="datetime-local"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              disabled={noEndDate}
+              required={!noEndDate}
+            />
+            <div className="flex items-center gap-2">
+              <Switch
+                id="noEndDate"
+                checked={noEndDate}
+                onCheckedChange={setNoEndDate}
+              />
+              <div className="flex flex-col">
+                <Label htmlFor="noEndDate" className="cursor-pointer">
+                  {t("noEndDate")}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {t("noEndDateDescription")}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -342,7 +372,6 @@ export function ExhibitFormSimple({
           {[
             { value: "gallery", label: t("grid") },
             { value: "constellation", label: t("constellation") },
-            { value: "global", label: t("map") },
           ].map((viewType) => (
             <div key={viewType.value} className="flex items-center gap-2">
               <input

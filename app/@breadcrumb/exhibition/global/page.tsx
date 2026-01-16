@@ -14,7 +14,7 @@ export default async function ExhibitionGlobalBreadcrumb({
 }: ExhibitionGlobalBreadcrumbProps) {
   const t = await getTranslations("navigation");
   const params = await searchParams;
-  
+
   const rawExhibitId = Array.isArray(params.exhibitId)
     ? params.exhibitId[0]
     : params.exhibitId;

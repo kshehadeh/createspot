@@ -5,12 +5,15 @@
 
 export function isExhibitActive(exhibit: {
   startTime: Date;
-  endTime: Date;
+  endTime: Date | null;
   isActive: boolean;
 }): boolean {
   if (!exhibit.isActive) {
     return false;
   }
   const now = new Date();
-  return now >= exhibit.startTime && now <= exhibit.endTime;
+  return (
+    now >= exhibit.startTime &&
+    (exhibit.endTime === null || now <= exhibit.endTime)
+  );
 }

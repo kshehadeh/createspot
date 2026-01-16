@@ -116,14 +116,7 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
       description:
         "Explore submissions along an interactive path through the exhibit.",
     },
-    {
-      value: "global" as const,
-      label: "Map",
-      path: `/exhibition/global?exhibitId=${exhibitId}`,
-      enabled: exhibit.allowedViewTypes.includes("global"),
-      description:
-        "View submissions on a geographic map showing artists worldwide.",
-    },
+    // Map/global view is not available for temporary exhibits
   ].filter((vt) => vt.enabled);
 
   return (
@@ -134,12 +127,11 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
             {exhibit.title}
           </h1>
           {session?.user?.isAdmin && (
-            <Link
-              href={`/admin/exhibits/${exhibitId}/edit`}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors shrink-0"
-            >
-              Edit Exhibit →
-            </Link>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/admin/exhibits/${exhibitId}/edit`}>
+                Edit Exhibit
+              </Link>
+            </Button>
           )}
         </div>
         {exhibit.description && (

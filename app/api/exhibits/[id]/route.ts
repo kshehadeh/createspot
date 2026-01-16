@@ -119,7 +119,7 @@ export async function PUT(
       );
     }
 
-    const validViewTypes = ["gallery", "constellation", "global"];
+    const validViewTypes = ["gallery", "constellation"];
     const invalidTypes = allowedViewTypes.filter(
       (type: string) => !validViewTypes.includes(type),
     );
@@ -146,7 +146,7 @@ export async function PUT(
     title?: string;
     description?: string | null;
     startTime?: Date;
-    endTime?: Date;
+    endTime?: Date | null;
     isActive?: boolean;
     curatorId?: string;
     allowedViewTypes?: string[];
@@ -157,7 +157,9 @@ export async function PUT(
   if (title !== undefined) updateData.title = title;
   if (description !== undefined) updateData.description = description || null;
   if (startTime !== undefined) updateData.startTime = new Date(startTime);
-  if (endTime !== undefined) updateData.endTime = new Date(endTime);
+  if (endTime !== undefined) {
+    updateData.endTime = endTime ? new Date(endTime) : null;
+  }
   if (isActive !== undefined) updateData.isActive = isActive;
   if (curatorId !== undefined) updateData.curatorId = curatorId;
   if (allowedViewTypes !== undefined)

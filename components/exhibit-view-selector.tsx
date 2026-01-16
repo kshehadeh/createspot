@@ -50,10 +50,13 @@ export function ExhibitViewSelector({
     },
   ];
 
-  // For temporary exhibits, filter by allowedViewTypes
+  // For temporary exhibits, filter by allowedViewTypes and exclude global/map view
   // For permanent exhibits, only show gallery and global (not constellation/path)
   const availableViews = exhibitId
-    ? allViewTypes.filter((view) => allowedViewTypes?.includes(view.type))
+    ? allViewTypes.filter(
+        (view) =>
+          allowedViewTypes?.includes(view.type) && view.type !== "global",
+      )
     : allViewTypes.filter((view) => view.type !== "constellation");
 
   // Filter out the current view
