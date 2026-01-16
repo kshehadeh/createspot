@@ -24,22 +24,25 @@ export async function generateMetadata({
     };
   }
 
+  function getDescription(text: string): string {
+    const cleanText = text.replace(/<[^>]*>/g, "").trim();
+    const sentences = cleanText.match(/[^.!?]+[.!?]+/g);
+    if (sentences && sentences.length > 0) {
+      return sentences[0].trim();
+    }
+    return cleanText.slice(0, 200);
+  }
+
+  const description = exhibit.description
+    ? getDescription(exhibit.description)
+    : `Explore the ${exhibit.title} exhibit in path view.`;
+
   return {
-    title: `${exhibit.title} - Path | Create Spot`,
-    description: exhibit.description
-      ? exhibit.description
-          .replace(/<[^>]*>/g, "")
-          .trim()
-          .slice(0, 200)
-      : `Explore the ${exhibit.title} exhibit in path view.`,
+    title: `${exhibit.title} | Exhibit | Create Spot`,
+    description,
     openGraph: {
-      title: `${exhibit.title} - Path | Create Spot`,
-      description: exhibit.description
-        ? exhibit.description
-            .replace(/<[^>]*>/g, "")
-            .trim()
-            .slice(0, 200)
-        : `Explore the ${exhibit.title} exhibit in path view.`,
+      title: `${exhibit.title} | Exhibit | Create Spot`,
+      description,
       type: "website",
     },
   };
