@@ -78,6 +78,9 @@ docs/                  # Developer documentation
 | `bun run lint` | Run oxlint |
 | `bun run format` | Format code with Biome |
 | `bun run format:check` | Check formatting without changes |
+| `bun run validate` | Run full validation (lint, format, knip, build) |
+
+> **Important**: After making major changes to the codebase (e.g., schema changes, new features, significant refactoring), always run `bun run validate` to ensure everything passes linting, formatting, dependency checks, and builds successfully before completing the task.
 
 ## Toolchain
 
@@ -330,9 +333,17 @@ const prompt = await getCurrentPrompt();
 // Returns prompt where now is between weekStart and weekEnd
 ```
 
-## Testing
+## Testing & Verification
 
-> Note: Test infrastructure is not yet set up. When adding tests:
+> **Important**: After making major changes to the codebase (including schema changes, new features, or significant refactoring), always run `bun run validate` to ensure:
+> - Code passes linting checks
+> - Code is properly formatted
+> - No unused dependencies or exports exist
+> - Application builds successfully
+
+### Unit & E2E Tests
+
+> Test infrastructure is not yet set up. When adding tests:
 > - Use Vitest or Jest for unit tests
 > - Use Playwright for E2E tests
 > - Place tests adjacent to source files or in `__tests__` directories
@@ -356,6 +367,7 @@ const prompt = await getCurrentPrompt();
 1. Edit `prisma/schema.prisma`
 2. Run `bunx prisma migrate dev --name <description>`
 3. Update TypeScript types if needed (auto-generated)
+4. **Run `bun run validate`** after schema changes to ensure builds pass
 
 ### Add a Shared Component
 

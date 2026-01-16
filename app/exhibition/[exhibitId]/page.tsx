@@ -36,12 +36,24 @@ export async function generateMetadata({
     };
   }
 
+  // Strip HTML tags from description for metadata
+  const plainDescription = exhibit.description
+    ? exhibit.description.replace(/<[^>]*>/g, "").trim()
+    : undefined;
+
+  // Get first sentence or first ~200 chars as description
+  const shortDescription = plainDescription
+    ? plainDescription.length > 200
+      ? plainDescription.slice(0, 200).replace(/\s+\S*$/, "...")
+      : plainDescription
+    : `View the ${exhibit.title} exhibit`;
+
   return {
-    title: `${exhibit.title} | Create Spot`,
-    description: exhibit.description || `View the ${exhibit.title} exhibit`,
+    title: `${exhibit.title} | Exhibit | Create Spot`,
+    description: shortDescription,
     openGraph: {
-      title: exhibit.title,
-      description: exhibit.description || undefined,
+      title: `${exhibit.title} | Exhibit | Create Spot`,
+      description: shortDescription,
       type: "website",
     },
   };
