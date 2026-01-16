@@ -9,8 +9,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { getObjectPositionStyle } from "@/lib/image-utils";
@@ -89,6 +90,21 @@ export function UserWorkModal({ userId, isOpen, onClose }: UserWorkModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          {loading ? (
+            <DialogTitle>Loading...</DialogTitle>
+          ) : error ? (
+            <DialogTitle>Error</DialogTitle>
+          ) : user ? (
+            <>
+              <DialogTitle>{user.name || "Anonymous"}</DialogTitle>
+              {location && <DialogDescription>{location}</DialogDescription>}
+            </>
+          ) : (
+            <DialogTitle>User Work</DialogTitle>
+          )}
+        </DialogHeader>
+
         {loading && (
           <div className="flex items-center justify-center py-12">
             <p className="text-muted-foreground">Loading...</p>
@@ -103,43 +119,12 @@ export function UserWorkModal({ userId, isOpen, onClose }: UserWorkModalProps) {
 
         {!loading && !error && user && (
           <>
-            <DialogHeader>
-              <div className="flex items-center gap-4 mb-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={user.image || undefined} />
-                  <AvatarFallback className="bg-muted text-lg">
-                    {user.name
-                      ? user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                          .slice(0, 2)
-                      : "?"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <DialogTitle className="text-2xl">
-                    {user.name || "Anonymous"}
-                  </DialogTitle>
-                  {location && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {location}
-                    </p>
-                  )}
-                </div>
-                <Button asChild variant="outline">
-                  <Link href={`/profile/${user.id}`}>View Profile</Link>
-                </Button>
-              </div>
-            </DialogHeader>
-
             {submissions.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <p>No public work available.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <AnimatePresence mode="popLayout">
                   {submissions.map((submission, index) => (
                     <motion.div
@@ -179,6 +164,14 @@ export function UserWorkModal({ userId, isOpen, onClose }: UserWorkModalProps) {
               </div>
             )}
           </>
+        )}
+
+        {!loading && !error && user && (
+          <DialogFooter>
+            <Button asChild variant="outline">
+              <Link href={`/profile/${user.id}`}>View Profile</Link>
+            </Button>
+          </DialogFooter>
         )}
       </DialogContent>
     </Dialog>

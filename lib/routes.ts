@@ -43,13 +43,13 @@ const ROUTES: Record<string, RouteConfig> = {
     // Note: This is a virtual route for breadcrumbs only - links to /exhibition
   },
   exhibitionGallery: {
-    path: "/exhibition/gallery",
+    path: "/exhibition/gallery/grid",
     label: "navigation.grid",
     parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.gallery.icon,
   },
   exhibitionConstellation: {
-    path: "/exhibition/constellation",
+    path: "/exhibition/gallery/path",
     label: "navigation.constellation",
     parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.constellation.icon,

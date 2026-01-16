@@ -115,7 +115,7 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
     {
       value: "gallery" as const,
       label: "Grid",
-      path: `/exhibition/gallery?exhibitId=${exhibitId}`,
+      path: `/exhibition/gallery/grid/${exhibitId}`,
       enabled: exhibit.allowedViewTypes.includes("gallery"),
       description:
         "Browse submissions in a grid layout with filtering and search options.",
@@ -123,7 +123,7 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
     {
       value: "constellation" as const,
       label: EXHIBITION_CONFIGS.constellation.name,
-      path: `/exhibition/constellation?exhibitId=${exhibitId}`,
+      path: `/exhibition/gallery/path/${exhibitId}`,
       enabled: exhibit.allowedViewTypes.includes("constellation"),
       description:
         "Explore submissions along an interactive path through the exhibit.",

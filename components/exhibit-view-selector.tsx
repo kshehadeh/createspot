@@ -70,10 +70,22 @@ export function ExhibitViewSelector({
   // Build URL with exhibitId if present, preserving other search params
   const buildUrl = (path: string) => {
     const params = new URLSearchParams(searchParams.toString());
+    // Remove exhibitId from query params since it's now in the route
+    params.delete("exhibitId");
+
+    // For gallery (grid) and constellation (path) views, use route parameter
+    if (
+      path === EXHIBITION_CONFIGS.gallery.path ||
+      path === EXHIBITION_CONFIGS.constellation.path
+    ) {
+      const basePath = exhibitId ? `${path}/${exhibitId}` : path;
+      const queryString = params.toString();
+      return queryString ? `${basePath}?${queryString}` : basePath;
+    }
+
+    // For global view, keep query param approach
     if (exhibitId) {
       params.set("exhibitId", exhibitId);
-    } else {
-      params.delete("exhibitId");
     }
     const queryString = params.toString();
     return queryString ? `${path}?${queryString}` : path;

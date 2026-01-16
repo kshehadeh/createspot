@@ -75,7 +75,7 @@ export function ExhibitionFilters({
     }
 
     const next = params.toString();
-    const basePath = pathname || "/exhibition/gallery";
+    const basePath = pathname || "/exhibition/gallery/grid";
 
     startTransition(() => {
       router.replace(next ? `${basePath}?${next}` : basePath, {

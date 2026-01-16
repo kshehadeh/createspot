@@ -14,12 +14,12 @@ export interface ExhibitionConfig {
 export const EXHIBITION_CONFIGS: Record<ExhibitionType, ExhibitionConfig> = {
   gallery: {
     name: "Grid",
-    path: "/exhibition/gallery",
+    path: "/exhibition/gallery/grid",
     icon: Table,
   },
   constellation: {
     name: "Path",
-    path: "/exhibition/constellation",
+    path: "/exhibition/gallery/path",
     icon: Signpost,
   },
   global: {

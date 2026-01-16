@@ -146,7 +146,7 @@ export function RecentSubmissionsCarousel({
       {/* View all link */}
       <div className="mt-3 text-right">
         <Link
-          href="/exhibition/gallery"
+          href="/exhibition/gallery/grid"
           className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           Visit the gallery →
