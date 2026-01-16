@@ -20,11 +20,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Exhibits | Create Spot",
   description:
-    "Explore Create Spot exhibits: browse the Grid, explore the Constellation in 3D, or discover artists worldwide on the Map.",
+    "Explore Create Spot exhibits: browse the Grid or discover artists worldwide on the Map.",
   openGraph: {
     title: "Exhibits | Create Spot",
     description:
-      "Explore Create Spot exhibits: browse the Grid, explore the Constellation in 3D, or discover artists worldwide on the Map.",
+      "Explore Create Spot exhibits: browse the Grid or discover artists worldwide on the Map.",
     type: "website",
   },
 };
@@ -78,7 +78,10 @@ const EXHIBIT_DECOR: Record<
 };
 
 export default async function ExhibitionHomePage() {
-  const permanentExhibits = Object.entries(EXHIBITION_CONFIGS) as Array<
+  // Filter out constellation/path from permanent exhibits (only for specific exhibits)
+  const permanentExhibits = Object.entries(EXHIBITION_CONFIGS)
+    .filter(([type]) => type !== "constellation")
+    .map(([type, config]) => [type, config]) as Array<
     [ExhibitionType, (typeof EXHIBITION_CONFIGS)[ExhibitionType]]
   >;
   const currentExhibits = await getCurrentExhibits();

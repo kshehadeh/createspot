@@ -110,11 +110,11 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
     },
     {
       value: "constellation" as const,
-      label: "Constellation",
+      label: EXHIBITION_CONFIGS.constellation.name,
       path: `/exhibition/constellation?exhibitId=${exhibitId}`,
       enabled: exhibit.allowedViewTypes.includes("constellation"),
       description:
-        "Explore submissions in an interactive 3D visualization space.",
+        "Explore submissions along an interactive path through the exhibit.",
     },
     {
       value: "global" as const,

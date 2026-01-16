@@ -285,11 +285,8 @@ body {
 }
 
 /* iOS Safari dark mode support for cards */
-@media (prefers-color-scheme: dark) {
-  /* Ensure card backgrounds use dark mode */
-  [class*="bg-card"]:not([class*="bg-gradient"]) {
-    background-color: hsl(240 10% 3.9%) !important;
-  }
+.dark [class*="bg-card"]:not([class*="bg-gradient"]) {
+  background-color: hsl(240 10% 3.9%) !important;
 }
 
 /* Image protection styles */
@@ -302,4 +299,42 @@ body {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
+}
+
+/* Text fade effect for constellation path */
+.text-fade {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+.text-fade-vertical {
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 70%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 70%,
+    transparent 100%
+  );
+}
+
+.text-fade-none {
+  mask-image: none;
+  -webkit-mask-image: none;
 }

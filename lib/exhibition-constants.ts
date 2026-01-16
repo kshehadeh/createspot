@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Map, Star, Table } from "lucide-react";
+import { Map, Signpost, Table } from "lucide-react";
 
 export const EXHIBITION_PAGE_SIZE = 12;
 
@@ -18,9 +18,9 @@ export const EXHIBITION_CONFIGS: Record<ExhibitionType, ExhibitionConfig> = {
     icon: Table,
   },
   constellation: {
-    name: "Constellation",
+    name: "Path",
     path: "/exhibition/constellation",
-    icon: Star,
+    icon: Signpost,
   },
   global: {
     name: "Map",

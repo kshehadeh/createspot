@@ -51,10 +51,10 @@ export function ExhibitViewSelector({
   ];
 
   // For temporary exhibits, filter by allowedViewTypes
-  // For permanent exhibits, show all views
+  // For permanent exhibits, only show gallery and global (not constellation/path)
   const availableViews = exhibitId
     ? allViewTypes.filter((view) => allowedViewTypes?.includes(view.type))
-    : allViewTypes;
+    : allViewTypes.filter((view) => view.type !== "constellation");
 
   // Filter out the current view
   const otherViews = availableViews.filter((view) => view.type !== currentView);

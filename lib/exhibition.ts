@@ -1,4 +1,5 @@
 import type { Prisma } from "@/app/generated/prisma/client";
+import { unstable_noStore } from "next/cache";
 import { prisma } from "./prisma";
 import { EXHIBITION_PAGE_SIZE } from "./exhibition-constants";
 
@@ -86,6 +87,7 @@ export async function getExhibitionSubmissions({
   skip = 0,
   take = EXHIBITION_PAGE_SIZE,
 }: ExhibitionFilterInput & { skip?: number; take?: number }) {
+  unstable_noStore();
   const limit = Math.max(1, Math.min(take, 30));
 
   // If exhibitId is provided, we need to order by exhibit submission order
@@ -107,7 +109,10 @@ export async function getExhibitionSubmissions({
         submissionId: true,
         order: true,
       },
-      orderBy: { order: "asc" },
+      orderBy: [
+        { order: "asc" },
+        { createdAt: "asc" }, // Secondary sort for consistency
+      ],
     });
 
     const submissionIds = exhibitSubmissions.map((es) => es.submissionId);

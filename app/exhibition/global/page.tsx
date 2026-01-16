@@ -54,6 +54,7 @@ export default async function GlobalExhibitionPage({
                 description: exhibit.description,
                 curator: exhibit.curator,
                 featuredArtist: exhibit.featuredArtist,
+                featuredSubmission: exhibit.featuredSubmission,
                 allowedViewTypes: exhibit.allowedViewTypes,
               }
             : null

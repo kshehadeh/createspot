@@ -47,21 +47,48 @@ export async function POST(
     );
   }
 
-  // Update order for each submission
-  // Order is 1-indexed (1 = first, 2 = second, etc.)
-  const updates = submissionIds.map((submissionId: string, index: number) =>
-    prisma.exhibitSubmission.update({
-      where: {
-        exhibitId_submissionId: {
-          exhibitId,
-          submissionId,
+  // Get all other submissions in the exhibit that aren't being reordered
+  const allExhibitSubmissions = await prisma.exhibitSubmission.findMany({
+    where: { exhibitId },
+    select: { submissionId: true },
+  });
+
+  const reorderedSet = new Set(submissionIds);
+  const otherSubmissionIds = allExhibitSubmissions
+    .map((es) => es.submissionId)
+    .filter((id) => !reorderedSet.has(id));
+
+  // Update order for reordered submissions (1-indexed)
+  const reorderUpdates = submissionIds.map(
+    (submissionId: string, index: number) =>
+      prisma.exhibitSubmission.update({
+        where: {
+          exhibitId_submissionId: {
+            exhibitId,
+            submissionId,
+          },
         },
-      },
-      data: { order: index + 1 },
-    }),
+        data: { order: index + 1 },
+      }),
   );
 
-  await prisma.$transaction(updates);
+  // Update order for other submissions (place them after the reordered ones)
+  const otherUpdates = otherSubmissionIds.map(
+    (submissionId: string, index: number) =>
+      prisma.exhibitSubmission.update({
+        where: {
+          exhibitId_submissionId: {
+            exhibitId,
+            submissionId,
+          },
+        },
+        data: { order: submissionIds.length + index + 1 },
+      }),
+  );
+
+  await prisma.$transaction([...reorderUpdates, ...otherUpdates], {
+    isolationLevel: "ReadCommitted",
+  });
 
   return NextResponse.json({ success: true });
 }

@@ -254,7 +254,7 @@ export function SubmissionLightbox({
           style={{ top: `max(3.5rem, env(safe-area-inset-top, 0px) + 1rem)` }}
         >
           <div className="flex flex-col items-end gap-1 rounded-lg bg-black/60 px-3 py-2 backdrop-blur-sm">
-            {hasText && (
+            {hasText && hasImage && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -340,6 +340,23 @@ export function SubmissionLightbox({
             </div>
           )}
 
+          {/* Text-only section */}
+          {hasText && !hasImage && (
+            <div className="relative flex h-full w-full flex-1 items-center justify-center overflow-y-auto p-8 sm:p-12">
+              <div className="w-full max-w-4xl">
+                {submission.title && (
+                  <h2 className="mb-6 text-3xl font-semibold text-white sm:text-4xl">
+                    {submission.title}
+                  </h2>
+                )}
+                <div
+                  className="prose prose-lg prose-invert max-w-none text-white prose-headings:text-white prose-p:text-white prose-strong:text-white prose-em:text-white prose-a:text-white prose-ul:text-white prose-ol:text-white prose-li:text-white"
+                  dangerouslySetInnerHTML={{ __html: submission.text! }}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Image metadata overlay */}
           {hasImage && (
             <div
@@ -352,6 +369,30 @@ export function SubmissionLightbox({
                 <span className="text-white font-medium text-sm sm:text-base">
                   {submission.title || "Untitled"}
                 </span>
+                {submission.user && (
+                  <span className="text-zinc-300 text-xs sm:text-sm">
+                    {submission.user.name || "Anonymous"}
+                  </span>
+                )}
+                {favoriteCount > 0 && (
+                  <div className="flex items-center gap-1.5 text-white">
+                    <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
+                    <span className="text-xs sm:text-sm">{favoriteCount}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Text-only metadata overlay */}
+          {hasText && !hasImage && (
+            <div
+              className="absolute right-4 left-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:right-8 sm:left-auto sm:px-6 sm:py-4"
+              style={{
+                bottom: `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
+              }}
+            >
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 {submission.user && (
                   <span className="text-zinc-300 text-xs sm:text-sm">
                     {submission.user.name || "Anonymous"}

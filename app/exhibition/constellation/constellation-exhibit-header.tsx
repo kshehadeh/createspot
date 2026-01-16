@@ -1,120 +1,58 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ConstellationPath } from "@/components/constellation-path";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExhibitViewSelector } from "@/components/exhibit-view-selector";
-import { GlobalMap } from "./global-map";
+import type { ConstellationItem } from "@/components/constellation-path";
 
-interface ExhibitData {
-  id: string;
-  title: string;
-  description: string | null;
-  curator: {
-    id: string;
-    name: string | null;
-    image: string | null;
-  };
-  featuredArtist: {
-    id: string;
-    name: string | null;
-    image: string | null;
-  } | null;
-  featuredSubmission: {
-    id: string;
-    title: string | null;
-    imageUrl: string | null;
-    text: string | null;
-  } | null;
-  allowedViewTypes: string[];
-}
-
-interface GlobalExhibitionWrapperProps {
+interface ConstellationExhibitHeaderProps {
   exhibitTitle: string;
-  exhibit: ExhibitData | null;
+  exhibit: {
+    id: string;
+    title: string;
+    description: string | null;
+    curator: {
+      id: string;
+      name: string | null;
+      image: string | null;
+    };
+    featuredArtist: {
+      id: string;
+      name: string | null;
+      image: string | null;
+    } | null;
+    featuredSubmission: {
+      id: string;
+      title: string | null;
+      imageUrl: string | null;
+      text: string | null;
+    } | null;
+    allowedViewTypes: string[];
+  } | null;
   exhibitId?: string;
+  items: ConstellationItem[];
+  className?: string;
 }
 
-export function GlobalExhibitionWrapper({
+export function ConstellationExhibitHeader({
   exhibitTitle,
   exhibit,
   exhibitId,
-}: GlobalExhibitionWrapperProps) {
+  items,
+  className,
+}: ConstellationExhibitHeaderProps) {
   const headerRef = useRef<HTMLDivElement>(null);
-  const [mapHeight, setMapHeight] = useState<string>(
-    "calc(100vh - var(--navbar-height) - 120px)",
-  );
-
-  useEffect(() => {
-    const updateMapHeight = () => {
-      const header = headerRef.current;
-
-      if (!header) {
-        // Fallback to default if element not found
-        setMapHeight("calc(100vh - var(--navbar-height) - 120px)");
-        return;
-      }
-
-      // Get the bottom edge of the header relative to the viewport
-      const headerRect = header.getBoundingClientRect();
-      const headerBottom = headerRect.bottom;
-
-      // Calculate available height from header bottom to viewport bottom
-      const availableHeight = window.innerHeight - headerBottom;
-
-      setMapHeight(`${availableHeight}px`);
-    };
-
-    // Initial calculation
-    updateMapHeight();
-
-    if (!headerRef.current) return;
-
-    // Use MutationObserver to watch for DOM changes (e.g., expand/collapse)
-    const mutationObserver = new MutationObserver(() => {
-      // Use requestAnimationFrame to ensure layout has been recalculated
-      requestAnimationFrame(updateMapHeight);
-    });
-
-    mutationObserver.observe(headerRef.current, {
-      childList: true, // Watch for added/removed child elements
-      subtree: true, // Watch all descendants
-      attributes: true, // Watch for attribute changes (like class changes)
-      characterData: true, // Watch for text content changes
-    });
-
-    // Use ResizeObserver as backup for size changes that don't involve DOM mutations
-    const resizeObserver = new ResizeObserver(() => {
-      updateMapHeight();
-    });
-
-    resizeObserver.observe(headerRef.current);
-
-    // Also observe navbar in case it changes
-    const navbar = document.querySelector("nav");
-    if (navbar) {
-      resizeObserver.observe(navbar);
-    }
-
-    // Fallback: also listen to window resize
-    window.addEventListener("resize", updateMapHeight);
-
-    return () => {
-      mutationObserver.disconnect();
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", updateMapHeight);
-    };
-  }, []);
-
   const hasFeaturedImage =
     exhibit?.featuredSubmission?.imageUrl || exhibit?.featuredSubmission?.text;
 
   return (
     <>
-      <div ref={headerRef} className="px-6 pt-6 pb-4 shrink-0">
+      <div ref={headerRef} className="mb-8">
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col sm:flex-row gap-6 flex-1">
             {/* Featured Image - Left Side */}
@@ -205,15 +143,26 @@ export function GlobalExhibitionWrapper({
             </div>
           </div>
           <ExhibitViewSelector
-            currentView="global"
+            currentView="constellation"
             exhibitId={exhibitId}
             allowedViewTypes={exhibit?.allowedViewTypes}
           />
         </div>
       </div>
-      <div className="flex-1 min-h-0">
-        <GlobalMap exhibitId={exhibitId} mapHeight={mapHeight} />
-      </div>
+
+      {items.length > 0 ? (
+        <ConstellationPath
+          items={items}
+          className={className}
+          headerRef={headerRef}
+        />
+      ) : (
+        <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
+          <p className="text-sm text-muted-foreground">
+            No public work available yet.
+          </p>
+        </div>
+      )}
     </>
   );
 }
