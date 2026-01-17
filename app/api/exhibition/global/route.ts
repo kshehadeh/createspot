@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -8,21 +9,7 @@ export async function GET(request: NextRequest) {
   const exhibitId = searchParams.get("exhibitId");
 
   // Build where clause
-  const whereClause: {
-    latitude: { not: null };
-    longitude: { not: null };
-    submissions?: {
-      some: {
-        exhibitSubmissions?: {
-          some: {
-            exhibitId: string;
-          };
-        };
-        isPortfolio?: boolean;
-        shareStatus?: string;
-      };
-    };
-  } = {
+  const whereClause: Prisma.UserWhereInput = {
     latitude: { not: null },
     longitude: { not: null },
   };
