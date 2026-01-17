@@ -56,7 +56,6 @@
     "websiteError": "Please enter a valid URL (e.g., example.com or https://example.com)",
     "featuredPiece": "Featured Piece",
     "featuredPieceDescription": "Select a work to feature on your profile",
-    "noWorkYet": "No work yet. Create a submission or add to your portfolio to feature it.",
     "managePortfolio": "Manage Portfolio",
     "managePortfolioDescription": "Add, edit, and organize your portfolio items",
     "dangerZone": "Danger Zone",
@@ -323,7 +322,6 @@
       "deleteMessage": "Are you sure you want to delete \"{title}\"? This action cannot be undone and will remove all submissions from this exhibit.",
       "deleteError": "Failed to delete exhibit",
       "searchPlaceholder": "Search by title",
-      "search": "Search",
       "filters": "Filters",
       "allCurators": "All Curators",
       "status": "Status",
@@ -332,7 +330,6 @@
       "clear": "Clear",
       "editTitle": "Edit Exhibit: {title}",
       "editDescription": "Update exhibit details and settings",
-      "backToExhibits": "Back to Exhibits",
       "manageContentTitle": "Manage Content: {title}",
       "manageContentDescription": "Add, remove, and reorder submissions in this exhibit",
       "backToEdit": "Back to Edit Exhibit",
@@ -347,8 +344,6 @@
       "endTime": "End Time",
       "noEndDate": "No End Date",
       "noEndDateDescription": "Exhibit will continue indefinitely",
-      "active": "Active",
-      "curator": "Curator",
       "curatorDescription": "Select the curator for this exhibit",
       "featuredArtist": "Featured Artist",
       "featuredArtistDescription": "Optionally select a featured artist for this exhibit",
@@ -381,8 +376,6 @@
       "selectCreator": "Select Creator",
       "allCreators": "All Creators",
       "searchByNameOrEmail": "Search by name or email...",
-      "selectAll": "Select All",
-      "deselectAll": "Deselect All",
       "addSelected": "Add Selected ({count})",
       "noSubmissionsFound": "No submissions found",
       "deselectAll": "Deselect All",
@@ -777,6 +770,19 @@
         "updateFailed": "Failed to update portfolio item",
         "saveFailed": "Failed to save portfolio item. Please try again."
       }
+    }
+  },
+  "email": {
+    "favoriteNotification": {
+      "title": "Your work was adored!",
+      "message": "{favorerName} just favorited {titleDisplay}.",
+      "description": "This is a great sign that your creation resonated with someone in the community!",
+      "viewWorkButton": "View the work",
+      "visitProfile": "Visit {favorerName}'s profile",
+      "yourWork": "your work",
+      "someone": "Someone",
+      "previewText": "{favorerName} favorited {titleDisplay}",
+      "subject": "{favorerName} favorited {titleDisplay}"
     }
   }
 }

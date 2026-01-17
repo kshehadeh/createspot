@@ -56,7 +56,6 @@
     "websiteError": "Por favor ingresa una URL válida (ej., ejemplo.com o https://ejemplo.com)",
     "featuredPiece": "Pieza Destacada",
     "featuredPieceDescription": "Selecciona un trabajo para destacar en tu perfil",
-    "noWorkYet": "Aún no hay trabajos. Crea una publicación o añade a tu portafolio para destacarla.",
     "managePortfolio": "Gestionar Portafolio",
     "managePortfolioDescription": "Añadir, editar y organizar elementos de tu portafolio",
     "dangerZone": "Zona de Peligro",
@@ -323,7 +322,6 @@
       "deleteMessage": "¿Estás seguro de que quieres eliminar \"{title}\"? Esta acción no se puede deshacer y eliminará todas las publicaciones de esta exposición.",
       "deleteError": "Error al eliminar exposición",
       "searchPlaceholder": "Buscar por título",
-      "search": "Buscar",
       "filters": "Filtros",
       "allCurators": "Todos los Curadores",
       "status": "Estado",
@@ -332,7 +330,6 @@
       "clear": "Limpiar",
       "editTitle": "Editar Exposición: {title}",
       "editDescription": "Actualizar detalles y configuración de la exposición",
-      "backToExhibits": "Volver a Exposiciones",
       "manageContentTitle": "Gestionar Contenido: {title}",
       "manageContentDescription": "Añadir, quitar y reorganizar publicaciones en esta exposición",
       "backToEdit": "Volver a Editar Exposición",
@@ -347,8 +344,6 @@
       "endTime": "Hora de Finalización",
       "noEndDate": "Sin Fecha de Finalización",
       "noEndDateDescription": "La exposición continuará indefinidamente",
-      "active": "Activa",
-      "curator": "Curador",
       "curatorDescription": "Selecciona el curador para esta exposición",
       "featuredArtist": "Artista Destacado",
       "featuredArtistDescription": "Opcionalmente selecciona un artista destacado para esta exposición",
@@ -381,8 +376,6 @@
       "selectCreator": "Seleccionar Creador",
       "allCreators": "Todos los Creadores",
       "searchByNameOrEmail": "Buscar por nombre o correo electrónico...",
-      "selectAll": "Seleccionar Todo",
-      "deselectAll": "Deseleccionar Todo",
       "addSelected": "Añadir Seleccionadas ({count})",
       "noSubmissionsFound": "No se encontraron publicaciones",
       "deselectAll": "Deseleccionar Todo",
@@ -777,6 +770,19 @@
         "updateFailed": "Error al actualizar el elemento del portafolio",
         "saveFailed": "Error al guardar el elemento del portafolio. Por favor, inténtalo de nuevo."
       }
+    }
+  },
+  "email": {
+    "favoriteNotification": {
+      "title": "¡Tu trabajo fue adorado!",
+      "message": "{favorerName} acaba de marcar como favorito {titleDisplay}.",
+      "description": "¡Esta es una gran señal de que tu creación resonó con alguien en la comunidad!",
+      "viewWorkButton": "Ver el trabajo",
+      "visitProfile": "Visitar el perfil de {favorerName}",
+      "yourWork": "tu trabajo",
+      "someone": "Alguien",
+      "previewText": "{favorerName} marcó como favorito {titleDisplay}",
+      "subject": "{favorerName} marcó como favorito {titleDisplay}"
     }
   }
 }

@@ -8,9 +8,10 @@ export interface BaseEmailProps {
 
 const styles = {
   body: {
-    backgroundColor: "#f5f4f1",
+    backgroundColor: "#000000",
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     margin: 0,
+    padding: "40px 20px",
   },
   container: {
     backgroundColor: "#ffffff",
