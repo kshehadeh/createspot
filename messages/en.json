@@ -120,7 +120,15 @@
     "preventAITrainingDescription": "Adds signals to your images requesting AI companies exclude them from training data (major AI companies generally respect this)",
     "protectionSettingsSaved": "Protection settings saved",
     "protectionSettingsFailed": "Failed to save protection settings. Please try again.",
-    "protectionDisclaimer": "Note: These protections are deterrents, not absolute prevention. Determined users can still screenshot or use developer tools."
+    "protectionDisclaimer": "Note: These protections are deterrents, not absolute prevention. Determined users can still screenshot or use developer tools.",
+    "emailPreferences": "Email preferences",
+    "emailPreferencesDescription": "Choose which emails you want to receive from Prompts",
+    "emailOnFavorite": "Your work gets favorited",
+    "emailOnFavoriteDescription": "Get notified whenever someone favorites one of your submissions.",
+    "emailFeatureUpdates": "Feature updates & news",
+    "emailFeatureUpdatesDescription": "Occasional updates about new features, exhibits, and community news.",
+    "emailPreferencesSaved": "Email preferences saved",
+    "emailPreferencesFailed": "Failed to save email preferences. Please try again."
   },
   "navigation": {
     "home": "Home",

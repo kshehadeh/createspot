@@ -120,7 +120,15 @@
     "preventAITrainingDescription": "Añade señales a tus imágenes solicitando que las empresas de IA las excluyan de los datos de entrenamiento (las principales empresas de IA generalmente respetan esto)",
     "protectionSettingsSaved": "Configuración de protección guardada",
     "protectionSettingsFailed": "Error al guardar la configuración de protección. Por favor, inténtalo de nuevo.",
-    "protectionDisclaimer": "Nota: Estas protecciones son disuasorios, no prevención absoluta. Los usuarios determinados aún pueden hacer capturas de pantalla o usar herramientas de desarrollador."
+    "protectionDisclaimer": "Nota: Estas protecciones son disuasorios, no prevención absoluta. Los usuarios determinados aún pueden hacer capturas de pantalla o usar herramientas de desarrollador.",
+    "emailPreferences": "Preferencias de correo",
+    "emailPreferencesDescription": "Elige qué correos deseas recibir de Prompts",
+    "emailOnFavorite": "Tu trabajo recibe un favorito",
+    "emailOnFavoriteDescription": "Recibe una notificación cuando alguien marque como favorito una de tus publicaciones.",
+    "emailFeatureUpdates": "Actualizaciones y noticias",
+    "emailFeatureUpdatesDescription": "Actualizaciones ocasionales sobre nuevas funciones, exhibiciones y noticias de la comunidad.",
+    "emailPreferencesSaved": "Preferencias de correo guardadas",
+    "emailPreferencesFailed": "No se pudieron guardar las preferencias de correo. Inténtalo de nuevo."
   },
   "navigation": {
     "home": "Inicio",

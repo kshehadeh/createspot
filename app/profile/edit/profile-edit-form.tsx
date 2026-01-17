@@ -27,6 +27,7 @@ import {
   Globe,
   Shield,
   AlertTriangle,
+  Mail,
 } from "lucide-react";
 import { normalizeUrl, isValidUrl } from "@/lib/utils";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
@@ -67,6 +68,8 @@ interface ProfileEditFormProps {
   initialWatermarkPosition: string;
   initialProtectFromDownload: boolean;
   initialProtectFromAI: boolean;
+  initialEmailOnFavorite: boolean;
+  initialEmailFeatureUpdates: boolean;
   submissions: SubmissionOption[];
   portfolioItemCount: number;
 }
@@ -88,6 +91,8 @@ export function ProfileEditForm({
   initialWatermarkPosition,
   initialProtectFromDownload,
   initialProtectFromAI,
+  initialEmailOnFavorite,
+  initialEmailFeatureUpdates,
   submissions,
   portfolioItemCount,
 }: ProfileEditFormProps) {
@@ -120,6 +125,12 @@ export function ProfileEditForm({
     initialProtectFromDownload,
   );
   const [protectFromAI, setProtectFromAI] = useState(initialProtectFromAI);
+  const [emailOnFavorite, setEmailOnFavorite] = useState(
+    initialEmailOnFavorite,
+  );
+  const [emailFeatureUpdates, setEmailFeatureUpdates] = useState(
+    initialEmailFeatureUpdates,
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [websiteError, setWebsiteError] = useState<string | null>(null);
@@ -686,6 +697,32 @@ export function ProfileEditForm({
     [router, t, tCommon],
   );
 
+  const saveEmailPreferences = useCallback(
+    async (settings: {
+      emailOnFavorite?: boolean;
+      emailFeatureUpdates?: boolean;
+    }) => {
+      const toastId = toast.loading(tCommon("saving"));
+      try {
+        const response = await fetch("/api/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(settings),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save email preferences");
+        }
+
+        toast.success(t("emailPreferencesSaved"), { id: toastId });
+        router.refresh();
+      } catch {
+        toast.error(t("emailPreferencesFailed"), { id: toastId });
+      }
+    },
+    [router, t, tCommon],
+  );
+
   const handleEnableWatermarkChange = useCallback(
     (checked: boolean) => {
       setEnableWatermark(checked);
@@ -716,6 +753,22 @@ export function ProfileEditForm({
       saveProtectionSettings({ protectFromAI: checked });
     },
     [saveProtectionSettings],
+  );
+
+  const handleEmailOnFavoriteChange = useCallback(
+    (checked: boolean) => {
+      setEmailOnFavorite(checked);
+      saveEmailPreferences({ emailOnFavorite: checked });
+    },
+    [saveEmailPreferences],
+  );
+
+  const handleEmailFeatureUpdatesChange = useCallback(
+    (checked: boolean) => {
+      setEmailFeatureUpdates(checked);
+      saveEmailPreferences({ emailFeatureUpdates: checked });
+    },
+    [saveEmailPreferences],
   );
 
   const getSubmissionLabel = (submission: SubmissionOption): string => {
@@ -1232,6 +1285,57 @@ export function ProfileEditForm({
           </div>
         </div>
 
+        {/* Email Preferences */}
+        <div className="mt-8 border-t border-border pt-8">
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                <Mail className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  {t("emailPreferences")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("emailPreferencesDescription")}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-4">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground">
+                    {t("emailOnFavorite")}
+                  </label>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("emailOnFavoriteDescription")}
+                  </p>
+                </div>
+                <Switch
+                  checked={emailOnFavorite}
+                  onCheckedChange={handleEmailOnFavoriteChange}
+                />
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-4">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground">
+                    {t("emailFeatureUpdates")}
+                  </label>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("emailFeatureUpdatesDescription")}
+                  </p>
+                </div>
+                <Switch
+                  checked={emailFeatureUpdates}
+                  onCheckedChange={handleEmailFeatureUpdatesChange}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Image Protection Settings */}
         <div className="mt-8 pt-8 border-t border-border">
           <div className="space-y-6">
@@ -1269,13 +1373,13 @@ export function ProfileEditForm({
               {enableWatermark && (
                 <>
                   {/* Warning Banner */}
-                  <div className="flex gap-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3">
+                  <div className="flex gap-3 rounded-lg bg-muted border border-border p-3">
                     <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-amber-800 dark:text-amber-200">
+                    <div className="text-sm text-foreground">
                       <p className="font-medium">
                         {t("watermarkWarningTitle")}
                       </p>
-                      <p className="text-xs mt-1 text-amber-700 dark:text-amber-300">
+                      <p className="text-xs mt-1 text-muted-foreground">
                         {t("watermarkWarningDescription")}
                       </p>
                     </div>

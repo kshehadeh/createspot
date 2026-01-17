@@ -182,7 +182,7 @@ export function SubmissionLightbox({
 
     // Check if sidebar is visible (xl+ breakpoint, 1280px+)
     const isSidebarVisible = window.innerWidth >= 1280 && sidebarRef.current;
-    
+
     if (isSidebarVisible && sidebarRef.current) {
       // Position in sidebar - relative to sidebar container
       // Sidebar is 400px wide, add margins on both sides
@@ -190,7 +190,7 @@ export function SubmissionLightbox({
       const rightMargin = 16;
       const availableWidth = 400 - leftMargin - rightMargin; // 368px available
       const zoomSize = Math.min(ZOOM_PREVIEW_SIZE, availableWidth);
-      
+
       return {
         position: "absolute" as const,
         backgroundImage: `url(${submission.imageUrl})`,

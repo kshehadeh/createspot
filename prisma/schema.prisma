@@ -81,6 +81,8 @@ model User {
   watermarkPosition    String       @default("bottom-right") // "bottom-right" | "bottom-left" | "top-right" | "top-left"
   protectFromDownload  Boolean      @default(true)
   protectFromAI        Boolean      @default(true)
+  emailOnFavorite      Boolean      @default(true)
+  emailFeatureUpdates  Boolean      @default(true)
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 

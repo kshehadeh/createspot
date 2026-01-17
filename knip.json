@@ -1,5 +1,12 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "app/**/*.{ts,tsx}",
+    "components/**/*.{ts,tsx}",
+    "lib/**/*.{ts,tsx}",
+    "emails/**/*.{ts,tsx}",
+    "scripts/**/*.{ts,tsx}"
+  ],
   "ignoreExportsUsedInFile": {
     "interface": true,
     "type": true

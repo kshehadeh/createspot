@@ -43,6 +43,8 @@ export default async function ProfileEditPage() {
       watermarkPosition: true,
       protectFromDownload: true,
       protectFromAI: true,
+      emailOnFavorite: true,
+      emailFeatureUpdates: true,
     },
   });
 
@@ -137,6 +139,8 @@ export default async function ProfileEditPage() {
         initialWatermarkPosition={user.watermarkPosition}
         initialProtectFromDownload={user.protectFromDownload}
         initialProtectFromAI={user.protectFromAI}
+        initialEmailOnFavorite={user.emailOnFavorite}
+        initialEmailFeatureUpdates={user.emailFeatureUpdates}
         submissions={submissions.map((s) => ({
           id: s.id,
           title: s.title,
