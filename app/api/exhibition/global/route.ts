@@ -13,11 +13,13 @@ export async function GET(request: NextRequest) {
     longitude: { not: null };
     submissions?: {
       some: {
-        exhibitSubmissions: {
+        exhibitSubmissions?: {
           some: {
             exhibitId: string;
           };
         };
+        isPortfolio?: boolean;
+        shareStatus?: string;
       };
     };
   } = {
@@ -34,6 +36,14 @@ export async function GET(request: NextRequest) {
             exhibitId,
           },
         },
+      },
+    };
+  } else {
+    // For permanent collection (no exhibitId), only show users with portfolio items that are public
+    whereClause.submissions = {
+      some: {
+        isPortfolio: true,
+        shareStatus: "PUBLIC",
       },
     };
   }

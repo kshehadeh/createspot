@@ -33,6 +33,9 @@ function buildExhibitionWhere({
         },
       },
     });
+  } else {
+    // For permanent collection (no exhibitId), only show portfolio items
+    filters.push({ isPortfolio: true });
   }
 
   // If userId is provided, filter to only submissions by that user
@@ -191,6 +194,9 @@ export async function getExhibitionFacets(exhibitId?: string) {
         exhibitId,
       },
     };
+  } else {
+    // For permanent collection (no exhibitId), only show portfolio items
+    baseWhere.isPortfolio = true;
   }
 
   const [categoryRows, tagRows] = await Promise.all([
