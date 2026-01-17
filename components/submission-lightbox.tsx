@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -50,6 +51,7 @@ export function SubmissionLightbox({
   hideGoToSubmission = false,
   protectionEnabled = true,
 }: SubmissionLightboxProps) {
+  const t = useTranslations("exhibition");
   const [zoomState, setZoomState] = useState<{
     isActive: boolean;
     x: number;
@@ -59,6 +61,8 @@ export function SubmissionLightbox({
   const [supportsHover, setSupportsHover] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isTextOverlayOpen, setIsTextOverlayOpen] = useState(false);
+  const [closeTooltipOpen, setCloseTooltipOpen] = useState(false);
+  const [closeTooltipHovered, setCloseTooltipHovered] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -86,6 +90,16 @@ export function SubmissionLightbox({
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isTextOverlayOpen]);
+
+  // Control close button tooltip to only show on hover, not focus
+  useEffect(() => {
+    if (closeTooltipHovered) {
+      const timer = setTimeout(() => setCloseTooltipOpen(true), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setCloseTooltipOpen(false);
+    }
+  }, [closeTooltipHovered]);
 
   const handleImageMouseMove = useCallback(
     (e: React.MouseEvent<HTMLImageElement>) => {
@@ -356,14 +370,27 @@ export function SubmissionLightbox({
                 </div>
               )}
 
-              {/* Text content - below zoom or at top if no zoom */}
+              {/* Title and creator - always shown at top */}
+              <div className="flex-shrink-0 p-6 xl:p-8 pb-4">
+                <h2 className="mb-2 text-2xl font-semibold text-muted-foreground">
+                  {submission.title || t("untitled")}
+                </h2>
+                {submission.user?.name && (
+                  <p className="text-sm text-muted-foreground/70 mb-2">
+                    {submission.user.name}
+                  </p>
+                )}
+                {favoriteCount > 0 && (
+                  <div className="flex items-center gap-1.5 text-muted-foreground/70">
+                    <Heart className="h-4 w-4 fill-red-400 text-red-400" />
+                    <span className="text-sm">{favoriteCount}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Text content - below title */}
               {hasText && (
-                <div className="flex-1 overflow-y-auto p-6 xl:p-8">
-                  {submission.title && (
-                    <h2 className="mb-4 text-2xl font-semibold text-muted-foreground">
-                      {submission.title}
-                    </h2>
-                  )}
+                <div className="flex-1 overflow-y-auto px-6 xl:px-8 pb-6 xl:pb-8">
                   <div
                     className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
                     dangerouslySetInnerHTML={{ __html: submission.text! }}
@@ -443,7 +470,7 @@ export function SubmissionLightbox({
         </div>
 
         {/* Buttons - lower right corner, absolute positioned */}
-        <TooltipProvider>
+        <TooltipProvider delayDuration={300}>
           <div
             className="absolute bottom-4 right-4 z-10 flex items-center gap-2"
             style={{
@@ -461,7 +488,7 @@ export function SubmissionLightbox({
                       e.stopPropagation();
                       setIsTextOverlayOpen(true);
                     }}
-                    className="xl:hidden border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
+                    className="xl:hidden"
                     aria-label="View text"
                   >
                     <FileText className="h-4 w-4" />
@@ -483,7 +510,7 @@ export function SubmissionLightbox({
                       variant="outline"
                       size="sm"
                       asChild
-                      className="hidden xl:flex border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
+                      className="hidden xl:flex"
                     >
                       <Link
                         href={`/s/${submission.id}`}
@@ -504,7 +531,7 @@ export function SubmissionLightbox({
                       variant="outline"
                       size="icon"
                       asChild
-                      className="xl:hidden border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
+                      className="xl:hidden"
                       aria-label="View submission"
                     >
                       <Link
@@ -523,41 +550,25 @@ export function SubmissionLightbox({
             )}
 
             {/* Close button */}
-            <>
-              {/* Full button on xl+ */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onClose}
-                    className="hidden xl:flex border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
-                  >
-                    Close
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Close lightbox</p>
-                </TooltipContent>
-              </Tooltip>
-              {/* Icon button on < xl */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={onClose}
-                    className="xl:hidden border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
-                    aria-label="Close"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Close</p>
-                </TooltipContent>
-              </Tooltip>
-            </>
+            <Tooltip open={closeTooltipOpen} onOpenChange={() => {}}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onClose}
+                  onMouseEnter={() => setCloseTooltipHovered(true)}
+                  onMouseLeave={() => setCloseTooltipHovered(false)}
+                  className="xl:gap-2"
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4 xl:hidden" />
+                  <span className="hidden xl:inline">Close</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Close lightbox</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </TooltipProvider>
 
@@ -584,7 +595,7 @@ export function SubmissionLightbox({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsTextOverlayOpen(false)}
-                className="absolute right-4 top-4 rounded-full bg-white/20 text-white hover:bg-white/30"
+                className="absolute right-4 top-4"
                 aria-label="Close text overlay"
               >
                 <X className="h-6 w-6" />
