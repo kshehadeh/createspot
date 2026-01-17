@@ -776,7 +776,7 @@
     "favoriteNotification": {
       "title": "¡Tu trabajo fue adorado!",
       "message": "{favorerName} acaba de marcar como favorito {titleDisplay}.",
-      "description": "¡Esta es una gran señal de que tu creación resonó con alguien en la comunidad!",
+      "description": "Alguien no solo vio tu trabajo sino que sintió una conexión con él!",
       "viewWorkButton": "Ver el trabajo",
       "visitProfile": "Visitar el perfil de {favorerName}",
       "yourWork": "tu trabajo",

@@ -776,7 +776,7 @@
     "favoriteNotification": {
       "title": "Your work was adored!",
       "message": "{favorerName} just favorited {titleDisplay}.",
-      "description": "This is a great sign that your creation resonated with someone in the community!",
+      "description": "Someone not only saw your work but felt a connection with it!",
       "viewWorkButton": "View the work",
       "visitProfile": "Visit {favorerName}'s profile",
       "yourWork": "your work",
