@@ -9,7 +9,13 @@ import {
   VisuallyHidden,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Heart, X } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Heart, X, ExternalLink, FileText } from "lucide-react";
 
 interface LightboxSubmission {
   id: string;
@@ -55,6 +61,7 @@ export function SubmissionLightbox({
   const [isTextOverlayOpen, setIsTextOverlayOpen] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
 
@@ -173,12 +180,33 @@ export function SubmissionLightbox({
     const bgPosX = ZOOM_PREVIEW_SIZE / 2 - clampedX * ZOOM_LEVEL;
     const bgPosY = ZOOM_PREVIEW_SIZE / 2 - clampedY * ZOOM_LEVEL;
 
-    // Calculate zoom preview position (avoid top-right where close button is)
-    // Always position in top-left corner for consistency
-    const margin = 20;
-    const previewX = margin;
-    const previewY = margin;
+    // Check if sidebar is visible (xl+ breakpoint, 1280px+)
+    const isSidebarVisible = window.innerWidth >= 1280 && sidebarRef.current;
+    
+    if (isSidebarVisible && sidebarRef.current) {
+      // Position in sidebar - relative to sidebar container
+      // Sidebar is 400px wide, add margins on both sides
+      const leftMargin = 16;
+      const rightMargin = 16;
+      const availableWidth = 400 - leftMargin - rightMargin; // 368px available
+      const zoomSize = Math.min(ZOOM_PREVIEW_SIZE, availableWidth);
+      
+      return {
+        position: "absolute" as const,
+        backgroundImage: `url(${submission.imageUrl})`,
+        backgroundSize: `${bgWidth}px ${bgHeight}px`,
+        backgroundPosition: `${bgPosX}px ${bgPosY}px`,
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "#000",
+        left: `${leftMargin}px`,
+        top: `${leftMargin}px`,
+        width: `${zoomSize}px`,
+        height: `${zoomSize}px`,
+      };
+    }
 
+    // Overlay mode - position fixed in top-left corner
+    const margin = 20;
     return {
       position: "fixed" as const,
       backgroundImage: `url(${submission.imageUrl})`,
@@ -186,8 +214,8 @@ export function SubmissionLightbox({
       backgroundPosition: `${bgPosX}px ${bgPosY}px`,
       backgroundRepeat: "no-repeat",
       backgroundColor: "#000",
-      left: `${previewX}px`,
-      top: `${previewY}px`,
+      left: `${margin}px`,
+      top: `${margin}px`,
     };
   };
 
@@ -250,48 +278,16 @@ export function SubmissionLightbox({
           </DialogTitle>
         </VisuallyHidden>
         <div
-          className="absolute right-4 z-10 flex flex-col items-end gap-2"
-          style={{ top: `max(3.5rem, env(safe-area-inset-top, 0px) + 1rem)` }}
-        >
-          <div className="flex flex-col items-end gap-1 rounded-lg bg-black/60 px-3 py-2 backdrop-blur-sm">
-            {hasText && hasImage && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsTextOverlayOpen(true);
-                }}
-                className="text-sm font-medium text-white/80 transition-colors hover:text-white"
-              >
-                View Text →
-              </button>
-            )}
-            {!hideGoToSubmission && (
-              <Link
-                href={`/s/${submission.id}`}
-                onClick={(e) => e.stopPropagation()}
-                className="text-sm font-medium text-white/80 transition-colors hover:text-white"
-              >
-                View Submission →
-              </Link>
-            )}
-          </div>
-          <button
-            onClick={onClose}
-            className="rounded-lg bg-black/60 px-3 py-2 text-sm font-medium text-white/80 backdrop-blur-sm transition-colors hover:text-white"
-          >
-            Close
-          </button>
-        </div>
-
-        <div
-          className="flex h-full w-full flex-col p-0"
+          className={`flex h-full w-full p-0 ${
+            hasImage ? "flex-col xl:flex-row" : "flex-col"
+          }`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Image section */}
           {hasImage && (
             <div
               ref={imageContainerRef}
-              className="protected-image-wrapper relative flex h-full w-full flex-1 items-center justify-center overflow-hidden touch-none"
+              className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden touch-none"
               onContextMenu={handleContextMenu}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -299,10 +295,10 @@ export function SubmissionLightbox({
                 ref={imageRef}
                 src={submission.imageUrl!}
                 alt={submission.title || "Submission"}
-                className="max-h-[100dvh] max-w-[100vw] h-auto w-auto object-contain select-none"
+                className="h-auto w-auto max-h-[100dvh] max-w-full object-contain select-none"
                 style={{
                   maxHeight: "100dvh",
-                  maxWidth: "100vw",
+                  maxWidth: "100%",
                   ...(protectionEnabled
                     ? { WebkitUserSelect: "none", userSelect: "none" }
                     : {}),
@@ -314,10 +310,10 @@ export function SubmissionLightbox({
                 onDragStart={handleDragStart}
               />
 
-              {/* Zoom square overlay */}
+              {/* Zoom square overlay - only shown when NOT in sidebar mode */}
               {zoomState.isActive && supportsHover && (
                 <div
-                  className="pointer-events-none absolute z-20 border-2 border-white bg-white/10"
+                  className="pointer-events-none absolute z-20 border-2 border-white bg-white/10 xl:hidden"
                   style={{
                     width: `${ZOOM_SQUARE_SIZE}px`,
                     height: `${ZOOM_SQUARE_SIZE}px`,
@@ -326,10 +322,10 @@ export function SubmissionLightbox({
                 />
               )}
 
-              {/* Zoom preview box */}
+              {/* Zoom preview box - overlay mode (when sidebar not visible) */}
               {zoomState.isActive && supportsHover && (
                 <div
-                  className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl"
+                  className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl xl:hidden"
                   style={{
                     width: `${ZOOM_PREVIEW_SIZE}px`,
                     height: `${ZOOM_PREVIEW_SIZE}px`,
@@ -340,27 +336,64 @@ export function SubmissionLightbox({
             </div>
           )}
 
+          {/* Sidebar - shown on xl+ screens when image exists */}
+          {hasImage && (
+            <div
+              ref={sidebarRef}
+              className="hidden xl:flex xl:w-[400px] xl:flex-shrink-0 xl:flex-col xl:overflow-hidden xl:border-l xl:border-border/50 xl:bg-black/40"
+            >
+              {/* Zoom preview window - near top when zooming */}
+              {zoomState.isActive && supportsHover && (
+                <div className="relative flex-shrink-0 p-4">
+                  <div
+                    className="border-2 border-white/90 shadow-2xl"
+                    style={{
+                      width: `${ZOOM_PREVIEW_SIZE}px`,
+                      height: `${ZOOM_PREVIEW_SIZE}px`,
+                      ...getZoomPreviewStyle(),
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Text content - below zoom or at top if no zoom */}
+              {hasText && (
+                <div className="flex-1 overflow-y-auto p-6 xl:p-8">
+                  {submission.title && (
+                    <h2 className="mb-4 text-2xl font-semibold text-muted-foreground">
+                      {submission.title}
+                    </h2>
+                  )}
+                  <div
+                    className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: submission.text! }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Text-only section */}
           {hasText && !hasImage && (
             <div className="relative flex h-full w-full flex-1 items-center justify-center overflow-y-auto p-8 sm:p-12">
-              <div className="w-full max-w-4xl">
+              <div className="mx-auto w-full max-w-4xl">
                 {submission.title && (
-                  <h2 className="mb-6 text-3xl font-semibold text-white sm:text-4xl">
+                  <h2 className="mb-6 text-3xl font-semibold text-muted-foreground sm:text-4xl">
                     {submission.title}
                   </h2>
                 )}
                 <div
-                  className="prose prose-lg prose-invert max-w-none text-white prose-headings:text-white prose-p:text-white prose-strong:text-white prose-em:text-white prose-a:text-white prose-ul:text-white prose-ol:text-white prose-li:text-white"
+                  className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
                   dangerouslySetInnerHTML={{ __html: submission.text! }}
                 />
               </div>
             </div>
           )}
 
-          {/* Image metadata overlay */}
+          {/* Image metadata overlay - hidden when sidebar is visible (xl+) */}
           {hasImage && (
             <div
-              className="absolute right-4 left-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:right-8 sm:left-auto sm:px-6 sm:py-4"
+              className="absolute left-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:px-6 sm:py-4 xl:hidden"
               style={{
                 bottom: `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
               }}
@@ -387,7 +420,7 @@ export function SubmissionLightbox({
           {/* Text-only metadata overlay */}
           {hasText && !hasImage && (
             <div
-              className="absolute right-4 left-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:right-8 sm:left-auto sm:px-6 sm:py-4"
+              className="absolute left-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:px-6 sm:py-4"
               style={{
                 bottom: `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
               }}
@@ -408,6 +441,125 @@ export function SubmissionLightbox({
             </div>
           )}
         </div>
+
+        {/* Buttons - lower right corner, absolute positioned */}
+        <TooltipProvider>
+          <div
+            className="absolute bottom-4 right-4 z-10 flex items-center gap-2"
+            style={{
+              bottom: `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
+            }}
+          >
+            {/* Text overlay button - shown in overlay mode (< xl) when text exists */}
+            {hasText && hasImage && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsTextOverlayOpen(true);
+                    }}
+                    className="xl:hidden border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
+                    aria-label="View text"
+                  >
+                    <FileText className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View text</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+
+            {/* View Submission button */}
+            {!hideGoToSubmission && (
+              <>
+                {/* Full button on xl+ */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="hidden xl:flex border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
+                    >
+                      <Link
+                        href={`/s/${submission.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View Submission
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>View full submission page</p>
+                  </TooltipContent>
+                </Tooltip>
+                {/* Icon button on < xl */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      asChild
+                      className="xl:hidden border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
+                      aria-label="View submission"
+                    >
+                      <Link
+                        href={`/s/${submission.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>View submission</p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
+
+            {/* Close button */}
+            <>
+              {/* Full button on xl+ */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onClose}
+                    className="hidden xl:flex border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
+                  >
+                    Close
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Close lightbox</p>
+                </TooltipContent>
+              </Tooltip>
+              {/* Icon button on < xl */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={onClose}
+                    className="xl:hidden border-border/50 bg-black/60 backdrop-blur-sm text-muted-foreground hover:bg-black/80"
+                    aria-label="Close"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Close</p>
+                </TooltipContent>
+              </Tooltip>
+            </>
+          </div>
+        </TooltipProvider>
 
         {/* Text Overlay */}
         {isTextOverlayOpen && hasText && (

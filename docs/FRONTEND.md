@@ -21,54 +21,128 @@ app/
 ├── layout.tsx          # Root layout with providers
 ├── page.tsx            # Home page
 ├── globals.css         # Global styles & theme tokens
-├── admin/              # Admin pages (prompt management, users)
+├── opengraph-image.tsx # Default OG image
+├── icon.tsx            # App icon
+├── apple-icon.tsx      # Apple touch icon
+├── about/              # About pages
+│   ├── page.tsx
+│   ├── purpose/
+│   ├── prompt-submissions/
+│   └── portfolios-and-sharing/
+├── admin/              # Admin pages
+│   ├── page.tsx
+│   ├── prompts/        # Prompt management
+│   ├── users/          # User management
+│   └── exhibits/       # Exhibit management
+│       ├── page.tsx
+│       ├── new/
+│       ├── [id]/
+│       │   ├── edit/
+│       │   └── content/
+│       └── [components] # Exhibit-related components
 ├── api/                # API routes
-├── auth/               # Authentication pages
+│   ├── auth/           # NextAuth routes
+│   ├── prompts/        # Prompt endpoints
+│   ├── submissions/    # Submission CRUD
+│   ├── favorites/      # Favorite management
+│   ├── profile/        # Profile endpoints
+│   ├── exhibition/     # Exhibition endpoints
+│   ├── exhibits/       # Exhibit endpoints
+│   ├── upload/         # Image upload
+│   ├── users/          # User endpoints
+│   └── admin/          # Admin endpoints
+├── auth/
+│   └── signin/         # Sign in page
+├── creators/           # Creators directory page
+│   └── page.tsx
 ├── exhibition/         # Exhibition pages
-│   ├── gallery/        # Gallery view
-│   └── constellation/  # Constellation view
+│   ├── page.tsx
+│   ├── [exhibitId]/    # Individual exhibit
+│   ├── gallery/        # Gallery views
+│   │   ├── page.tsx
+│   │   ├── [exhibitId]/
+│   │   ├── grid/
+│   │   └── path/
+│   ├── constellation/  # Constellation view
+│   └── global/         # Global exhibition
 ├── favorites/          # User favorites page
-├── prompt/             # Prompt-related pages
-│   ├── history/        # User submission history
-│   ├── play/           # Submission creation
-│   └── this-week/      # Gallery view
+│   └── page.tsx
+├── portfolio/          # Portfolio pages
+│   ├── [userId]/       # Public portfolio view
+│   └── edit/           # Portfolio editing
 ├── profile/            # User profile pages
 │   ├── [userId]/       # Public profile view
 │   └── edit/           # Profile editing
-└── s/                  # Submission detail pages
-    └── [id]/           # Individual submission view
+├── prompt/             # Prompt-related pages
+│   ├── page.tsx
+│   ├── history/        # User submission history
+│   ├── play/           # Submission creation
+│   └── this-week/      # Gallery view
+├── s/                  # Submission detail pages
+│   └── [id]/
+│       ├── page.tsx
+│       └── opengraph-image.tsx
+└── terms/              # Terms of service
+    └── page.tsx
 
 components/
 ├── ui/                      # shadcn/ui components
-│   ├── button.tsx          # Button component
-│   ├── dialog.tsx          # Dialog/Modal component
-│   ├── dropdown-menu.tsx   # Dropdown menu component
-│   ├── input.tsx          # Input field component
-│   ├── select.tsx         # Select dropdown component
-│   ├── label.tsx          # Form label component
-│   ├── avatar.tsx         # Avatar component
-│   ├── badge.tsx          # Badge component
-│   ├── tabs.tsx           # Tabs component
-│   ├── alert-dialog.tsx   # Alert dialog component
-│   └── ...                # Other shadcn components
-├── auth-button.tsx          # Sign in/out buttons
-├── confirm-modal.tsx        # Reusable confirmation dialog (uses AlertDialog)
-├── expandable-image.tsx     # Image viewer with expand functionality (uses Dialog)
-├── expandable-text.tsx      # Text viewer with expand functionality
+│   ├── alert-dialog.tsx
+│   ├── avatar.tsx
+│   ├── badge.tsx
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── dialog.tsx
+│   ├── dropdown-menu.tsx
+│   ├── input.tsx
+│   ├── label.tsx
+│   ├── popover.tsx
+│   ├── select.tsx
+│   ├── sonner.tsx          # Toast notifications
+│   ├── switch.tsx
+│   └── tooltip.tsx
+├── breadcrumb.tsx           # Breadcrumb navigation
+├── confirm-modal.tsx        # Reusable confirmation dialog
+├── constellation-path.tsx   # Constellation path visualization
+├── create-spot-logo.tsx     # Logo component
+├── creators-filters.tsx     # Creator filtering
+├── creators-grid.tsx        # Creators grid display
+├── delete-account-modal.tsx # Account deletion modal
+├── exhibit-view-selector.tsx # Exhibit view type selector
+├── expandable-bio.tsx        # Expandable biography
+├── expandable-text.tsx      # Text viewer with expand
 ├── favorite-button.tsx      # Favorite/unfavorite button
-├── favorites-provider.tsx   # Context provider for favorites state
+├── favorites-provider.tsx   # Context provider for favorites
+├── featured-submission-selector.tsx # Featured submission picker
+├── featured-submission.tsx  # Featured submission display
+├── focal-point-modal.tsx    # Image focal point editor
 ├── header.tsx               # App header with navigation
-├── logo.tsx                 # SVG logo component
+├── image-lightbox.tsx       # Image lightbox viewer
+├── mobile-navigation.tsx    # Mobile navigation menu
+├── navigation-links.tsx     # Navigation links component
+├── page-header.tsx          # Page header component
+├── page-layout.tsx          # Page layout wrapper
 ├── portfolio-grid.tsx       # Grid display for portfolio items
-├── portfolio-item-form.tsx  # Form for creating/editing portfolio items
+├── portfolio-item-form.tsx # Form for creating/editing portfolio items
+├── portfolio-share-button.tsx # Portfolio share button
 ├── profile-analytics.tsx    # Analytics display component
-├── profile-view-tracker.tsx # Client component for tracking profile views
+├── profile-image-modal.tsx  # Profile image upload modal
+├── profile-image-viewer.tsx # Profile image viewer
+├── profile-share-button.tsx # Profile share button
+├── profile-view-tracker.tsx # Client component for tracking views
+├── recent-submissions-carousel.tsx # Recent submissions carousel
 ├── rich-text-editor.tsx     # TipTap-based rich text editor
 ├── share-button.tsx         # Share submission button
-├── submission-lightbox.tsx  # Full-screen submission viewer (uses Dialog)
+├── submission-edit-modal.tsx # Submission editing modal
+├── submission-image.tsx      # Submission image display
+├── submission-lightbox.tsx  # Full-screen submission viewer
+├── text-thumbnail.tsx        # Text preview thumbnail
 ├── theme-provider.tsx        # Theme provider wrapper (next-themes)
 ├── theme-toggle.tsx          # Theme toggle button
-└── text-thumbnail.tsx        # Text preview thumbnail
+├── themed-card.tsx           # Theme-aware card component
+├── user-dropdown.tsx          # User dropdown menu
+├── user-selector.tsx         # User selection component
+└── user-work-modal.tsx       # User work modal viewer
 ```
 
 ## Theme System
@@ -361,6 +435,224 @@ Several components have been migrated to use shadcn/ui primitives:
 - **Form components** → Use `Input`, `Select`, `Label`, `Button`
 
 All migrated components maintain backward compatibility with their original prop interfaces.
+
+### SubmissionLightbox
+
+Full-screen lightbox component for viewing submissions with responsive layouts that adapt based on screen size and content type.
+
+**Location:** `components/submission-lightbox.tsx`
+
+**Props:**
+- `submission`: Submission object with `id`, `title`, `imageUrl`, `text`, `user`, `_count`
+- `word`: The prompt word for this submission
+- `onClose`: Callback when lightbox is closed
+- `isOpen`: Boolean to control visibility
+- `hideGoToSubmission?`: Hide the "View Submission" button (default: false)
+- `protectionEnabled?`: Enable download protection (default: true)
+
+**Features:**
+- Responsive layout with sidebar on large screens (xl+, 1280px+)
+- Image zoom functionality with preview window
+- Text content display in sidebar or overlay
+- Metadata display (title, user, favorites)
+- Tooltips on all buttons
+- Theme-aware styling
+
+#### Layout Structure
+
+The lightbox adapts its layout based on screen size and content:
+
+**Breakpoint:** `xl` (1280px) - Sidebar appears on screens >= 1280px wide
+
+##### Desktop with Sidebar (xl+, >= 1280px)
+
+When the sidebar is visible, the layout uses a two-column structure:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Lightbox Container (Full Screen)             │
+├──────────────────────────────────────┬──────────────────────────┤
+│                                      │                          │
+│         Main Area (flex-1)           │   Sidebar (400px)        │
+│                                      │                          │
+│         ┌──────────────┐            │   ┌──────────────────┐   │
+│         │              │            │   │  Zoom Preview    │   │
+│         │    Image     │            │   │  (when hovering) │   │
+│         │  (centered,  │            │   └──────────────────┘   │
+│         │  zoomable)   │            │                          │
+│         │              │            │   ┌──────────────────┐   │
+│         │              │            │   │                  │   │
+│         └──────────────┘            │   │  Text Content   │   │
+│                                      │   │  (scrollable)   │   │
+│                                      │   │                  │   │
+│                                      │   └──────────────────┘   │
+│                                      │                          │
+├──────────────────────────────────────┴──────────────────────────┤
+│                                                          [Buttons]│
+│                                                          (lower   │
+│                                                           right)  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Layout Details:**
+- **Main area**: Image fills the left side, centered and zoomable
+- **Sidebar (right)**: Fixed 400px width containing:
+  - Zoom preview window near the top (only visible when actively zooming)
+  - Text content below zoom window (when text exists)
+- **Buttons**: Full buttons with text in lower right corner
+- **Metadata**: Hidden (title shown in sidebar instead)
+
+##### Desktop without Sidebar (< xl, < 1280px)
+
+On smaller desktop screens, buttons and zoom overlay the image:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Lightbox Container (Full Screen)             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│         Main Area (full width)                                 │
+│                                                                 │
+│    ┌──────────┐                                                │
+│    │  Zoom    │                                                │
+│    │ Preview  │    ┌──────────────┐                           │
+│    │(overlay) │    │              │                           │
+│    └──────────┘    │    Image     │                           │
+│                    │  (centered,  │                           │
+│                    │  zoomable)   │                           │
+│                    │              │                           │
+│                    └──────────────┘                           │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│ [Metadata]                                              [Icon   │
+│ (title, user,                                           Buttons]│
+│ favorites)                                              (lower  │
+│ (lower left)                                            right)  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Layout Details:**
+- **Main area**: Image fills the space, centered and zoomable
+- **Zoom preview**: Overlays the image in top-left corner
+- **Buttons**: Icon-only buttons in lower right corner (includes "View Text" icon when text exists)
+- **Metadata**: Title, user, and favorites in lower left corner
+
+##### Text-Only Layout
+
+When there's only text (no image), the text occupies the main area:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Lightbox Container (Full Screen)             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│         Main Area (full width)                                 │
+│                                                                 │
+│                    ┌──────────────────────┐                    │
+│                    │                      │                    │
+│                    │   Text Content      │                    │
+│                    │   (centered,        │                    │
+│                    │    scrollable)      │                    │
+│                    │                      │                    │
+│                    └──────────────────────┘                    │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│ [Metadata]                                              [Buttons]│
+│ (user,                                                (lower    │
+│ favorites)                                            right)    │
+│ (lower left)                                                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Layout Details:**
+- **Main area**: Text content centered and scrollable
+- **Buttons**: Full buttons on xl+, icon-only on smaller screens
+- **Metadata**: User and favorites in lower left corner
+
+##### Mobile Layout
+
+On mobile devices, the layout is simplified:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Lightbox Container (Full Screen)             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│         Main Area (full width)                                 │
+│                                                                 │
+│                    ┌──────────────┐                             │
+│                    │              │                             │
+│                    │    Image     │  (when image exists)        │
+│                    │   or Text    │  (when text only)           │
+│                    │              │                             │
+│                    └──────────────┘                             │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│ [Metadata]                                              [Icon   │
+│ (title, user,                                           Buttons]│
+│ favorites)                                              (lower  │
+│ (lower left)                                            right)  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Layout Details:**
+- **Main area**: Image or text fills the space
+- **Buttons**: Icon-only buttons in lower right corner
+- **Metadata**: Title, user, and favorites in lower left corner (when image exists)
+
+#### Zoom Functionality
+
+The lightbox includes image zoom functionality:
+
+- **Hover to zoom**: Move mouse over image to see zoom preview
+- **Zoom square**: 200px square overlay on image showing zoom area
+- **Zoom preview**: 400px preview window showing magnified area (2x zoom)
+- **Sidebar mode**: Zoom preview appears in sidebar near top (xl+)
+- **Overlay mode**: Zoom preview overlays image in top-left (< xl)
+
+**Requirements:**
+- Image must be at least 200px in both dimensions
+- Only works on devices that support hover (not touch devices)
+
+#### Button Layout
+
+All buttons are positioned in the lower right corner:
+
+**On xl+ screens:**
+- Full buttons with text labels
+- "View Submission" button (if not hidden)
+- "Close" button
+
+**On < xl screens (including mobile):**
+- Icon-only buttons
+- "View Text" icon button (when text exists and image present)
+- "View Submission" icon button (if not hidden)
+- "Close" icon button
+
+All buttons have tooltips for clarity.
+
+#### Usage Example
+
+```tsx
+import { SubmissionLightbox } from "@/components/submission-lightbox";
+
+const [isOpen, setIsOpen] = useState(false);
+
+<SubmissionLightbox
+  submission={{
+    id: "123",
+    title: "My Submission",
+    imageUrl: "https://...",
+    text: "<p>Description</p>",
+    user: { id: "user1", name: "John Doe" },
+    _count: { favorites: 5 }
+  }}
+  word="inspiration"
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  hideGoToSubmission={false}
+  protectionEnabled={true}
+/>
 ```
 
 ## Animation Patterns
