@@ -138,7 +138,11 @@
     "tutorialsDisabled": "Tutoriales deshabilitados",
     "tutorialsReset": "Tutoriales restablecidos exitosamente",
     "tutorialsResetError": "Error al restablecer los tutoriales. Por favor, inténtalo de nuevo.",
-    "tutorialsUpdateError": "Error al actualizar la configuración de tutoriales. Por favor, inténtalo de nuevo."
+    "tutorialsUpdateError": "Error al actualizar la configuración de tutoriales. Por favor, inténtalo de nuevo.",
+    "didYouKnowProfilesTitle": "Perfiles",
+    "didYouKnowProfilesDescription": "Cada usuario tiene un perfil que incluye configuración y un portafolio. Para llegar a tu portafolio puedes comenzar en tu perfil o puedes marcar tu portafolio como favorito para acceder directamente.",
+    "didYouKnowManagePortfolioTitle": "Gestionar Portafolio",
+    "didYouKnowManagePortfolioDescription": "Aquí es donde puedes manipular tu portafolio para agregar, eliminar o cambiar el orden de tu trabajo"
   },
   "navigation": {
     "home": "Inicio",
@@ -526,7 +530,9 @@
     "missionStatement": "Un lugar para creativos para",
     "missionExhibit": "exhibir su trabajo",
     "missionCreate": "crear más",
-    "missionSupport": "apoyar a otros humanos",
+    "missionSupport": "apoyar a otros humanos"
+  },
+  "global": {
     "exhibitHintTitle": "¿Qué son las Exposiciones?",
     "exhibitHintDescription": "Las exposiciones son colecciones cuidadosamente curadas de trabajo creativo de nuestra comunidad. Explora diferentes perspectivas e inspírate con lo que otros han creado.",
     "creatorHintTitle": "Conoce Creadores",

@@ -10,10 +10,17 @@ interface HintPopoverProps {
   page: string;
   title: string;
   description: string;
-  targetSelector: string;
+  targetSelector?: string;
   side?: "top" | "right" | "bottom" | "left";
   shouldShow: boolean;
   order?: number;
+  showArrow?: boolean;
+  fixedPosition?: {
+    bottom?: number;
+    right?: number;
+    top?: number;
+    left?: number;
+  };
 }
 
 export function HintPopover({
@@ -25,6 +32,8 @@ export function HintPopover({
   side = "bottom",
   shouldShow,
   order,
+  showArrow = true,
+  fixedPosition,
 }: HintPopoverProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(shouldShow);
@@ -32,10 +41,67 @@ export function HintPopover({
     top: number;
     left: number;
   } | null>(null);
+  const [useFallbackPosition, setUseFallbackPosition] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
+
+    // If fixedPosition is provided, use it directly
+    if (fixedPosition) {
+      const top = fixedPosition.top ?? undefined;
+      const left = fixedPosition.left ?? undefined;
+      const bottom = fixedPosition.bottom ?? undefined;
+      const right = fixedPosition.right ?? undefined;
+
+      setPosition({
+        top:
+          top ??
+          (bottom !== undefined
+            ? window.innerHeight -
+              (popoverRef.current?.offsetHeight ?? 0) -
+              bottom
+            : 0),
+        left:
+          left ??
+          (right !== undefined
+            ? window.innerWidth - (popoverRef.current?.offsetWidth ?? 0) - right
+            : 0),
+      });
+
+      // Set up resize listener for fixed position hints
+      const handleResize = () => {
+        setPosition({
+          top:
+            top ??
+            (bottom !== undefined
+              ? window.innerHeight -
+                (popoverRef.current?.offsetHeight ?? 0) -
+                bottom
+              : 0),
+          left:
+            left ??
+            (right !== undefined
+              ? window.innerWidth -
+                (popoverRef.current?.offsetWidth ?? 0) -
+                right
+              : 0),
+        });
+      };
+
+      window.addEventListener("resize", handleResize);
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
+    }
+
+    // Target-based positioning (existing logic)
+    if (!targetSelector) {
+      console.warn(
+        "HintPopover: targetSelector is required when fixedPosition is not provided",
+      );
+      return;
+    }
 
     let targetEl: Element | null = null;
     let mutationObserver: MutationObserver | null = null;
@@ -133,9 +199,39 @@ export function HintPopover({
       }
     };
 
+    /**
+     * Check if an element is actually visible (not just present in DOM)
+     * Elements can be hidden via CSS (display: none, visibility: hidden, etc.)
+     */
+    const isElementVisible = (element: Element): boolean => {
+      if (!(element instanceof HTMLElement)) return false;
+
+      // Check bounding box - if width/height are 0, element is likely hidden
+      const rect = element.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return false;
+
+      // Check computed styles
+      const style = window.getComputedStyle(element);
+      if (style.display === "none") return false;
+      if (style.visibility === "hidden") return false;
+      if (style.opacity === "0") return false;
+
+      // Check if element is within viewport (at least partially)
+      const isInViewport =
+        rect.top < window.innerHeight &&
+        rect.bottom > 0 &&
+        rect.left < window.innerWidth &&
+        rect.right > 0;
+
+      return isInViewport;
+    };
+
     const findAndSetup = () => {
       const element = document.querySelector(targetSelector);
       if (!element) return false;
+
+      // Check if element is actually visible
+      if (!isElementVisible(element)) return false;
 
       targetEl = element;
       if (updatePosition()) {
@@ -171,11 +267,19 @@ export function HintPopover({
         window.addEventListener("resize", updatePosition);
         window.addEventListener("scroll", updatePosition);
       } else if (retryCount >= maxRetries) {
-        // Give up after max retries
+        // Give up after max retries - fall back to fixed position (Did You Know style)
         clearInterval(retryTimer);
-        console.warn(
-          `HintPopover: Could not find target element "${targetSelector}" after ${maxRetries} retries`,
-        );
+        const element = document.querySelector(targetSelector);
+        if (element && !isElementVisible(element)) {
+          console.warn(
+            `HintPopover: Target element "${targetSelector}" exists but is not visible (likely hidden on mobile). Falling back to fixed position.`,
+          );
+        } else {
+          console.warn(
+            `HintPopover: Could not find or make visible target element "${targetSelector}" after ${maxRetries} retries. Falling back to fixed position.`,
+          );
+        }
+        setUseFallbackPosition(true);
       }
     }, retryInterval);
 
@@ -186,7 +290,12 @@ export function HintPopover({
       window.removeEventListener("resize", updatePosition);
       window.removeEventListener("scroll", updatePosition);
     };
-  }, [isOpen, side, targetSelector]);
+  }, [isOpen, side, targetSelector, fixedPosition]);
+
+  // Reset fallback position when targetSelector changes
+  useEffect(() => {
+    setUseFallbackPosition(false);
+  }, [targetSelector]);
 
   const handleDismiss = async () => {
     setIsOpen(false);
@@ -290,28 +399,56 @@ export function HintPopover({
     }
   };
 
-  return (
-    <div
-      ref={popoverRef}
-      style={{
+  // Determine if we should use fixed position (either explicitly provided or fallback)
+  const effectiveFixedPosition = useFallbackPosition
+    ? { bottom: 24, right: 24 }
+    : fixedPosition;
+
+  const positionStyle: React.CSSProperties = effectiveFixedPosition
+    ? {
+        position: "fixed",
+        ...(effectiveFixedPosition.top !== undefined && {
+          top: `${effectiveFixedPosition.top}px`,
+        }),
+        ...(effectiveFixedPosition.left !== undefined && {
+          left: `${effectiveFixedPosition.left}px`,
+        }),
+        ...(effectiveFixedPosition.bottom !== undefined && {
+          bottom: `${effectiveFixedPosition.bottom}px`,
+        }),
+        ...(effectiveFixedPosition.right !== undefined && {
+          right: `${effectiveFixedPosition.right}px`,
+        }),
+        zIndex: 50,
+      }
+    : {
         position: "fixed",
         top: position ? `${position.top}px` : "-9999px",
         left: position ? `${position.left}px` : "-9999px",
         zIndex: 50,
         visibility: position ? "visible" : "hidden",
-      }}
+      };
+
+  return (
+    <div
+      ref={popoverRef}
+      style={positionStyle}
       className="w-72 rounded-lg border border-border bg-popover text-popover-foreground shadow-md"
     >
       {/* Outer arrow (border) */}
-      <div
-        style={getArrowStyles()?.outer as React.CSSProperties}
-        className="absolute w-0 h-0"
-      />
+      {showArrow && !useFallbackPosition && (
+        <div
+          style={getArrowStyles()?.outer as React.CSSProperties}
+          className="absolute w-0 h-0"
+        />
+      )}
       {/* Inner arrow (fill) */}
-      <div
-        style={getArrowStyles()?.inner as React.CSSProperties}
-        className="absolute w-0 h-0"
-      />
+      {showArrow && !useFallbackPosition && (
+        <div
+          style={getArrowStyles()?.inner as React.CSSProperties}
+          className="absolute w-0 h-0"
+        />
+      )}
       <div className="relative space-y-3 p-4">
         <div className="flex items-start justify-between gap-2">
           <h4 className="font-semibold text-sm">{title}</h4>

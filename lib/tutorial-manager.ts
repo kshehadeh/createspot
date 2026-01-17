@@ -20,13 +20,13 @@ export class TutorialManager {
     if (!tutorialData) {
       this.blob = {
         status: "enabled",
-        home: {},
+        global: {},
       };
     } else if (typeof tutorialData === "string") {
       try {
         this.blob = JSON.parse(tutorialData);
       } catch {
-        this.blob = { status: "enabled", home: {} };
+        this.blob = { status: "enabled", global: {} };
       }
     } else {
       this.blob = tutorialData as TutorialBlob;
@@ -94,7 +94,7 @@ export class TutorialManager {
   reset(): void {
     this.blob = {
       status: "enabled",
-      home: {},
+      global: {},
     };
   }
 

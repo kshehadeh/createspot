@@ -7,7 +7,9 @@ import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalHints } from "@/components/global-hints";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -66,6 +68,16 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
+  // Fetch tutorial data for global hints
+  let tutorialData = null;
+  if (session?.user?.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { tutorial: true },
+    });
+    tutorialData = user?.tutorial;
+  }
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
@@ -79,6 +91,10 @@ export default async function RootLayout({
                 {breadcrumb}
                 {children}
               </div>
+              <GlobalHints
+                tutorialData={tutorialData}
+                userId={session?.user?.id}
+              />
               <Analytics />
             </SessionProvider>
           </NextIntlClientProvider>

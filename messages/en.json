@@ -138,7 +138,11 @@
     "tutorialsDisabled": "Tutorials disabled",
     "tutorialsReset": "Tutorials reset successfully",
     "tutorialsResetError": "Failed to reset tutorials. Please try again.",
-    "tutorialsUpdateError": "Failed to update tutorial settings. Please try again."
+    "tutorialsUpdateError": "Failed to update tutorial settings. Please try again.",
+    "didYouKnowProfilesTitle": "Profiles",
+    "didYouKnowProfilesDescription": "Every user has a profile that includes settings and a portfolio. To get to your portfolio you can start at your profile or you can bookmark your portfolio to get to it directly.",
+    "didYouKnowManagePortfolioTitle": "Manage Portfolio",
+    "didYouKnowManagePortfolioDescription": "Here's where you can manipulate your portfolio to add, remove or change the order of your work"
   },
   "navigation": {
     "home": "Home",
@@ -526,7 +530,9 @@
     "missionStatement": "A place for creatives to",
     "missionExhibit": "exhibit their work",
     "missionCreate": "create more",
-    "missionSupport": "support fellow humans",
+    "missionSupport": "support fellow humans"
+  },
+  "global": {
     "exhibitHintTitle": "What are Exhibits?",
     "exhibitHintDescription": "Exhibits are carefully curated collections of creative work from our community. Explore different perspectives and get inspired by what others have created.",
     "creatorHintTitle": "Meet Creators",

@@ -15,6 +15,8 @@ import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { ProfileShareButton } from "@/components/profile-share-button";
+import { HintPopover } from "@/components/hint-popover";
+import { TutorialManager } from "@/lib/tutorial-manager";
 import { Eye, Pencil, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -124,6 +126,16 @@ export default async function ProfilePage({
 
   const isOwnProfile = session?.user?.id === user.id;
   const isLoggedIn = !!session?.user;
+
+  // Get tutorial data for hints
+  let tutorialManager: TutorialManager | null = null;
+  if (session?.user?.id) {
+    const userWithTutorial = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { tutorial: true },
+    });
+    tutorialManager = new TutorialManager(userWithTutorial?.tutorial);
+  }
 
   // When viewing own profile with ?view=public, show public view
   const isPublicView = isOwnProfile && isPublicViewRequested;
@@ -542,6 +554,61 @@ export default async function ProfilePage({
           </div>
         )}
       </div>
+
+      {/* Did You Know hints for logged-in users */}
+      {session?.user &&
+        tutorialManager &&
+        (() => {
+          // Define available hints with their order and configuration
+          const availableHints = [
+            {
+              key: "profiles",
+              order: 1,
+              title: t("didYouKnowProfilesTitle"),
+              description: t("didYouKnowProfilesDescription"),
+              fixedPosition: { bottom: 24, right: 24 },
+              showArrow: false,
+            },
+            // Only show manage portfolio hint when viewing own profile
+            ...(effectiveIsOwnProfile
+              ? [
+                  {
+                    key: "managePortfolio",
+                    order: 2,
+                    title: t("didYouKnowManagePortfolioTitle"),
+                    description: t("didYouKnowManagePortfolioDescription"),
+                    targetSelector: "a[href='/portfolio/edit']",
+                    side: "bottom" as const,
+                    showArrow: true,
+                  },
+                ]
+              : []),
+          ];
+
+          // Get the next hint to show
+          const nextHintKey = tutorialManager.getNextHint(
+            "profile",
+            availableHints.map((h) => ({ key: h.key, order: h.order })),
+          );
+          const nextHint = nextHintKey
+            ? availableHints.find((h) => h.key === nextHintKey)
+            : null;
+
+          return nextHint ? (
+            <HintPopover
+              hintKey={nextHint.key}
+              page="profile"
+              title={nextHint.title}
+              description={nextHint.description}
+              shouldShow={true}
+              order={nextHint.order}
+              showArrow={nextHint.showArrow ?? false}
+              fixedPosition={nextHint.fixedPosition}
+              targetSelector={nextHint.targetSelector}
+              side={nextHint.side}
+            />
+          ) : null;
+        })()}
     </PageLayout>
   );
 }
