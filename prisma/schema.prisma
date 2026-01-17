@@ -84,6 +84,7 @@ model User {
   emailOnFavorite      Boolean      @default(true)
   emailFeatureUpdates  Boolean      @default(true)
   welcomeEmailSent     Boolean      @default(false)
+  tutorial             Json         @default("{\"status\": \"enabled\", \"home\": {}}")
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 

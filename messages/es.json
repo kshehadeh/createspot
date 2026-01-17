@@ -127,7 +127,18 @@
     "emailFeatureUpdates": "Actualizaciones y noticias",
     "emailFeatureUpdatesDescription": "Actualizaciones ocasionales sobre nuevas funciones, exhibiciones y noticias de la comunidad.",
     "emailPreferencesSaved": "Preferencias de correo guardadas",
-    "emailPreferencesFailed": "No se pudieron guardar las preferencias de correo. Inténtalo de nuevo."
+    "emailPreferencesFailed": "No se pudieron guardar las preferencias de correo. Inténtalo de nuevo.",
+    "tutorialSettings": "Configuración de Tutoriales",
+    "tutorialSettingsDescription": "Controla cómo aparecen las pistas y tutoriales en toda la aplicación",
+    "enableTutorials": "Habilitar tutoriales",
+    "enableTutorialsDescription": "Mostrar pistas útiles para guiarte por la aplicación",
+    "resetTutorials": "Restablecer Tutoriales",
+    "resetTutorialsDescription": "Restablece todos los tutoriales para ver las pistas nuevamente desde el principio",
+    "tutorialsEnabled": "Tutoriales habilitados",
+    "tutorialsDisabled": "Tutoriales deshabilitados",
+    "tutorialsReset": "Tutoriales restablecidos exitosamente",
+    "tutorialsResetError": "Error al restablecer los tutoriales. Por favor, inténtalo de nuevo.",
+    "tutorialsUpdateError": "Error al actualizar la configuración de tutoriales. Por favor, inténtalo de nuevo."
   },
   "navigation": {
     "home": "Inicio",
@@ -515,7 +526,11 @@
     "missionStatement": "Un lugar para creativos para",
     "missionExhibit": "exhibir su trabajo",
     "missionCreate": "crear más",
-    "missionSupport": "apoyar a otros humanos"
+    "missionSupport": "apoyar a otros humanos",
+    "exhibitHintTitle": "¿Qué son las Exposiciones?",
+    "exhibitHintDescription": "Las exposiciones son colecciones cuidadosamente curadas de trabajo creativo de nuestra comunidad. Explora diferentes perspectivas e inspírate con lo que otros han creado.",
+    "creatorHintTitle": "Conoce Creadores",
+    "creatorHintDescription": "Sigue a los creadores para mantenerte actualizado con su trabajo más reciente y ve cómo evoluciona su viaje creativo a lo largo del tiempo."
   },
   "about": {
     "title": "Acerca de | Create Spot",

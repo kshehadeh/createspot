@@ -127,7 +127,18 @@
     "emailFeatureUpdates": "Feature updates & news",
     "emailFeatureUpdatesDescription": "Occasional updates about new features, exhibits, and community news.",
     "emailPreferencesSaved": "Email preferences saved",
-    "emailPreferencesFailed": "Failed to save email preferences. Please try again."
+    "emailPreferencesFailed": "Failed to save email preferences. Please try again.",
+    "tutorialSettings": "Tutorial Settings",
+    "tutorialSettingsDescription": "Control how hints and tutorials appear throughout the app",
+    "enableTutorials": "Enable tutorials",
+    "enableTutorialsDescription": "Show helpful hints to guide you through the app",
+    "resetTutorials": "Reset Tutorials",
+    "resetTutorialsDescription": "Reset all tutorials to see hints again from the beginning",
+    "tutorialsEnabled": "Tutorials enabled",
+    "tutorialsDisabled": "Tutorials disabled",
+    "tutorialsReset": "Tutorials reset successfully",
+    "tutorialsResetError": "Failed to reset tutorials. Please try again.",
+    "tutorialsUpdateError": "Failed to update tutorial settings. Please try again."
   },
   "navigation": {
     "home": "Home",
@@ -515,7 +526,11 @@
     "missionStatement": "A place for creatives to",
     "missionExhibit": "exhibit their work",
     "missionCreate": "create more",
-    "missionSupport": "support fellow humans"
+    "missionSupport": "support fellow humans",
+    "exhibitHintTitle": "What are Exhibits?",
+    "exhibitHintDescription": "Exhibits are carefully curated collections of creative work from our community. Explore different perspectives and get inspired by what others have created.",
+    "creatorHintTitle": "Meet Creators",
+    "creatorHintDescription": "Follow creators to stay updated with their latest work and see how their creative journey evolves over time."
   },
   "about": {
     "title": "About | Create Spot",

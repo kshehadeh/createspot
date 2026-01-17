@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Briefcase, LayoutGrid, Sparkles } from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
+import { HintPopover } from "@/components/hint-popover";
+import { TutorialManager } from "@/lib/tutorial-manager";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +58,15 @@ export default async function Home() {
   const tFooter = await getTranslations("footer");
   const session = await auth();
   const recentWork = await getRecentWork();
+
+  let tutorialManager: TutorialManager | null = null;
+  if (session?.user?.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { tutorial: true },
+    });
+    tutorialManager = new TutorialManager(user?.tutorial);
+  }
 
   type HeroCardId = "exhibits" | "portfolio" | "prompt";
 
@@ -233,6 +244,53 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* Hints for logged-in users - show one at a time based on order */}
+      {session?.user &&
+        tutorialManager &&
+        (() => {
+          // Define available hints with their order and configuration
+          const availableHints = [
+            {
+              key: "exhibits",
+              order: 1,
+              title: t("exhibitHintTitle"),
+              description: t("exhibitHintDescription"),
+              targetSelector: "a[href='/exhibition']",
+              side: "bottom" as const,
+            },
+            {
+              key: "creators",
+              order: 2,
+              title: t("creatorHintTitle"),
+              description: t("creatorHintDescription"),
+              targetSelector: "a[href='/creators']",
+              side: "bottom" as const,
+            },
+          ];
+
+          // Get the next hint to show
+          const nextHintKey = tutorialManager.getNextHint(
+            "home",
+            availableHints,
+          );
+          const nextHint = nextHintKey
+            ? availableHints.find((h) => h.key === nextHintKey)
+            : null;
+
+          return nextHint ? (
+            <HintPopover
+              hintKey={nextHint.key}
+              page="home"
+              title={nextHint.title}
+              description={nextHint.description}
+              targetSelector={nextHint.targetSelector}
+              side={nextHint.side}
+              shouldShow={true}
+              order={nextHint.order}
+            />
+          ) : null;
+        })()}
 
       {/* Mission Statement Section */}
       <section className="px-6 pb-8 pt-0 sm:pb-12 sm:pt-2">

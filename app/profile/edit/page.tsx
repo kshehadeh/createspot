@@ -45,6 +45,7 @@ export default async function ProfileEditPage() {
       protectFromAI: true,
       emailOnFavorite: true,
       emailFeatureUpdates: true,
+      tutorial: true,
     },
   });
 
@@ -141,6 +142,7 @@ export default async function ProfileEditPage() {
         initialProtectFromAI={user.protectFromAI}
         initialEmailOnFavorite={user.emailOnFavorite}
         initialEmailFeatureUpdates={user.emailFeatureUpdates}
+        tutorial={user.tutorial}
         submissions={submissions.map((s) => ({
           id: s.id,
           title: s.title,

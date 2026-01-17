@@ -18,7 +18,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { TutorialManager } from "@/lib/tutorial-manager";
 import { Country, State, City } from "country-state-city";
 import {
   Briefcase,
@@ -31,6 +33,7 @@ import {
 } from "lucide-react";
 import { normalizeUrl, isValidUrl } from "@/lib/utils";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
+import { ConfirmModal } from "@/components/confirm-modal";
 import { locales, localeNames, type Locale } from "@/i18n/config";
 
 interface SubmissionOption {
@@ -72,6 +75,7 @@ interface ProfileEditFormProps {
   initialEmailFeatureUpdates: boolean;
   submissions: SubmissionOption[];
   portfolioItemCount: number;
+  tutorial?: any;
 }
 
 export function ProfileEditForm({
@@ -95,6 +99,7 @@ export function ProfileEditForm({
   initialEmailFeatureUpdates,
   submissions,
   portfolioItemCount,
+  tutorial,
 }: ProfileEditFormProps) {
   const router = useRouter();
   const t = useTranslations("profile");
@@ -131,11 +136,21 @@ export function ProfileEditForm({
   const [emailFeatureUpdates, setEmailFeatureUpdates] = useState(
     initialEmailFeatureUpdates,
   );
+
+  // Tutorial state
+  const tutorialManager = new TutorialManager(tutorial);
+  const [tutorialsEnabled, setTutorialsEnabled] = useState(
+    tutorialManager.isEnabled(),
+  );
+  const [tutorialUpdating, setTutorialUpdating] = useState(false);
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [websiteError, setWebsiteError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isResetTutorialModalOpen, setIsResetTutorialModalOpen] =
+    useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Track initial values to detect changes
@@ -455,6 +470,58 @@ export function ProfileEditForm({
     setBio(bioOriginalValue);
     setBioHasFocus(false);
   }, [bioOriginalValue]);
+
+  // Tutorial handlers
+  const handleTutorialToggle = async (enabled: boolean) => {
+    setTutorialUpdating(true);
+    try {
+      const response = await fetch("/api/tutorial", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: enabled ? "enable" : "disable" }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update tutorial settings");
+      }
+
+      setTutorialsEnabled(enabled);
+      toast.success(enabled ? t("tutorialsEnabled") : t("tutorialsDisabled"));
+      router.refresh();
+    } catch {
+      toast.error(t("tutorialsUpdateError"));
+    } finally {
+      setTutorialUpdating(false);
+    }
+  };
+
+  const handleResetTutorials = () => {
+    setIsResetTutorialModalOpen(true);
+  };
+
+  const performResetTutorials = async () => {
+    setIsResetTutorialModalOpen(false);
+    setTutorialUpdating(true);
+    try {
+      const response = await fetch("/api/tutorial", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset" }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to reset tutorials");
+      }
+
+      setTutorialsEnabled(true);
+      toast.success(t("tutorialsReset"));
+      router.refresh();
+    } catch {
+      toast.error(t("tutorialsResetError"));
+    } finally {
+      setTutorialUpdating(false);
+    }
+  };
 
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1454,6 +1521,61 @@ export function ProfileEditForm({
           </div>
         </div>
 
+        {/* Tutorial Settings */}
+        <div className="mt-12 pt-8 border-t border-border">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">
+                {t("tutorialSettings")}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t("tutorialSettingsDescription")}
+              </p>
+            </div>
+
+            {/* Enable/Disable Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label
+                  htmlFor="tutorial-toggle"
+                  className="text-sm font-medium"
+                >
+                  {t("enableTutorials")}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t("enableTutorialsDescription")}
+                </p>
+              </div>
+              <Switch
+                id="tutorial-toggle"
+                checked={tutorialsEnabled}
+                onCheckedChange={handleTutorialToggle}
+                disabled={tutorialUpdating}
+              />
+            </div>
+
+            {/* Reset Button */}
+            <div className="flex items-center justify-between border-t border-border pt-4">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-medium">
+                  {t("resetTutorials")}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t("resetTutorialsDescription")}
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetTutorials}
+                disabled={tutorialUpdating}
+              >
+                {t("resetTutorials")}
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {/* Danger Zone */}
         <div className="mt-12 pt-8 border-t border-destructive/20">
           <div className="space-y-4">
@@ -1481,6 +1603,16 @@ export function ProfileEditForm({
       <DeleteAccountModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
+      />
+
+      <ConfirmModal
+        isOpen={isResetTutorialModalOpen}
+        title={t("resetTutorials")}
+        message={t("resetTutorialsDescription")}
+        confirmLabel={t("resetTutorials")}
+        onConfirm={performResetTutorials}
+        onCancel={() => setIsResetTutorialModalOpen(false)}
+        isLoading={tutorialUpdating}
       />
     </div>
   );
