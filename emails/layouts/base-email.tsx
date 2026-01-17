@@ -41,11 +41,11 @@ export const BaseEmail = ({ children, previewText, userId, baseUrl, t }: BaseEma
   
   // Use translations if available, otherwise fall back to English
   const receivingReason = t
-    ? t("email.footer.receivingReason", { appName })
+    ? t("footer.receivingReason", { appName })
     : `You are receiving this email because you have a ${appName} account.`;
   
   const manageNotificationsText = t
-    ? t("email.footer.manageNotifications")
+    ? t("footer.manageNotifications")
     : "Manage notifications in your profile";
   
   // Build profile URL if userId and baseUrl are provided

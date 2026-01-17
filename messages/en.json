@@ -791,9 +791,12 @@
     "welcome": {
       "previewText": "Welcome to {appName}, {name}!",
       "title": "Welcome, {name} 👋",
-      "message1": "We're thrilled to have you in the {appName} community. Each week we share a new three-word brief to spark creativity. Submit your photos, explore the gallery, and discover inspiration from others.",
-      "message2": "Ready to jump in? Share your first submission or browse what others are creating this week.",
-      "ctaButton": "Go to this week's prompt",
+      "message1": "We're thrilled to have you in the {appName} community.",
+      "permanentCollection": "Explore the permanent collection on the gallery grid or discover artists on the global map.",
+      "exhibits": "Discover curated exhibits that showcase themed collections and highlight exceptional work from the community.",
+      "portfolio": "Build and manage your portfolio over time. Curate the pieces that represent you best and share them when you want to be seen.",
+      "promptGame": "Finally, join the weekly prompt inspiration game. Each week we share a new three-word brief to spark creativity—use it to create something new or connect an existing portfolio piece that fits the theme.",
+      "ctaButton": "Explore the collection",
       "subject": "Welcome to {appName}",
       "friend": "friend"
     }

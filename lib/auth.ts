@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
+import { sendWelcomeEmailIfNeeded } from "./send-welcome-email";
 
 const isProduction = process.env.NODE_ENV === "production";
 const useSecureCookies =
@@ -36,10 +37,22 @@ export const { handlers, signIn, auth } = NextAuth({
         // Fetch isAdmin and profileImageUrl from database
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { isAdmin: true, profileImageUrl: true },
+          select: {
+            isAdmin: true,
+            profileImageUrl: true,
+            welcomeEmailSent: true,
+          },
         });
         session.user.isAdmin = dbUser?.isAdmin ?? false;
         session.user.profileImageUrl = dbUser?.profileImageUrl ?? null;
+
+        // Send welcome email if needed (fire and forget - don't block session creation)
+        if (dbUser && !dbUser.welcomeEmailSent) {
+          // Send asynchronously without blocking the session callback
+          sendWelcomeEmailIfNeeded(user.id).catch((error) => {
+            console.error("[Auth] Failed to send welcome email:", error);
+          });
+        }
       }
       return session;
     },

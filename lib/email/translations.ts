@@ -12,8 +12,9 @@ import { defaultLocale, isValidLocale } from "@/i18n/config";
 async function loadTranslations(
   locale: string,
 ): Promise<Record<string, unknown>> {
-  const validLocale: Locale =
-    isValidLocale(locale) ? (locale as Locale) : defaultLocale;
+  const validLocale: Locale = isValidLocale(locale)
+    ? (locale as Locale)
+    : defaultLocale;
 
   const messages = (await import(`../../messages/${validLocale}.json`)).default;
   return messages;
@@ -33,8 +34,9 @@ export async function getEmailTranslations(
   namespace?: string,
 ): Promise<(key: string, values?: Record<string, string | number>) => string> {
   const messages = await loadTranslations(locale);
-  const validLocale: Locale =
-    isValidLocale(locale) ? (locale as Locale) : defaultLocale;
+  const validLocale: Locale = isValidLocale(locale)
+    ? (locale as Locale)
+    : defaultLocale;
 
   // Use next-intl's createTranslator - works outside request context
   const t = createTranslator({

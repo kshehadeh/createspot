@@ -83,6 +83,7 @@ model User {
   protectFromAI        Boolean      @default(true)
   emailOnFavorite      Boolean      @default(true)
   emailFeatureUpdates  Boolean      @default(true)
+  welcomeEmailSent     Boolean      @default(false)
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 
