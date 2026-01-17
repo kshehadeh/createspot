@@ -76,6 +76,7 @@ async function sendNotificationEmail(
   recipientEmail: string,
   userLanguage: string,
   baseUrl: string,
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   "use step";
 
@@ -113,6 +114,7 @@ async function sendNotificationEmail(
       submissionUrl,
       favorerProfileUrl,
       baseUrl,
+      userId,
       t,
     });
 
@@ -195,5 +197,6 @@ export async function sendFavoriteNotification(
     submission.user.email,
     submission.user.language,
     baseUrl,
+    submission.userId,
   );
 }

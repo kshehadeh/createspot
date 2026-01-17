@@ -783,6 +783,19 @@
       "someone": "Alguien",
       "previewText": "{favorerName} marcó como favorito {titleDisplay}",
       "subject": "{favorerName} marcó como favorito {titleDisplay}"
+    },
+    "footer": {
+      "receivingReason": "Estás recibiendo este correo porque tienes una cuenta de {appName}.",
+      "manageNotifications": "Gestiona las notificaciones en tu perfil"
+    },
+    "welcome": {
+      "previewText": "¡Bienvenido a {appName}, {name}!",
+      "title": "Bienvenido, {name} 👋",
+      "message1": "Estamos encantados de tenerte en la comunidad de {appName}. Cada semana compartimos un nuevo brief de tres palabras para despertar la creatividad. Envía tus fotos, explora la galería y descubre inspiración de otros.",
+      "message2": "¿Listo para empezar? Comparte tu primera presentación o explora lo que otros están creando esta semana.",
+      "ctaButton": "Ir al prompt de esta semana",
+      "subject": "Bienvenido a {appName}",
+      "friend": "amigo"
     }
   }
 }

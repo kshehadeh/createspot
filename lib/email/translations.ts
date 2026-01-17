@@ -1,3 +1,4 @@
+import { createTranslator } from "next-intl";
 import type { Locale } from "@/i18n/config";
 import { defaultLocale, isValidLocale } from "@/i18n/config";
 
@@ -20,7 +21,8 @@ async function loadTranslations(
 
 /**
  * Creates a translation function for a specific namespace and locale.
- * This mimics the behavior of next-intl's getTranslations but works outside request context.
+ * Uses next-intl's createTranslator to work outside of Next.js request context.
+ * This is the same translation system used throughout the app, just without request context.
  *
  * @param locale - The locale code
  * @param namespace - The translation namespace (e.g., "email", "common")
@@ -31,45 +33,22 @@ export async function getEmailTranslations(
   namespace?: string,
 ): Promise<(key: string, values?: Record<string, string | number>) => string> {
   const messages = await loadTranslations(locale);
+  const validLocale: Locale =
+    isValidLocale(locale) ? (locale as Locale) : defaultLocale;
 
-  const namespaceMessages = namespace
-    ? (messages[namespace] as Record<string, unknown> | undefined) ?? {}
-    : (messages as Record<string, unknown>);
+  // Use next-intl's createTranslator - works outside request context
+  const t = createTranslator({
+    locale: validLocale,
+    messages,
+    namespace,
+  });
 
+  // Wrap the translator to match our expected signature
+  // The translator is strongly typed, so we need to use type assertion
   return (key: string, values?: Record<string, string | number>): string => {
-    // Handle nested keys like "favoriteNotification.title"
-    const keys = key.split(".");
-    let translation: unknown = namespaceMessages;
-
-    // Traverse the object using the key path
-    for (const k of keys) {
-      if (
-        translation &&
-        typeof translation === "object" &&
-        k in translation
-      ) {
-        translation = (translation as Record<string, unknown>)[k];
-      } else {
-        // Key not found, return the original key
-        return key;
-      }
-    }
-
-    // Ensure we have a string
-    if (typeof translation !== "string") {
-      return key;
-    }
-
-    // Replace variables in the format {variableName}
-    if (values) {
-      for (const [varName, varValue] of Object.entries(values)) {
-        translation = translation.replace(
-          new RegExp(`\\{${varName}\\}`, "g"),
-          String(varValue),
-        );
-      }
-    }
-
-    return translation;
+    return (t as (key: string, values?: Record<string, unknown>) => string)(
+      key,
+      values as Record<string, unknown>,
+    );
   };
 }

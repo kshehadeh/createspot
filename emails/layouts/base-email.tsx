@@ -1,9 +1,12 @@
-import { Body, Container, Head, Hr, Html, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
 import type { ReactNode } from "react";
 
 export interface BaseEmailProps {
   children: ReactNode;
   previewText?: string;
+  userId?: string;
+  baseUrl?: string;
+  t?: (key: string, values?: Record<string, string | number>) => string;
 }
 
 const styles = {
@@ -33,19 +36,42 @@ const styles = {
   },
 };
 
-export const BaseEmail = ({ children, previewText }: BaseEmailProps) => (
-  <Html>
-    <Head />
-    {previewText ? <Preview>{previewText}</Preview> : null}
-    <Body style={styles.body}>
-      <Container style={styles.container}>
-        <Section>{children}</Section>
-        <Hr style={styles.divider} />
-        <Text style={styles.footerText}>
-          You are receiving this email because you have a Prompts account. Manage notifications in your
-          profile.
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-);
+export const BaseEmail = ({ children, previewText, userId, baseUrl, t }: BaseEmailProps) => {
+  const appName = "Create Spot";
+  
+  // Use translations if available, otherwise fall back to English
+  const receivingReason = t
+    ? t("email.footer.receivingReason", { appName })
+    : `You are receiving this email because you have a ${appName} account.`;
+  
+  const manageNotificationsText = t
+    ? t("email.footer.manageNotifications")
+    : "Manage notifications in your profile";
+  
+  // Build profile URL if userId and baseUrl are provided
+  const profileUrl = userId && baseUrl ? `${baseUrl}/profile/${userId}` : undefined;
+  
+  return (
+    <Html>
+      <Head />
+      {previewText ? <Preview>{previewText}</Preview> : null}
+      <Body style={styles.body}>
+        <Container style={styles.container}>
+          <Section>{children}</Section>
+          <Hr style={styles.divider} />
+          <Text style={styles.footerText}>
+            {receivingReason}{" "}
+            {profileUrl ? (
+              <Link href={profileUrl} style={{ color: "#3b82f6", textDecoration: "none" }}>
+                {manageNotificationsText}
+              </Link>
+            ) : (
+              manageNotificationsText
+            )}
+            .
+          </Text>
+        </Container>
+      </Body>
+    </Html>
+  );
+};

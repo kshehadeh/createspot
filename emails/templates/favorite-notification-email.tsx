@@ -9,6 +9,7 @@ export interface FavoriteNotificationEmailProps {
   submissionUrl: string;
   favorerProfileUrl: string;
   baseUrl: string;
+  userId: string;
   t: (key: string, values?: Record<string, string | number>) => string;
 }
 
@@ -18,6 +19,7 @@ export const FavoriteNotificationEmail = ({
   submissionUrl,
   favorerProfileUrl,
   baseUrl,
+  userId,
   t,
 }: FavoriteNotificationEmailProps) => {
   const titleDisplay = submissionTitle
@@ -32,7 +34,7 @@ export const FavoriteNotificationEmail = ({
   const logoUrl = `${baseUrl}/images/create-spot-logo.svg`;
 
   return (
-    <BaseEmail previewText={previewText}>
+    <BaseEmail previewText={previewText} userId={userId} baseUrl={baseUrl} t={t}>
       <Section style={{ marginBottom: "32px", textAlign: "center" }}>
         <Img
           src={logoUrl}

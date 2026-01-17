@@ -783,6 +783,19 @@
       "someone": "Someone",
       "previewText": "{favorerName} favorited {titleDisplay}",
       "subject": "{favorerName} favorited {titleDisplay}"
+    },
+    "footer": {
+      "receivingReason": "You are receiving this email because you have a {appName} account.",
+      "manageNotifications": "Manage notifications in your profile"
+    },
+    "welcome": {
+      "previewText": "Welcome to {appName}, {name}!",
+      "title": "Welcome, {name} 👋",
+      "message1": "We're thrilled to have you in the {appName} community. Each week we share a new three-word brief to spark creativity. Submit your photos, explore the gallery, and discover inspiration from others.",
+      "message2": "Ready to jump in? Share your first submission or browse what others are creating this week.",
+      "ctaButton": "Go to this week's prompt",
+      "subject": "Welcome to {appName}",
+      "friend": "friend"
     }
   }
 }
