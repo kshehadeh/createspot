@@ -100,6 +100,7 @@ model User {
   curatedExhibits    Exhibit[]        @relation("CuratedExhibits")
   featuredArtistInExhibits Exhibit[]  @relation("FeaturedArtistInExhibits")
   critiques          Critique[]       @relation("Critiques")
+  notificationLogs   NotificationLog[] @relation("NotificationLogs")
 }
 
 model Prompt {
@@ -250,4 +251,17 @@ model Critique {
   @@index([submissionId])
   @@index([critiquerId])
   @@index([submissionId, critiquerId])
+}
+
+model NotificationLog {
+  id     String   @id @default(cuid())
+  type   String   // e.g., "NEW_PROMPT", "PROMPT_ENDING", "WEEKLY_DIGEST"
+  meta   Json     // { "promptId": "xxx" } or other event-specific data
+  userId String?  // NULL for broadcast notifications, set for user-specific
+  sentAt DateTime @default(now())
+
+  user User? @relation("NotificationLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([type, sentAt])
+  @@index([userId])
 }

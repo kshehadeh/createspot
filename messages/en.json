@@ -901,6 +901,16 @@
       "ctaButton": "Explore the collection",
       "subject": "Welcome to {appName}",
       "friend": "friend"
+    },
+    "newPromptNotification": {
+      "subject": "New prompt: {word1} / {word2} / {word3}",
+      "previewText": "This week's creative challenge: {word1} / {word2} / {word3}",
+      "title": "New Prompt Available!",
+      "greeting": "A new creative prompt is ready for you!",
+      "greetingWithName": "Hey {name}, a new creative prompt is ready for you!",
+      "description": "Pick any word that sparks your imagination and create something unique — a photo, artwork, poem, or story. Share your interpretation with the community!",
+      "startCreatingButton": "Start Creating",
+      "learnMore": "Learn more about prompts"
     }
   }
 }

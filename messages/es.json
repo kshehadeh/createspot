@@ -901,6 +901,16 @@
       "ctaButton": "Explorar la colección",
       "subject": "Bienvenido a {appName}",
       "friend": "amigo"
+    },
+    "newPromptNotification": {
+      "subject": "Nueva indicación: {word1} / {word2} / {word3}",
+      "previewText": "El desafío creativo de esta semana: {word1} / {word2} / {word3}",
+      "title": "¡Nueva Indicación Disponible!",
+      "greeting": "¡Una nueva indicación creativa está lista para ti!",
+      "greetingWithName": "Hola {name}, ¡una nueva indicación creativa está lista para ti!",
+      "description": "Elige cualquier palabra que despierte tu imaginación y crea algo único — una foto, obra de arte, poema o historia. ¡Comparte tu interpretación con la comunidad!",
+      "startCreatingButton": "Empezar a Crear",
+      "learnMore": "Más información sobre las indicaciones"
     }
   }
 }
