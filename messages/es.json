@@ -235,7 +235,15 @@
     "deleteTitle": "Eliminar Elemento del Portafolio",
     "deleteMessage": "¿Estás seguro de que quieres eliminar \"{title}\" de tu portafolio? Esta acción no se puede deshacer.",
     "removeFromExhibitTitle": "Quitar de la Exposición",
-    "removeFromExhibitMessage": "¿Estás seguro de que quieres quitar \"{title}\" de esta exposición? La publicación permanecerá en el portafolio del creador."
+    "removeFromExhibitMessage": "¿Estás seguro de que quieres quitar \"{title}\" de esta exposición? La publicación permanecerá en el portafolio del creador.",
+    "shareStatus": {
+      "private": "Privado",
+      "profile": "Solo Perfil",
+      "public": "Público"
+    },
+    "filterByAccessLevel": "Filtrar por nivel de acceso...",
+    "filterByTags": "Filtrar por etiquetas...",
+    "clearFilters": "Limpiar"
   },
   "admin": {
     "dashboard": {

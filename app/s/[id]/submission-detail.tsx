@@ -47,12 +47,14 @@ interface SubmissionDetailProps {
   };
   isLoggedIn: boolean;
   isOwner?: boolean;
+  currentUserId?: string | null;
 }
 
 export function SubmissionDetail({
   submission: initialSubmission,
   isLoggedIn,
   isOwner = false,
+  currentUserId,
 }: SubmissionDetailProps) {
   const tCategories = useTranslations("categories");
   const tExhibition = useTranslations("exhibition");
@@ -264,6 +266,7 @@ export function SubmissionDetail({
           onClose={() => setIsLightboxOpen(false)}
           isOpen={isLightboxOpen}
           hideGoToSubmission={true}
+          currentUserId={currentUserId}
         />
       )}
 

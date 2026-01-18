@@ -147,6 +147,7 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
       }}
       isLoggedIn={!!session?.user}
       isOwner={isOwner}
+      currentUserId={session?.user?.id}
     />
   );
 }

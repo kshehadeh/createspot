@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
     const finalShareStatus =
       shareStatus && validShareStatuses.includes(shareStatus)
         ? shareStatus
-        : "PUBLIC";
+        : "PRIVATE";
 
     const submission = await prisma.submission.create({
       data: {

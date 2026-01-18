@@ -18,8 +18,8 @@ import { ExhibitViewSelector } from "@/components/exhibit-view-selector";
 interface GalleryContentProps {
   exhibitId?: string;
   searchParams: {
-    category?: string;
-    tag?: string;
+    category?: string | string[];
+    tag?: string | string[];
     q?: string;
   };
 }
@@ -30,23 +30,39 @@ export async function GalleryContent({
 }: GalleryContentProps) {
   const session = await auth();
 
-  const category = searchParams.category?.trim() || "";
-  const tag = searchParams.tag?.trim() || "";
+  // Normalize category to array - support both single string and array
+  const categoryParam = searchParams.category;
+  const categories = Array.isArray(categoryParam)
+    ? categoryParam.filter((c) => c?.trim()).map((c) => c.trim())
+    : categoryParam?.trim()
+      ? [categoryParam.trim()]
+      : [];
+
+  // Normalize tag to array - support both single string and array
+  const tagParam = searchParams.tag;
+  const tags = Array.isArray(tagParam)
+    ? tagParam.filter((t) => t?.trim()).map((t) => t.trim())
+    : tagParam?.trim()
+      ? [tagParam.trim()]
+      : [];
   const query = searchParams.q?.trim() || "";
 
-  const [{ submissions, hasMore }, { categories, tags }, exhibit] =
-    await Promise.all([
-      getExhibitionSubmissions({
-        category,
-        tag,
-        query,
-        exhibitId,
-        skip: 0,
-        take: EXHIBITION_PAGE_SIZE,
-      }),
-      getExhibitionFacets(exhibitId),
-      exhibitId ? getExhibitById(exhibitId) : Promise.resolve(null),
-    ]);
+  const [
+    { submissions, hasMore },
+    { categories: availableCategories, tags: availableTags },
+    exhibit,
+  ] = await Promise.all([
+    getExhibitionSubmissions({
+      categories,
+      tags,
+      query,
+      exhibitId,
+      skip: 0,
+      take: EXHIBITION_PAGE_SIZE,
+    }),
+    getExhibitionFacets(exhibitId),
+    exhibitId ? getExhibitById(exhibitId) : Promise.resolve(null),
+  ]);
 
   const exhibitTitle = exhibit
     ? exhibit.title
@@ -155,11 +171,12 @@ export async function GalleryContent({
         </div>
       </div>
       <ExhibitionFilters
-        categories={categories}
-        tags={tags}
-        initialCategory={category}
-        initialTag={tag}
+        categories={availableCategories}
+        tags={availableTags}
+        initialCategory={categories}
+        initialTag={tags}
         initialQuery={query}
+        exhibitId={exhibitId}
       />
 
       <ExhibitionGrid

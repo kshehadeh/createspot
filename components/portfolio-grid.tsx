@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/tooltip";
 import { getCategoryIcon } from "@/lib/categories";
 import { getObjectPositionStyle } from "@/lib/image-utils";
-import { Pencil, Trash2, Star } from "lucide-react";
+import { Pencil, Trash2, Star, Lock, Eye, Globe } from "lucide-react";
 
 // Prevent right-click context menu on images for download protection
 const handleImageContextMenu = (e: React.MouseEvent) => {
@@ -66,6 +66,7 @@ interface PortfolioItem {
   _count: {
     favorites: number;
   };
+  shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   // For exhibit mode - items can come from different users
   user?: {
     id: string;
@@ -346,6 +347,37 @@ function SortablePortfolioItem({
               />
             </svg>
           </div>
+        )}
+
+        {/* Share status indicator */}
+        {item.shareStatus && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className={`absolute ${
+                  allowEdit ? "top-11 left-2" : "top-2 left-2"
+                } flex h-6 w-6 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {item.shareStatus === "PRIVATE" && (
+                  <Lock className="h-3.5 w-3.5 text-red-400" />
+                )}
+                {item.shareStatus === "PROFILE" && (
+                  <Eye className="h-3.5 w-3.5 text-amber-400" />
+                )}
+                {item.shareStatus === "PUBLIC" && (
+                  <Globe className="h-3.5 w-3.5 text-green-400" />
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {item.shareStatus === "PRIVATE" && t("shareStatus.private")}
+                {item.shareStatus === "PROFILE" && t("shareStatus.profile")}
+                {item.shareStatus === "PUBLIC" && t("shareStatus.public")}
+              </p>
+            </TooltipContent>
+          </Tooltip>
         )}
 
         {/* Overlay information in lower left */}
@@ -680,6 +712,38 @@ function PortfolioGridContent({
                           className="h-full w-full"
                         />
                       ) : null}
+
+                      {/* Share status indicator */}
+                      {item.shareStatus && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              className="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {item.shareStatus === "PRIVATE" && (
+                                <Lock className="h-3.5 w-3.5 text-red-400" />
+                              )}
+                              {item.shareStatus === "PROFILE" && (
+                                <Eye className="h-3.5 w-3.5 text-amber-400" />
+                              )}
+                              {item.shareStatus === "PUBLIC" && (
+                                <Globe className="h-3.5 w-3.5 text-green-400" />
+                              )}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {item.shareStatus === "PRIVATE" &&
+                                t("shareStatus.private")}
+                              {item.shareStatus === "PROFILE" &&
+                                t("shareStatus.profile")}
+                              {item.shareStatus === "PUBLIC" &&
+                                t("shareStatus.public")}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
 
                       {/* Overlay information in lower left */}
                       <div className="absolute bottom-0 left-0 max-w-[85%] bg-black/70 p-2.5 pr-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

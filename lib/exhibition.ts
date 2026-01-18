@@ -4,8 +4,10 @@ import { prisma } from "./prisma";
 import { EXHIBITION_PAGE_SIZE } from "./exhibition-constants";
 
 export interface ExhibitionFilterInput {
-  category?: string;
-  tag?: string;
+  category?: string; // Deprecated: use categories instead
+  categories?: string[];
+  tag?: string; // Deprecated: use tags instead
+  tags?: string[];
   query?: string;
   exhibitId?: string;
   userId?: string;
@@ -13,7 +15,9 @@ export interface ExhibitionFilterInput {
 
 function buildExhibitionWhere({
   category,
+  categories,
   tag,
+  tags,
   query,
   exhibitId,
   userId,
@@ -43,12 +47,21 @@ function buildExhibitionWhere({
     filters.push({ userId });
   }
 
-  if (category) {
-    filters.push({ category });
+  // Support both single category (for backward compatibility) and multiple categories
+  const categoryList =
+    categories && categories.length > 0
+      ? categories
+      : category
+        ? [category]
+        : [];
+  if (categoryList.length > 0) {
+    filters.push({ category: { in: categoryList } });
   }
 
-  if (tag) {
-    filters.push({ tags: { has: tag } });
+  // Support both single tag (for backward compatibility) and multiple tags
+  const tagList = tags && tags.length > 0 ? tags : tag ? [tag] : [];
+  if (tagList.length > 0) {
+    filters.push({ tags: { hasSome: tagList } });
   }
 
   if (query) {
@@ -83,7 +96,9 @@ const submissionInclude = {
 
 export async function getExhibitionSubmissions({
   category,
+  categories,
   tag,
+  tags,
   query,
   exhibitId,
   userId,
@@ -96,7 +111,9 @@ export async function getExhibitionSubmissions({
   // If exhibitId is provided, we need to order by exhibit submission order
   const whereClause = buildExhibitionWhere({
     category,
+    categories,
     tag,
+    tags,
     query,
     exhibitId,
     userId,
@@ -130,7 +147,9 @@ export async function getExhibitionSubmissions({
     // Build where clause without the exhibitId filter (we're already filtering by IDs)
     const whereClauseWithoutExhibit = buildExhibitionWhere({
       category,
+      categories,
       tag,
+      tags,
       query,
       userId,
     });

@@ -16,7 +16,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Heart, X, ExternalLink, FileText } from "lucide-react";
+import { Heart, X, FileText, Edit, Eye } from "lucide-react";
+import { SubmissionEditModal } from "@/components/submission-edit-modal";
+import { useSession } from "next-auth/react";
 
 interface LightboxSubmission {
   id: string;
@@ -42,6 +44,8 @@ interface SubmissionLightboxProps {
   hideGoToSubmission?: boolean;
   /** Whether to enable download protection. Default: true */
   protectionEnabled?: boolean;
+  /** Current logged-in user ID. If provided, edit button will show for owned submissions. */
+  currentUserId?: string | null;
 }
 
 export function SubmissionLightbox({
@@ -50,8 +54,12 @@ export function SubmissionLightbox({
   isOpen,
   hideGoToSubmission = false,
   protectionEnabled = true,
+  currentUserId: propCurrentUserId,
 }: SubmissionLightboxProps) {
   const t = useTranslations("exhibition");
+  const { data: session } = useSession();
+  // Use session user ID if available, otherwise fall back to prop
+  const currentUserId = session?.user?.id || propCurrentUserId;
   const [zoomState, setZoomState] = useState<{
     isActive: boolean;
     x: number;
@@ -63,11 +71,26 @@ export function SubmissionLightbox({
   const [isTextOverlayOpen, setIsTextOverlayOpen] = useState(false);
   const [closeTooltipOpen, setCloseTooltipOpen] = useState(false);
   const [closeTooltipHovered, setCloseTooltipHovered] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [submissionData, setSubmissionData] = useState<{
+    id: string;
+    title: string | null;
+    imageUrl: string | null;
+    imageFocalPoint?: { x: number; y: number } | null;
+    text: string | null;
+    tags: string[];
+    category: string | null;
+    shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
+  } | null>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
+  const isOwner =
+    !!currentUserId &&
+    !!submission.user?.id &&
+    currentUserId === submission.user.id;
 
   // Get favorite count - handle both _count and direct favoriteCount
   const favoriteCount =
@@ -100,6 +123,29 @@ export function SubmissionLightbox({
       setCloseTooltipOpen(false);
     }
   }, [closeTooltipHovered]);
+
+  // Fetch submission data when opening edit modal
+  const handleEditClick = async () => {
+    try {
+      const response = await fetch(`/api/submissions/${submission.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSubmissionData({
+          id: data.submission.id,
+          title: data.submission.title,
+          imageUrl: data.submission.imageUrl,
+          imageFocalPoint: data.submission.imageFocalPoint,
+          text: data.submission.text,
+          tags: data.submission.tags || [],
+          category: data.submission.category,
+          shareStatus: data.submission.shareStatus,
+        });
+        setIsEditModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch submission data:", error);
+    }
+  };
 
   const handleImageMouseMove = useCallback(
     (e: React.MouseEvent<HTMLImageElement>) => {
@@ -284,6 +330,7 @@ export function SubmissionLightbox({
       <DialogContent
         className="w-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden overflow-hidden"
         style={{ height: "100dvh", minHeight: "100vh" }}
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <VisuallyHidden>
           <DialogTitle>
@@ -500,6 +547,53 @@ export function SubmissionLightbox({
               </Tooltip>
             )}
 
+            {/* Edit button - shown if user owns the submission */}
+            {isOwner && (
+              <>
+                {/* Full button on xl+ */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditClick();
+                      }}
+                      className="hidden xl:flex"
+                      aria-label="Edit submission"
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span>Edit</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Edit submission</p>
+                  </TooltipContent>
+                </Tooltip>
+                {/* Icon button on < xl */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditClick();
+                      }}
+                      className="xl:hidden"
+                      aria-label="Edit submission"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Edit submission</p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
+
             {/* View Submission button */}
             {!hideGoToSubmission && (
               <>
@@ -516,7 +610,8 @@ export function SubmissionLightbox({
                         href={`/s/${submission.id}`}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        View Submission
+                        <Eye className="h-4 w-4" />
+                        <span>View</span>
                       </Link>
                     </Button>
                   </TooltipTrigger>
@@ -538,7 +633,7 @@ export function SubmissionLightbox({
                         href={`/s/${submission.id}`}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <ExternalLink className="h-4 w-4" />
+                        <Eye className="h-4 w-4" />
                       </Link>
                     </Button>
                   </TooltipTrigger>
@@ -554,14 +649,14 @@ export function SubmissionLightbox({
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={onClose}
                   onMouseEnter={() => setCloseTooltipHovered(true)}
                   onMouseLeave={() => setCloseTooltipHovered(false)}
-                  className="xl:gap-2"
+                  className="xl:h-9 xl:w-auto xl:px-3 xl:gap-2"
                   aria-label="Close"
                 >
-                  <X className="h-4 w-4 xl:hidden" />
+                  <X className="h-4 w-4" />
                   <span className="hidden xl:inline">Close</span>
                 </Button>
               </TooltipTrigger>
@@ -602,6 +697,23 @@ export function SubmissionLightbox({
               </Button>
             </div>
           </div>
+        )}
+
+        {/* Edit Modal */}
+        {submissionData && (
+          <SubmissionEditModal
+            isOpen={isEditModalOpen}
+            onClose={() => {
+              setIsEditModalOpen(false);
+              setSubmissionData(null);
+            }}
+            initialData={submissionData}
+            onSuccess={() => {
+              // Refresh the page to show updated data
+              window.location.reload();
+            }}
+            mode="edit"
+          />
         )}
       </DialogContent>
     </Dialog>

@@ -69,7 +69,7 @@ export function PortfolioItemForm({
   const [category, setCategory] = useState(initialData?.category || "");
   const [shareStatus, setShareStatus] = useState<
     "PRIVATE" | "PROFILE" | "PUBLIC"
-  >(initialData?.shareStatus || "PUBLIC");
+  >(initialData?.shareStatus || "PRIVATE");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

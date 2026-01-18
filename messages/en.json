@@ -235,7 +235,15 @@
     "deleteTitle": "Delete Portfolio Item",
     "deleteMessage": "Are you sure you want to delete \"{title}\" from your portfolio? This action cannot be undone.",
     "removeFromExhibitTitle": "Remove from Exhibit",
-    "removeFromExhibitMessage": "Are you sure you want to remove \"{title}\" from this exhibit? The submission will remain in the creator's portfolio."
+    "removeFromExhibitMessage": "Are you sure you want to remove \"{title}\" from this exhibit? The submission will remain in the creator's portfolio.",
+    "shareStatus": {
+      "private": "Private",
+      "profile": "Profile Only",
+      "public": "Public"
+    },
+    "filterByAccessLevel": "Filter by access level...",
+    "filterByTags": "Filter by tags...",
+    "clearFilters": "Clear"
   },
   "admin": {
     "dashboard": {

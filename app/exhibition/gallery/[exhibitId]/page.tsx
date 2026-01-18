@@ -65,12 +65,20 @@ export default async function GalleryExhibitPage({
     notFound();
   }
 
-  const category = Array.isArray(paramsSearch.category)
-    ? paramsSearch.category[0]
-    : paramsSearch.category;
-  const tag = Array.isArray(paramsSearch.tag)
-    ? paramsSearch.tag[0]
-    : paramsSearch.tag;
+  // Support multiple categories - normalize to array
+  const categoryParam = paramsSearch.category;
+  const categories = Array.isArray(categoryParam)
+    ? categoryParam.filter((c) => c?.trim()).map((c) => c.trim())
+    : categoryParam?.trim()
+      ? [categoryParam.trim()]
+      : [];
+  // Support multiple tags - normalize to array
+  const tagParam = paramsSearch.tag;
+  const tags = Array.isArray(tagParam)
+    ? tagParam.filter((t) => t?.trim()).map((t) => t.trim())
+    : tagParam?.trim()
+      ? [tagParam.trim()]
+      : [];
   const query = Array.isArray(paramsSearch.q)
     ? paramsSearch.q[0]
     : paramsSearch.q;
@@ -79,8 +87,8 @@ export default async function GalleryExhibitPage({
     <GalleryContent
       exhibitId={exhibitId}
       searchParams={{
-        category: category?.trim() || "",
-        tag: tag?.trim() || "",
+        category: categories.length > 0 ? categories : undefined,
+        tag: tags.length > 0 ? tags : undefined,
         q: query?.trim() || "",
       }}
     />

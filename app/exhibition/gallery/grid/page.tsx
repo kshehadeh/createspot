@@ -39,14 +39,30 @@ export default async function GridExhibitionPage({
   if (exhibitId) {
     // Build redirect URL with filter params preserved
     const filterParams = new URLSearchParams();
-    const category = Array.isArray(params.category)
-      ? params.category[0]
-      : params.category;
-    const tag = Array.isArray(params.tag) ? params.tag[0] : params.tag;
+    // Support multiple categories for redirect
+    const categoryParam = params.category;
+    const categories = Array.isArray(categoryParam)
+      ? categoryParam.filter((c) => c?.trim()).map((c) => c.trim())
+      : categoryParam?.trim()
+        ? [categoryParam.trim()]
+        : [];
+    // Support multiple tags for redirect
+    const tagParam = params.tag;
+    const tags = Array.isArray(tagParam)
+      ? tagParam.filter((t) => t?.trim()).map((t) => t.trim())
+      : tagParam?.trim()
+        ? [tagParam.trim()]
+        : [];
     const query = Array.isArray(params.q) ? params.q[0] : params.q;
 
-    if (category?.trim()) filterParams.set("category", category.trim());
-    if (tag?.trim()) filterParams.set("tag", tag.trim());
+    // Preserve all categories in redirect
+    categories.forEach((category) => {
+      filterParams.append("category", category);
+    });
+    // Preserve all tags in redirect
+    tags.forEach((tag) => {
+      filterParams.append("tag", tag);
+    });
     if (query?.trim()) filterParams.set("q", query.trim());
 
     const queryString = filterParams.toString();
@@ -57,18 +73,28 @@ export default async function GridExhibitionPage({
     redirect(redirectUrl);
   }
 
-  const category = Array.isArray(params.category)
-    ? params.category[0]
-    : params.category;
-  const tag = Array.isArray(params.tag) ? params.tag[0] : params.tag;
+  // Support multiple categories - normalize to array
+  const categoryParam = params.category;
+  const categories = Array.isArray(categoryParam)
+    ? categoryParam.filter((c) => c?.trim()).map((c) => c.trim())
+    : categoryParam?.trim()
+      ? [categoryParam.trim()]
+      : [];
+  // Support multiple tags - normalize to array
+  const tagParam = params.tag;
+  const tags = Array.isArray(tagParam)
+    ? tagParam.filter((t) => t?.trim()).map((t) => t.trim())
+    : tagParam?.trim()
+      ? [tagParam.trim()]
+      : [];
   const query = Array.isArray(params.q) ? params.q[0] : params.q;
 
   return (
     <GalleryContent
       exhibitId={undefined}
       searchParams={{
-        category: category?.trim() || "",
-        tag: tag?.trim() || "",
+        category: categories.length > 0 ? categories : undefined,
+        tag: tags.length > 0 ? tags : undefined,
         q: query?.trim() || "",
       }}
     />

@@ -13,9 +13,21 @@ function normalizeParam(value: string | null): string | undefined {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
+  // Support multiple tags - get all tag params
+  const tagParams = searchParams.getAll("tag");
+  const tags = tagParams
+    .map((t) => t?.trim())
+    .filter((t): t is string => Boolean(t));
+
+  // Support multiple categories - get all category params
+  const categoryParams = searchParams.getAll("category");
+  const categories = categoryParams
+    .map((c) => c?.trim())
+    .filter((c): c is string => Boolean(c));
+
   const filters: ExhibitionFilterInput = {
-    category: normalizeParam(searchParams.get("category")),
-    tag: normalizeParam(searchParams.get("tag")),
+    categories: categories.length > 0 ? categories : undefined,
+    tags: tags.length > 0 ? tags : undefined,
     query: normalizeParam(searchParams.get("q")),
     userId: normalizeParam(searchParams.get("userId")),
   };
