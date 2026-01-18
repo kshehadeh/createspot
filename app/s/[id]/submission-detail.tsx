@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { ExpandableText } from "@/components/expandable-text";
 import { SubmissionImage } from "@/components/submission-image";
 import { ShareButton } from "@/components/share-button";
@@ -66,6 +67,9 @@ export function SubmissionDetail({
 
   // Local state for submission data that can be updated after editing
   const [submission, setSubmission] = useState(initialSubmission);
+
+  // Track view when component mounts (only if not the owner)
+  useTrackSubmissionView(submission.id, isOwner);
 
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;

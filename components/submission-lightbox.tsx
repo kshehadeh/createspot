@@ -19,6 +19,7 @@ import {
 import { Heart, X, FileText, Edit, Eye } from "lucide-react";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { useSession } from "next-auth/react";
+import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 
 interface LightboxSubmission {
   id: string;
@@ -123,6 +124,9 @@ export function SubmissionLightbox({
       setCloseTooltipOpen(false);
     }
   }, [closeTooltipHovered]);
+
+  // Track view when lightbox opens (only if not the owner)
+  useTrackSubmissionView(submission.id, isOwner, isOpen);
 
   // Fetch submission data when opening edit modal
   const handleEditClick = async () => {

@@ -49,26 +49,39 @@ export default async function PortfolioEditPage() {
     take: 100,
   });
 
-  // Fetch portfolio items
-  const portfolioItems = await prisma.submission.findMany({
-    where: {
-      userId: session.user.id,
-      isPortfolio: true,
-    },
-    orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
+  // Fetch portfolio items with pagination (initial 50 items)
+  const PAGE_SIZE = 50;
+  const [portfolioItems, totalPortfolioCount] = await Promise.all([
+    prisma.submission.findMany({
+      where: {
+        userId: session.user.id,
+        isPortfolio: true,
+      },
+      orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
+      take: PAGE_SIZE,
+      include: {
+        prompt: {
+          select: {
+            word1: true,
+            word2: true,
+            word3: true,
+          },
+        },
+        _count: {
+          select: {
+            favorites: true,
+            views: true,
+          },
         },
       },
-      _count: {
-        select: { favorites: true },
+    }),
+    prisma.submission.count({
+      where: {
+        userId: session.user.id,
+        isPortfolio: true,
       },
-    },
-  });
+    }),
+  ]);
 
   return (
     <PageLayout maxWidth="max-w-5xl" className="w-full">
@@ -135,9 +148,11 @@ export default async function PortfolioEditPage() {
             : null,
           _count: {
             favorites: p._count.favorites,
+            views: p._count.views,
           },
           shareStatus: p.shareStatus,
         }))}
+        totalPortfolioCount={totalPortfolioCount}
       />
     </PageLayout>
   );

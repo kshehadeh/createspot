@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { TextThumbnail } from "@/components/text-thumbnail";
-import { PortfolioGrid } from "@/components/portfolio-grid";
+import { PortfolioListEditor } from "@/components/portfolio-list-editor";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { Button } from "@/components/ui/button";
 import { getObjectPositionStyle } from "@/lib/image-utils";
@@ -47,6 +47,7 @@ interface PortfolioItem {
   } | null;
   _count: {
     favorites: number;
+    views: number;
   };
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
 }
@@ -55,12 +56,14 @@ interface PortfolioEditFormProps {
   submissions: SubmissionOption[];
   portfolioItems: PortfolioItem[];
   featuredSubmissionId?: string | null;
+  totalPortfolioCount: number;
 }
 
 export function PortfolioEditForm({
   submissions,
   portfolioItems: initialPortfolioItems,
   featuredSubmissionId: initialFeaturedSubmissionId,
+  totalPortfolioCount,
 }: PortfolioEditFormProps) {
   const router = useRouter();
   const t = useTranslations("portfolio");
@@ -79,10 +82,17 @@ export function PortfolioEditForm({
     useState<SubmissionOption | null>(null);
   const [creatingPortfolioItem, setCreatingPortfolioItem] = useState(false);
 
+  // Pagination state
+  const [hasMore, setHasMore] = useState(
+    initialPortfolioItems.length < totalPortfolioCount,
+  );
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   // Sync portfolio items state when initialPortfolioItems prop changes (e.g., after router.refresh())
   useEffect(() => {
     setPortfolioItems(initialPortfolioItems);
-  }, [initialPortfolioItems]);
+    setHasMore(initialPortfolioItems.length < totalPortfolioCount);
+  }, [initialPortfolioItems, totalPortfolioCount]);
 
   const handleDeletePortfolioItem = async (item: PortfolioItem) => {
     try {
@@ -105,9 +115,61 @@ export function PortfolioEditForm({
     setEditingItem(item);
   };
 
-  const handleDeletePortfolioItemFromGrid = async (item: PortfolioItem) => {
-    await handleDeletePortfolioItem(item);
-  };
+  const handleLoadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      const response = await fetch(
+        `/api/portfolio/items?skip=${portfolioItems.length}&take=50`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to load more items");
+      }
+
+      const data = await response.json();
+      setPortfolioItems((prev) => [...prev, ...data.items]);
+      setHasMore(data.hasMore);
+    } catch (err) {
+      console.error("Failed to load more items:", err);
+      setError(t("loadMoreError"));
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [isLoadingMore, hasMore, portfolioItems.length, t]);
+
+  const handleReorder = useCallback(async (newItems: PortfolioItem[]) => {
+    const response = await fetch("/api/submissions/reorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        submissionIds: newItems.map((item) => item.id),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save order");
+    }
+  }, []);
+
+  const handleBulkDelete = useCallback(
+    async (ids: string[]) => {
+      const deletePromises = ids.map((id) =>
+        fetch(`/api/submissions/${id}`, { method: "DELETE" }),
+      );
+
+      const results = await Promise.all(deletePromises);
+      const failedCount = results.filter((r) => !r.ok).length;
+
+      if (failedCount > 0) {
+        setError(t("bulkDeletePartialError", { count: failedCount }));
+      }
+
+      router.refresh();
+    },
+    [router, t],
+  );
 
   const handleSetFeatured = async (item: PortfolioItem) => {
     try {
@@ -177,24 +239,21 @@ export function PortfolioEditForm({
           {t("addNewItem")}
         </Button>
 
-        {/* Portfolio Items Grid */}
+        {/* Portfolio Items List */}
         {portfolioItems.length > 0 && (
-          <div>
-            <h3 className="mb-4 text-sm font-medium text-foreground">
-              {t("yourPortfolioItems", { count: portfolioItems.length })}
-            </h3>
-            <PortfolioGrid
-              items={portfolioItems}
-              isLoggedIn={true}
-              isOwnProfile={true}
-              showPromptBadge={true}
-              allowEdit={true}
-              onEdit={handleEditPortfolioItem}
-              onDelete={handleDeletePortfolioItemFromGrid}
-              featuredSubmissionId={featuredSubmissionId}
-              onSetFeatured={handleSetFeatured}
-            />
-          </div>
+          <PortfolioListEditor
+            items={portfolioItems}
+            totalCount={totalPortfolioCount}
+            hasMore={hasMore}
+            isLoadingMore={isLoadingMore}
+            onLoadMore={handleLoadMore}
+            onEdit={handleEditPortfolioItem}
+            onDelete={handleDeletePortfolioItem}
+            onReorder={handleReorder}
+            featuredSubmissionId={featuredSubmissionId}
+            onSetFeatured={handleSetFeatured}
+            onBulkDelete={handleBulkDelete}
+          />
         )}
 
         {/* Add from Prompt Submissions */}
@@ -360,7 +419,7 @@ export function PortfolioEditForm({
                   promptId: null,
                   wordIndex: addingToPortfolio.wordIndex,
                   prompt: addingToPortfolio.prompt,
-                  _count: { favorites: 0 },
+                  _count: { favorites: 0, views: 0 },
                   shareStatus: updatedData.shareStatus,
                 },
               ]);
