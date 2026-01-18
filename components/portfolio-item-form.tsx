@@ -25,7 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, getCategoryIcon } from "@/lib/categories";
 
 interface SubmissionData {
   id: string;
@@ -204,6 +204,11 @@ export function PortfolioItemForm({
 
     if (!imageUrl && !text) {
       setError(t("errors.addImageOrText"));
+      return;
+    }
+
+    if (!category) {
+      setError(t("errors.categoryRequired"));
       return;
     }
 
@@ -470,11 +475,17 @@ export function PortfolioItemForm({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__none__">{t("categoryNone")}</SelectItem>
-            {CATEGORIES.map((cat) => (
-              <SelectItem key={cat} value={cat}>
-                {tCategories(cat)}
-              </SelectItem>
-            ))}
+            {CATEGORIES.map((cat) => {
+              const IconComponent = getCategoryIcon(cat);
+              return (
+                <SelectItem key={cat} value={cat}>
+                  <div className="flex items-center gap-2">
+                    {IconComponent && <IconComponent className="h-4 w-4" />}
+                    {tCategories(cat)}
+                  </div>
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>

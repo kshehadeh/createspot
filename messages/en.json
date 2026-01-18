@@ -797,7 +797,8 @@
         "uploadFailed": "Failed to upload image. Please try again.",
         "createFailed": "Failed to create portfolio item",
         "updateFailed": "Failed to update portfolio item",
-        "saveFailed": "Failed to save portfolio item. Please try again."
+        "saveFailed": "Failed to save portfolio item. Please try again.",
+        "categoryRequired": "Please select a category"
       }
     }
   },

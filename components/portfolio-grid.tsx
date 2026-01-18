@@ -253,6 +253,7 @@ interface SortablePortfolioItemProps {
   showPromptBadge: boolean;
   allowEdit: boolean;
   isDragging?: boolean;
+  isOwnProfile?: boolean;
   mode?: "portfolio" | "exhibit";
   onEdit?: (item: PortfolioItem) => void;
   onDeleteClick: (e: React.MouseEvent, item: PortfolioItem) => void;
@@ -266,6 +267,7 @@ function SortablePortfolioItem({
   isLoggedIn,
   allowEdit,
   isDragging,
+  isOwnProfile = false,
   mode = "portfolio",
   onEdit,
   onDeleteClick,
@@ -349,8 +351,8 @@ function SortablePortfolioItem({
           </div>
         )}
 
-        {/* Share status indicator */}
-        {item.shareStatus && (
+        {/* Share status indicator - only show when owner is viewing */}
+        {item.shareStatus && isOwnProfile && (
           <Tooltip>
             <TooltipTrigger asChild>
               <div
@@ -403,7 +405,7 @@ function SortablePortfolioItem({
         })()}
 
         {/* Favorite button in top right */}
-        {isLoggedIn && (
+        {isLoggedIn && !isOwnProfile && (
           <div
             className="absolute top-2 right-2"
             onClick={(e) => e.stopPropagation()}
@@ -660,6 +662,7 @@ function PortfolioGridContent({
                   showPromptBadge={showPromptBadge}
                   allowEdit={allowEdit}
                   isDragging={activeId === item.id}
+                  isOwnProfile={isOwnProfile}
                   mode={mode}
                   onEdit={onEdit}
                   onDeleteClick={handleDeleteClick}
@@ -713,8 +716,8 @@ function PortfolioGridContent({
                         />
                       ) : null}
 
-                      {/* Share status indicator */}
-                      {item.shareStatus && (
+                      {/* Share status indicator - only show when owner is viewing */}
+                      {item.shareStatus && isOwnProfile && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div
@@ -763,7 +766,7 @@ function PortfolioGridContent({
                       })()}
 
                       {/* Favorite button in top right */}
-                      {isLoggedIn && (
+                      {isLoggedIn && !isOwnProfile && (
                         <div
                           className="absolute top-2 right-2"
                           onClick={(e) => e.stopPropagation()}

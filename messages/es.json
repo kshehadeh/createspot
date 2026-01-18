@@ -797,7 +797,8 @@
         "uploadFailed": "Error al subir la imagen. Por favor, inténtalo de nuevo.",
         "createFailed": "Error al crear el elemento del portafolio",
         "updateFailed": "Error al actualizar el elemento del portafolio",
-        "saveFailed": "Error al guardar el elemento del portafolio. Por favor, inténtalo de nuevo."
+        "saveFailed": "Error al guardar el elemento del portafolio. Por favor, inténtalo de nuevo.",
+        "categoryRequired": "Por favor selecciona una categoría"
       }
     }
   },
