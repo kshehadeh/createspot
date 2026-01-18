@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -289,101 +290,122 @@ export default async function ProfilePage({
         </div>
       )}
 
-      {!effectiveIsOwnProfile && featuredSubmission?.imageUrl ? (
-        <div className="mb-8 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-12 bg-muted overflow-hidden">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url(${featuredSubmission.imageUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: getObjectPositionStyle(
-                featuredSubmission.imageFocalPoint as {
-                  x: number;
-                  y: number;
-                } | null,
-              ),
-            }}
-          />
-          {/* Semi-opaque overlay for public view with featured image */}
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
-
-          <div className="relative flex flex-col gap-3 p-6 max-w-5xl mx-auto md:flex-row md:items-start md:justify-between md:gap-4">
-            <div className="flex items-center gap-4 min-w-0 flex-1">
-              {(() => {
-                const displayImage = getUserImageUrl(
-                  user.profileImageUrl,
-                  user.image,
-                );
-                return displayImage ? (
-                  <ProfileImageViewer
-                    profileImageUrl={user.profileImageUrl}
-                    oauthImage={user.image}
-                    profileImageFocalPoint={
-                      user.profileImageFocalPoint as {
-                        x: number;
-                        y: number;
-                      } | null
-                    }
-                    name={user.name}
-                    className="h-12 w-12 rounded-full md:h-16 md:w-16 ring-2 ring-background/50 object-cover shrink-0"
+      {!effectiveIsOwnProfile &&
+      featuredSubmission &&
+      (featuredSubmission.imageUrl || featuredSubmission.text) ? (
+        <div className="mb-8 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-12 bg-muted overflow-hidden min-h-[60vh] flex flex-col">
+          {/* Hero Image/Background */}
+          <div className="absolute inset-0">
+            {featuredSubmission.imageUrl ? (
+              <Image
+                src={featuredSubmission.imageUrl}
+                alt={featuredSubmission.title || "Featured submission"}
+                fill
+                className="object-cover"
+                sizes="100vw"
+                style={{
+                  objectPosition: getObjectPositionStyle(
+                    featuredSubmission.imageFocalPoint as {
+                      x: number;
+                      y: number;
+                    } | null,
+                  ),
+                }}
+              />
+            ) : featuredSubmission.text ? (
+              <div className="relative h-full w-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                <div className="absolute inset-0 p-8 md:p-12 lg:p-16 pb-32 overflow-hidden">
+                  <div
+                    className="text-4xl font-serif leading-relaxed text-zinc-600 dark:text-zinc-400"
+                    dangerouslySetInnerHTML={{
+                      __html: featuredSubmission.text,
+                    }}
                   />
-                ) : (
-                  <div className="h-12 w-12 flex items-center justify-center rounded-full bg-muted md:h-16 md:w-16 ring-2 ring-background/50 shrink-0">
-                    <span className="text-xl font-medium text-muted-foreground md:text-2xl">
-                      {user.name?.charAt(0) || "?"}
-                    </span>
-                  </div>
-                );
-              })()}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-2xl font-semibold text-foreground truncate drop-shadow-sm">
-                    {user.name || t("anonymous")}
-                  </h1>
-                  <ProfileShareButton userId={user.id} />
                 </div>
-                <div className="flex items-center gap-3">
-                  <p className="text-sm text-foreground/90 drop-shadow-sm">
-                    {submissionCount}{" "}
-                    {submissionCount !== 1 ? t("works") : t("work")}
-                  </p>
-                  {hasSocialLinks && (
-                    <SocialLinks
-                      instagram={user.instagram}
-                      twitter={user.twitter}
-                      linkedin={user.linkedin}
-                      website={user.website}
-                      variant="minimal"
-                    />
-                  )}
+                {/* Gradient fade at bottom - stays within text area, doesn't overlap profile info */}
+                <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-zinc-100 via-zinc-100/80 to-transparent dark:from-zinc-800 dark:via-zinc-800/80 pointer-events-none" />
+              </div>
+            ) : null}
+          </div>
+
+          {/* Profile Info Overlay - Bottom */}
+          <div className="relative mt-auto z-20">
+            <div className="bg-background/80 backdrop-blur-sm px-6 py-4 max-w-5xl mx-auto w-full">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
+                <div className="flex items-center gap-4 min-w-0 flex-1">
+                  {(() => {
+                    const displayImage = getUserImageUrl(
+                      user.profileImageUrl,
+                      user.image,
+                    );
+                    return displayImage ? (
+                      <ProfileImageViewer
+                        profileImageUrl={user.profileImageUrl}
+                        oauthImage={user.image}
+                        profileImageFocalPoint={
+                          user.profileImageFocalPoint as {
+                            x: number;
+                            y: number;
+                          } | null
+                        }
+                        name={user.name}
+                        className="h-12 w-12 rounded-full md:h-16 md:w-16 ring-2 ring-background/50 object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 flex items-center justify-center rounded-full bg-muted md:h-16 md:w-16 ring-2 ring-background/50 shrink-0">
+                        <span className="text-xl font-medium text-muted-foreground md:text-2xl">
+                          {user.name?.charAt(0) || "?"}
+                        </span>
+                      </div>
+                    );
+                  })()}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h1 className="text-2xl font-semibold text-foreground truncate">
+                        {user.name || t("anonymous")}
+                      </h1>
+                      <ProfileShareButton userId={user.id} />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <p className="text-sm text-foreground/90">
+                        {submissionCount}{" "}
+                        {submissionCount !== 1 ? t("works") : t("work")}
+                      </p>
+                      {hasSocialLinks && (
+                        <SocialLinks
+                          instagram={user.instagram}
+                          twitter={user.twitter}
+                          linkedin={user.linkedin}
+                          website={user.website}
+                          variant="minimal"
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {user.bio && (
+                <div className="mt-4">
+                  <ExpandableBio
+                    html={user.bio}
+                    className="text-foreground/90"
+                  />
+                </div>
+              )}
             </div>
-            {isOwnProfile && !isPublicView && (
-              <div className="flex flex-row flex-wrap items-end justify-end gap-2 md:shrink-0">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/profile/${user.id}?view=public`}>
-                    <Eye className="h-4 w-4" />
-                    <span className="hidden md:inline">
-                      {t("viewAsAnonymous")}
-                    </span>
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/profile/edit">
-                    <Pencil className="h-4 w-4" />
-                    <span className="hidden md:inline">{t("editProfile")}</span>
-                  </Link>
-                </Button>
+
+            {/* Submission Details Overlay - Very Bottom */}
+            {featuredSubmission.title && (
+              <div className="bg-background/80 backdrop-blur-sm px-6 py-3 border-t border-border/50">
+                <div className="max-w-5xl mx-auto">
+                  <h2 className="text-lg font-semibold text-foreground">
+                    {featuredSubmission.title}
+                  </h2>
+                </div>
               </div>
             )}
           </div>
-
-          {user.bio && (
-            <div className="relative px-6 pb-6 max-w-5xl mx-auto">
-              <ExpandableBio html={user.bio} className="text-foreground/90" />
-            </div>
-          )}
         </div>
       ) : (
         <div className="mb-8 w-full min-w-0">

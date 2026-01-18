@@ -101,7 +101,11 @@ export function FeaturedSubmission({ submission }: FeaturedSubmissionProps) {
           className="group relative aspect-square w-full cursor-pointer overflow-hidden bg-muted"
           onClick={() => setIsLightboxOpen(true)}
         >
-          <TextThumbnail text={submission.text!} className="h-full w-full" />
+          <TextThumbnail
+            text={submission.text!}
+            className="h-full w-full"
+            fadeBottom
+          />
           {/* Hover overlay with creator name and title */}
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <div className="px-4 text-center">
