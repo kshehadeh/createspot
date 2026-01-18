@@ -112,6 +112,7 @@ export async function POST(request: NextRequest) {
     tags,
     category,
     shareStatus,
+    critiquesEnabled,
   } = body;
 
   // Validate focal point if provided
@@ -166,6 +167,7 @@ export async function POST(request: NextRequest) {
         tags: tags || [],
         category: category || null,
         shareStatus: finalShareStatus,
+        critiquesEnabled: critiquesEnabled ?? false,
       },
     });
 
@@ -238,6 +240,8 @@ export async function POST(request: NextRequest) {
       tags: tags ?? existingSubmission?.tags ?? [],
       category: category ?? existingSubmission?.category ?? null,
       shareStatus: "PUBLIC", // Prompt submissions are always public
+      critiquesEnabled:
+        critiquesEnabled ?? existingSubmission?.critiquesEnabled ?? false,
     },
     create: {
       userId: session.user.id,
@@ -251,6 +255,7 @@ export async function POST(request: NextRequest) {
       tags: tags ?? [],
       category: category ?? null,
       shareStatus: "PUBLIC", // Prompt submissions are always public
+      critiquesEnabled: critiquesEnabled ?? false,
     },
   });
 

@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
@@ -36,6 +37,7 @@ interface SubmissionData {
   tags: string[];
   category: string | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled?: boolean;
 }
 
 interface PortfolioItemFormProps {
@@ -55,6 +57,7 @@ export function PortfolioItemForm({
 }: PortfolioItemFormProps) {
   const router = useRouter();
   const t = useTranslations("modals.portfolioItemForm");
+  const tCritique = useTranslations("critique");
   const tCommon = useTranslations("common");
   const tCategories = useTranslations("categories");
   const tUpload = useTranslations("upload");
@@ -80,6 +83,9 @@ export function PortfolioItemForm({
   } | null>(initialData?.imageFocalPoint || null);
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
+  const [critiquesEnabled, setCritiquesEnabled] = useState(
+    initialData?.critiquesEnabled ?? false,
+  );
 
   // Fetch watermark setting on mount
   useEffect(() => {
@@ -233,6 +239,7 @@ export function PortfolioItemForm({
             tags: trimmedTags,
             category: category || null,
             shareStatus,
+            critiquesEnabled,
           }),
         });
 
@@ -251,6 +258,7 @@ export function PortfolioItemForm({
             tags: trimmedTags,
             category: category || null,
             shareStatus,
+            critiquesEnabled,
             ...(setIsPortfolio ? { isPortfolio: true } : {}),
           }),
         });
@@ -272,6 +280,7 @@ export function PortfolioItemForm({
               tags: trimmedTags,
               category: category || null,
               shareStatus,
+              critiquesEnabled,
             }
           : undefined;
         onSuccess(updatedData);
@@ -605,6 +614,24 @@ export function PortfolioItemForm({
               </div>
             </label>
           ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="critiquesEnabled">
+              {tCritique("enableCritiques")}
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              {tCritique("enableCritiquesDescription")}
+            </p>
+          </div>
+          <Switch
+            id="critiquesEnabled"
+            checked={critiquesEnabled}
+            onCheckedChange={setCritiquesEnabled}
+          />
         </div>
       </div>
 

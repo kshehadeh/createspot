@@ -129,6 +129,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     promptId,
     wordIndex,
     shareStatus,
+    critiquesEnabled,
   } = body;
 
   // Validate focal point if provided
@@ -206,6 +207,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   if (category !== undefined) updateData.category = category;
   if (promptId !== undefined) updateData.promptId = promptId;
   if (wordIndex !== undefined) updateData.wordIndex = wordIndex;
+  if (critiquesEnabled !== undefined)
+    updateData.critiquesEnabled = critiquesEnabled;
 
   // Handle shareStatus - if linking to a prompt, force PUBLIC
   if (promptId !== undefined && promptId !== null) {

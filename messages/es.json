@@ -837,6 +837,32 @@
       }
     }
   },
+  "critique": {
+    "enableCritiques": "Habilitar críticas",
+    "enableCritiquesDescription": "Permitir que otros proporcionen comentarios sobre este trabajo",
+    "critiqueButton": "Crítica",
+    "manageCritiques": "Gestionar Críticas",
+    "addCritique": "Añadir Crítica",
+    "editCritique": "Editar Crítica",
+    "deleteCritique": "Eliminar Crítica",
+    "reply": "Responder",
+    "creatorReply": "Respuesta del Creador",
+    "editReply": "Editar Respuesta",
+    "deleteReply": "Eliminar Respuesta",
+    "noCritiques": "Aún no hay críticas",
+    "unseen": "No vista",
+    "seen": "Vista",
+    "cannotEdit": "No se puede editar después de que el creador haya visto esta crítica",
+    "cannotDelete": "No se puede eliminar después de que el creador haya visto esta crítica",
+    "critiquePlaceholder": "Escribe tu crítica...",
+    "responsePlaceholder": "Escribe tu respuesta...",
+    "saving": "Guardando...",
+    "deleting": "Eliminando...",
+    "critiquer": "Crítico",
+    "yourCritiques": "Tus Críticas",
+    "allCritiques": "Todas las Críticas",
+    "deleteCritiqueConfirm": "¿Estás seguro de que quieres eliminar esta crítica? Esta acción no se puede deshacer."
+  },
   "email": {
     "favoriteNotification": {
       "title": "¡Tu trabajo fue adorado!",
@@ -848,6 +874,17 @@
       "someone": "Alguien",
       "previewText": "{favorerName} marcó como favorito {titleDisplay}",
       "subject": "{favorerName} marcó como favorito {titleDisplay}"
+    },
+    "critiqueNotification": {
+      "subject": "{critiquerName} dejó una crítica en {titleDisplay}",
+      "title": "Nueva Crítica Recibida",
+      "message": "{critiquerName} dejó una crítica en {titleDisplay}",
+      "description": "Ve la crítica y responde en tu página de publicación.",
+      "viewWorkButton": "Ver Publicación",
+      "visitProfile": "Visitar el perfil de {critiquerName}",
+      "previewText": "Recibiste una nueva crítica",
+      "yourWork": "tu trabajo",
+      "someone": "Alguien"
     },
     "footer": {
       "receivingReason": "Estás recibiendo este correo porque tienes una cuenta de {appName}.",

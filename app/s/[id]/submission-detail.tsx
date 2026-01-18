@@ -8,6 +8,7 @@ import { ExpandableText } from "@/components/expandable-text";
 import { SubmissionImage } from "@/components/submission-image";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
+import { CritiqueButton } from "@/components/critique-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
@@ -26,6 +27,7 @@ interface SubmissionDetailProps {
     category: string | null;
     tags: string[];
     shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
+    critiquesEnabled?: boolean;
     user: {
       id: string;
       name: string | null;
@@ -159,6 +161,15 @@ export function SubmissionDetail({
                 {isLoggedIn && (
                   <FavoriteButton submissionId={submission.id} size="md" />
                 )}
+                {isLoggedIn && submission.critiquesEnabled && (
+                  <CritiqueButton
+                    submissionId={submission.id}
+                    critiquesEnabled={submission.critiquesEnabled}
+                    isOwner={isOwner}
+                    currentUserId={currentUserId}
+                    submissionTitle={submission.title}
+                  />
+                )}
                 {submission._count.favorites > 0 && (
                   <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                     <svg
@@ -287,6 +298,7 @@ export function SubmissionDetail({
             tags: submission.tags,
             category: submission.category,
             shareStatus: submission.shareStatus,
+            critiquesEnabled: submission.critiquesEnabled,
           }}
           onSuccess={(updatedData) => {
             // Update the local submission state with the new data
@@ -300,6 +312,7 @@ export function SubmissionDetail({
                 tags: updatedData.tags,
                 category: updatedData.category,
                 shareStatus: updatedData.shareStatus,
+                critiquesEnabled: updatedData.critiquesEnabled,
               }));
             }
           }}

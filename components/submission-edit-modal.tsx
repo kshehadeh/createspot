@@ -20,6 +20,7 @@ interface SubmissionData {
   tags: string[];
   category: string | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled?: boolean;
 }
 
 interface SubmissionEditModalProps {

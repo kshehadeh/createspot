@@ -99,6 +99,7 @@ model User {
   submissionViews    SubmissionView[] @relation("SubmissionViews")
   curatedExhibits    Exhibit[]        @relation("CuratedExhibits")
   featuredArtistInExhibits Exhibit[]  @relation("FeaturedArtistInExhibits")
+  critiques          Critique[]       @relation("Critiques")
 }
 
 model Prompt {
@@ -132,6 +133,7 @@ model Submission {
   tags           String[]    @default([])    // Array of tags for portfolio items
   category       String?     // e.g., "Photography", "Writing", "Digital Art"
   shareStatus    ShareStatus @default(PUBLIC) // Visibility: PRIVATE, PROFILE, or PUBLIC
+  critiquesEnabled Boolean   @default(false) // Allow critiques on this submission
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -142,6 +144,7 @@ model Submission {
   featuredBy User?            @relation("FeaturedSubmission")
   exhibitSubmissions ExhibitSubmission[]
   featuredInExhibits Exhibit[] @relation("FeaturedInExhibits")
+  critiques  Critique[]
 
   @@unique([userId, promptId, wordIndex])
   @@index([promptId])
@@ -229,4 +232,22 @@ model ExhibitSubmission {
 
   @@unique([exhibitId, submissionId])
   @@index([exhibitId, order])
+}
+
+model Critique {
+  id           String    @id @default(cuid())
+  submissionId String
+  critiquerId  String    // User who wrote the critique
+  critique     String    @db.Text // HTML text (from RichTextEditor)
+  response     String?   @db.Text // Creator's reply (HTML, nullable, from RichTextEditor)
+  seenAt       DateTime? // When creator viewed the critique (NULL = unseen)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  critiquer  User      @relation("Critiques", fields: [critiquerId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@index([critiquerId])
+  @@index([submissionId, critiquerId])
 }

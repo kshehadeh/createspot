@@ -23,6 +23,7 @@ async function getSubmission(id: string) {
       category: true,
       tags: true,
       shareStatus: true,
+      critiquesEnabled: true,
       userId: true,
       user: {
         select: {
