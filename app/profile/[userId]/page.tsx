@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
+const MAX_PORTFOLIO_ITEMS = 10;
+
 interface ProfilePageProps {
   params: Promise<{ userId: string }>;
   searchParams: Promise<{ view?: string | string[] }>;
@@ -486,9 +488,14 @@ export default async function ProfilePage({
       {(portfolioItems.length > 0 || featuredSubmission) && (
         <div className="mb-12">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-foreground">
-              {t("portfolio")}
-            </h2>
+            <div>
+              <h2 className="text-2xl font-semibold text-foreground">
+                {t("portfolio")}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t("showingTopPortfolioItems", { count: MAX_PORTFOLIO_ITEMS })}
+              </p>
+            </div>
             <div className="flex flex-row flex-wrap items-end justify-end gap-2">
               <Button asChild variant="outline" size="sm">
                 <Link href={`/portfolio/${user.id}`}>
@@ -511,13 +518,15 @@ export default async function ProfilePage({
             </div>
           </div>
           <PortfolioGrid
-            items={allPortfolioItems.map((item) => ({
-              ...item,
-              imageFocalPoint: item.imageFocalPoint as
-                | { x: number; y: number }
-                | null
-                | undefined,
-            }))}
+            items={allPortfolioItems
+              .slice(0, MAX_PORTFOLIO_ITEMS)
+              .map((item) => ({
+                ...item,
+                imageFocalPoint: item.imageFocalPoint as
+                  | { x: number; y: number }
+                  | null
+                  | undefined,
+              }))}
             isLoggedIn={isLoggedIn}
             isOwnProfile={effectiveIsOwnProfile}
             featuredSubmissionId={featuredSubmission?.id}

@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HintPopover } from "@/components/hint-popover";
 import { usePageHints, type HintConfig } from "@/lib/hooks/use-page-hints";
+import { getCategoryIcon } from "@/lib/categories";
 
 interface SubmissionDetailProps {
   submission: {
@@ -63,7 +64,6 @@ export function SubmissionDetail({
   currentUserId,
   tutorialData,
 }: SubmissionDetailProps) {
-  const tCategories = useTranslations("categories");
   const tExhibition = useTranslations("exhibition");
   const tSubmission = useTranslations("submission");
   const tProfile = useTranslations("profile");
@@ -127,17 +127,20 @@ export function SubmissionDetail({
               {/* Title and user name */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2 flex-wrap">
+                  {submission.category &&
+                    (() => {
+                      const CategoryIcon = getCategoryIcon(submission.category);
+                      return CategoryIcon ? (
+                        <CategoryIcon className="h-5 w-5 shrink-0 text-muted-foreground sm:h-6 sm:w-6" />
+                      ) : null;
+                    })()}
                   <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl">
                     {submission.title || tExhibition("untitled")}
-                    {submission.category && (
-                      <span className="ml-2 text-base font-normal text-muted-foreground sm:text-lg">
-                        ({tCategories(submission.category)})
-                      </span>
-                    )}
                   </h1>
                   <ShareButton
                     submissionId={submission.id}
                     title={submission.title}
+                    className="shrink-0"
                   />
                 </div>
                 <div className="flex items-center gap-2">
