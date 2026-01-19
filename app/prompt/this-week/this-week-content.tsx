@@ -71,7 +71,9 @@ export function ThisWeekContent({
         take: `${EXHIBITION_PAGE_SIZE}`,
       });
 
-      const response = await fetch(`/api/prompt/this-week?${params.toString()}`);
+      const response = await fetch(
+        `/api/prompt/this-week?${params.toString()}`,
+      );
 
       if (!response.ok) {
         throw new Error("loadMoreError");
@@ -174,11 +176,13 @@ export function ThisWeekContent({
             </button>
           </div>
         )}
-        {!hasMore && allSubmissions.length > 0 && filteredSubmissions.length === 0 && (
-          <span className="text-muted-foreground">
-            No submissions for this word yet.
-          </span>
-        )}
+        {!hasMore &&
+          allSubmissions.length > 0 &&
+          filteredSubmissions.length === 0 && (
+            <span className="text-muted-foreground">
+              No submissions for this word yet.
+            </span>
+          )}
       </div>
     </div>
   );
