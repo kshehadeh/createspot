@@ -1,5 +1,3 @@
-import { prisma } from "@/lib/prisma";
-
 interface SendBadgeAwardEmailInput {
   userId: string;
   badgeKey: string;
@@ -13,6 +11,7 @@ export async function sendBadgeAwardEmail(
   const { userId, badgeKey, awardId } = input;
 
   const { badgeDefinitionsByKey } = await import("@/lib/badges");
+  const { prisma } = await import("@/lib/prisma");
 
   const badge =
     badgeDefinitionsByKey[badgeKey as keyof typeof badgeDefinitionsByKey];
