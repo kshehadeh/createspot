@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
 import { PageLayout } from "@/components/page-layout";
-import { GalleryGrid } from "./gallery-grid";
+import { ThisWeekContent } from "./this-week-content";
+import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,12 @@ export default async function ThisWeekPage() {
   const t = await getTranslations("prompt.thisWeek");
   const session = await auth();
   const prompt = await getCurrentPrompt();
-  const submissions = prompt ? await getPromptSubmissions(prompt.id) : [];
+  const { submissions, hasMore } = prompt
+    ? await getPromptSubmissions(prompt.id, {
+        skip: 0,
+        take: EXHIBITION_PAGE_SIZE,
+      })
+    : { submissions: [], hasMore: false };
 
   if (!prompt) {
     return (
@@ -51,16 +57,20 @@ export default async function ThisWeekPage() {
       </section>
 
       {submissions.length > 0 ? (
-        <GalleryGrid
-          submissions={submissions.map((s) => ({
+        <ThisWeekContent
+          initialSubmissions={submissions.map((s) => ({
             ...s,
             imageFocalPoint: s.imageFocalPoint as {
               x: number;
               y: number;
             } | null,
+            tags: s.tags || [],
+            category: s.category || null,
           }))}
+          promptId={prompt.id}
           words={[prompt.word1, prompt.word2, prompt.word3]}
           isLoggedIn={!!session?.user}
+          initialHasMore={hasMore}
         />
       ) : (
         <div className="text-center">

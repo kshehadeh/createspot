@@ -39,12 +39,14 @@ interface ExhibitionGridProps {
   submissions: ExhibitionSubmission[];
   isLoggedIn: boolean;
   initialHasMore: boolean;
+  showWordInsteadOfTitle?: boolean;
 }
 
 export function ExhibitionGrid({
   submissions,
   isLoggedIn,
   initialHasMore,
+  showWordInsteadOfTitle = false,
 }: ExhibitionGridProps) {
   const [items, setItems] = useState(submissions);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -108,6 +110,7 @@ export function ExhibitionGrid({
         isLoading={isLoading}
         onLoadMore={loadMore}
         loadError={loadError}
+        showWordInsteadOfTitle={showWordInsteadOfTitle}
       />
     </FavoritesProvider>
   );
@@ -120,6 +123,7 @@ function GridContent({
   isLoading,
   onLoadMore,
   loadError,
+  showWordInsteadOfTitle = false,
 }: Omit<ExhibitionGridProps, "initialHasMore"> & {
   hasMore: boolean;
   isLoading: boolean;
@@ -239,11 +243,13 @@ function GridContent({
                         </svg>
                       </div>
                     )}
-                    {/* Hover overlay with creator name and title */}
+                    {/* Hover overlay with creator name and title/word */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <div className="px-4 text-center">
                         <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
-                          {submission.title || t("untitled")}
+                          {showWordInsteadOfTitle
+                            ? getWord(submission) || t("untitled")
+                            : submission.title || t("untitled")}
                         </h3>
                         <p className="text-sm font-medium text-white/90 drop-shadow-md">
                           {submission.user.name || tProfile("anonymous")}
@@ -268,11 +274,13 @@ function GridContent({
                         />
                       </div>
                     )}
-                    {/* Hover overlay with creator name and title */}
+                    {/* Hover overlay with creator name and title/word */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <div className="px-4 text-center">
                         <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
-                          {submission.title || t("untitled")}
+                          {showWordInsteadOfTitle
+                            ? getWord(submission) || t("untitled")
+                            : submission.title || t("untitled")}
                         </h3>
                         <p className="text-sm font-medium text-white/90 drop-shadow-md">
                           {submission.user.name || tProfile("anonymous")}
