@@ -101,6 +101,7 @@ model User {
   featuredArtistInExhibits Exhibit[]  @relation("FeaturedArtistInExhibits")
   critiques          Critique[]       @relation("Critiques")
   notificationLogs   NotificationLog[] @relation("NotificationLogs")
+  badgeAwards        BadgeAward[]
 }
 
 model Prompt {
@@ -264,4 +265,18 @@ model NotificationLog {
 
   @@index([type, sentAt])
   @@index([userId])
+}
+
+model BadgeAward {
+  id         String   @id @default(cuid())
+  userId     String
+  badgeKey   String
+  awardedAt  DateTime @default(now())
+  notifiedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeKey])
+  @@index([userId])
+  @@index([awardedAt])
 }

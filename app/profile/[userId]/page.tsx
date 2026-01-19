@@ -17,6 +17,7 @@ import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { ProfileShareButton } from "@/components/profile-share-button";
+import { ProfileBadges } from "@/components/profile-badges";
 import { HintPopover } from "@/components/hint-popover";
 import { getNextPageHint, type HintConfig } from "@/lib/hints-helper";
 import { Eye, Pencil, Briefcase } from "lucide-react";
@@ -121,6 +122,13 @@ export default async function ProfilePage({
       linkedin: true,
       website: true,
       featuredSubmissionId: true,
+      badgeAwards: {
+        select: {
+          badgeKey: true,
+          awardedAt: true,
+        },
+        orderBy: { awardedAt: "desc" },
+      },
     },
   });
 
@@ -389,6 +397,13 @@ export default async function ProfilePage({
                   />
                 </div>
               )}
+
+              {/* Badges Section */}
+              {user.badgeAwards && user.badgeAwards.length > 0 && (
+                <div className="mt-6">
+                  <ProfileBadges badgeAwards={user.badgeAwards} />
+                </div>
+              )}
             </div>
 
             {/* Submission Details Overlay - Very Bottom */}
@@ -479,6 +494,11 @@ export default async function ProfilePage({
 
           {user.bio && <ExpandableBio html={user.bio} className="mt-4" />}
         </div>
+      )}
+
+      {/* Badges Section */}
+      {user.badgeAwards && user.badgeAwards.length > 0 && (
+        <ProfileBadges badgeAwards={user.badgeAwards} />
       )}
 
       {/* Analytics - only visible to profile owner in private view */}

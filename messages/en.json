@@ -629,6 +629,14 @@
       "soInspiration": ", so your inspiration and your body of work",
       "stayConnected": "stay connected",
       "learnMore": "Learn more about prompt submissions →"
+    },
+    "badges": {
+      "title": "Badges",
+      "description": "Celebrate your creative journey with badges that recognize your achievements.",
+      "celebrateMilestones": "Celebrate milestones",
+      "automaticallyAwarded": "Badges are automatically awarded when you",
+      "creatingAndSharing": "create, share, and engage",
+      "learnMore": "Learn more about badges →"
     }
   },
   "aboutPurpose": {
@@ -729,6 +737,28 @@
       "title": "Prompts and portfolios together",
       "description": "Prompt submissions can be added to your portfolio, and portfolio pieces can be linked to prompts. This keeps your weekly inspiration connected to your long-term body of work while maintaining a single, consistent archive."
     },
+    "backToAbout": "← Back to About"
+  },
+  "aboutBadges": {
+    "title": "Badges | Create Spot",
+    "description": "Learn about badges on Create Spot - how they work, what badges are available, and how to earn them.",
+    "aboutBadges": "About Badges",
+    "mainTitle": "Celebrate your creative milestones.",
+    "mainDescription": "Badges recognize your achievements and milestones in the Create Spot community. Earn them by creating, sharing, and engaging with others.",
+    "howBadgesWork": {
+      "title": "How badges work",
+      "description": "Badges are automatically awarded when you reach certain milestones in your creative journey. They are",
+      "automaticallyAwarded": "automatically awarded",
+      "displayed": "and displayed on your",
+      "profilePage": "profile page",
+      "emailNotification": "You'll receive an email notification when you earn a new badge."
+    },
+    "allBadges": "All Badges",
+    "howToEarn": "How to earn",
+    "howToEarnAspiringCreator": "Add your first portfolio item to your profile. Portfolio items are works you showcase in your personal collection.",
+    "howToEarnPromptPioneer": "Submit your first work to a weekly prompt. Pick any word from the three-word prompt and create something inspired by it.",
+    "howToEarnFeaturedVoice": "Receive your first critique on one of your submissions. Enable critiques on your work to allow others to provide feedback.",
+    "howToEarnArtfulEye": "Write your first critique on someone else's work. Share thoughtful feedback to help creators grow and improve.",
     "backToAbout": "← Back to About"
   },
   "modals": {
@@ -916,6 +946,23 @@
       "description": "Pick any word that sparks your imagination and create something unique — a photo, artwork, poem, or story. Share your interpretation with the community!",
       "startCreatingButton": "Start Creating",
       "learnMore": "Learn more about prompts"
+    },
+    "badgeAward": {
+      "subject": "You earned the {badgeName} badge!",
+      "title": "Congratulations! You earned the {badgeName} badge!",
+      "preview": "You earned the {badgeName} badge",
+      "viewProfile": "View Your Profile"
     }
+  },
+  "badgeAward": {
+    "title": "Badges",
+    "aspiringCreator": "Aspiring Creator",
+    "aspiringCreatorDescription": "First Portfolio Submission",
+    "promptPioneer": "Prompt Pioneer",
+    "promptPioneerDescription": "First Prompt Submission",
+    "featuredVoice": "Featured Voice",
+    "featuredVoiceDescription": "First Critique Received",
+    "artfulEye": "Artful Eye",
+    "artfulEyeDescription": "First Critique Given"
   }
 }

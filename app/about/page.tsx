@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
+import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,25 +22,26 @@ export default async function AboutPage() {
   const t = await getTranslations("about");
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
-      <section className="mb-14 text-center">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-          {t("aboutCreateSpot")}
-        </p>
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          {t("mainTitle")}{" "}
-          <span className="font-permanent-marker">
-            {t("mainTitleHighlight")}
-          </span>{" "}
-          {t("mainTitleSuffix")}
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          {t("mainDescription")}{" "}
-          <span className="font-permanent-marker">
-            {t("mainDescriptionHighlight")}
-          </span>{" "}
-          {t("mainDescriptionSuffix")}
-        </p>
-      </section>
+      <PageHeader
+        title={
+          <>
+            {t("mainTitle")}{" "}
+            <span className="font-permanent-marker">
+              {t("mainTitleHighlight")}
+            </span>{" "}
+            {t("mainTitleSuffix")}
+          </>
+        }
+        subtitle={
+          <>
+            {t("mainDescription")}{" "}
+            <span className="font-permanent-marker">
+              {t("mainDescriptionHighlight")}
+            </span>{" "}
+            {t("mainDescriptionSuffix")}
+          </>
+        }
+      />
 
       <div className="grid gap-8">
         <Card className="rounded-3xl border-none bg-linear-to-br from-amber-50/50 to-white shadow-sm dark:from-amber-950/10 dark:to-transparent">
@@ -134,6 +136,33 @@ export default async function AboutPage() {
                 className="inline-flex items-center text-sm font-semibold text-sky-700 transition-colors hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200 underline underline-offset-4 decoration-sky-600/50 hover:decoration-sky-700"
               >
                 {t("promptInspiration.learnMore")}
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-none bg-linear-to-br from-violet-50/50 to-white shadow-sm dark:from-violet-950/10 dark:to-transparent">
+          <CardContent className="p-8">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
+              {t("badges.title")}
+            </h2>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              {t("badges.description")}{" "}
+              <strong className="text-foreground">
+                {t("badges.celebrateMilestones")}
+              </strong>
+              . {t("badges.automaticallyAwarded")}{" "}
+              <strong className="text-foreground">
+                {t("badges.creatingAndSharing")}
+              </strong>
+              .
+            </p>
+            <div className="mt-5">
+              <Link
+                href="/about/badges"
+                className="inline-flex items-center text-sm font-semibold text-violet-600 transition-colors hover:text-violet-700 dark:text-violet-300 dark:hover:text-violet-200 underline underline-offset-4 decoration-violet-600/50 hover:decoration-violet-700"
+              >
+                {t("badges.learnMore")}
               </Link>
             </div>
           </CardContent>

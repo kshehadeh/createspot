@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
+import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,17 +22,7 @@ export default async function PortfoliosAndSharingPage() {
   const t = await getTranslations("aboutPortfolios");
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
-      <section className="mb-12 text-center">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-          {t("aboutPortfolios")}
-        </p>
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          {t("mainTitle")}
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          {t("mainDescription")}
-        </p>
-      </section>
+      <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
       <div className="grid gap-8">
         <Card className="rounded-3xl border-none bg-linear-to-br from-orange-50/50 to-white shadow-sm dark:from-orange-950/10 dark:to-transparent">

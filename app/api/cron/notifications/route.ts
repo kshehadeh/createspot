@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendNewPromptNotification } from "@/app/workflows/send-new-prompt-notification";
+import { checkBadgeAwards } from "@/app/workflows/check-badge-awards";
 
 export async function GET(request: NextRequest) {
   // Verify cron secret for security
@@ -13,8 +14,10 @@ export async function GET(request: NextRequest) {
 
   const results: {
     newPromptNotifications: { promptId: string; status: string }[];
+    badgeAwards: { status: string };
   } = {
     newPromptNotifications: [],
+    badgeAwards: { status: "pending" },
   };
 
   try {
@@ -71,6 +74,25 @@ export async function GET(request: NextRequest) {
         status: "triggered",
       });
     }
+
+    // Check and award badges
+    checkBadgeAwards({})
+      .then((result) => {
+        console.log(
+          "[Cron] Badge award check workflow completed. Awarded:",
+          result.awardedCount,
+          "Errors:",
+          result.errors.length,
+        );
+        if (result.errors.length > 0) {
+          console.error("[Cron] Badge award errors:", result.errors);
+        }
+      })
+      .catch((error) => {
+        console.error("[Cron] Badge award check workflow failed:", error);
+      });
+
+    results.badgeAwards = { status: "triggered" };
 
     return NextResponse.json({
       success: true,

@@ -629,6 +629,14 @@
       "soInspiration": ", por lo que tu inspiración y tu cuerpo de trabajo",
       "stayConnected": "permanecen conectados",
       "learnMore": "Aprende más sobre las publicaciones de indicaciones →"
+    },
+    "badges": {
+      "title": "Insignias",
+      "description": "Celebra tu viaje creativo con insignias que reconocen tus logros.",
+      "celebrateMilestones": "Celebra los hitos",
+      "automaticallyAwarded": "Las insignias se otorgan automáticamente cuando",
+      "creatingAndSharing": "creas, compartes e interactúas",
+      "learnMore": "Más información sobre las insignias →"
     }
   },
   "aboutPurpose": {
@@ -729,6 +737,28 @@
       "title": "Indicaciones y portafolios juntos",
       "description": "Las publicaciones de indicaciones pueden añadirse a tu portafolio, y las piezas del portafolio pueden vincularse a indicaciones. Esto mantiene tu inspiración semanal conectada a tu cuerpo de trabajo a largo plazo mientras mantiene un archivo único y consistente."
     },
+    "backToAbout": "← Volver a Acerca de"
+  },
+  "aboutBadges": {
+    "title": "Insignias | Create Spot",
+    "description": "Aprende sobre las insignias en Create Spot - cómo funcionan, qué insignias están disponibles y cómo ganarlas.",
+    "aboutBadges": "Acerca de las Insignias",
+    "mainTitle": "Celebra tus logros creativos.",
+    "mainDescription": "Las insignias reconocen tus logros e hitos en la comunidad de Create Spot. Gánalas creando, compartiendo e interactuando con otros.",
+    "howBadgesWork": {
+      "title": "Cómo funcionan las insignias",
+      "description": "Las insignias se otorgan automáticamente cuando alcanzas ciertos hitos en tu viaje creativo. Se",
+      "automaticallyAwarded": "otorgan automáticamente",
+      "displayed": "y se muestran en tu",
+      "profilePage": "página de perfil",
+      "emailNotification": "Recibirás una notificación por correo electrónico cuando ganes una nueva insignia."
+    },
+    "allBadges": "Todas las Insignias",
+    "howToEarn": "Cómo ganar",
+    "howToEarnAspiringCreator": "Agrega tu primer elemento de portafolio a tu perfil. Los elementos del portafolio son trabajos que muestras en tu colección personal.",
+    "howToEarnPromptPioneer": "Envía tu primer trabajo a una indicación semanal. Elige cualquier palabra de la indicación de tres palabras y crea algo inspirado en ella.",
+    "howToEarnFeaturedVoice": "Recibe tu primera crítica en una de tus publicaciones. Habilita las críticas en tu trabajo para permitir que otros proporcionen comentarios.",
+    "howToEarnArtfulEye": "Escribe tu primera crítica en el trabajo de otra persona. Comparte comentarios reflexivos para ayudar a los creadores a crecer y mejorar.",
     "backToAbout": "← Volver a Acerca de"
   },
   "modals": {
@@ -916,6 +946,23 @@
       "description": "Elige cualquier palabra que despierte tu imaginación y crea algo único — una foto, obra de arte, poema o historia. ¡Comparte tu interpretación con la comunidad!",
       "startCreatingButton": "Empezar a Crear",
       "learnMore": "Más información sobre las indicaciones"
+    },
+    "badgeAward": {
+      "subject": "¡Ganaste la insignia {badgeName}!",
+      "title": "¡Felicitaciones! Ganaste la insignia {badgeName}!",
+      "preview": "Ganaste la insignia {badgeName}",
+      "viewProfile": "Ver Tu Perfil"
     }
+  },
+  "badgeAward": {
+    "title": "Insignias",
+    "aspiringCreator": "Creador Aspirante",
+    "aspiringCreatorDescription": "Primera Publicación de Portafolio",
+    "promptPioneer": "Pionero de Indicaciones",
+    "promptPioneerDescription": "Primera Publicación de Indicación",
+    "featuredVoice": "Voz Destacada",
+    "featuredVoiceDescription": "Primera Crítica Recibida",
+    "artfulEye": "Ojo Artístico",
+    "artfulEyeDescription": "Primera Crítica Dada"
   }
 }
