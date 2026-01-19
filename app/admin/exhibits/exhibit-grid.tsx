@@ -90,6 +90,11 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
           const active = isExhibitActive(exhibit);
           const featuredImage = exhibit.featuredSubmission?.imageUrl;
           const featuredText = exhibit.featuredSubmission?.text;
+          const now = new Date();
+          const hasEnded =
+            exhibit.endTime !== null && new Date(exhibit.endTime) < now;
+          const isUpcoming =
+            exhibit.isActive && new Date(exhibit.startTime) > now && !hasEnded;
 
           return (
             <Card
@@ -137,7 +142,11 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
                       </span>
                     ) : (
                       <span className="rounded-full bg-muted/90 px-2 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-                        {exhibit.isActive ? t("upcoming") : t("inactive")}
+                        {hasEnded
+                          ? t("ended")
+                          : isUpcoming
+                            ? t("upcoming")
+                            : t("inactive")}
                       </span>
                     )}
                   </div>

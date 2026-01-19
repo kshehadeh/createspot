@@ -397,14 +397,6 @@ export default async function ProfilePage({
                   />
                 </div>
               )}
-
-              {/* Badges Section */}
-              {user.badgeAwards && user.badgeAwards.length > 0 && (
-                <ProfileBadges
-                  badgeAwards={user.badgeAwards}
-                  className="mt-6"
-                />
-              )}
             </div>
 
             {/* Submission Details Overlay - Very Bottom */}
