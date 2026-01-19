@@ -15,6 +15,8 @@ import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { SocialLinks } from "@/app/profile/[userId]/social-links";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { HintPopover } from "@/components/hint-popover";
+import { usePageHints, type HintConfig } from "@/lib/hooks/use-page-hints";
 
 interface SubmissionDetailProps {
   submission: {
@@ -51,6 +53,7 @@ interface SubmissionDetailProps {
   isLoggedIn: boolean;
   isOwner?: boolean;
   currentUserId?: string | null;
+  tutorialData?: any;
 }
 
 export function SubmissionDetail({
@@ -58,6 +61,7 @@ export function SubmissionDetail({
   isLoggedIn,
   isOwner = false,
   currentUserId,
+  tutorialData,
 }: SubmissionDetailProps) {
   const tCategories = useTranslations("categories");
   const tExhibition = useTranslations("exhibition");
@@ -69,6 +73,29 @@ export function SubmissionDetail({
 
   // Local state for submission data that can be updated after editing
   const [submission, setSubmission] = useState(initialSubmission);
+
+  // Define available hints - only show critique hint if critiques are enabled
+  const availableHints: HintConfig[] = submission.critiquesEnabled
+    ? [
+        {
+          key: "critique",
+          order: 1,
+          title: tSubmission("critiqueHintTitle"),
+          description: tSubmission("critiqueHintDescription"),
+          targetSelector: "button[data-hint-target='critique-button']",
+          side: "bottom",
+          showArrow: true,
+        },
+      ]
+    : [];
+
+  // Get the next hint to show using the hook
+  // The hook handles all logic for determining if hints should be shown
+  const nextHint = usePageHints({
+    tutorialData: tutorialData || null,
+    page: "submission",
+    availableHints,
+  });
 
   // Track view when component mounts (only if not the owner)
   useTrackSubmissionView(submission.id, isOwner);
@@ -99,14 +126,20 @@ export function SubmissionDetail({
             <div className="flex flex-wrap items-center justify-between gap-4">
               {/* Title and user name */}
               <div className="flex flex-col gap-1">
-                <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl">
-                  {submission.title || tExhibition("untitled")}
-                  {submission.category && (
-                    <span className="ml-2 text-base font-normal text-muted-foreground sm:text-lg">
-                      ({tCategories(submission.category)})
-                    </span>
-                  )}
-                </h1>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl">
+                    {submission.title || tExhibition("untitled")}
+                    {submission.category && (
+                      <span className="ml-2 text-base font-normal text-muted-foreground sm:text-lg">
+                        ({tCategories(submission.category)})
+                      </span>
+                    )}
+                  </h1>
+                  <ShareButton
+                    submissionId={submission.id}
+                    title={submission.title}
+                  />
+                </div>
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/profile/${submission.user.id}`}
@@ -131,62 +164,52 @@ export function SubmissionDetail({
 
               {/* Actions */}
               <div className="flex flex-wrap items-center gap-3">
-                {isOwner && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="gap-1.5"
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                {/* Edit and Critique buttons grouped together */}
+                <div className="flex items-center gap-2">
+                  {isOwner && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="gap-1.5"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                    {tSubmission("edit")}
-                  </Button>
-                )}
-                <ShareButton
-                  submissionId={submission.id}
-                  title={submission.title}
-                />
-                {isLoggedIn && (
-                  <FavoriteButton submissionId={submission.id} size="md" />
-                )}
-                {isLoggedIn && submission.critiquesEnabled && (
-                  <CritiqueButton
-                    submissionId={submission.id}
-                    critiquesEnabled={submission.critiquesEnabled}
-                    isOwner={isOwner}
-                    currentUserId={currentUserId}
-                    submissionTitle={submission.title}
-                  />
-                )}
-                {submission._count.favorites > 0 && (
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <svg
-                      className="h-5 w-5 text-red-500"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                      />
-                    </svg>
-                    <span>{submission._count.favorites}</span>
-                  </div>
-                )}
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                      {tSubmission("edit")}
+                    </Button>
+                  )}
+                  {isLoggedIn && submission.critiquesEnabled && (
+                    <CritiqueButton
+                      submissionId={submission.id}
+                      critiquesEnabled={submission.critiquesEnabled}
+                      isOwner={isOwner}
+                      currentUserId={currentUserId}
+                      submissionTitle={submission.title}
+                    />
+                  )}
+                </div>
+                {/* Favorite button with count */}
+                <div className="flex items-center gap-1.5">
+                  {isLoggedIn && (
+                    <FavoriteButton submissionId={submission.id} size="md" />
+                  )}
+                  {submission._count.favorites > 0 && (
+                    <span className="text-sm text-muted-foreground">
+                      {submission._count.favorites}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -316,6 +339,21 @@ export function SubmissionDetail({
               }));
             }
           }}
+        />
+      )}
+
+      {nextHint && (
+        <HintPopover
+          hintKey={nextHint.key}
+          page="submission"
+          title={nextHint.title}
+          description={nextHint.description}
+          targetSelector={nextHint.targetSelector}
+          side={nextHint.side}
+          shouldShow={true}
+          order={nextHint.order}
+          showArrow={nextHint.showArrow ?? true}
+          fixedPosition={nextHint.fixedPosition}
         />
       )}
     </FavoritesProvider>

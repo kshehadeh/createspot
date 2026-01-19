@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { PageLayout } from "@/components/page-layout";
@@ -17,7 +18,7 @@ import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { ProfileShareButton } from "@/components/profile-share-button";
 import { HintPopover } from "@/components/hint-popover";
-import { TutorialManager } from "@/lib/tutorial-manager";
+import { getNextPageHint, type HintConfig } from "@/lib/hints-helper";
 import { Eye, Pencil, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -129,14 +130,7 @@ export default async function ProfilePage({
   const isLoggedIn = !!session?.user;
 
   // Get tutorial data for hints
-  let tutorialManager: TutorialManager | null = null;
-  if (session?.user?.id) {
-    const userWithTutorial = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { tutorial: true },
-    });
-    tutorialManager = new TutorialManager(userWithTutorial?.tutorial);
-  }
+  const tutorialData = await getTutorialData(session?.user?.id);
 
   // When viewing own profile with ?view=public, show public view
   const isPublicView = isOwnProfile && isPublicViewRequested;
@@ -579,10 +573,10 @@ export default async function ProfilePage({
 
       {/* Did You Know hints for logged-in users */}
       {session?.user &&
-        tutorialManager &&
+        tutorialData &&
         (() => {
           // Define available hints with their order and configuration
-          const availableHints = [
+          const availableHints: HintConfig[] = [
             {
               key: "profiles",
               order: 1,
@@ -607,14 +601,13 @@ export default async function ProfilePage({
               : []),
           ];
 
-          // Get the next hint to show
-          const nextHintKey = tutorialManager.getNextHint(
+          // Get the next hint to show using the helper
+          // The helper handles all logic for determining if hints should be shown
+          const nextHint = getNextPageHint(
+            tutorialData,
             "profile",
-            availableHints.map((h) => ({ key: h.key, order: h.order })),
+            availableHints,
           );
-          const nextHint = nextHintKey
-            ? availableHints.find((h) => h.key === nextHintKey)
-            : null;
 
           return nextHint ? (
             <HintPopover

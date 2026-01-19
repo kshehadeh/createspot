@@ -52,16 +52,14 @@ export function GlobalHints({ tutorialData, userId }: GlobalHintsProps) {
       side: "bottom",
       showArrow: true,
     },
-    // Add "Did You Know" hints here as needed
-    // Example:
-    // {
-    //   key: "didYouKnow1",
-    //   order: 3,
-    //   title: t("didYouKnow1Title"),
-    //   description: t("didYouKnow1Description"),
-    //   fixedPosition: { bottom: 24, right: 24 },
-    //   showArrow: false,
-    // },
+    {
+      key: "critiqueDidYouKnow",
+      order: 3,
+      title: t("critiqueDidYouKnowTitle"),
+      description: t("critiqueDidYouKnowDescription"),
+      fixedPosition: { bottom: 24, right: 24 },
+      showArrow: false,
+    },
   ];
 
   // Get the next hint to show

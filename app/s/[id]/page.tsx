@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getTutorialData } from "@/lib/get-tutorial-data";
 import { SubmissionDetail } from "./submission-detail";
 
 export const dynamic = "force-dynamic";
@@ -137,6 +138,9 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
 
   const isOwner = !!session?.user && session.user.id === submission.userId;
 
+  // Fetch tutorial data for hints
+  const tutorialData = await getTutorialData(session?.user?.id);
+
   return (
     <SubmissionDetail
       submission={{
@@ -149,6 +153,7 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
       isLoggedIn={!!session?.user}
       isOwner={isOwner}
       currentUserId={session?.user?.id}
+      tutorialData={tutorialData}
     />
   );
 }

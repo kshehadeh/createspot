@@ -59,6 +59,7 @@ export function CritiqueButton({
         size="sm"
         onClick={() => setIsModalOpen(true)}
         className="gap-1.5"
+        data-hint-target="critique-button"
       >
         <svg
           className="h-4 w-4"

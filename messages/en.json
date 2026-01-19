@@ -198,7 +198,9 @@
     "edit": "Edit",
     "image": "Image",
     "text": "Text",
-    "submissionAlt": "Submission"
+    "submissionAlt": "Submission",
+    "critiqueHintTitle": "Get Feedback",
+    "critiqueHintDescription": "Click the Critique button to view or add feedback on this work. Creators can enable critiques when editing their submissions."
   },
   "categories": {
     "Photography": "Photography",
@@ -579,7 +581,9 @@
     "exhibitHintTitle": "What are Exhibits?",
     "exhibitHintDescription": "Exhibits are carefully curated collections of creative work from our community. Explore different perspectives and get inspired by what others have created.",
     "creatorHintTitle": "Meet Creators",
-    "creatorHintDescription": "Follow creators to stay updated with their latest work and see how their creative journey evolves over time."
+    "creatorHintDescription": "Follow creators to stay updated with their latest work and see how their creative journey evolves over time.",
+    "critiqueDidYouKnowTitle": "Did You Know?",
+    "critiqueDidYouKnowDescription": "Critiques let you give and receive detailed feedback on creative work. Creators can enable critiques on their submissions, and you can edit your critiques until the creator sees them."
   },
   "about": {
     "title": "About | Create Spot",

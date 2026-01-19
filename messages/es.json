@@ -198,7 +198,9 @@
     "edit": "Editar",
     "image": "Imagen",
     "text": "Texto",
-    "submissionAlt": "Publicación"
+    "submissionAlt": "Publicación",
+    "critiqueHintTitle": "Obtener Comentarios",
+    "critiqueHintDescription": "Haz clic en el botón Crítica para ver o añadir comentarios sobre este trabajo. Los creadores pueden habilitar críticas al editar sus publicaciones."
   },
   "categories": {
     "Photography": "Fotografía",
@@ -579,7 +581,9 @@
     "exhibitHintTitle": "¿Qué son las Exposiciones?",
     "exhibitHintDescription": "Las exposiciones son colecciones cuidadosamente curadas de trabajo creativo de nuestra comunidad. Explora diferentes perspectivas e inspírate con lo que otros han creado.",
     "creatorHintTitle": "Conoce Creadores",
-    "creatorHintDescription": "Sigue a los creadores para mantenerte actualizado con su trabajo más reciente y ve cómo evoluciona su viaje creativo a lo largo del tiempo."
+    "creatorHintDescription": "Sigue a los creadores para mantenerte actualizado con su trabajo más reciente y ve cómo evoluciona su viaje creativo a lo largo del tiempo.",
+    "critiqueDidYouKnowTitle": "¿Sabías?",
+    "critiqueDidYouKnowDescription": "Las críticas te permiten dar y recibir comentarios detallados sobre trabajos creativos. Los creadores pueden habilitar críticas en sus publicaciones, y puedes editar tus críticas hasta que el creador las vea."
   },
   "about": {
     "title": "Acerca de | Create Spot",

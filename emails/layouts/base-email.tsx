@@ -1,5 +1,6 @@
 import { Body, Container, Head, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
 import type { ReactNode } from "react";
+import { getRoute } from "@/lib/routes";
 
 export interface BaseEmailProps {
   children: ReactNode;
@@ -49,7 +50,7 @@ export const BaseEmail = ({ children, previewText, userId, baseUrl, t }: BaseEma
     : "Manage notifications in your profile";
   
   // Build profile URL if userId and baseUrl are provided
-  const profileUrl = userId && baseUrl ? `${baseUrl}/profile/${userId}` : undefined;
+  const profileUrl = userId && baseUrl ? `${baseUrl}${getRoute("profile").path}/${userId}` : undefined;
   
   return (
     <Html>

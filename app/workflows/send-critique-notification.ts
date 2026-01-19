@@ -180,9 +180,10 @@ export async function sendCritiqueNotification(
   }
 
   // Build URLs
+  const { getRoute } = await import("@/lib/routes");
   const baseUrl = process.env.NEXTAUTH_URL || "https://prompts.art";
   const submissionUrl = `${baseUrl}/s/${submissionId}`;
-  const critiquerProfileUrl = `${baseUrl}/profile/${critiquer.id}`;
+  const critiquerProfileUrl = `${baseUrl}${getRoute("profile").path}/${critiquer.id}`;
 
   console.log("[Workflow] Proceeding to send email. URLs:", {
     submissionUrl,

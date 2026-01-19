@@ -2,6 +2,7 @@ import { prisma } from "./prisma";
 import { sendEmail } from "./email";
 import { WelcomeEmail } from "@/emails/templates/welcome-email";
 import { getEmailTranslations } from "./email/translations";
+import { getRoute } from "./routes";
 
 /**
  * Sends a welcome email to a user if they haven't received one yet.
@@ -52,7 +53,7 @@ export async function sendWelcomeEmailIfNeeded(
 
     // Get the exhibition URL for the CTA
     const baseUrl = process.env.NEXTAUTH_URL || "https://create.spot";
-    const ctaUrl = `${baseUrl}/exhibition`;
+    const ctaUrl = `${baseUrl}${getRoute("exhibition").path}`;
 
     // Load translations for the user's language
     const t = await getEmailTranslations(user.language, "email");

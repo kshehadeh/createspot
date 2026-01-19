@@ -112,12 +112,13 @@ async function sendEmailAndLog(
   );
   const { getEmailTranslations } = await import("@/lib/email/translations");
   const { prisma } = await import("@/lib/prisma");
+  const { getRoute } = await import("@/lib/routes");
 
   try {
     const t = await getEmailTranslations(user.language, "email");
 
-    const promptUrl = `${baseUrl}/prompt`;
-    const playUrl = `${baseUrl}/play`;
+    const promptUrl = `${baseUrl}${getRoute("prompt").path}`;
+    const playUrl = `${baseUrl}${getRoute("promptPlay").path}`;
 
     const emailComponent = NewPromptNotificationEmail({
       userName: user.name,

@@ -43,6 +43,7 @@ The app will be available at http://localhost:3000
 | [docs/FRONTEND.md](docs/FRONTEND.md) | React components, theming, UI patterns |
 | [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md) | Translation system, i18n patterns, adding new languages |
 | [docs/CREATOR-PROTECTIONS.md](docs/CREATOR-PROTECTIONS.md) | Watermarking, download prevention, AI training opt-out |
+| [docs/HINTS.md](docs/HINTS.md) | Contextual help and hint system, tutorial management |
 
 ## Project Structure
 

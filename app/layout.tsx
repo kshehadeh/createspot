@@ -9,7 +9,7 @@ import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { GlobalHints } from "@/components/global-hints";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getTutorialData } from "@/lib/get-tutorial-data";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -69,14 +69,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   // Fetch tutorial data for global hints
-  let tutorialData = null;
-  if (session?.user?.id) {
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { tutorial: true },
-    });
-    tutorialData = user?.tutorial;
-  }
+  const tutorialData = await getTutorialData(session?.user?.id);
 
   return (
     <html lang={locale} suppressHydrationWarning>
