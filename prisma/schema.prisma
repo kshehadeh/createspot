@@ -83,6 +83,7 @@ model User {
   protectFromAI        Boolean      @default(true)
   emailOnFavorite      Boolean      @default(true)
   emailFeatureUpdates  Boolean      @default(true)
+  emailOnBadgeAward    Boolean      @default(true)
   welcomeEmailSent     Boolean      @default(false)
   tutorial             Json         @default("{\"status\": \"enabled\", \"global\": {}}")
   createdAt            DateTime     @default(now())

@@ -18,9 +18,10 @@ interface BadgeAward {
 
 interface ProfileBadgesProps {
   badgeAwards: BadgeAward[];
+  className?: string;
 }
 
-export function ProfileBadges({ badgeAwards }: ProfileBadgesProps) {
+export function ProfileBadges({ badgeAwards, className }: ProfileBadgesProps) {
   const t = useTranslations("badgeAward");
   if (badgeAwards.length === 0) {
     return null;
@@ -61,32 +62,33 @@ export function ProfileBadges({ badgeAwards }: ProfileBadgesProps) {
   };
 
   return (
-    <div className="mb-8">
-      <h2 className="text-2xl font-semibold text-foreground mb-4">
-        {t("title")}
-      </h2>
+    <div className={`px-4 py-3 rounded-lg bg-muted/50 ${className || ""}`}>
       <TooltipProvider delayDuration={300}>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="flex flex-wrap justify-center gap-3">
           {badgesWithDefinitions.map(({ award, definition }) => (
             <Tooltip key={award.badgeKey}>
               <TooltipTrigger asChild>
-                <div className="flex flex-col items-center gap-2 cursor-help">
-                  <div className="relative w-20 h-20 md:w-24 md:h-24">
+                <div className="flex flex-col items-center gap-1.5 cursor-help">
+                  <div className="relative w-12 h-12 md:w-14 md:h-14">
                     <Image
                       src={definition.image}
                       alt={definition.name}
                       fill
                       className="object-contain"
-                      sizes="(max-width: 768px) 80px, 96px"
+                      sizes="(max-width: 768px) 48px, 56px"
                     />
                   </div>
-                  <p className="text-sm font-medium text-foreground text-center">
-                    {t(getBadgeTranslationKey(award.badgeKey))}
-                  </p>
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{t(getBadgeDescriptionKey(award.badgeKey))}</p>
+                <div className="text-center">
+                  <p className="font-medium mb-1">
+                    {t(getBadgeTranslationKey(award.badgeKey))}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {t(getBadgeDescriptionKey(award.badgeKey))}
+                  </p>
+                </div>
               </TooltipContent>
             </Tooltip>
           ))}

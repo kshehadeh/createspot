@@ -31,6 +31,10 @@ const styles = {
     textAlign: "center" as const,
     marginTop: "24px",
   },
+  footerLink: {
+    color: "#3b82f6",
+    textDecoration: "none",
+  },
   divider: {
     borderColor: "#e5e7eb",
     margin: "32px 0",
@@ -49,8 +53,22 @@ export const BaseEmail = ({ children, previewText, userId, baseUrl, t }: BaseEma
     ? t("footer.manageNotifications")
     : "Manage notifications in your profile";
   
-  // Build profile URL if userId and baseUrl are provided
+  const visitSiteText = t
+    ? t("footer.visitSite")
+    : "Visit Create Spot";
+  
+  const termsText = t
+    ? t("footer.terms")
+    : "Terms of Service";
+  
+  const companyInfo = t
+    ? t("footer.companyInfo")
+    : "Create Spot";
+  
+  // Build URLs
+  const siteUrl = baseUrl || "https://create.spot";
   const profileUrl = userId && baseUrl ? `${baseUrl}${getRoute("profile").path}/${userId}` : undefined;
+  const termsUrl = baseUrl ? `${baseUrl}${getRoute("terms").path}` : undefined;
   
   return (
     <Html>
@@ -63,13 +81,29 @@ export const BaseEmail = ({ children, previewText, userId, baseUrl, t }: BaseEma
           <Text style={styles.footerText}>
             {receivingReason}{" "}
             {profileUrl ? (
-              <Link href={profileUrl} style={{ color: "#3b82f6", textDecoration: "none" }}>
+              <Link href={profileUrl} style={styles.footerLink}>
                 {manageNotificationsText}
               </Link>
             ) : (
               manageNotificationsText
             )}
             .
+          </Text>
+          <Text style={styles.footerText}>
+            <Link href={siteUrl} style={styles.footerLink}>
+              {visitSiteText}
+            </Link>
+            {termsUrl && (
+              <>
+                {" • "}
+                <Link href={termsUrl} style={styles.footerLink}>
+                  {termsText}
+                </Link>
+              </>
+            )}
+          </Text>
+          <Text style={styles.footerText}>
+            {companyInfo}
           </Text>
         </Container>
       </Body>

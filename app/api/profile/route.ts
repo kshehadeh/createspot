@@ -66,6 +66,7 @@ export async function GET() {
       protectFromAI: true,
       emailOnFavorite: true,
       emailFeatureUpdates: true,
+      emailOnBadgeAward: true,
     },
   });
 
@@ -101,6 +102,7 @@ export async function PUT(request: NextRequest) {
     protectFromAI,
     emailOnFavorite,
     emailFeatureUpdates,
+    emailOnBadgeAward,
   } = body;
 
   // Normalize and validate website URL
@@ -245,6 +247,8 @@ export async function PUT(request: NextRequest) {
     updateData.emailOnFavorite = emailOnFavorite ?? true;
   if (emailFeatureUpdates !== undefined)
     updateData.emailFeatureUpdates = emailFeatureUpdates ?? true;
+  if (emailOnBadgeAward !== undefined)
+    updateData.emailOnBadgeAward = emailOnBadgeAward ?? true;
 
   // Handle coordinates: only update if location changed
   if (locationChanged) {
@@ -288,6 +292,7 @@ export async function PUT(request: NextRequest) {
       protectFromAI: true,
       emailOnFavorite: true,
       emailFeatureUpdates: true,
+      emailOnBadgeAward: true,
     },
   });
 

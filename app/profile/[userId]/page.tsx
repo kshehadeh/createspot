@@ -400,9 +400,10 @@ export default async function ProfilePage({
 
               {/* Badges Section */}
               {user.badgeAwards && user.badgeAwards.length > 0 && (
-                <div className="mt-6">
-                  <ProfileBadges badgeAwards={user.badgeAwards} />
-                </div>
+                <ProfileBadges
+                  badgeAwards={user.badgeAwards}
+                  className="mt-6"
+                />
               )}
             </div>
 
@@ -498,7 +499,7 @@ export default async function ProfilePage({
 
       {/* Badges Section */}
       {user.badgeAwards && user.badgeAwards.length > 0 && (
-        <ProfileBadges badgeAwards={user.badgeAwards} />
+        <ProfileBadges badgeAwards={user.badgeAwards} className="mb-8" />
       )}
 
       {/* Analytics - only visible to profile owner in private view */}

@@ -73,6 +73,7 @@ interface ProfileEditFormProps {
   initialProtectFromAI: boolean;
   initialEmailOnFavorite: boolean;
   initialEmailFeatureUpdates: boolean;
+  initialEmailOnBadgeAward: boolean;
   submissions: SubmissionOption[];
   portfolioItemCount: number;
   tutorial?: any;
@@ -97,6 +98,7 @@ export function ProfileEditForm({
   initialProtectFromAI,
   initialEmailOnFavorite,
   initialEmailFeatureUpdates,
+  initialEmailOnBadgeAward,
   submissions,
   portfolioItemCount,
   tutorial,
@@ -135,6 +137,9 @@ export function ProfileEditForm({
   );
   const [emailFeatureUpdates, setEmailFeatureUpdates] = useState(
     initialEmailFeatureUpdates,
+  );
+  const [emailOnBadgeAward, setEmailOnBadgeAward] = useState(
+    initialEmailOnBadgeAward,
   );
 
   // Tutorial state
@@ -768,6 +773,7 @@ export function ProfileEditForm({
     async (settings: {
       emailOnFavorite?: boolean;
       emailFeatureUpdates?: boolean;
+      emailOnBadgeAward?: boolean;
     }) => {
       const toastId = toast.loading(tCommon("saving"));
       try {
@@ -834,6 +840,14 @@ export function ProfileEditForm({
     (checked: boolean) => {
       setEmailFeatureUpdates(checked);
       saveEmailPreferences({ emailFeatureUpdates: checked });
+    },
+    [saveEmailPreferences],
+  );
+
+  const handleEmailOnBadgeAwardChange = useCallback(
+    (checked: boolean) => {
+      setEmailOnBadgeAward(checked);
+      saveEmailPreferences({ emailOnBadgeAward: checked });
     },
     [saveEmailPreferences],
   );
@@ -1397,6 +1411,21 @@ export function ProfileEditForm({
                 <Switch
                   checked={emailFeatureUpdates}
                   onCheckedChange={handleEmailFeatureUpdatesChange}
+                />
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-4">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground">
+                    {t("emailOnBadgeAward")}
+                  </label>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("emailOnBadgeAwardDescription")}
+                  </p>
+                </div>
+                <Switch
+                  checked={emailOnBadgeAward}
+                  onCheckedChange={handleEmailOnBadgeAwardChange}
                 />
               </div>
             </div>

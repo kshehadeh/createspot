@@ -127,6 +127,8 @@
     "emailOnFavoriteDescription": "Recibe una notificación cuando alguien marque como favorito una de tus publicaciones.",
     "emailFeatureUpdates": "Actualizaciones y noticias",
     "emailFeatureUpdatesDescription": "Actualizaciones ocasionales sobre nuevas funciones, exhibiciones y noticias de la comunidad.",
+    "emailOnBadgeAward": "Insignias otorgadas",
+    "emailOnBadgeAwardDescription": "Recibe una notificación cuando ganes una nueva insignia por tus logros.",
     "emailPreferencesSaved": "Preferencias de correo guardadas",
     "emailPreferencesFailed": "No se pudieron guardar las preferencias de correo. Inténtalo de nuevo.",
     "tutorialSettings": "Configuración de Tutoriales",
@@ -923,7 +925,10 @@
     },
     "footer": {
       "receivingReason": "Estás recibiendo este correo porque tienes una cuenta de {appName}.",
-      "manageNotifications": "Gestiona las notificaciones en tu perfil"
+      "manageNotifications": "Gestiona las notificaciones en tu perfil",
+      "visitSite": "Visitar Create Spot",
+      "terms": "Términos de Servicio",
+      "companyInfo": "Create Spot"
     },
     "welcome": {
       "previewText": "¡Bienvenido a {appName}, {name}!",

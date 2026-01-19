@@ -23,7 +23,12 @@ export async function sendBadgeAwardEmail(
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, language: true, emailOnFavorite: true, name: true },
+    select: {
+      email: true,
+      language: true,
+      emailOnBadgeAward: true,
+      name: true,
+    },
   });
 
   if (!user?.email) {
@@ -31,8 +36,10 @@ export async function sendBadgeAwardEmail(
     return;
   }
 
-  if (!user.emailOnFavorite) {
-    console.log("[BadgeAwards] User disabled emails, skipping", { userId });
+  if (!user.emailOnBadgeAward) {
+    console.log("[BadgeAwards] User disabled badge emails, skipping", {
+      userId,
+    });
     return;
   }
 

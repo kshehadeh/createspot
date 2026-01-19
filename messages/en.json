@@ -127,6 +127,8 @@
     "emailOnFavoriteDescription": "Get notified whenever someone favorites one of your submissions.",
     "emailFeatureUpdates": "Feature updates & news",
     "emailFeatureUpdatesDescription": "Occasional updates about new features, exhibits, and community news.",
+    "emailOnBadgeAward": "Badge awards",
+    "emailOnBadgeAwardDescription": "Get notified when you earn a new badge for your achievements.",
     "emailPreferencesSaved": "Email preferences saved",
     "emailPreferencesFailed": "Failed to save email preferences. Please try again.",
     "tutorialSettings": "Tutorial Settings",
@@ -923,7 +925,10 @@
     },
     "footer": {
       "receivingReason": "You are receiving this email because you have a {appName} account.",
-      "manageNotifications": "Manage notifications in your profile"
+      "manageNotifications": "Manage notifications in your profile",
+      "visitSite": "Visit Create Spot",
+      "terms": "Terms of Service",
+      "companyInfo": "Create Spot"
     },
     "welcome": {
       "previewText": "Welcome to {appName}, {name}!",
