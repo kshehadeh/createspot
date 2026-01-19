@@ -178,7 +178,8 @@
     "new": "Nuevo",
     "users": "Usuarios",
     "exhibit": "Exposición",
-    "details": "Detalles"
+    "details": "Detalles",
+    "notifications": "Notificaciones"
   },
   "favorites": {
     "title": "Tus Favoritos",
@@ -295,6 +296,8 @@
       "manageUsersDescription": "Ver y gestionar cuentas de usuario. Monitorea la actividad de los usuarios y maneja tareas de administración de cuentas.",
       "manageExhibits": "Gestionar Exposiciones",
       "manageExhibitsDescription": "Crea y cura exposiciones. Organiza publicaciones en colecciones temáticas y gestiona el contenido de las exposiciones.",
+      "manageNotifications": "Gestionar Notificaciones",
+      "manageNotificationsDescription": "Explora y filtra todas las notificaciones enviadas a los usuarios. Ver historial de notificaciones y metadatos.",
       "goTo": "Ir a {title}"
     },
     "users": {
@@ -451,6 +454,39 @@
       "by": "por",
       "noUsersFound": "No se encontraron usuarios",
       "noUsersAvailable": "No hay usuarios disponibles"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "description": "Explora y filtra todas las notificaciones que se han enviado a los usuarios.",
+      "columns": {
+        "date": "Fecha",
+        "type": "Tipo",
+        "user": "Usuario",
+        "metadata": "Metadatos"
+      },
+      "filters": {
+        "filterByType": "Filtrar por Tipo",
+        "filterByUser": "Filtrar por Usuario",
+        "allTypes": "Todos los Tipos",
+        "allUsers": "Todos los Usuarios",
+        "userIdPlaceholder": "Buscar un usuario..."
+      },
+      "typeLabels": {
+        "badgeAwarded": "Insignia Otorgada",
+        "newPrompt": "Nueva Indicación",
+        "favoriteAdded": "Favorito Añadido",
+        "critiqueAdded": "Crítica Añadida"
+      },
+      "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "page": "Página",
+        "of": "de",
+        "total": "total"
+      },
+      "loading": "Cargando notificaciones...",
+      "noNotifications": "No se encontraron notificaciones",
+      "noUser": "Sin usuario"
     }
   },
   "prompt": {

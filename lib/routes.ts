@@ -110,6 +110,11 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.new",
     parentPath: "/admin/exhibits",
   },
+  adminNotifications: {
+    path: "/admin/notifications",
+    label: "navigation.notifications",
+    parentPath: "/admin",
+  },
 
   // Profile routes
   profile: {

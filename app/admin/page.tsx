@@ -11,7 +11,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Users, LayoutGrid } from "lucide-react";
+import { Sparkles, Users, LayoutGrid, Bell } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +49,13 @@ export default async function AdminPage() {
       description: t("manageExhibitsDescription"),
       href: "/admin/exhibits",
       icon: LayoutGrid,
+    },
+    {
+      id: "notifications",
+      title: t("manageNotifications"),
+      description: t("manageNotificationsDescription"),
+      href: "/admin/notifications",
+      icon: Bell,
     },
   ];
 

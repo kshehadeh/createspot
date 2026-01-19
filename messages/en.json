@@ -178,7 +178,8 @@
     "new": "New",
     "users": "Users",
     "exhibit": "Exhibit",
-    "details": "Details"
+    "details": "Details",
+    "notifications": "Notifications"
   },
   "favorites": {
     "title": "Your Favorites",
@@ -295,6 +296,8 @@
       "manageUsersDescription": "View and manage user accounts. Monitor user activity and handle account administration tasks.",
       "manageExhibits": "Manage Exhibits",
       "manageExhibitsDescription": "Create and curate exhibits. Organize submissions into themed collections and manage exhibit content.",
+      "manageNotifications": "Manage Notifications",
+      "manageNotificationsDescription": "Browse and filter all notifications sent to users. View notification history and metadata.",
       "goTo": "Go to {title}"
     },
     "users": {
@@ -451,6 +454,39 @@
       "by": "by",
       "noUsersFound": "No users found",
       "noUsersAvailable": "No users available"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Browse and filter all notifications that have been sent to users.",
+      "columns": {
+        "date": "Date",
+        "type": "Type",
+        "user": "User",
+        "metadata": "Metadata"
+      },
+      "filters": {
+        "filterByType": "Filter by Type",
+        "filterByUser": "Filter by User",
+        "allTypes": "All Types",
+        "allUsers": "All Users",
+        "userIdPlaceholder": "Search for a user..."
+      },
+      "typeLabels": {
+        "badgeAwarded": "Badge Awarded",
+        "newPrompt": "New Prompt",
+        "favoriteAdded": "Favorite Added",
+        "critiqueAdded": "Critique Added"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page",
+        "of": "of",
+        "total": "total"
+      },
+      "loading": "Loading notifications...",
+      "noNotifications": "No notifications found",
+      "noUser": "No user"
     }
   },
   "prompt": {

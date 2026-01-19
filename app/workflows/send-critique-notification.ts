@@ -77,6 +77,8 @@ async function sendNotificationEmail(
   userLanguage: string,
   baseUrl: string,
   userId: string,
+  submissionId: string,
+  critiquerId: string,
 ): Promise<{ success: boolean; error?: string }> {
   "use step";
 
@@ -92,6 +94,7 @@ async function sendNotificationEmail(
     "@/emails/templates/critique-notification-email"
   );
   const { getEmailTranslations } = await import("@/lib/email/translations");
+  const { prisma } = await import("@/lib/prisma");
 
   try {
     // Load translations for the user's language
@@ -131,6 +134,26 @@ async function sendNotificationEmail(
       subject: emailSubject,
       react: emailComponent,
     });
+
+    // Log the notification
+    try {
+      await prisma.notificationLog.create({
+        data: {
+          type: "CRITIQUE_ADDED",
+          meta: { submissionId, critiquerId },
+          userId,
+        },
+      });
+      console.log(
+        "[Workflow] Notification log created for critique:",
+        submissionId,
+        "user:",
+        userId,
+      );
+    } catch (logError) {
+      // Log error but don't fail the whole operation if notification log fails
+      console.error("[Workflow] Failed to create notification log:", logError);
+    }
 
     console.log("[Workflow] Email sent successfully to", recipientEmail);
     return { success: true };
@@ -199,5 +222,7 @@ export async function sendCritiqueNotification(
     submission.user.language,
     baseUrl,
     submission.userId,
+    submissionId,
+    critiquerId,
   );
 }
