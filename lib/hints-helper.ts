@@ -19,7 +19,7 @@ export interface HintConfig {
 /**
  * Helper function to get the next hint to show for a page.
  * Can be used in both server and client components.
- * 
+ *
  * This function handles all logic for determining if hints should be shown:
  * - Checks if user is logged in (via tutorialData presence)
  * - Checks if tutorials are enabled
