@@ -34,7 +34,7 @@ export default async function TermsPage() {
 
       <div className="space-y-8">
         {/* Content Ownership */}
-        <Card className="rounded-3xl border-none bg-linear-to-br from-amber-50/50 to-white shadow-sm dark:from-amber-950/10 dark:to-transparent">
+        <Card className="terms-card rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-4 text-2xl font-semibold text-foreground">
               {t("contentOwnership.title")}
@@ -50,7 +50,7 @@ export default async function TermsPage() {
         </Card>
 
         {/* User Responsibilities */}
-        <Card className="rounded-3xl border-none bg-linear-to-br from-rose-50/50 to-white shadow-sm dark:from-rose-950/10 dark:to-transparent">
+        <Card className="terms-card rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-4 text-2xl font-semibold text-foreground">
               {t("userResponsibilities.title")}
@@ -70,7 +70,7 @@ export default async function TermsPage() {
         </Card>
 
         {/* Service Usage */}
-        <Card className="rounded-3xl border-none bg-linear-to-br from-sky-50/50 to-white shadow-sm dark:from-sky-950/10 dark:to-transparent">
+        <Card className="terms-card rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-4 text-2xl font-semibold text-foreground">
               {t("serviceUsage.title")}
@@ -84,7 +84,7 @@ export default async function TermsPage() {
         </Card>
 
         {/* Limitation of Liability */}
-        <Card className="rounded-3xl border-none bg-linear-to-br from-violet-50/50 to-white shadow-sm dark:from-violet-950/10 dark:to-transparent">
+        <Card className="terms-card rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-4 text-2xl font-semibold text-foreground">
               {t("limitationOfLiability.title")}
@@ -97,7 +97,7 @@ export default async function TermsPage() {
         </Card>
 
         {/* Changes to Terms */}
-        <Card className="rounded-3xl border-none bg-linear-to-br from-emerald-50/50 to-white shadow-sm dark:from-emerald-950/10 dark:to-transparent">
+        <Card className="terms-card rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-4 text-2xl font-semibold text-foreground">
               {t("changesToTerms.title")}
@@ -110,7 +110,7 @@ export default async function TermsPage() {
         </Card>
 
         {/* Contact */}
-        <Card className="rounded-3xl border-none bg-linear-to-br from-indigo-50/50 to-white shadow-sm dark:from-indigo-950/10 dark:to-transparent">
+        <Card className="terms-card rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-4 text-2xl font-semibold text-foreground">
               {t("contact.title")}

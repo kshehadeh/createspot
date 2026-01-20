@@ -296,6 +296,21 @@ body {
   background-color: hsl(240 10% 3.9%) !important;
 }
 
+/* Terms page card styling with iOS Safari dark mode support */
+.terms-card {
+  background: linear-gradient(to bottom right, rgb(254 252 232 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .terms-card {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .terms-card:not(.light .terms-card) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
 /* Image protection styles */
 .protected-image-wrapper {
   position: relative;
