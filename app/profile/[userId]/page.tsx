@@ -19,7 +19,7 @@ import { ExpandableBio } from "@/components/expandable-bio";
 import { ProfileShareButton } from "@/components/profile-share-button";
 import { ProfileBadges } from "@/components/profile-badges";
 import { HintPopover } from "@/components/hint-popover";
-import { getNextPageHint, type HintConfig } from "@/lib/hints-helper";
+import { getNextPageHint } from "@/lib/hints-helper";
 import { Eye, Pencil, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -586,44 +586,21 @@ export default async function ProfilePage({
       {session?.user &&
         tutorialData &&
         (() => {
-          // Define available hints with their order and configuration
-          const availableHints: HintConfig[] = [
-            {
-              key: "profiles",
-              order: 1,
-              title: t("didYouKnowProfilesTitle"),
-              description: t("didYouKnowProfilesDescription"),
-              fixedPosition: { bottom: 24, right: 24 },
-              showArrow: false,
-            },
-            // Only show manage portfolio hint when viewing own profile
-            ...(effectiveIsOwnProfile
-              ? [
-                  {
-                    key: "managePortfolio",
-                    order: 2,
-                    title: t("didYouKnowManagePortfolioTitle"),
-                    description: t("didYouKnowManagePortfolioDescription"),
-                    targetSelector: "a[href='/portfolio/edit']",
-                    side: "bottom" as const,
-                    showArrow: true,
-                  },
-                ]
-              : []),
-          ];
-
           // Get the next hint to show using the helper
-          // The helper handles all logic for determining if hints should be shown
+          // The helper looks up hints from centralized config and handles all logic
+          // Context is used for conditional hints (e.g., isOwnProfile)
           const nextHint = getNextPageHint(
             tutorialData,
+            "profile-view",
+            t,
             "profile",
-            availableHints,
+            { isOwnProfile: effectiveIsOwnProfile },
           );
 
           return nextHint ? (
             <HintPopover
               hintKey={nextHint.key}
-              page="profile"
+              page="profile-view"
               title={nextHint.title}
               description={nextHint.description}
               shouldShow={true}

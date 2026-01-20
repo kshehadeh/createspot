@@ -99,6 +99,8 @@
     "portfolioDescription": "View {name}'s creative portfolio on Create Spot - a community for artists and creators.",
     "portfolioEmpty": "Your portfolio is empty. Add some work to showcase it here.",
     "noPortfolioItems": "No portfolio items to display yet.",
+    "collectionsHintTitle": "Collections",
+    "collectionsHintDescription": "Collections are a subset of portfolio submissions that you can use for sharing mini-portfolios for school, award or publication submissions.",
     "profileViews": "Profile Views",
     "totalFavorites": "Total Favorites",
     "workViews": "Work Views",

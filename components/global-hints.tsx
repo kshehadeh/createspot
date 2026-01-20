@@ -1,29 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { HintPopover } from "@/components/hint-popover";
 import { TutorialManager } from "@/lib/tutorial-manager";
-import { GLOBAL_HINTS_CONFIG } from "@/lib/global-hints-config";
+import { getPageHintsConfig } from "@/lib/hints-config";
 
 interface GlobalHintsProps {
   tutorialData: any;
   userId?: string;
-}
-
-interface GlobalHint {
-  key: string;
-  order: number;
-  title: string;
-  description: string;
-  targetSelector?: string;
-  side?: "top" | "right" | "bottom" | "left";
-  fixedPosition?: {
-    bottom?: number;
-    right?: number;
-    top?: number;
-    left?: number;
-  };
-  showArrow?: boolean;
 }
 
 export function GlobalHints({ tutorialData, userId }: GlobalHintsProps) {
@@ -33,43 +18,20 @@ export function GlobalHints({ tutorialData, userId }: GlobalHintsProps) {
 
   const tutorialManager = new TutorialManager(tutorialData);
 
-  // Build available hints from shared configuration, adding translations
-  const availableHints: GlobalHint[] = GLOBAL_HINTS_CONFIG.map((config) => {
-    // Map translation keys based on hint key
-    const translationKeyMap: Record<
-      string,
-      { title: string; description: string }
-    > = {
-      exhibits: {
-        title: t("exhibitHintTitle"),
-        description: t("exhibitHintDescription"),
-      },
-      creators: {
-        title: t("creatorHintTitle"),
-        description: t("creatorHintDescription"),
-      },
-      critiqueDidYouKnow: {
-        title: t("critiqueDidYouKnowTitle"),
-        description: t("critiqueDidYouKnowDescription"),
-      },
-    };
-
-    const translations = translationKeyMap[config.key] || {
-      title: "",
-      description: "",
-    };
-
-    return {
-      key: config.key,
-      order: config.order,
-      title: translations.title,
-      description: translations.description,
-      targetSelector: config.targetSelector,
-      side: config.side,
-      fixedPosition: config.fixedPosition,
-      showArrow: config.showArrow,
-    };
-  });
+  // Get hints from centralized config and resolve translations
+  const availableHints = useMemo(() => {
+    const hintConfigs = getPageHintsConfig("global");
+    return hintConfigs.map((hint) => ({
+      key: hint.key,
+      order: hint.order,
+      title: t(hint.translationKeys.title),
+      description: t(hint.translationKeys.description),
+      targetSelector: hint.targetSelector,
+      side: hint.side,
+      fixedPosition: hint.fixedPosition,
+      showArrow: hint.showArrow,
+    }));
+  }, [t]);
 
   // Get the next hint to show
   const nextHintKey = tutorialManager.getNextHint(

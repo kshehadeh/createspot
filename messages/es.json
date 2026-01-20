@@ -99,6 +99,8 @@
     "portfolioDescription": "Ver el portafolio creativo de {name} en Create Spot - una comunidad para artistas y creadores.",
     "portfolioEmpty": "Tu portafolio está vacío. Añade algunos trabajos para mostrarlos aquí.",
     "noPortfolioItems": "Aún no hay elementos en el portafolio para mostrar.",
+    "collectionsHintTitle": "Colecciones",
+    "collectionsHintDescription": "Las colecciones son un subconjunto de las publicaciones del portafolio que puedes usar para compartir mini-portafolios para escuelas, premios o publicaciones.",
     "profileViews": "Vistas del Perfil",
     "totalFavorites": "Favoritos Totales",
     "workViews": "Vistas de Trabajos",

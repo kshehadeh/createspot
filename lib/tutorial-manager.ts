@@ -144,6 +144,8 @@ export class TutorialManager {
   ): string | null {
     if (!this.isEnabled()) return null;
 
+    console.log("availableHints", availableHints);
+
     // Sort hints by order
     const sortedHints = [...availableHints].sort((a, b) => a.order - b.order);
 
@@ -176,5 +178,18 @@ export class TutorialManager {
     return availableGlobalHints.some(
       (hint) => !this.isHintSeen("global", hint.key),
     );
+  }
+
+  /**
+   * Get the next pending global hint key, if any.
+   * Returns the hint key with the lowest order that hasn't been seen.
+   *
+   * @param availableGlobalHints - Array of global hints with their keys and orders
+   * @returns The next global hint key, or null if all have been seen
+   */
+  getNextPendingGlobalHint(
+    availableGlobalHints: Array<{ key: string; order: number }>,
+  ): string | null {
+    return this.getNextHint("global", availableGlobalHints);
   }
 }

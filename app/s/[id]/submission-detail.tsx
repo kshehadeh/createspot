@@ -16,7 +16,7 @@ import { SocialLinks } from "@/app/profile/[userId]/social-links";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HintPopover } from "@/components/hint-popover";
-import { usePageHints, type HintConfig } from "@/lib/hooks/use-page-hints";
+import { usePageHints } from "@/lib/hooks/use-page-hints";
 import { getCategoryIcon } from "@/lib/categories";
 
 interface SubmissionDetailProps {
@@ -74,27 +74,13 @@ export function SubmissionDetail({
   // Local state for submission data that can be updated after editing
   const [submission, setSubmission] = useState(initialSubmission);
 
-  // Define available hints - only show critique hint if critiques are enabled
-  const availableHints: HintConfig[] = submission.critiquesEnabled
-    ? [
-        {
-          key: "critique",
-          order: 1,
-          title: tSubmission("critiqueHintTitle"),
-          description: tSubmission("critiqueHintDescription"),
-          targetSelector: "button[data-hint-target='critique-button']",
-          side: "bottom",
-          showArrow: true,
-        },
-      ]
-    : [];
-
   // Get the next hint to show using the hook
-  // The hook handles all logic for determining if hints should be shown
+  // The hook looks up hints from centralized config and handles all logic
+  // Context is used for conditional hints (e.g., critiquesEnabled)
   const nextHint = usePageHints({
     tutorialData: tutorialData || null,
-    page: "submission",
-    availableHints,
+    page: "submission-view",
+    context: { critiquesEnabled: submission.critiquesEnabled },
   });
 
   // Track view when component mounts (only if not the owner)
@@ -348,7 +334,7 @@ export function SubmissionDetail({
       {nextHint && (
         <HintPopover
           hintKey={nextHint.key}
-          page="submission"
+          page="submission-view"
           title={nextHint.title}
           description={nextHint.description}
           targetSelector={nextHint.targetSelector}

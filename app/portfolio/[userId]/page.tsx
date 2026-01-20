@@ -9,6 +9,9 @@ import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { PortfolioShareButton } from "@/components/portfolio-share-button";
 import { PortfolioFilters } from "@/components/portfolio-filters";
+import { HintPopover } from "@/components/hint-popover";
+import { getTutorialData } from "@/lib/get-tutorial-data";
+import { getNextPageHint } from "@/lib/hints-helper";
 import { Eye, Pencil, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -99,6 +102,10 @@ export default async function PortfolioPage({
 
   const isOwnPortfolio = session?.user?.id === user.id;
   const isLoggedIn = !!session?.user;
+
+  // Get tutorial data for hints
+  const tutorialData = await getTutorialData(session?.user?.id);
+  console.log("tutorialData", tutorialData);
 
   // Parse shareStatus from search params (can be string or array)
   const shareStatusParam = resolvedSearchParams.shareStatus;
@@ -239,7 +246,10 @@ export default async function PortfolioPage({
               rightContent={
                 <div className="flex flex-row flex-wrap items-end justify-end gap-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/portfolio/${user.id}/collections`}>
+                    <Link
+                      href={`/portfolio/${user.id}/collections`}
+                      data-hint-target="collections-button"
+                    >
                       <FolderOpen className="h-4 w-4" />
                       <span className="hidden md:inline">
                         {t("collections")}
@@ -273,7 +283,10 @@ export default async function PortfolioPage({
         <div className="md:hidden mt-4 flex flex-wrap items-center gap-2">
           <PortfolioShareButton userId={user.id} />
           <Button asChild variant="outline" size="sm">
-            <Link href={`/portfolio/${user.id}/collections`}>
+            <Link
+              href={`/portfolio/${user.id}/collections`}
+              data-hint-target="collections-button"
+            >
               <FolderOpen className="h-4 w-4" />
               <span>{t("collections")}</span>
             </Link>
@@ -340,6 +353,35 @@ export default async function PortfolioPage({
           )}
         </div>
       )}
+
+      {/* Page Hints */}
+      {session?.user &&
+        tutorialData &&
+        (() => {
+          // Get the next hint to show using the helper
+          // The helper looks up hints from centralized config and handles all logic
+          const nextHint = getNextPageHint(
+            tutorialData,
+            "portfolio-view",
+            t,
+            "profile",
+          );
+
+          return nextHint ? (
+            <HintPopover
+              hintKey={nextHint.key}
+              page="portfolio-view"
+              title={nextHint.title}
+              description={nextHint.description}
+              shouldShow={true}
+              order={nextHint.order}
+              showArrow={nextHint.showArrow ?? false}
+              fixedPosition={nextHint.fixedPosition}
+              targetSelector={nextHint.targetSelector}
+              side={nextHint.side}
+            />
+          ) : null;
+        })()}
     </PageLayout>
   );
 }

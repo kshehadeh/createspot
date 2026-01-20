@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioEditForm } from "./portfolio-edit-form";
-import { Briefcase, Eye } from "lucide-react";
+import { Briefcase, Eye, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
@@ -90,6 +90,12 @@ export default async function PortfolioEditPage() {
         subtitle={t("managePortfolioDescription")}
         rightContent={
           <div className="flex flex-row flex-wrap items-end justify-end gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/portfolio/${user.id}/collections`}>
+                <FolderOpen className="h-4 w-4" />
+                <span className="hidden md:inline">{t("collections")}</span>
+              </Link>
+            </Button>
             <Button asChild variant="outline" size="sm">
               <Link href={`/portfolio/${user.id}`}>
                 <Briefcase className="h-4 w-4" />
