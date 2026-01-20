@@ -167,6 +167,33 @@ export default async function AboutPage() {
             </div>
           </CardContent>
         </Card>
+
+        <Card className="rounded-3xl border-none bg-linear-to-br from-emerald-50/50 to-white shadow-sm dark:from-emerald-950/10 dark:to-transparent">
+          <CardContent className="p-8">
+            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
+              {t("protectingYourWork.title")}
+            </h2>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              {t("protectingYourWork.description")}{" "}
+              <strong className="text-foreground">
+                {t("protectingYourWork.tools")}
+              </strong>
+              {t("protectingYourWork.continuation")}{" "}
+              <strong className="text-foreground">
+                {t("protectingYourWork.ownership")}
+              </strong>
+              .
+            </p>
+            <div className="mt-5">
+              <Link
+                href="/about/protecting-your-work"
+                className="inline-flex items-center text-sm font-semibold text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-300 dark:hover:text-emerald-200 underline underline-offset-4 decoration-emerald-600/50 hover:decoration-emerald-700"
+              >
+                {t("protectingYourWork.learnMore")}
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </PageLayout>
   );

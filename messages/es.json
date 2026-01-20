@@ -622,7 +622,29 @@
     "missionStatement": "Un lugar para creativos para",
     "missionExhibit": "exhibir su trabajo",
     "missionCreate": "crear más",
-    "missionSupport": "apoyar a otros humanos"
+    "missionSupport": "apoyar a otros humanos",
+    "features": {
+      "inspiration": {
+        "title": "Inspiración",
+        "description": "Los desafíos semanales de tres palabras despiertan ideas frescas y te impulsan a probar cosas nuevas. Explora la galería para ver cómo otros interpretaron las mismas palabras, descubre creadores que admiras y gana insignias mientras construyes tu práctica creativa. Todo aquí está diseñado para mantenerte inspirado y creando.",
+        "startCreating": "Empieza a Crear",
+        "thisWeekPrompts": "Indicaciones de Esta Semana",
+        "browseCollection": "Explora la Colección Permanente"
+      },
+      "mediaManager": {
+        "title": "Gestor de Medios",
+        "description": "Tu perfil es el hogar de tu portafolio — un archivo creciente de tu mejor trabajo. Organiza piezas en colecciones para propósitos específicos como solicitudes escolares, postulaciones a premios o exhibiciones temáticas. Comparte un solo enlace a tu portafolio completo o cura mini-portafolios para exactamente la audiencia que necesitas.",
+        "startCreating": "Empieza a Crear",
+        "yourProfile": "Tu Perfil",
+        "yourPortfolio": "Tu Portafolio"
+      },
+      "exposureWithSafety": {
+        "title": "Exposición con Seguridad",
+        "description": "Sé descubierto a través de exhibiciones y galerías mientras mantienes el control de tu trabajo. Ofrecemos marcas de agua, disuasión de descargas y señales que piden a las empresas de IA que no entrenen con tus imágenes. Lo más importante, tu trabajo es tuyo — no reclamamos ningún derecho sobre nada que subas.",
+        "protectingYourWork": "Protegiendo Tu Trabajo",
+        "browseTerms": "Explora nuestros términos"
+      }
+    }
   },
   "global": {
     "exhibitHintTitle": "¿Qué son las Exposiciones?",
@@ -683,6 +705,14 @@
       "automaticallyAwarded": "Las insignias se otorgan automáticamente cuando",
       "creatingAndSharing": "creas, compartes e interactúas",
       "learnMore": "Más información sobre las insignias →"
+    },
+    "protectingYourWork": {
+      "title": "Protegiendo tu trabajo",
+      "description": "En la era de la IA, los creativos necesitan formas de proteger su trabajo. Proporcionamos",
+      "tools": "marcas de agua, disuasión de descargas y señales de exclusión de IA",
+      "continuation": " — y creemos en",
+      "ownership": "tu propiedad de todo lo que creas",
+      "learnMore": "Más información sobre proteger tu trabajo →"
     }
   },
   "aboutPurpose": {
@@ -782,6 +812,47 @@
     "promptsAndPortfolios": {
       "title": "Indicaciones y portafolios juntos",
       "description": "Las publicaciones de indicaciones pueden añadirse a tu portafolio, y las piezas del portafolio pueden vincularse a indicaciones. Esto mantiene tu inspiración semanal conectada a tu cuerpo de trabajo a largo plazo mientras mantiene un archivo único y consistente."
+    },
+    "backToAbout": "← Volver a Acerca de"
+  },
+  "aboutProtectingYourWork": {
+    "title": "Protegiendo Tu Trabajo | Create Spot",
+    "description": "Aprende cómo proteger tu trabajo creativo en la era de la IA, y cómo Create Spot te ayuda a mantener el control sobre tu arte.",
+    "breadcrumb": "Protegiendo Tu Trabajo",
+    "mainTitle": "Protegiendo tu trabajo en la era de la IA.",
+    "mainDescription": "A medida que la IA se vuelve más prevalente, los creativos necesitan herramientas para proteger su trabajo y mantener la propiedad. Así es como ayudamos.",
+    "theAgeOfAI": {
+      "title": "La era de la IA",
+      "description": "La IA generativa ha cambiado el panorama creativo. Los modelos entrenados con miles de millones de imágenes y textos ahora pueden producir trabajo que imita la creatividad humana. Para los artistas profesionales, esto plantea preocupaciones reales sobre",
+      "highlight1": "el uso no autorizado de su trabajo",
+      "continuation": " para entrenamiento, y la",
+      "highlight2": "dificultad de probar la autoría humana",
+      "ending": " en un mundo inundado de contenido generado."
+    },
+    "howWeProtect": {
+      "title": "Cómo ayudamos a proteger tu trabajo",
+      "description": "Create Spot te da herramientas para disuadir el uso no autorizado y señalar tus intenciones a los sistemas de IA:",
+      "watermarking": "Marcas de agua —",
+      "watermarkingDescription": "Añade una marca de agua visible a tus imágenes. Controlas la posición, y se incrusta durante la carga para que tu original permanezca seguro.",
+      "downloadDeterrents": "Disuasión de descargas —",
+      "downloadDeterrentsDescription": "Hacemos más difícil hacer clic derecho y guardar imágenes directamente. Esto no detendrá a usuarios determinados, pero añade fricción.",
+      "aiOptOut": "Exclusión del entrenamiento de IA —",
+      "aiOptOutDescription": "Añadimos señales a tus imágenes solicitando a las empresas de IA que no las incluyan en conjuntos de datos de entrenamiento. Los principales proveedores de IA generalmente respetan estas señales."
+    },
+    "humanVsGenerated": {
+      "title": "Arte humano vs. generado",
+      "description": "Distinguir el trabajo hecho por humanos del contenido generado por IA es cada vez más difícil. Por eso la procedencia importa. Cuando construyes un cuerpo de trabajo en Create Spot con el tiempo, creas",
+      "highlight1": "una historia verificable",
+      "continuation": " de tu viaje creativo. Tus publicaciones tienen marca de tiempo, están vinculadas a tu identidad, y son parte de una",
+      "highlight2": "práctica creativa continua",
+      "ending": " que es difícil de falsificar."
+    },
+    "yourWorkYourRights": {
+      "title": "Tu trabajo, tus derechos",
+      "description": "Construimos Create Spot para creadores humanos. No",
+      "highlight": "reclamamos derechos de propiedad",
+      "continuation": " sobre nada que subas. Tu trabajo sigue siendo tuyo, y puedes eliminarlo en cualquier momento. Para los detalles completos, consulta nuestros",
+      "termsLink": "términos de servicio"
     },
     "backToAbout": "← Volver a Acerca de"
   },

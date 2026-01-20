@@ -622,7 +622,29 @@
     "missionStatement": "A place for creatives to",
     "missionExhibit": "exhibit their work",
     "missionCreate": "create more",
-    "missionSupport": "support fellow humans"
+    "missionSupport": "support fellow humans",
+    "features": {
+      "inspiration": {
+        "title": "Inspiration",
+        "description": "Weekly three-word prompts spark fresh ideas and push you to try new things. Browse the gallery to see how others interpreted the same words, discover creators you admire, and earn badges as you build your creative practice. Everything here is designed to keep you inspired and making.",
+        "startCreating": "Start Creating",
+        "thisWeekPrompts": "This Week's Prompts",
+        "browseCollection": "Browse the Permanent Collection"
+      },
+      "mediaManager": {
+        "title": "Media Manager",
+        "description": "Your profile is home to your portfolio — a growing archive of your best work. Organize pieces into collections for specific purposes like school applications, award submissions, or themed showcases. Share a single link to your full portfolio or curate mini-portfolios for exactly the audience you need.",
+        "startCreating": "Start Creating",
+        "yourProfile": "Your Profile",
+        "yourPortfolio": "Your Portfolio"
+      },
+      "exposureWithSafety": {
+        "title": "Exposure with Safety",
+        "description": "Get discovered through exhibits and galleries while keeping control of your work. We offer watermarking, download deterrents, and signals that ask AI companies not to train on your images. Most importantly, your work is yours — we claim no rights to anything you upload.",
+        "protectingYourWork": "Protecting Your Work",
+        "browseTerms": "Browse our terms"
+      }
+    }
   },
   "global": {
     "exhibitHintTitle": "What are Exhibits?",
@@ -683,6 +705,14 @@
       "automaticallyAwarded": "Badges are automatically awarded when you",
       "creatingAndSharing": "create, share, and engage",
       "learnMore": "Learn more about badges →"
+    },
+    "protectingYourWork": {
+      "title": "Protecting your work",
+      "description": "In the age of AI, creatives need ways to protect their work. We provide",
+      "tools": "watermarking, download deterrents, and AI opt-out signals",
+      "continuation": " — and we believe in",
+      "ownership": "your ownership of everything you create",
+      "learnMore": "Learn more about protecting your work →"
     }
   },
   "aboutPurpose": {
@@ -782,6 +812,47 @@
     "promptsAndPortfolios": {
       "title": "Prompts and portfolios together",
       "description": "Prompt submissions can be added to your portfolio, and portfolio pieces can be linked to prompts. This keeps your weekly inspiration connected to your long-term body of work while maintaining a single, consistent archive."
+    },
+    "backToAbout": "← Back to About"
+  },
+  "aboutProtectingYourWork": {
+    "title": "Protecting Your Work | Create Spot",
+    "description": "Learn how to protect your creative work in the age of AI, and how Create Spot helps you maintain control over your art.",
+    "breadcrumb": "Protecting Your Work",
+    "mainTitle": "Protecting your work in the age of AI.",
+    "mainDescription": "As AI becomes more prevalent, creatives need tools to protect their work and maintain ownership. Here's how we help.",
+    "theAgeOfAI": {
+      "title": "The age of AI",
+      "description": "Generative AI has changed the creative landscape. Models trained on billions of images and texts can now produce work that mimics human creativity. For working artists, this raises real concerns about",
+      "highlight1": "unauthorized use of their work",
+      "continuation": " for training, and the",
+      "highlight2": "difficulty of proving human authorship",
+      "ending": " in a world flooded with generated content."
+    },
+    "howWeProtect": {
+      "title": "How we help protect your work",
+      "description": "Create Spot gives you tools to deter unauthorized use and signal your intentions to AI systems:",
+      "watermarking": "Watermarking —",
+      "watermarkingDescription": "Add a visible watermark to your images. You control the position, and it's embedded during upload so your original stays safe.",
+      "downloadDeterrents": "Download deterrents —",
+      "downloadDeterrentsDescription": "We make it harder to right-click and save images directly. This won't stop determined users, but it adds friction.",
+      "aiOptOut": "AI training opt-out —",
+      "aiOptOutDescription": "We add signals to your images requesting AI companies not include them in training datasets. Major AI providers generally respect these signals."
+    },
+    "humanVsGenerated": {
+      "title": "Human vs. generated art",
+      "description": "Distinguishing human-made work from AI-generated content is becoming harder. That's why provenance matters. When you build a body of work on Create Spot over time, you create",
+      "highlight1": "a verifiable history",
+      "continuation": " of your creative journey. Your submissions are timestamped, tied to your identity, and part of a",
+      "highlight2": "continuous creative practice",
+      "ending": " that's difficult to fake."
+    },
+    "yourWorkYourRights": {
+      "title": "Your work, your rights",
+      "description": "We built Create Spot for human creators. We",
+      "highlight": "claim no ownership rights",
+      "continuation": " over anything you upload. Your work remains yours, and you can remove it at any time. For the full details, see our",
+      "termsLink": "terms of service"
     },
     "backToAbout": "← Back to About"
   },

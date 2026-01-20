@@ -10,7 +10,14 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Briefcase, LayoutGrid, Sparkles } from "lucide-react";
+import {
+  Briefcase,
+  FolderOpen,
+  LayoutGrid,
+  Lightbulb,
+  Shield,
+  Sparkles,
+} from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
 
 export const dynamic = "force-dynamic";
@@ -244,6 +251,133 @@ export default async function Home() {
             <strong className="rainbow-sheen">{t("missionCreate")}</strong>, and{" "}
             <strong className="rainbow-sheen">{t("missionSupport")}</strong>.
           </p>
+        </div>
+      </section>
+
+      {/* Feature Sections */}
+      <section className="border-t border-border/50 bg-muted/30">
+        {/* Inspiration Section */}
+        <div className="border-b border-border/50 px-6 py-16 sm:py-20">
+          <div className="mx-auto max-w-4xl">
+            <div className="flex flex-col gap-6">
+              <div className="flex items-start gap-6">
+                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 ring-1 ring-amber-500/30 dark:from-amber-400/15 dark:to-rose-400/15 dark:ring-amber-400/25">
+                  <Lightbulb className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="flex-1">
+                <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                  {t("features.inspiration.title")}
+                </h2>
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  {t("features.inspiration.description")}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+                  {!session?.user && (
+                    <Link
+                      href="/auth/signin"
+                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                    >
+                      {t("features.inspiration.startCreating")}
+                    </Link>
+                  )}
+                  <Link
+                    href="/prompt"
+                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("features.inspiration.thisWeekPrompts")}
+                  </Link>
+                  <Link
+                    href="/exhibition/gallery/grid"
+                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("features.inspiration.browseCollection")}
+                  </Link>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Media Manager Section */}
+        <div className="border-b border-border/50 px-6 py-16 sm:py-20">
+          <div className="mx-auto max-w-4xl">
+            <div className="flex flex-col gap-6">
+              <div className="flex items-start gap-6">
+                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500/20 to-emerald-500/20 ring-1 ring-sky-500/30 dark:from-sky-400/15 dark:to-emerald-400/15 dark:ring-sky-400/25">
+                  <FolderOpen className="h-8 w-8 text-sky-600 dark:text-sky-400" />
+                </div>
+                <div className="flex-1">
+                <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                  {t("features.mediaManager.title")}
+                </h2>
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  {t("features.mediaManager.description")}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+                  {!session?.user ? (
+                    <Link
+                      href="/auth/signin"
+                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                    >
+                      {t("features.mediaManager.startCreating")}
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        href={`/profile/${session.user.id}`}
+                        className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                      >
+                        {t("features.mediaManager.yourProfile")}
+                      </Link>
+                      <Link
+                        href="/portfolio/edit"
+                        className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                      >
+                        {t("features.mediaManager.yourPortfolio")}
+                      </Link>
+                    </>
+                  )}
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Exposure with Safety Section */}
+        <div className="px-6 py-16 sm:py-20">
+          <div className="mx-auto max-w-4xl">
+            <div className="flex flex-col gap-6">
+              <div className="flex items-start gap-6">
+                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 ring-1 ring-violet-500/30 dark:from-violet-400/15 dark:to-fuchsia-400/15 dark:ring-violet-400/25">
+                  <Shield className="h-8 w-8 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="flex-1">
+                <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                  {t("features.exposureWithSafety.title")}
+                </h2>
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  {t("features.exposureWithSafety.description")}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+                  <Link
+                    href="/about/protecting-your-work"
+                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("features.exposureWithSafety.protectingYourWork")}
+                  </Link>
+                  <Link
+                    href="/terms"
+                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("features.exposureWithSafety.browseTerms")}
+                  </Link>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
