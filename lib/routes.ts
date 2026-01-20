@@ -1,6 +1,16 @@
 import type { LucideIcon } from "lucide-react";
 import type { getTranslations } from "next-intl/server";
-import { Lock, Heart, User, Briefcase, LogOut, Users } from "lucide-react";
+import {
+  Lock,
+  Heart,
+  User,
+  Briefcase,
+  LogOut,
+  Users,
+  LayoutGrid,
+  Sparkles,
+  Info,
+} from "lucide-react";
 import { EXHIBITION_CONFIGS } from "./exhibition-constants";
 import { Home } from "lucide-react";
 
@@ -35,6 +45,7 @@ const ROUTES: Record<string, RouteConfig> = {
     path: "/exhibition",
     label: "navigation.exhibits",
     isLink: false, // Root exhibit page is not a link in breadcrumbs
+    icon: LayoutGrid,
   },
   exhibitionPermanent: {
     path: "/exhibition/permanent",
@@ -66,6 +77,7 @@ const ROUTES: Record<string, RouteConfig> = {
     path: "/prompt",
     label: "navigation.prompts",
     isLink: false, // Root prompt page is not a link in breadcrumbs
+    icon: Sparkles,
   },
   promptPlay: {
     path: "/prompt/play",
@@ -164,6 +176,7 @@ const ROUTES: Record<string, RouteConfig> = {
     path: "/about",
     label: "navigation.about",
     isLink: false,
+    icon: Info,
   },
   terms: {
     path: "/terms",

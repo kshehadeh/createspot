@@ -20,6 +20,7 @@ import { Heart, X, FileText, Edit, Eye } from "lucide-react";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
+import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
 
 interface LightboxSubmission {
   id: string;
@@ -86,6 +87,7 @@ export function SubmissionLightbox({
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const viewportHeight = useViewportHeight();
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const isOwner =
@@ -332,8 +334,12 @@ export function SubmissionLightbox({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="w-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden overflow-hidden"
-        style={{ height: "100dvh", minHeight: "100vh" }}
+        className="w-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden overflow-hidden md:overflow-hidden"
+        style={{
+          height: viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
+          minHeight: viewportHeight > 0 ? `${viewportHeight}px` : "100vh",
+          maxHeight: viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
+        }}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <VisuallyHidden>
@@ -343,7 +349,7 @@ export function SubmissionLightbox({
           </DialogTitle>
         </VisuallyHidden>
         <div
-          className={`flex h-full w-full p-0 ${
+          className={`flex h-full w-full p-0 overflow-y-auto md:overflow-hidden ${
             hasImage ? "flex-col xl:flex-row" : "flex-col"
           }`}
           onClick={(e) => e.stopPropagation()}
@@ -362,7 +368,8 @@ export function SubmissionLightbox({
                 alt={submission.title || "Submission"}
                 className="h-auto w-auto max-h-[100dvh] max-w-full object-contain select-none"
                 style={{
-                  maxHeight: "100dvh",
+                  maxHeight:
+                    viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
                   maxWidth: "100%",
                   ...(protectionEnabled
                     ? { WebkitUserSelect: "none", userSelect: "none" }
@@ -523,9 +530,15 @@ export function SubmissionLightbox({
         {/* Buttons - lower right corner, absolute positioned */}
         <TooltipProvider delayDuration={300}>
           <div
-            className="absolute bottom-4 right-4 z-10 flex items-center gap-2"
+            className="absolute right-4 z-10 flex items-center gap-2"
             style={{
-              bottom: `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
+              // Calculate bottom position to ensure buttons are always visible
+              // Account for safe area insets and ensure buttons are above browser UI
+              // On mobile, add extra padding to account for browser UI that may overlay
+              bottom:
+                typeof window !== "undefined" && window.innerWidth < 768
+                  ? `max(2rem, calc(env(safe-area-inset-bottom, 0px) + 2rem))`
+                  : `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
             }}
           >
             {/* Text overlay button - shown in overlay mode (< xl) when text exists */}

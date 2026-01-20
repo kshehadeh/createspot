@@ -11,7 +11,7 @@ import { SubmissionEditModal } from "./submission-edit-modal";
 import { cn } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
 import { getUserImageUrl } from "@/lib/user-image";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 
 interface MobileNavigationUser {
   id?: string;
@@ -150,8 +150,9 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
                       setIsCreateModalOpen(true);
                       setIsMenuOpen(false);
                     }}
-                    className="block w-full px-4 py-3 text-left text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    className="block w-full px-4 py-3 text-left text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
                   >
+                    <Plus className="h-5 w-5" />
                     {t("create")}
                   </button>
                 </div>

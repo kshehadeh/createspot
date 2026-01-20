@@ -221,13 +221,16 @@ export default async function PortfolioPage({
           <div className="flex-1 min-w-0">
             <PageHeader
               title={
-                <div className="flex items-center gap-3">
-                  <span className="truncate">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="break-words min-w-0">
                     {user.name
                       ? t("portfolioTitle", { name: user.name })
                       : t("portfolio")}
                   </span>
-                  <PortfolioShareButton userId={user.id} />
+                  {/* Share button - hidden on mobile, shown in action buttons below */}
+                  <div className="hidden md:block shrink-0">
+                    <PortfolioShareButton userId={user.id} />
+                  </div>
                 </div>
               }
               subtitle={`${portfolioItems.length} ${
@@ -265,6 +268,30 @@ export default async function PortfolioPage({
               }
             />
           </div>
+        </div>
+        {/* Mobile action buttons - shown below header on mobile */}
+        <div className="md:hidden mt-4 flex flex-wrap items-center gap-2">
+          <PortfolioShareButton userId={user.id} />
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/portfolio/${user.id}/collections`}>
+              <FolderOpen className="h-4 w-4" />
+              <span>{t("collections")}</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/profile/${user.id}`}>
+              <Eye className="h-4 w-4" />
+              <span>{t("viewProfile")}</span>
+            </Link>
+          </Button>
+          {isOwnPortfolio && (
+            <Button asChild variant="outline" size="sm">
+              <Link href="/portfolio/edit">
+                <Pencil className="h-4 w-4" />
+                <span>{t("managePortfolio")}</span>
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 

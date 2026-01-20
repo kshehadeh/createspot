@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { CreateSpotLogo } from "./create-spot-logo";
-import { UserDropdown } from "./user-dropdown";
 import { DashboardNavigation } from "./navigation-links";
 import { MobileNavigation } from "./mobile-navigation";
 import { ThemeToggle } from "./theme-toggle";
@@ -13,6 +13,20 @@ import { SubmissionEditModal } from "./submission-edit-modal";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import { getRoute } from "@/lib/routes";
+
+// Dynamically import UserDropdown to avoid SSR hydration issues with Radix UI
+const UserDropdown = dynamic(
+  () =>
+    import("./user-dropdown").then((mod) => ({ default: mod.UserDropdown })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center gap-2 border-l border-border pl-4">
+        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+      </div>
+    ),
+  },
+);
 
 interface HeaderUser {
   id?: string;
