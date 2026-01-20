@@ -47,11 +47,7 @@ export default async function OpenGraphImage({ params }: RouteParams) {
 
   // Check if collection exists, belongs to the user, and is public
   // OG images are accessed by crawlers without auth, so we only show public collections
-  if (
-    !collection ||
-    collection.userId !== userId ||
-    !collection.isPublic
-  ) {
+  if (!collection || collection.userId !== userId || !collection.isPublic) {
     return new ImageResponse(
       <div
         style={{
@@ -102,9 +98,10 @@ export default async function OpenGraphImage({ params }: RouteParams) {
             let processedBuffer = await sharp(buffer).rotate().toBuffer();
 
             // Apply focal point if available
-            const focalPoint = cs.submission.imageFocalPoint as
-              | { x: number; y: number }
-              | null;
+            const focalPoint = cs.submission.imageFocalPoint as {
+              x: number;
+              y: number;
+            } | null;
 
             if (focalPoint) {
               const metadata = await sharp(processedBuffer).metadata();
