@@ -27,11 +27,11 @@ export default async function PortfolioBreadcrumb({
       segments={[
         {
           label: portfolioRoute?.label || t("portfolio"),
-          // No href - portfolio doesn't have a root page
+          href: `/portfolio/${userId}`,
         },
         {
           label: userName,
-          href: `/portfolio/${userId}`, // Last item links to itself
+          // Last item - no link since it's the current page
         },
       ]}
     />

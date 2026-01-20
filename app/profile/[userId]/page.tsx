@@ -398,17 +398,6 @@ export default async function ProfilePage({
                 </div>
               )}
             </div>
-
-            {/* Submission Details Overlay - Very Bottom */}
-            {featuredSubmission.title && (
-              <div className="bg-background/80 backdrop-blur-sm px-6 py-3 border-t border-border/50">
-                <div className="max-w-5xl mx-auto">
-                  <h2 className="text-lg font-semibold text-foreground">
-                    {featuredSubmission.title}
-                  </h2>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       ) : (

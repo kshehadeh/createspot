@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { PortfolioShareButton } from "@/components/portfolio-share-button";
 import { PortfolioFilters } from "@/components/portfolio-filters";
-import { Eye, Pencil } from "lucide-react";
+import { Eye, Pencil, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
@@ -235,6 +235,14 @@ export default async function PortfolioPage({
               }`}
               rightContent={
                 <div className="flex flex-row flex-wrap items-end justify-end gap-2">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/portfolio/${user.id}/collections`}>
+                      <FolderOpen className="h-4 w-4" />
+                      <span className="hidden md:inline">
+                        {t("collections")}
+                      </span>
+                    </Link>
+                  </Button>
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/profile/${user.id}`}>
                       <Eye className="h-4 w-4" />

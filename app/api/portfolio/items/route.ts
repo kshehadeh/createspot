@@ -17,13 +17,32 @@ export async function GET(request: NextRequest) {
     searchParams.get("take") || String(DEFAULT_PAGE_SIZE),
     10,
   );
+  const search = searchParams.get("search") || "";
+  const excludeIdsParam = searchParams.get("excludeIds") || "";
+  const excludeIds = excludeIdsParam ? excludeIdsParam.split(",") : [];
+
+  const where: any = {
+    userId: session.user.id,
+    isPortfolio: true,
+  };
+
+  // Add search filter if provided
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: "insensitive" } },
+      { category: { contains: search, mode: "insensitive" } },
+      { text: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  // Add exclude filter if provided
+  if (excludeIds.length > 0) {
+    where.id = { notIn: excludeIds };
+  }
 
   const [items, totalCount] = await Promise.all([
     prisma.submission.findMany({
-      where: {
-        userId: session.user.id,
-        isPortfolio: true,
-      },
+      where,
       orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
       skip,
       take,
@@ -43,12 +62,7 @@ export async function GET(request: NextRequest) {
         },
       },
     }),
-    prisma.submission.count({
-      where: {
-        userId: session.user.id,
-        isPortfolio: true,
-      },
-    }),
+    prisma.submission.count({ where }),
   ]);
 
   return NextResponse.json({

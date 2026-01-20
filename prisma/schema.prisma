@@ -103,6 +103,7 @@ model User {
   critiques          Critique[]       @relation("Critiques")
   notificationLogs   NotificationLog[] @relation("NotificationLogs")
   badgeAwards        BadgeAward[]
+  collections        Collection[]
 }
 
 model Prompt {
@@ -148,6 +149,7 @@ model Submission {
   exhibitSubmissions ExhibitSubmission[]
   featuredInExhibits Exhibit[] @relation("FeaturedInExhibits")
   critiques  Critique[]
+  collectionSubmissions CollectionSubmission[]
 
   @@unique([userId, promptId, wordIndex])
   @@index([promptId])
@@ -280,4 +282,34 @@ model BadgeAward {
   @@unique([userId, badgeKey])
   @@index([userId])
   @@index([awardedAt])
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?  @db.Text
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissions CollectionSubmission[]
+
+  @@index([userId])
+  @@index([userId, isPublic])
+}
+
+model CollectionSubmission {
+  id           String   @id @default(cuid())
+  collectionId String
+  submissionId String
+  order        Int
+  createdAt    DateTime @default(now())
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, submissionId])
+  @@index([collectionId, order])
 }

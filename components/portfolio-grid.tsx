@@ -87,6 +87,7 @@ interface PortfolioGridProps {
   // For exhibit mode
   mode?: "portfolio" | "exhibit";
   onRemove?: (item: PortfolioItem) => Promise<void>;
+  context?: "exhibit" | "collection"; // To distinguish between exhibits and collections
   user?: {
     id: string;
     name: string | null;
@@ -107,6 +108,7 @@ export function PortfolioGrid({
   onReorder,
   mode = "portfolio",
   onRemove,
+  context = "exhibit",
   user,
   featuredSubmissionId,
   onSetFeatured,
@@ -239,6 +241,7 @@ export function PortfolioGrid({
         isSaving={isSaving}
         mode={mode}
         onRemove={onRemove}
+        context={context}
         user={user}
         featuredSubmissionId={featuredSubmissionId}
         onSetFeatured={onSetFeatured}
@@ -523,6 +526,7 @@ function PortfolioGridContent({
   isSaving,
   mode,
   onRemove,
+  context,
   user,
   featuredSubmissionId,
   onSetFeatured,
@@ -539,6 +543,7 @@ function PortfolioGridContent({
   isSaving: boolean;
   mode?: "portfolio" | "exhibit";
   onRemove?: (item: PortfolioItem) => Promise<void>;
+  context?: "exhibit" | "collection";
   user?: {
     id: string;
     name: string | null;
@@ -812,36 +817,10 @@ function PortfolioGridContent({
   return (
     <TooltipProvider>
       <div>
-        {/* Saving indicator */}
-        {isSaving && (
-          <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-            <svg
-              className="h-4 w-4 animate-spin"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-            {t("savingOrder")}
-          </div>
-        )}
-
-        {/* Drag hint when in edit mode */}
+        {/* Drag/Saving hint when in edit mode */}
         {allowEdit && items.length > 1 && (
           <p className="mb-4 text-xs text-muted-foreground">
-            {t("dragToReorder")}
+            {isSaving ? t("savingOrder") : t("dragToReorder")}
           </p>
         )}
 
@@ -899,14 +878,24 @@ function PortfolioGridContent({
           />
         )}
 
-        {/* Remove from Exhibit Confirmation Modal */}
+        {/* Remove Confirmation Modal */}
         {removingItem && (
           <ConfirmModal
             isOpen={true}
-            title={t("removeFromExhibitTitle")}
-            message={t("removeFromExhibitMessage", {
-              title: removingItem.title || "this item",
-            })}
+            title={
+              context === "collection"
+                ? t("removeFromCollectionTitle")
+                : t("removeFromExhibitTitle")
+            }
+            message={
+              context === "collection"
+                ? t("removeFromCollectionMessage", {
+                    title: removingItem.title || "this item",
+                  })
+                : t("removeFromExhibitMessage", {
+                    title: removingItem.title || "this item",
+                  })
+            }
             confirmLabel={t("remove")}
             onConfirm={handleRemoveConfirm}
             onCancel={() => setRemovingItem(null)}

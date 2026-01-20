@@ -12,10 +12,6 @@ export default async function PortfolioEditBreadcrumb() {
     <Breadcrumb
       segments={[
         {
-          label: t("portfolio"),
-          href: userId ? `/portfolio/${userId}` : undefined,
-        },
-        {
           label: userName || "Your Portfolio",
           href: userId ? `/portfolio/${userId}` : undefined,
         },

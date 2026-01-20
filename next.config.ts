@@ -25,6 +25,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Prevent Next.js from bundling pdfkit to allow it to access font files
+  serverExternalPackages: ["pdfkit"],
 };
 
 export default withWorkflow(withNextIntl(nextConfig));

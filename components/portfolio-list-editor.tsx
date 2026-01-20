@@ -32,10 +32,12 @@ import {
   Globe,
   Heart,
   X,
+  FolderPlus,
 } from "lucide-react";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
+import { CollectionSelectModal } from "@/components/collection-select-modal";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -416,6 +418,9 @@ export function PortfolioListEditor({
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
+  // Collection modal state
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
+
   // Reorder state
   const [isSaving, setIsSaving] = useState(false);
   const [orderedItems, setOrderedItems] = useState<PortfolioItem[]>(items);
@@ -565,6 +570,25 @@ export function PortfolioListEditor({
     }
   };
 
+  // Add to collection
+  const handleAddToCollection = async (collectionId: string) => {
+    const response = await fetch(
+      `/api/collections/${collectionId}/submissions`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submissionIds: Array.from(selectedIds) }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to add to collection");
+    }
+
+    setSelectedIds(new Set());
+    setShowCollectionModal(false);
+  };
+
   // Sync items when prop changes
   if (items !== orderedItems && !isSaving) {
     setOrderedItems(items);
@@ -649,6 +673,16 @@ export function PortfolioListEditor({
           </div>
 
           <div className="flex items-center gap-3">
+            {isSomeSelected && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCollectionModal(true)}
+              >
+                <FolderPlus className="mr-1 h-4 w-4" />
+                {t("addToCollection")}
+              </Button>
+            )}
             {isSomeSelected && onBulkDelete && (
               <Button
                 variant="destructive"
@@ -809,6 +843,14 @@ export function PortfolioListEditor({
             isLoading={isBulkDeleting}
           />
         )}
+
+        {/* Collection Select Modal */}
+        <CollectionSelectModal
+          isOpen={showCollectionModal}
+          onClose={() => setShowCollectionModal(false)}
+          onSelect={handleAddToCollection}
+          selectedCount={selectedIds.size}
+        />
 
         {/* Submission Lightbox */}
         {selectedSubmission &&

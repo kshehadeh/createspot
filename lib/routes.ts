@@ -142,6 +142,13 @@ const ROUTES: Record<string, RouteConfig> = {
     parentPath: "/portfolio",
   },
 
+  // Collections routes
+  collections: {
+    path: "/collections",
+    label: "navigation.collections",
+    parentPath: "/portfolio",
+  },
+
   // Other routes
   creators: {
     path: "/creators",

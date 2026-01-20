@@ -12,10 +12,6 @@ export default async function ProfileEditBreadcrumb() {
     <Breadcrumb
       segments={[
         {
-          label: t("profile"),
-          href: userId ? `/profile/${userId}` : undefined,
-        },
-        {
           label: userName || "Your Profile",
           href: userId ? `/profile/${userId}` : undefined,
         },
