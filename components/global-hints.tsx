@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { HintPopover } from "@/components/hint-popover";
 import { TutorialManager } from "@/lib/tutorial-manager";
+import { GLOBAL_HINTS_CONFIG } from "@/lib/global-hints-config";
 
 interface GlobalHintsProps {
   tutorialData: any;
@@ -32,35 +33,43 @@ export function GlobalHints({ tutorialData, userId }: GlobalHintsProps) {
 
   const tutorialManager = new TutorialManager(tutorialData);
 
-  // Define available global hints with their order and configuration
-  const availableHints: GlobalHint[] = [
-    {
-      key: "exhibits",
-      order: 1,
-      title: t("exhibitHintTitle"),
-      description: t("exhibitHintDescription"),
-      targetSelector: "a[href='/exhibition']",
-      side: "bottom",
-      showArrow: true,
-    },
-    {
-      key: "creators",
-      order: 2,
-      title: t("creatorHintTitle"),
-      description: t("creatorHintDescription"),
-      targetSelector: "a[href='/creators']",
-      side: "bottom",
-      showArrow: true,
-    },
-    {
-      key: "critiqueDidYouKnow",
-      order: 3,
-      title: t("critiqueDidYouKnowTitle"),
-      description: t("critiqueDidYouKnowDescription"),
-      fixedPosition: { bottom: 24, right: 24 },
-      showArrow: false,
-    },
-  ];
+  // Build available hints from shared configuration, adding translations
+  const availableHints: GlobalHint[] = GLOBAL_HINTS_CONFIG.map((config) => {
+    // Map translation keys based on hint key
+    const translationKeyMap: Record<
+      string,
+      { title: string; description: string }
+    > = {
+      exhibits: {
+        title: t("exhibitHintTitle"),
+        description: t("exhibitHintDescription"),
+      },
+      creators: {
+        title: t("creatorHintTitle"),
+        description: t("creatorHintDescription"),
+      },
+      critiqueDidYouKnow: {
+        title: t("critiqueDidYouKnowTitle"),
+        description: t("critiqueDidYouKnowDescription"),
+      },
+    };
+
+    const translations = translationKeyMap[config.key] || {
+      title: "",
+      description: "",
+    };
+
+    return {
+      key: config.key,
+      order: config.order,
+      title: translations.title,
+      description: translations.description,
+      targetSelector: config.targetSelector,
+      side: config.side,
+      fixedPosition: config.fixedPosition,
+      showArrow: config.showArrow,
+    };
+  });
 
   // Get the next hint to show
   const nextHintKey = tutorialManager.getNextHint(

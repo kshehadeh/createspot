@@ -1,4 +1,5 @@
 import { TutorialManager } from "@/lib/tutorial-manager";
+import { getGlobalHintsKeys } from "@/lib/global-hints-config";
 
 export interface HintConfig {
   key: string;
@@ -23,6 +24,7 @@ export interface HintConfig {
  * This function handles all logic for determining if hints should be shown:
  * - Checks if user is logged in (via tutorialData presence)
  * - Checks if tutorials are enabled
+ * - Checks if there are pending global hints (global hints take priority)
  * - Checks if there are available hints
  * - Returns the next hint based on order and seen status
  *
@@ -47,6 +49,13 @@ export function getNextPageHint(
   }
 
   const tutorialManager = new TutorialManager(tutorialData);
+
+  // Check if there are pending global hints - if so, don't show page hints
+  // Global hints always take priority over page hints
+  const globalHintsKeys = getGlobalHintsKeys();
+  if (tutorialManager.hasPendingGlobalHints(globalHintsKeys)) {
+    return null;
+  }
 
   // TutorialManager.getNextHint() already checks if tutorials are enabled
   // and if hints have been seen, so we can use it directly

@@ -156,4 +156,25 @@ export class TutorialManager {
 
     return null;
   }
+
+  /**
+   * Check if there are any pending (unseen) global hints.
+   * Used to determine if page hints should be suppressed in favor of global hints.
+   *
+   * @param availableGlobalHints - Array of global hints with their keys and orders
+   * @returns true if any global hint hasn't been seen, false otherwise
+   */
+  hasPendingGlobalHints(
+    availableGlobalHints: Array<{ key: string; order: number }>,
+  ): boolean {
+    if (!this.isEnabled()) return false;
+
+    const globalHints = this.blob.global;
+    if (!globalHints || typeof globalHints === "string") return false;
+
+    // Check if any of the available global hints haven't been seen
+    return availableGlobalHints.some(
+      (hint) => !this.isHintSeen("global", hint.key),
+    );
+  }
 }

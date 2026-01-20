@@ -184,6 +184,36 @@ Fixed-position hints appear at a specific location on the screen, typically for 
 5. **Persistence**: Once dismissed, hints are marked as seen and never shown again for that user
 6. **Flexibility**: New hints can be added in the future, and old hints can be removed without breaking the system
 
+## Hint Priority System
+
+The hints system uses a priority-based coordination mechanism to ensure only one hint appears at a time, preventing visual conflicts and user confusion.
+
+### Priority Rules
+
+1. **Global Hints Take Precedence**: Global hints always have priority over page-specific hints. If there are any pending (unseen) global hints, page hints will not display.
+
+2. **Within-Context Ordering**: Within each context (global or page-specific), hints are ordered by their `order` field. Lower numbers are shown first.
+
+3. **One Hint at a Time**: Only one hint is displayed at any given time, regardless of how many hints are available.
+
+### How It Works
+
+When a page component calls `getNextPageHint()`, the helper function:
+
+1. Checks if the user is logged in and tutorials are enabled
+2. **Checks for pending global hints** - If any global hints haven't been seen, returns `null` (suppressing page hints)
+3. If no global hints are pending, proceeds to check for page-specific hints
+4. Returns the next page hint based on order and seen status
+
+This ensures a smooth, non-overlapping hint experience where users see global navigation hints first, then page-specific hints after all global hints have been dismissed.
+
+### Example Scenarios
+
+- **Global hint (order 1) + Page hint (order 1)**: Only the global hint shows
+- **No global hints + Page hint (order 1)**: Page hint shows normally
+- **All global hints dismissed + Page hint (order 1)**: Page hint shows
+- **Multiple global hints**: Shows one at a time in order, then page hints after all are dismissed
+
 ## API
 
 ### POST `/api/tutorial`
@@ -252,6 +282,7 @@ const tutorialManager = new TutorialManager(user?.tutorial);
 | `getHintMetadata()` | `(page: string)` | `Array<{key, order, seen, dismissedAt}>` | Get all hints for a page |
 | `hasUnseenHints()` | `(page: string)` | `boolean` | Check if page has any unseen hints |
 | `getNextHint()` | `(page: string, availableHints: Array<{key, order}>)` | `string \| null` | Get the next hint to show based on order and seen status |
+| `hasPendingGlobalHints()` | `(availableGlobalHints: Array<{key, order}>)` | `boolean` | Check if there are any pending (unseen) global hints |
 
 ### Example Usage
 
@@ -428,8 +459,9 @@ For fixed-position hints (like "Did You Know"), no arrow is shown (`showArrow={f
 5. **Hint Order**: Set `order` field when marking hints as seen for future prioritization
 6. **Test Both States**: Verify hints appear for new users and don't reappear after dismissal
 7. **Mobile Friendly**: Ensure target selectors work on both desktop and mobile views
-8. **One at a Time**: Global hints show one at a time based on order - ensure proper ordering
+8. **One at a Time**: Only one hint shows at a time - global hints take priority over page hints, and within each context hints are shown one at a time based on order
 9. **Internationalization**: Always use translation keys for hint text, never hardcode strings
+10. **Priority Awareness**: Remember that global hints will suppress page hints - design your hint flow accordingly
 
 ## Examples
 
@@ -455,7 +487,7 @@ The system includes global hints that appear on all pages:
 - Shows when: User is logged in and hasn't dismissed it
 - Location: `components/global-hints.tsx`
 
-All global hints are rendered conditionally based on the user's tutorial state and automatically save dismissal to the database via the API endpoint. They appear one at a time, ordered by priority.
+All global hints are rendered conditionally based on the user's tutorial state and automatically save dismissal to the database via the API endpoint. They appear one at a time, ordered by priority. **Global hints take precedence over page-specific hints** - if any global hints are pending, page hints will not display until all global hints have been dismissed.
 
 ### Example: Profile Page Hints
 
