@@ -26,6 +26,9 @@ export async function generateMetadata({
     where: { id: collectionId },
     include: {
       user: { select: { name: true } },
+      _count: {
+        select: { submissions: true },
+      },
     },
   });
 
@@ -33,10 +36,44 @@ export async function generateMetadata({
     return { title: `${t("notFound")} | Create Spot` };
   }
 
+  // Only generate OG metadata for public collections
+  // Private collections should not have shareable OG images
+  if (!collection.isPublic) {
+    const creatorName = collection.user.name || t("anonymous");
+    return {
+      title: `${collection.name} - ${creatorName} | Create Spot`,
+      description: collection.description || undefined,
+    };
+  }
+
   const creatorName = collection.user.name || t("anonymous");
+  const itemCount = collection._count.submissions;
+  const description =
+    collection.description ||
+    `A collection by ${creatorName} with ${itemCount} ${itemCount !== 1 ? "items" : "item"}`;
+
+  // Generate absolute OG image URL - Next.js will automatically use opengraph-image.tsx
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const ogImageUrl = `${baseUrl}/portfolio/${userId}/collections/${collectionId}/opengraph-image`;
+
+  const pageTitle = `${collection.name} - ${creatorName} | Create Spot`;
+
   return {
-    title: `${collection.name} - ${creatorName} | Create Spot`,
-    description: collection.description || undefined,
+    title: pageTitle,
+    description,
+    openGraph: {
+      title: pageTitle,
+      description,
+      images: [ogImageUrl],
+      type: "website",
+      url: `${baseUrl}/portfolio/${userId}/collections/${collectionId}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: pageTitle,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 
