@@ -12,6 +12,7 @@ export function DashboardNavigation() {
   const promptRoute = getRoute("prompt");
   const creatorsRoute = getRoute("creators");
   const aboutRoute = getRoute("about");
+  const contactRoute = getRoute("contact");
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -47,6 +48,12 @@ export function DashboardNavigation() {
       </Link>
       <Link href={aboutRoute.path} className={linkClassName(aboutRoute.path)}>
         {t("about")}
+      </Link>
+      <Link
+        href={contactRoute.path}
+        className={linkClassName(contactRoute.path)}
+      >
+        {t("contact")}
       </Link>
     </nav>
   );

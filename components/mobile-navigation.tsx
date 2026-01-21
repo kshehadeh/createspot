@@ -204,6 +204,7 @@ function MobileNavigationLinks({
   const promptRoute = getRoute("prompt");
   const creatorsRoute = getRoute("creators");
   const aboutRoute = getRoute("about");
+  const contactRoute = getRoute("contact");
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -272,6 +273,19 @@ function MobileNavigationLinks({
         >
           {aboutRoute.icon && <aboutRoute.icon className="h-5 w-5" />}
           {t("about")}
+        </Link>
+      </div>
+      <div className="mb-2">
+        <Link
+          href={contactRoute.path}
+          className={cn(
+            linkClassName(contactRoute.path),
+            "flex items-center gap-2",
+          )}
+          onClick={onLinkClick}
+        >
+          {contactRoute.icon && <contactRoute.icon className="h-5 w-5" />}
+          {t("contact")}
         </Link>
       </div>
     </>

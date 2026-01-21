@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   Sparkles,
   Info,
+  Mail,
 } from "lucide-react";
 import { EXHIBITION_CONFIGS } from "./exhibition-constants";
 import { Home } from "lucide-react";
@@ -177,6 +178,11 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.about",
     isLink: false,
     icon: Info,
+  },
+  contact: {
+    path: "/contact",
+    label: "navigation.contact",
+    icon: Mail,
   },
   terms: {
     path: "/terms",
