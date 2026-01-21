@@ -265,34 +265,34 @@ export default async function Home() {
                   <Lightbulb className="h-8 w-8 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div className="flex-1">
-                <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                  {t("features.inspiration.title")}
-                </h2>
-                <p className="text-lg leading-relaxed text-muted-foreground">
-                  {t("features.inspiration.description")}
-                </p>
-                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-                  {!session?.user && (
+                  <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                    {t("features.inspiration.title")}
+                  </h2>
+                  <p className="text-lg leading-relaxed text-muted-foreground">
+                    {t("features.inspiration.description")}
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+                    {!session?.user && (
+                      <Link
+                        href="/auth/signin"
+                        className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                      >
+                        {t("features.inspiration.startCreating")}
+                      </Link>
+                    )}
                     <Link
-                      href="/auth/signin"
+                      href="/prompt"
                       className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                     >
-                      {t("features.inspiration.startCreating")}
+                      {t("features.inspiration.thisWeekPrompts")}
                     </Link>
-                  )}
-                  <Link
-                    href="/prompt"
-                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
-                    {t("features.inspiration.thisWeekPrompts")}
-                  </Link>
-                  <Link
-                    href="/exhibition/gallery/grid"
-                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
-                    {t("features.inspiration.browseCollection")}
-                  </Link>
-                </div>
+                    <Link
+                      href="/exhibition/gallery/grid"
+                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                    >
+                      {t("features.inspiration.browseCollection")}
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -308,37 +308,37 @@ export default async function Home() {
                   <FolderOpen className="h-8 w-8 text-sky-600 dark:text-sky-400" />
                 </div>
                 <div className="flex-1">
-                <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                  {t("features.mediaManager.title")}
-                </h2>
-                <p className="text-lg leading-relaxed text-muted-foreground">
-                  {t("features.mediaManager.description")}
-                </p>
-                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-                  {!session?.user ? (
-                    <Link
-                      href="/auth/signin"
-                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
-                      {t("features.mediaManager.startCreating")}
-                    </Link>
-                  ) : (
-                    <>
+                  <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                    {t("features.mediaManager.title")}
+                  </h2>
+                  <p className="text-lg leading-relaxed text-muted-foreground">
+                    {t("features.mediaManager.description")}
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+                    {!session?.user ? (
                       <Link
-                        href={`/profile/${session.user.id}`}
+                        href="/auth/signin"
                         className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                       >
-                        {t("features.mediaManager.yourProfile")}
+                        {t("features.mediaManager.startCreating")}
                       </Link>
-                      <Link
-                        href="/portfolio/edit"
-                        className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                      >
-                        {t("features.mediaManager.yourPortfolio")}
-                      </Link>
-                    </>
-                  )}
-                </div>
+                    ) : (
+                      <>
+                        <Link
+                          href={`/profile/${session.user.id}`}
+                          className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                        >
+                          {t("features.mediaManager.yourProfile")}
+                        </Link>
+                        <Link
+                          href="/portfolio/edit"
+                          className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                        >
+                          {t("features.mediaManager.yourPortfolio")}
+                        </Link>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -354,26 +354,26 @@ export default async function Home() {
                   <Shield className="h-8 w-8 text-violet-600 dark:text-violet-400" />
                 </div>
                 <div className="flex-1">
-                <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                  {t("features.exposureWithSafety.title")}
-                </h2>
-                <p className="text-lg leading-relaxed text-muted-foreground">
-                  {t("features.exposureWithSafety.description")}
-                </p>
-                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-                  <Link
-                    href="/about/protecting-your-work"
-                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
-                    {t("features.exposureWithSafety.protectingYourWork")}
-                  </Link>
-                  <Link
-                    href="/terms"
-                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
-                    {t("features.exposureWithSafety.browseTerms")}
-                  </Link>
-                </div>
+                  <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                    {t("features.exposureWithSafety.title")}
+                  </h2>
+                  <p className="text-lg leading-relaxed text-muted-foreground">
+                    {t("features.exposureWithSafety.description")}
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+                    <Link
+                      href="/about/protecting-your-work"
+                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                    >
+                      {t("features.exposureWithSafety.protectingYourWork")}
+                    </Link>
+                    <Link
+                      href="/terms"
+                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                    >
+                      {t("features.exposureWithSafety.browseTerms")}
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1140,5 +1140,41 @@
     "downloading": "Downloading...",
     "downloadingPDF": "Generating PDF...",
     "downloadingZIP": "Generating ZIP..."
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Have a question, bug report, or collaboration idea? We'd love to hear from you.",
+    "support": {
+      "title": "Support & Bug Reports",
+      "description": "Found something broken or have a feature suggestion? Tell us about it and help us improve Create Spot.",
+      "cta": "Report a Bug",
+      "formDescription": "Describe the issue you encountered",
+      "descriptionLabel": "What's the problem?",
+      "descriptionPlaceholder": "Please describe the issue you're experiencing...",
+      "urlLabel": "Page URL",
+      "urlPlaceholder": "https://create.spot/page-where-issue-occurred",
+      "submit": "Submit Report",
+      "successMessage": "Thank you! Your bug report has been submitted.",
+      "errorRequired": "Please fill in all required fields",
+      "errorSubmit": "Failed to submit bug report. Please try again."
+    },
+    "exhibit": {
+      "title": "Request for Exhibit",
+      "description": "Interested in featuring work in an exhibit? Tell us about your exhibit idea and select the pieces you'd like to showcase.",
+      "cta": "Request an Exhibit",
+      "formDescription": "Share your exhibit concept",
+      "nameLabel": "Exhibit Name",
+      "namePlaceholder": "e.g., 'Digital Landscapes 2024'",
+      "descriptionLabel": "Exhibit Description",
+      "descriptionPlaceholder": "Tell us about your exhibit, its theme, and what makes it special...",
+      "submissionsLabel": "Select Submissions",
+      "selectSubmissions": "Browse & Select Submissions",
+      "selectedCount": "{count} submission{count, plural, one {} other {s}} selected",
+      "submit": "Submit Request",
+      "successMessage": "Thank you! Your exhibit request has been sent.",
+      "errorRequired": "Please fill in all required fields",
+      "errorNoSubmissions": "Please select at least one submission",
+      "errorSubmit": "Failed to submit exhibit request. Please try again."
+    }
   }
 }

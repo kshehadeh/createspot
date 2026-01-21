@@ -1140,5 +1140,41 @@
     "downloading": "Descargando...",
     "downloadingPDF": "Generando PDF...",
     "downloadingZIP": "Generando ZIP..."
+  },
+  "contact": {
+    "title": "Ponte en Contacto",
+    "subtitle": "¿Tienes una pregunta, reporte de error o idea de colaboración? Nos encantaría escucharte.",
+    "support": {
+      "title": "Soporte y Reportes de Errores",
+      "description": "¿Encontraste algo que no funciona o tienes una sugerencia? Cuéntanos y ayúdanos a mejorar Create Spot.",
+      "cta": "Reportar un Error",
+      "formDescription": "Describe el problema que encontraste",
+      "descriptionLabel": "¿Cuál es el problema?",
+      "descriptionPlaceholder": "Por favor describe el problema que estás experimentando...",
+      "urlLabel": "URL de la Página",
+      "urlPlaceholder": "https://create.spot/pagina-donde-ocurrio-el-error",
+      "submit": "Enviar Reporte",
+      "successMessage": "¡Gracias! Tu reporte de error ha sido enviado.",
+      "errorRequired": "Por favor completa todos los campos requeridos",
+      "errorSubmit": "No se pudo enviar el reporte. Por favor intenta de nuevo."
+    },
+    "exhibit": {
+      "title": "Solicitud para Exhibición",
+      "description": "¿Interesado en exhibir tu obra? Cuéntanos sobre tu idea de exhibición y selecciona las piezas que te gustaría mostrar.",
+      "cta": "Solicitar una Exhibición",
+      "formDescription": "Comparte tu concepto de exhibición",
+      "nameLabel": "Nombre de la Exhibición",
+      "namePlaceholder": "p.ej., 'Paisajes Digitales 2024'",
+      "descriptionLabel": "Descripción de la Exhibición",
+      "descriptionPlaceholder": "Cuéntanos sobre tu exhibición, su tema y qué la hace especial...",
+      "submissionsLabel": "Selecciona Trabajos",
+      "selectSubmissions": "Explorar y Seleccionar Trabajos",
+      "selectedCount": "{count} trabajo{count, plural, one {} other {s}} seleccionado{count, plural, one {} other {s}}",
+      "submit": "Enviar Solicitud",
+      "successMessage": "¡Gracias! Tu solicitud de exhibición ha sido enviada.",
+      "errorRequired": "Por favor completa todos los campos requeridos",
+      "errorNoSubmissions": "Por favor selecciona al menos un trabajo",
+      "errorSubmit": "No se pudo enviar la solicitud. Por favor intenta de nuevo."
+    }
   }
 }
