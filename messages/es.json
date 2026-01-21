@@ -452,6 +452,7 @@
       "searchByNameOrEmail": "Buscar por nombre o correo electrónico...",
       "addSelected": "Añadir Seleccionadas ({count})",
       "noSubmissionsFound": "No se encontraron publicaciones",
+      "searchOrFilterToLoad": "Usa búsqueda o filtros para cargar publicaciones",
       "deselectAll": "Deseleccionar Todo",
       "selectAll": "Seleccionar Todo ({count})",
       "selected": "seleccionadas",

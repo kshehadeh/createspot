@@ -90,20 +90,32 @@ export const ExhibitRequestEmail = ({
           <Text style={{ fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>
             SUBMISSIONS ({submissions.length})
           </Text>
-          {submissions.map((submission) => (
-            <Section key={submission.id} style={{ marginBottom: "12px" }}>
-              <Text style={{ fontSize: "14px", margin: "4px 0" }}>
-                <strong>{submission.title || "Untitled"}</strong>
-              </Text>
-              <Text style={{ fontSize: "12px", margin: "4px 0", color: "#6b7280" }}>
-                By {submission.user.name || "Anonymous"} (
-                <Link href={`mailto:${submission.user.email}`}>
-                  {submission.user.email}
-                </Link>
-                )
-              </Text>
-            </Section>
-          ))}
+          {submissions.map((submission) => {
+            const submissionUrl = baseUrl ? `${baseUrl}/s/${submission.id}` : undefined;
+
+            return (
+              <Section key={submission.id} style={{ marginBottom: "12px" }}>
+                <Text style={{ fontSize: "14px", margin: "4px 0" }}>
+                  <strong>
+                    {submissionUrl ? (
+                      <Link href={submissionUrl}>
+                        {submission.title || "Untitled"}
+                      </Link>
+                    ) : (
+                      submission.title || "Untitled"
+                    )}
+                  </strong>
+                </Text>
+                <Text style={{ fontSize: "12px", margin: "4px 0", color: "#6b7280" }}>
+                  By {submission.user.name || "Anonymous"} (
+                  <Link href={`mailto:${submission.user.email}`}>
+                    {submission.user.email}
+                  </Link>
+                  )
+                </Text>
+              </Section>
+            );
+          })}
         </Section>
 
         <EmailText>

@@ -84,8 +84,8 @@ export function SupportForm() {
           </DialogHeader>
 
           {success ? (
-            <div className="rounded-lg bg-green-50 p-4 text-center dark:bg-green-950/20">
-              <p className="text-sm font-medium text-green-900 dark:text-green-200">
+            <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-center">
+              <p className="text-sm font-medium text-foreground">
                 {t("successMessage")}
               </p>
             </div>
@@ -120,7 +120,7 @@ export function SupportForm() {
               </div>
 
               {error && (
-                <div className="rounded-lg bg-red-50 p-3 text-sm text-red-900 dark:bg-red-950/20 dark:text-red-200">
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
                   {error}
                 </div>
               )}

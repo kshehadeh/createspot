@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
-import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { SubmissionBrowser } from "@/components/submission-browser";
 
 interface SelectedSubmission {
@@ -38,7 +36,7 @@ export function ExhibitRequestForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showBrowser, setShowBrowser] = useState(false);
-  const [selectedSubmissions, setSelectedSubmissions] = useState<
+  const [_selectedSubmissions, setSelectedSubmissions] = useState<
     SelectedSubmission[]
   >([]);
   const [formData, setFormData] = useState<FormData>({
@@ -57,16 +55,6 @@ export function ExhibitRequestForm() {
       selectedSubmissionIds: submissionIds,
     });
     setShowBrowser(false);
-  };
-
-  const handleRemoveSubmission = (submissionId: string) => {
-    const newIds = formData.selectedSubmissionIds.filter(
-      (id) => id !== submissionId,
-    );
-    setFormData({ ...formData, selectedSubmissionIds: newIds });
-    setSelectedSubmissions(
-      selectedSubmissions.filter((s) => s.id !== submissionId),
-    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,8 +119,8 @@ export function ExhibitRequestForm() {
           </DialogHeader>
 
           {success ? (
-            <div className="rounded-lg bg-green-50 p-4 text-center dark:bg-green-950/20">
-              <p className="text-sm font-medium text-green-900 dark:text-green-200">
+            <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-center">
+              <p className="text-sm font-medium text-foreground">
                 {t("successMessage")}
               </p>
             </div>
@@ -183,36 +171,18 @@ export function ExhibitRequestForm() {
                 </Button>
 
                 {formData.selectedSubmissionIds.length > 0 && (
-                  <div className="space-y-2 pt-2">
-                    <p className="text-sm text-muted-foreground">
+                  <div className="rounded-lg border border-border bg-muted p-3 text-sm">
+                    <p className="text-muted-foreground">
                       {t("selectedCount", {
                         count: formData.selectedSubmissionIds.length,
                       })}
                     </p>
-                    <div className="flex flex-wrap gap-2">
-                      {formData.selectedSubmissionIds.map((id) => (
-                        <Badge
-                          key={id}
-                          variant="secondary"
-                          className="flex items-center gap-1"
-                        >
-                          <span className="truncate">{id.slice(0, 8)}</span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveSubmission(id)}
-                            className="ml-1 hover:text-destructive"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
                   </div>
                 )}
               </div>
 
               {error && (
-                <div className="rounded-lg bg-red-50 p-3 text-sm text-red-900 dark:bg-red-950/20 dark:text-red-200">
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
                   {error}
                 </div>
               )}
@@ -239,6 +209,7 @@ export function ExhibitRequestForm() {
         isOpen={showBrowser}
         onClose={() => setShowBrowser(false)}
         onSelect={handleSelectSubmissions}
+        preselectedIds={formData.selectedSubmissionIds}
       />
     </>
   );

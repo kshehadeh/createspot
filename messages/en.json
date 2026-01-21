@@ -452,6 +452,7 @@
       "searchByNameOrEmail": "Search by name or email...",
       "addSelected": "Add Selected ({count})",
       "noSubmissionsFound": "No submissions found",
+      "searchOrFilterToLoad": "Use search or filters to load submissions",
       "deselectAll": "Deselect All",
       "selectAll": "Select All ({count})",
       "selected": "selected",

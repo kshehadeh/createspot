@@ -1,4 +1,4 @@
-import { Section, Text } from "@react-email/components";
+import { Section, Text, Link } from "@react-email/components";
 import { EmailText } from "@/emails/components/text";
 import { BaseEmail } from "@/emails/layouts/base-email";
 
@@ -7,6 +7,8 @@ export interface ContactSupportEmailProps {
   description: string;
   pageUrl: string;
   baseUrl?: string;
+  userEmail?: string;
+  isAdminCopy?: boolean;
 }
 
 export const ContactSupportEmail = ({
@@ -14,19 +16,25 @@ export const ContactSupportEmail = ({
   description,
   pageUrl,
   baseUrl,
+  userEmail,
+  isAdminCopy = false,
 }: ContactSupportEmailProps) => {
-  const previewText = "We received your bug report";
+  const previewText = isAdminCopy
+    ? `Bug report from ${userName}`
+    : "We received your bug report";
 
   return (
     <BaseEmail previewText={previewText} baseUrl={baseUrl}>
       <Section>
         <Text style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}>
-          Thank you for reporting a bug, {userName}!
+          {isAdminCopy
+            ? `Bug Report from ${userName}`
+            : `Thank you for reporting a bug, ${userName}!`}
         </Text>
         <EmailText>
-          We received your bug report and appreciate you helping us improve
-          Create Spot. Our team will review the details and investigate the
-          issue as soon as possible.
+          {isAdminCopy
+            ? "A user has submitted a bug report. Please review the details below."
+            : "We received your bug report and appreciate you helping us improve Create Spot. Our team will review the details and investigate the issue as soon as possible."}
         </EmailText>
 
         <Section
@@ -40,8 +48,15 @@ export const ContactSupportEmail = ({
           <Text style={{ fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
             BUG REPORT DETAILS
           </Text>
+          {isAdminCopy && userEmail && (
+            <Text style={{ fontSize: "14px", margin: "8px 0" }}>
+              <strong>Reporter:</strong> {userName} (
+              <Link href={`mailto:${userEmail}`}>{userEmail}</Link>)
+            </Text>
+          )}
           <Text style={{ fontSize: "14px", margin: "8px 0" }}>
-            <strong>Page URL:</strong> {pageUrl}
+            <strong>Page URL:</strong>{" "}
+            <Link href={pageUrl}>{pageUrl}</Link>
           </Text>
           <Text style={{ fontSize: "14px", margin: "8px 0" }}>
             <strong>Description:</strong>
@@ -51,10 +66,12 @@ export const ContactSupportEmail = ({
           </Text>
         </Section>
 
-        <EmailText>
-          If you have any additional details to add or would like to provide
-          more information, please feel free to reach out to us.
-        </EmailText>
+        {!isAdminCopy && (
+          <EmailText>
+            If you have any additional details to add or would like to provide
+            more information, please feel free to reach out to us.
+          </EmailText>
+        )}
       </Section>
     </BaseEmail>
   );

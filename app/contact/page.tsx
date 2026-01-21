@@ -10,10 +10,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("contact");
   return {
     title: t("title"),
-    description: t("description"),
+    description: t("subtitle"),
     openGraph: {
       title: t("title"),
-      description: t("description"),
+      description: t("subtitle"),
       type: "website",
     },
   };

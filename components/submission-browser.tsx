@@ -52,6 +52,7 @@ interface SubmissionBrowserProps {
   onClose: () => void;
   onSelect: (submissionIds: string[]) => void;
   excludeIds?: string[];
+  preselectedIds?: string[];
 }
 
 export function SubmissionBrowser({
@@ -59,6 +60,7 @@ export function SubmissionBrowser({
   onClose,
   onSelect,
   excludeIds = [],
+  preselectedIds = [],
 }: SubmissionBrowserProps) {
   const t = useTranslations("admin.exhibits");
   const tCommon = useTranslations("common");
@@ -131,7 +133,7 @@ export function SubmissionBrowser({
     if (isUserPopoverOpen) {
       loadUsers(userSearchQuery);
     }
-  }, [isUserPopoverOpen, userSearchQuery, loadUsers]);
+  }, [isUserPopoverOpen, userSearchQuery]);
 
   const loadFacets = useCallback(async () => {
     try {
@@ -146,14 +148,20 @@ export function SubmissionBrowser({
     }
   }, []);
 
+  // Load facets when dialog opens
   useEffect(() => {
     if (isOpen) {
       loadFacets();
-      loadSubmissions();
-      loadUsers();
-      setSelectedIds(new Set());
+      setSelectedIds(new Set(preselectedIds));
     }
-  }, [isOpen, loadFacets, loadSubmissions, loadUsers]);
+  }, [isOpen, preselectedIds]);
+
+  // Reload submissions when filters change
+  useEffect(() => {
+    if (isOpen) {
+      loadSubmissions();
+    }
+  }, [category, tag, query, userId, isOpen]);
 
   const handleToggleSelection = (submissionId: string) => {
     setSelectedIds((prev) => {
@@ -430,10 +438,17 @@ export function SubmissionBrowser({
               <div className="flex items-center justify-center py-12">
                 <p className="text-muted-foreground">{tCommon("loading")}</p>
               </div>
-            ) : submissions.length === 0 ? (
+            ) : submissions.length === 0 &&
+              (category || tag || query || userId) ? (
               <div className="flex items-center justify-center py-12">
                 <p className="text-muted-foreground">
                   {t("noSubmissionsFound")}
+                </p>
+              </div>
+            ) : submissions.length === 0 ? (
+              <div className="flex items-center justify-center py-12">
+                <p className="text-muted-foreground">
+                  {t("searchOrFilterToLoad")}
                 </p>
               </div>
             ) : (
