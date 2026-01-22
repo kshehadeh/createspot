@@ -519,9 +519,12 @@ export function SubmissionLightbox({
           {/* Image metadata overlay - hidden when sidebar is visible (xl+) */}
           {hasImage && (
             <div
-              className="absolute left-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:px-6 sm:py-4 xl:hidden"
+              className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
               style={{
-                bottom: `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
+                // Position at top, but add offset when zoom indicator is visible
+                top: !supportsHover && touchZoom.isZoomed
+                  ? `max(4.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem))`
+                  : `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
               }}
             >
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -543,12 +546,12 @@ export function SubmissionLightbox({
             </div>
           )}
 
-          {/* Text-only metadata overlay */}
+          {/* Text-only metadata overlay - top on mobile only */}
           {hasText && !hasImage && (
             <div
-              className="absolute left-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:px-6 sm:py-4"
+              className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
               style={{
-                bottom: `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
+                top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
               }}
             >
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
