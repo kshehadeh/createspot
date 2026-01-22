@@ -162,6 +162,7 @@
     "admin": "Admin",
     "creators": "Creators",
     "about": "About",
+    "features": "Features",
     "contact": "Contact",
     "terms": "Terms of Service",
     "create": "Create",
@@ -715,6 +716,14 @@
       "continuation": " — and we believe in",
       "ownership": "your ownership of everything you create",
       "learnMore": "Learn more about protecting your work →"
+    },
+    "features": {
+      "title": "Features",
+      "description": "Discover all the ways Create Spot helps you organize, share, and protect your creative work.",
+      "viewAll": "View all features →"
+    },
+    "sidebar": {
+      "title": "On this page"
     }
   },
   "aboutPurpose": {
@@ -745,6 +754,51 @@
       "cycleDescription": "is a cycle that makes life worth living. Each feeds the next, and the loop gets stronger when we share our work and support each other. Let's keep that cycle going together."
     },
     "backToAbout": "← Back to About"
+  },
+  "aboutFeatures": {
+    "title": "Features | Create Spot",
+    "description": "Explore all the powerful features that help you organize, share, and protect your creative work.",
+    "mainTitle": "Everything you need to showcase your creativity.",
+    "mainDescription": "Create Spot provides a comprehensive set of tools designed to help you build, organize, and share your creative portfolio.",
+    "backToAbout": "← Back to About",
+    "features": {
+      "portfolio": {
+        "title": "Portfolio Organization",
+        "description": "Keep all your art in your portfolio and organize with tags and categories."
+      },
+      "collections": {
+        "title": "Collections",
+        "description": "Create collections of your art for special purposes like award submissions, publications, etc."
+      },
+      "socialSharing": {
+        "title": "Social Sharing",
+        "description": "Share your work on social media using powerful and configurable social graph preview links."
+      },
+      "protection": {
+        "title": "Work Protection",
+        "description": "Protect your work from AI scraping and downloading through various blockers and watermarking."
+      },
+      "downloads": {
+        "title": "Collection Downloads",
+        "description": "Download your collections as PDFs or zip files for sharing easily."
+      },
+      "critiques": {
+        "title": "Critiques",
+        "description": "Request critiques of your work (optionally) to grow your skills with the help of others."
+      },
+      "prompts": {
+        "title": "Art Prompts",
+        "description": "Get inspired to make more through art prompts and browsing the collection."
+      },
+      "exhibits": {
+        "title": "Exhibits",
+        "description": "Get featured in special exhibits and view these exhibits using different views."
+      },
+      "mapView": {
+        "title": "Map View",
+        "description": "Browse the world of art in our map view."
+      }
+    }
   },
   "aboutPromptSubmissions": {
     "title": "Prompt Submissions | Create Spot",

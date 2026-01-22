@@ -179,6 +179,36 @@ const ROUTES: Record<string, RouteConfig> = {
     isLink: false,
     icon: Info,
   },
+  aboutPurpose: {
+    path: "/about/purpose",
+    label: "about.purpose.title",
+    parentPath: "/about",
+  },
+  aboutFeatures: {
+    path: "/about/features",
+    label: "navigation.features",
+    parentPath: "/about",
+  },
+  aboutPortfoliosAndSharing: {
+    path: "/about/portfolios-and-sharing",
+    label: "about.organization.title",
+    parentPath: "/about",
+  },
+  aboutPromptSubmissions: {
+    path: "/about/prompt-submissions",
+    label: "about.promptInspiration.title",
+    parentPath: "/about",
+  },
+  aboutBadges: {
+    path: "/about/badges",
+    label: "about.badges.title",
+    parentPath: "/about",
+  },
+  aboutProtectingYourWork: {
+    path: "/about/protecting-your-work",
+    label: "about.protectingYourWork.title",
+    parentPath: "/about",
+  },
   contact: {
     path: "/contact",
     label: "navigation.contact",

@@ -162,6 +162,7 @@
     "admin": "Admin",
     "creators": "Creadores",
     "about": "Acerca de",
+    "features": "Características",
     "contact": "Contacto",
     "terms": "Términos de Servicio",
     "create": "Crear",
@@ -715,6 +716,14 @@
       "continuation": " — y creemos en",
       "ownership": "tu propiedad de todo lo que creas",
       "learnMore": "Más información sobre proteger tu trabajo →"
+    },
+    "features": {
+      "title": "Características",
+      "description": "Descubre todas las formas en que Create Spot te ayuda a organizar, compartir y proteger tu trabajo creativo.",
+      "viewAll": "Ver todas las características →"
+    },
+    "sidebar": {
+      "title": "En esta página"
     }
   },
   "aboutPurpose": {
@@ -745,6 +754,51 @@
       "cycleDescription": "es un ciclo que hace que la vida valga la pena vivir. Cada uno alimenta al siguiente, y el ciclo se fortalece cuando compartimos nuestro trabajo y nos apoyamos mutuamente. Mantengamos ese ciclo en marcha juntos."
     },
     "backToAbout": "← Volver a Acerca de"
+  },
+  "aboutFeatures": {
+    "title": "Características | Create Spot",
+    "description": "Explora todas las características poderosas que te ayudan a organizar, compartir y proteger tu trabajo creativo.",
+    "mainTitle": "Todo lo que necesitas para mostrar tu creatividad.",
+    "mainDescription": "Create Spot proporciona un conjunto completo de herramientas diseñadas para ayudarte a construir, organizar y compartir tu portafolio creativo.",
+    "backToAbout": "← Volver a Acerca de",
+    "features": {
+      "portfolio": {
+        "title": "Organización de Portafolio",
+        "description": "Mantén todo tu arte en tu portafolio y organízalo con etiquetas y categorías."
+      },
+      "collections": {
+        "title": "Colecciones",
+        "description": "Crea colecciones de tu arte para propósitos especiales como envíos de premios, publicaciones, etc."
+      },
+      "socialSharing": {
+        "title": "Compartir en Redes Sociales",
+        "description": "Comparte tu trabajo en redes sociales usando enlaces de vista previa de gráfico social potentes y configurables."
+      },
+      "protection": {
+        "title": "Protección del Trabajo",
+        "description": "Protege tu trabajo del raspado de IA y la descarga mediante varios bloqueadores y marcas de agua."
+      },
+      "downloads": {
+        "title": "Descargas de Colecciones",
+        "description": "Descarga tus colecciones como PDFs o archivos zip para compartir fácilmente."
+      },
+      "critiques": {
+        "title": "Críticas",
+        "description": "Solicita críticas de tu trabajo (opcionalmente) para mejorar tus habilidades con la ayuda de otros."
+      },
+      "prompts": {
+        "title": "Indicaciones de Arte",
+        "description": "Inspírate para crear más a través de indicaciones de arte y navegando la colección."
+      },
+      "exhibits": {
+        "title": "Exposiciones",
+        "description": "Destácate en exposiciones especiales y visualiza estas exposiciones usando diferentes vistas."
+      },
+      "mapView": {
+        "title": "Vista de Mapa",
+        "description": "Navega el mundo del arte en nuestra vista de mapa."
+      }
+    }
   },
   "aboutPromptSubmissions": {
     "title": "Publicaciones de Indicaciones | Create Spot",
