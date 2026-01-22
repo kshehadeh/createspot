@@ -229,6 +229,54 @@ The toggle cycles between:
 - **Dark** - Force dark mode  
 - **System** - Follow system preference (default)
 
+### iOS Safari Dark Mode Support
+
+iOS Safari has a known issue where dark mode detection can fail for cards with gradient backgrounds. When using gradient backgrounds on cards, you must add explicit CSS rules with `!important` to ensure proper dark mode styling.
+
+**Pattern for iOS Safari dark mode support:**
+
+1. Create a specific CSS class for the card (e.g., `contact-card-blue`, `terms-card`)
+2. Define the light mode gradient background
+3. Add `.dark` class rule with `!important`
+4. Add `@media (prefers-color-scheme: dark)` rule with `!important` for iOS Safari
+
+**Example from `app/globals.css`:**
+
+```css
+/* Contact page card styling with iOS Safari dark mode support */
+.contact-card-blue {
+  background: linear-gradient(to bottom right, rgb(239 246 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .contact-card-blue {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .contact-card-blue:not(.light .contact-card-blue) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+```
+
+**Usage in components:**
+
+```tsx
+<Card className="contact-card-blue rounded-3xl border-none shadow-sm">
+  <CardContent>...</CardContent>
+</Card>
+```
+
+**Important notes:**
+- Always use `!important` to override Tailwind classes
+- Use the card background color `hsl(240 10% 3.9%)` for dark mode
+- The `@media (prefers-color-scheme: dark)` rule is critical for iOS Safari
+- Apply this pattern to any card with custom gradient backgrounds
+
+**Pages using this pattern:**
+- `/contact` - `contact-card-blue`, `contact-card-purple`
+- `/terms` - `terms-card`
+
 ### Typography
 
 Two fonts are loaded via `next/font/google`:

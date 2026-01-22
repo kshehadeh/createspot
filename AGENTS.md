@@ -209,6 +209,18 @@ The app uses `next-themes` for theme management. Users can toggle between light/
 </div>
 ```
 
+**Important: iOS Safari Dark Mode Issue**
+
+iOS Safari has a known issue where dark mode detection fails for cards with gradient backgrounds. When creating cards with custom gradients, you must add explicit CSS rules in `app/globals.css` with `!important` flags to ensure proper dark mode styling.
+
+**Pattern:**
+1. Create a specific CSS class (e.g., `contact-card-blue`)
+2. Define light mode gradient with `!important`
+3. Add `.dark` class rule with dark background `hsl(240 10% 3.9%)` and `!important`
+4. Add `@media (prefers-color-scheme: dark)` rule with same dark background and `!important`
+
+See `app/globals.css` for examples (`terms-card`, `contact-card-blue`, `contact-card-purple`) and [docs/FRONTEND.md](docs/FRONTEND.md) for complete documentation.
+
 #### Adding New shadcn Components
 
 ```bash
@@ -413,3 +425,37 @@ bunx prisma generate
 ```bash
 bun run format
 ```
+
+### iOS Safari dark mode not working on cards
+
+If cards with gradient backgrounds show light backgrounds with light text in dark mode on iOS Safari, you need to add explicit CSS rules with `!important` flags.
+
+**Solution:**
+1. Create a specific CSS class for the card in `app/globals.css`
+2. Add light mode gradient background with `!important`
+3. Add `.dark` class rule with `background: hsl(240 10% 3.9%) !important`
+4. Add `@media (prefers-color-scheme: dark)` rule with same background and `!important`
+
+**Example:**
+```css
+.contact-card-blue {
+  background: linear-gradient(to bottom right, rgb(239 246 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .contact-card-blue {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .contact-card-blue:not(.light .contact-card-blue) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+```
+
+Then use the class in your component:
+```tsx
+<Card className="contact-card-blue rounded-3xl border-none shadow-sm">
+```
+
+See existing examples in `app/globals.css` (`terms-card`, `contact-card-blue`, `contact-card-purple`) and [docs/FRONTEND.md](docs/FRONTEND.md) for complete documentation.

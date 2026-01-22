@@ -311,6 +311,35 @@ body {
   }
 }
 
+/* Contact page card styling with iOS Safari dark mode support */
+.contact-card-blue {
+  background: linear-gradient(to bottom right, rgb(239 246 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .contact-card-blue {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .contact-card-blue:not(.light .contact-card-blue) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.contact-card-purple {
+  background: linear-gradient(to bottom right, rgb(250 245 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .contact-card-purple {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .contact-card-purple:not(.light .contact-card-purple) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
 /* Image protection styles */
 .protected-image-wrapper {
   position: relative;

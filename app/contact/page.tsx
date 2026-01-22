@@ -28,7 +28,7 @@ export default async function ContactPage() {
 
       <div className="grid gap-8">
         {/* Support & Bug Reports */}
-        <Card className="rounded-3xl border-none bg-linear-to-br from-blue-50/50 to-white shadow-sm dark:from-blue-950/10 dark:to-transparent">
+        <Card className="contact-card-blue rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-2 text-2xl text-foreground font-permanent-marker">
               {t("support.title")}
@@ -41,7 +41,7 @@ export default async function ContactPage() {
         </Card>
 
         {/* Request for Exhibit */}
-        <Card className="rounded-3xl border-none bg-linear-to-br from-purple-50/50 to-white shadow-sm dark:from-purple-950/10 dark:to-transparent">
+        <Card className="contact-card-purple rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-2 text-2xl text-foreground font-permanent-marker">
               {t("exhibit.title")}
