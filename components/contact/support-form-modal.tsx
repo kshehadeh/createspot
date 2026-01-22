@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +38,7 @@ export function SupportFormModal({ isOpen, onClose }: SupportFormModalProps) {
   const t = useTranslations("contact.support");
   const tCommon = useTranslations("common");
   const { data: session } = useSession();
+  const pathname = usePathname();
   const { getRecentUrls } = useRecentUrls();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -46,17 +48,26 @@ export function SupportFormModal({ isOpen, onClose }: SupportFormModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [useCustomUrl, setUseCustomUrl] = useState(false);
-  const [recentUrls, setRecentUrls] = useState<string[]>([]);
+  const [availableUrls, setAvailableUrls] = useState<string[]>([]);
 
-  // Load recent URLs when modal opens
+  // Load recent URLs and include current page URL when modal opens
   useEffect(() => {
-    if (isOpen) {
-      const urls = getRecentUrls(10);
-      setRecentUrls(urls);
-      // If there are recent URLs, don't default to custom input
-      setUseCustomUrl(urls.length === 0);
+    if (isOpen && typeof window !== "undefined") {
+      const currentUrl = `${window.location.origin}${pathname}`;
+      const recentUrls = getRecentUrls(10);
+      
+      // Combine current URL with recent URLs, avoiding duplicates
+      // Current URL should be first, then recent URLs (excluding current)
+      const allUrls = [
+        currentUrl,
+        ...recentUrls.filter((url) => url !== currentUrl),
+      ].slice(0, 10);
+      
+      setAvailableUrls(allUrls);
+      // Always default to dropdown (not custom input)
+      setUseCustomUrl(false);
     }
-  }, [isOpen, getRecentUrls]);
+  }, [isOpen, pathname, getRecentUrls]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,7 +153,7 @@ export function SupportFormModal({ isOpen, onClose }: SupportFormModalProps) {
 
             <div className="space-y-2">
               <Label htmlFor="pageUrl">{t("urlLabel")}</Label>
-              {!useCustomUrl && recentUrls.length > 0 ? (
+              {!useCustomUrl ? (
                 <div className="space-y-2">
                   <Select
                     value={formData.pageUrl || ""}
@@ -160,7 +171,7 @@ export function SupportFormModal({ isOpen, onClose }: SupportFormModalProps) {
                       <SelectValue placeholder={t("urlSelectPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
-                      {recentUrls.map((url) => (
+                      {availableUrls.map((url) => (
                         <SelectItem key={url} value={url}>
                           {url}
                         </SelectItem>
