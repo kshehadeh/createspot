@@ -21,6 +21,7 @@ import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
+import { usePinchZoom } from "@/lib/hooks/use-pinch-zoom";
 
 interface LightboxSubmission {
   id: string;
@@ -88,6 +89,14 @@ export function SubmissionLightbox({
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const viewportHeight = useViewportHeight();
+
+  // Pinch-to-zoom hook for mobile
+  const { touchZoom, handleTouchStart, handleTouchMove, handleTouchEnd, setBaseDimensions } =
+    usePinchZoom({
+      supportsHover,
+      imageRef,
+      imageContainerRef,
+    });
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const isOwner =
@@ -358,7 +367,11 @@ export function SubmissionLightbox({
           {hasImage && (
             <div
               ref={imageContainerRef}
-              className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden touch-none"
+              className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden"
+              style={{
+                // Allow panning but prevent page zoom
+                touchAction: supportsHover ? "none" : "pan-x pan-y",
+              }}
               onContextMenu={handleContextMenu}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -371,13 +384,28 @@ export function SubmissionLightbox({
                   maxHeight:
                     viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
                   maxWidth: "100%",
+                  // Apply touch zoom transforms only on mobile
+                  ...(!supportsHover && touchZoom.isZoomed
+                    ? {
+                        transform: `translate(${touchZoom.translateX}px, ${touchZoom.translateY}px) scale(${touchZoom.scale})`,
+                        transformOrigin: "center center",
+                        transition: "none",
+                      }
+                    : {}),
                   ...(protectionEnabled
                     ? { WebkitUserSelect: "none", userSelect: "none" }
                     : {}),
                 }}
-                onLoad={() => setImageLoaded(true)}
+                onLoad={() => {
+                  setImageLoaded(true);
+                  // Store base image dimensions when image loads (before any transforms)
+                  setBaseDimensions();
+                }}
                 onMouseMove={handleImageMouseMove}
                 onMouseLeave={handleImageMouseLeave}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
                 draggable={!protectionEnabled}
                 onDragStart={handleDragStart}
               />
@@ -404,6 +432,19 @@ export function SubmissionLightbox({
                     ...getZoomPreviewStyle(),
                   }}
                 />
+              )}
+
+              {/* Zoom percentage indicator - mobile only */}
+              {!supportsHover && touchZoom.isZoomed && (
+                <div
+                  className="absolute left-4 top-4 z-20 rounded-lg bg-black/70 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm"
+                  style={{
+                    top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
+                    left: `max(1rem, env(safe-area-inset-left, 0px) + 1rem)`,
+                  }}
+                >
+                  {Math.round(touchZoom.scale * 100)}%
+                </div>
               )}
             </div>
           )}
