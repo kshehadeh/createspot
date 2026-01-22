@@ -11,9 +11,9 @@ interface UsePinchZoomOptions {
   /** Whether the device supports hover (desktop) - zoom only works on touch devices */
   supportsHover: boolean;
   /** Ref to the image element */
-  imageRef: React.RefObject<HTMLImageElement>;
+  imageRef: React.RefObject<HTMLImageElement | null>;
   /** Ref to the image container element */
-  imageContainerRef: React.RefObject<HTMLDivElement>;
+  imageContainerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 /**
@@ -62,12 +62,16 @@ export function usePinchZoom({
   const lastTapRef = useRef<number>(0);
   const doubleTapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   // Store base image dimensions (before any transforms)
-  const baseImageDimensionsRef = useRef<{ width: number; height: number } | null>(
-    null,
-  );
+  const baseImageDimensionsRef = useRef<{
+    width: number;
+    height: number;
+  } | null>(null);
 
   // Calculate distance between two touch points
-  const getTouchDistance = (touch1: Touch, touch2: Touch): number => {
+  const getTouchDistance = (
+    touch1: React.Touch,
+    touch2: React.Touch,
+  ): number => {
     const dx = touch2.clientX - touch1.clientX;
     const dy = touch2.clientY - touch1.clientY;
     return Math.sqrt(dx * dx + dy * dy);
@@ -75,8 +79,8 @@ export function usePinchZoom({
 
   // Calculate center point between two touches
   const getTouchCenter = (
-    touch1: Touch,
-    touch2: Touch,
+    touch1: React.Touch,
+    touch2: React.Touch,
   ): { x: number; y: number } => {
     return {
       x: (touch1.clientX + touch2.clientX) / 2,
@@ -116,12 +120,24 @@ export function usePinchZoom({
       const scaledHeight = baseHeight * scale;
 
       // Calculate bounds (how much the image extends beyond container)
-      const maxTranslateX = Math.max(0, (scaledWidth - containerRect.width) / 2);
-      const maxTranslateY = Math.max(0, (scaledHeight - containerRect.height) / 2);
+      const maxTranslateX = Math.max(
+        0,
+        (scaledWidth - containerRect.width) / 2,
+      );
+      const maxTranslateY = Math.max(
+        0,
+        (scaledHeight - containerRect.height) / 2,
+      );
 
       // Constrain translation
-      const constrainedX = Math.max(-maxTranslateX, Math.min(maxTranslateX, translateX));
-      const constrainedY = Math.max(-maxTranslateY, Math.min(maxTranslateY, translateY));
+      const constrainedX = Math.max(
+        -maxTranslateX,
+        Math.min(maxTranslateX, translateX),
+      );
+      const constrainedY = Math.max(
+        -maxTranslateY,
+        Math.min(maxTranslateY, translateY),
+      );
 
       return { translateX: constrainedX, translateY: constrainedY };
     },
@@ -170,7 +186,12 @@ export function usePinchZoom({
           if (doubleTapTimeoutRef.current) {
             clearTimeout(doubleTapTimeoutRef.current);
           }
-          setTouchZoom({ scale: 1, translateX: 0, translateY: 0, isZoomed: false });
+          setTouchZoom({
+            scale: 1,
+            translateX: 0,
+            translateY: 0,
+            isZoomed: false,
+          });
           touchStartRef.current = null;
           panStartRef.current = null;
           e.preventDefault();
@@ -200,7 +221,8 @@ export function usePinchZoom({
             setBaseDimensions();
           }
 
-          const containerRect = imageContainerRef.current.getBoundingClientRect();
+          const containerRect =
+            imageContainerRef.current.getBoundingClientRect();
 
           // Calculate pinch center in container coordinates (container center is origin)
           const centerXInContainer =
@@ -267,7 +289,11 @@ export function usePinchZoom({
           touchStartRef.current.translateY - pinchCenterY * scaleDelta;
 
         // Constrain pan
-        const constrained = constrainPan(newScale, newTranslateX, newTranslateY);
+        const constrained = constrainPan(
+          newScale,
+          newTranslateX,
+          newTranslateY,
+        );
 
         setTouchZoom({
           scale: newScale,
@@ -324,7 +350,12 @@ export function usePinchZoom({
 
         // If zoomed out completely, reset
         if (touchZoom.scale <= 1) {
-          setTouchZoom({ scale: 1, translateX: 0, translateY: 0, isZoomed: false });
+          setTouchZoom({
+            scale: 1,
+            translateX: 0,
+            translateY: 0,
+            isZoomed: false,
+          });
         }
       }
     },

@@ -91,12 +91,17 @@ export function SubmissionLightbox({
   const viewportHeight = useViewportHeight();
 
   // Pinch-to-zoom hook for mobile
-  const { touchZoom, handleTouchStart, handleTouchMove, handleTouchEnd, setBaseDimensions } =
-    usePinchZoom({
-      supportsHover,
-      imageRef,
-      imageContainerRef,
-    });
+  const {
+    touchZoom,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    setBaseDimensions,
+  } = usePinchZoom({
+    supportsHover,
+    imageRef,
+    imageContainerRef,
+  });
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const isOwner =
@@ -522,9 +527,10 @@ export function SubmissionLightbox({
               className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
               style={{
                 // Position at top, but add offset when zoom indicator is visible
-                top: !supportsHover && touchZoom.isZoomed
-                  ? `max(4.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem))`
-                  : `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
+                top:
+                  !supportsHover && touchZoom.isZoomed
+                    ? `max(4.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem))`
+                    : `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
               }}
             >
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
