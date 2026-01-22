@@ -10,6 +10,7 @@ import { DashboardNavigation } from "./navigation-links";
 import { MobileNavigation } from "./mobile-navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { SubmissionEditModal } from "./submission-edit-modal";
+import { BugReportButton } from "./bug-report-button";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import { getRoute } from "@/lib/routes";
@@ -77,6 +78,13 @@ export function Header({ user }: HeaderProps) {
                 {t("create")}
               </Button>
             )}
+            <div className="hidden lg:block">
+              <BugReportButton
+                variant="outline"
+                size="default"
+                showLabel={false}
+              />
+            </div>
             <ThemeToggle />
             {user ? (
               <UserDropdown

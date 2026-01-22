@@ -8,6 +8,7 @@ import { signOut, signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Button } from "./ui/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
+import { BugReportButton } from "./bug-report-button";
 import { cn } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
 import { getUserImageUrl } from "@/lib/user-image";
@@ -144,17 +145,26 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
             <MobileNavigationLinks onLinkClick={() => setIsMenuOpen(false)} />
             {user ? (
               <>
-                <div className="mb-2">
-                  <button
+                <div className="mb-2 mt-auto border-t border-border pt-4 px-4 space-y-2">
+                  <Button
                     onClick={() => {
                       setIsCreateModalOpen(true);
                       setIsMenuOpen(false);
                     }}
-                    className="block w-full px-4 py-3 text-left text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
+                    variant="outline"
+                    size="default"
+                    className="w-full flex items-center gap-2"
                   >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-4 w-4" />
                     {t("create")}
-                  </button>
+                  </Button>
+                  <BugReportButton
+                    variant="outline"
+                    size="default"
+                    showLabel={true}
+                    className="w-full"
+                    onOpen={() => setIsMenuOpen(false)}
+                  />
                 </div>
                 <MobileUserSection
                   user={user}
@@ -163,6 +173,15 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
               </>
             ) : (
               <div className="mt-auto border-t border-border pt-4 px-4">
+                <div className="mb-4">
+                  <BugReportButton
+                    variant="outline"
+                    size="default"
+                    showLabel={true}
+                    className="w-full"
+                    onOpen={() => setIsMenuOpen(false)}
+                  />
+                </div>
                 <Button
                   onClick={() => {
                     signIn("google");

@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { GlobalHints } from "@/components/global-hints";
+import { UrlTracker } from "@/components/url-tracker";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import "./globals.css";
@@ -88,6 +89,7 @@ export default async function RootLayout({
                 tutorialData={tutorialData}
                 userId={session?.user?.id}
               />
+              <UrlTracker />
               <Analytics />
             </SessionProvider>
           </NextIntlClientProvider>
