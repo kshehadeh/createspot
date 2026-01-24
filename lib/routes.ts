@@ -154,6 +154,11 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.edit",
     parentPath: "/portfolio",
   },
+  submissionImageEditor: {
+    path: "/s/[id]/tools/image-editor",
+    label: "navigation.imageEditor",
+    parentPath: "/portfolio",
+  },
 
   // Collections routes
   collections: {

@@ -55,14 +55,14 @@ export function SupportFormModal({ isOpen, onClose }: SupportFormModalProps) {
     if (isOpen && typeof window !== "undefined") {
       const currentUrl = `${window.location.origin}${pathname}`;
       const recentUrls = getRecentUrls(10);
-      
+
       // Combine current URL with recent URLs, avoiding duplicates
       // Current URL should be first, then recent URLs (excluding current)
       const allUrls = [
         currentUrl,
         ...recentUrls.filter((url) => url !== currentUrl),
       ].slice(0, 10);
-      
+
       setAvailableUrls(allUrls);
       // Always default to dropdown (not custom input)
       setUseCustomUrl(false);

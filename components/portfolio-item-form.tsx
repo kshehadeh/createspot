@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Crosshair } from "lucide-react";
+import { Crosshair, ImageIcon } from "lucide-react";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FocalPointModal } from "@/components/focal-point-modal";
@@ -349,6 +349,24 @@ export function PortfolioItemForm({
                       : t("setFocalPoint")}
                   </TooltipContent>
                 </Tooltip>
+                {mode === "edit" && initialData?.id && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        asChild
+                        className="bg-black/50 text-white hover:bg-black/70"
+                      >
+                        <Link href={`/s/${initialData.id}/tools/image-editor`}>
+                          <ImageIcon className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("editImage")}</TooltipContent>
+                  </Tooltip>
+                )}
               </TooltipProvider>
               <Button
                 type="button"
