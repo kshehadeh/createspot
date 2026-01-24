@@ -11,7 +11,6 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { CritiqueButton } from "@/components/critique-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
-import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { SocialLinks } from "@/app/profile/[userId]/social-links";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -69,10 +68,9 @@ export function SubmissionDetail({
   const tProfile = useTranslations("profile");
   const [mobileView, setMobileView] = useState<"image" | "text">("image");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Local state for submission data that can be updated after editing
-  const [submission, setSubmission] = useState(initialSubmission);
+  const [submission] = useState(initialSubmission);
 
   // Get the next hint to show using the hook
   // The hook looks up hints from centralized config and handles all logic
@@ -159,23 +157,25 @@ export function SubmissionDetail({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setIsEditModalOpen(true)}
+                      asChild
                       className="gap-1.5"
                     >
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
-                      {tSubmission("edit")}
+                      <Link href={`/s/${submission.id}/edit`}>
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
+                        </svg>
+                        {tSubmission("edit")}
+                      </Link>
                     </Button>
                   )}
                   {isLoggedIn && submission.critiquesEnabled && (
@@ -294,40 +294,6 @@ export function SubmissionDetail({
           isOpen={isLightboxOpen}
           hideGoToSubmission={true}
           currentUserId={currentUserId}
-        />
-      )}
-
-      {isOwner && (
-        <SubmissionEditModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          initialData={{
-            id: submission.id,
-            title: submission.title,
-            imageUrl: submission.imageUrl,
-            imageFocalPoint: submission.imageFocalPoint,
-            text: submission.text,
-            tags: submission.tags,
-            category: submission.category,
-            shareStatus: submission.shareStatus,
-            critiquesEnabled: submission.critiquesEnabled,
-          }}
-          onSuccess={(updatedData) => {
-            // Update the local submission state with the new data
-            if (updatedData) {
-              setSubmission((prev) => ({
-                ...prev,
-                title: updatedData.title,
-                imageUrl: updatedData.imageUrl,
-                imageFocalPoint: updatedData.imageFocalPoint,
-                text: updatedData.text,
-                tags: updatedData.tags,
-                category: updatedData.category,
-                shareStatus: updatedData.shareStatus,
-                critiquesEnabled: updatedData.critiquesEnabled,
-              }));
-            }
-          }}
         />
       )}
 

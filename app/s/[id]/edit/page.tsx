@@ -1,0 +1,80 @@
+import { redirect, notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { PageLayout } from "@/components/page-layout";
+import { PageHeader } from "@/components/page-header";
+import { SubmissionEditForm } from "./submission-edit-form";
+
+export const dynamic = "force-dynamic";
+
+interface SubmissionEditPageProps {
+  params: Promise<{ id: string }>;
+}
+
+async function getSubmission(id: string) {
+  const submission = await prisma.submission.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      imageUrl: true,
+      imageFocalPoint: true,
+      text: true,
+      category: true,
+      tags: true,
+      shareStatus: true,
+      critiquesEnabled: true,
+      userId: true,
+    },
+  });
+
+  return submission;
+}
+
+export default async function SubmissionEditPage({
+  params,
+}: SubmissionEditPageProps) {
+  const session = await auth();
+  const t = await getTranslations("modals.submissionEdit");
+
+  if (!session?.user?.id) {
+    redirect("/");
+  }
+
+  const { id } = await params;
+
+  const submission = await getSubmission(id);
+
+  if (!submission) {
+    notFound();
+  }
+
+  // Only allow the owner to edit - return 404 to hide existence
+  if (submission.userId !== session.user.id) {
+    notFound();
+  }
+
+  return (
+    <PageLayout maxWidth="max-w-3xl" className="w-full">
+      <PageHeader title={t("editTitle")} subtitle={t("editDescription")} />
+      <SubmissionEditForm
+        submissionId={submission.id}
+        initialData={{
+          id: submission.id,
+          title: submission.title,
+          imageUrl: submission.imageUrl,
+          imageFocalPoint: submission.imageFocalPoint as
+            | { x: number; y: number }
+            | null
+            | undefined,
+          text: submission.text,
+          tags: submission.tags,
+          category: submission.category,
+          shareStatus: submission.shareStatus,
+          critiquesEnabled: submission.critiquesEnabled,
+        }}
+      />
+    </PageLayout>
+  );
+}

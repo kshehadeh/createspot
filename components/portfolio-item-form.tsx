@@ -5,7 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Crosshair, ImageIcon } from "lucide-react";
+import {
+  Crosshair,
+  ImageIcon,
+  Info,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FocalPointModal } from "@/components/focal-point-modal";
@@ -27,6 +33,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CATEGORIES, getCategoryIcon } from "@/lib/categories";
+import {
+  getImageMetadata,
+  type ImageMetadata,
+} from "@/lib/image-editor/metadata";
 
 interface SubmissionData {
   id: string;
@@ -61,6 +71,7 @@ export function PortfolioItemForm({
   const tCommon = useTranslations("common");
   const tCategories = useTranslations("categories");
   const tUpload = useTranslations("upload");
+  const tImageEditor = useTranslations("imageEditor");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState(initialData?.title || "");
@@ -86,6 +97,10 @@ export function PortfolioItemForm({
   const [critiquesEnabled, setCritiquesEnabled] = useState(
     initialData?.critiquesEnabled ?? false,
   );
+  const [imageMetadata, setImageMetadata] = useState<ImageMetadata | null>(
+    null,
+  );
+  const [isImageInfoOpen, setIsImageInfoOpen] = useState(false);
 
   // Fetch watermark setting on mount
   useEffect(() => {
@@ -102,6 +117,25 @@ export function PortfolioItemForm({
     };
     fetchWatermarkSetting();
   }, []);
+
+  // Load image metadata when imageUrl changes
+  useEffect(() => {
+    if (imageUrl) {
+      const loadMetadata = async () => {
+        try {
+          const metadata = await getImageMetadata(imageUrl);
+          setImageMetadata(metadata);
+        } catch {
+          // Silently fail - metadata is optional and some images may not be accessible
+          // due to CORS restrictions or other issues
+          setImageMetadata(null);
+        }
+      };
+      loadMetadata();
+    } else {
+      setImageMetadata(null);
+    }
+  }, [imageUrl]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -349,24 +383,6 @@ export function PortfolioItemForm({
                       : t("setFocalPoint")}
                   </TooltipContent>
                 </Tooltip>
-                {mode === "edit" && initialData?.id && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="icon"
-                        asChild
-                        className="bg-black/50 text-white hover:bg-black/70"
-                      >
-                        <Link href={`/s/${initialData.id}/tools/image-editor`}>
-                          <ImageIcon className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>{t("editImage")}</TooltipContent>
-                  </Tooltip>
-                )}
               </TooltipProvider>
               <Button
                 type="button"
@@ -389,6 +405,88 @@ export function PortfolioItemForm({
                 </svg>
               </Button>
             </div>
+            {/* Cleanup Image button - only shown in edit mode */}
+            {mode === "edit" && initialData?.id && (
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="w-full sm:w-auto"
+                >
+                  <Link href={`/s/${initialData.id}/tools/image-editor`}>
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    {t("cleanupImage")}
+                  </Link>
+                </Button>
+                <p className="hidden text-sm text-muted-foreground sm:block">
+                  {t("cleanupImageDescription")}
+                </p>
+              </div>
+            )}
+            {/* Image metadata - collapsible */}
+            {imageMetadata && (
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={() => setIsImageInfoOpen(!isImageInfoOpen)}
+                  className="flex w-full items-center justify-between rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm font-medium hover:bg-muted transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    {tImageEditor("imageInfo")}
+                  </span>
+                  {isImageInfoOpen ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </button>
+                {isImageInfoOpen && (
+                  <div className="mt-2 space-y-2 rounded-lg border border-border bg-muted/30 p-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        {tImageEditor("dimensions")}:
+                      </span>
+                      <span className="font-mono">
+                        {imageMetadata.width} × {imageMetadata.height}
+                      </span>
+                    </div>
+                    {imageMetadata.format && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          {tImageEditor("format")}:
+                        </span>
+                        <span className="font-mono uppercase">
+                          {imageMetadata.format}
+                        </span>
+                      </div>
+                    )}
+                    {imageMetadata.size && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          {tImageEditor("fileSize")}:
+                        </span>
+                        <span className="font-mono">
+                          {(imageMetadata.size / 1024).toFixed(1)} KB
+                        </span>
+                      </div>
+                    )}
+                    {imageMetadata.colorDepth && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          {tImageEditor("colorDepth")}:
+                        </span>
+                        <span className="font-mono">
+                          {imageMetadata.colorDepth} bit
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <div

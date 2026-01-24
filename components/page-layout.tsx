@@ -4,6 +4,7 @@ interface PageLayoutProps {
   children: React.ReactNode;
   /** Max width class (default: max-w-6xl) */
   maxWidth?:
+    | "max-w-2xl"
     | "max-w-3xl"
     | "max-w-4xl"
     | "max-w-5xl"

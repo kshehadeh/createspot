@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -17,7 +18,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Heart, X, FileText, Edit, Eye } from "lucide-react";
-import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
@@ -74,17 +74,7 @@ export function SubmissionLightbox({
   const [isTextOverlayOpen, setIsTextOverlayOpen] = useState(false);
   const [closeTooltipOpen, setCloseTooltipOpen] = useState(false);
   const [closeTooltipHovered, setCloseTooltipHovered] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [submissionData, setSubmissionData] = useState<{
-    id: string;
-    title: string | null;
-    imageUrl: string | null;
-    imageFocalPoint?: { x: number; y: number } | null;
-    text: string | null;
-    tags: string[];
-    category: string | null;
-    shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
-  } | null>(null);
+  const router = useRouter();
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -144,27 +134,9 @@ export function SubmissionLightbox({
   // Track view when lightbox opens (only if not the owner)
   useTrackSubmissionView(submission.id, isOwner, isOpen);
 
-  // Fetch submission data when opening edit modal
-  const handleEditClick = async () => {
-    try {
-      const response = await fetch(`/api/submissions/${submission.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setSubmissionData({
-          id: data.submission.id,
-          title: data.submission.title,
-          imageUrl: data.submission.imageUrl,
-          imageFocalPoint: data.submission.imageFocalPoint,
-          text: data.submission.text,
-          tags: data.submission.tags || [],
-          category: data.submission.category,
-          shareStatus: data.submission.shareStatus,
-        });
-        setIsEditModalOpen(true);
-      }
-    } catch (error) {
-      console.error("Failed to fetch submission data:", error);
-    }
+  // Navigate to edit page
+  const handleEditClick = () => {
+    router.push(`/s/${submission.id}/edit`);
   };
 
   const handleImageMouseMove = useCallback(
@@ -764,23 +736,6 @@ export function SubmissionLightbox({
               </Button>
             </div>
           </div>
-        )}
-
-        {/* Edit Modal */}
-        {submissionData && (
-          <SubmissionEditModal
-            isOpen={isEditModalOpen}
-            onClose={() => {
-              setIsEditModalOpen(false);
-              setSubmissionData(null);
-            }}
-            initialData={submissionData}
-            onSuccess={() => {
-              // Refresh the page to show updated data
-              window.location.reload();
-            }}
-            mode="edit"
-          />
         )}
       </DialogContent>
     </Dialog>

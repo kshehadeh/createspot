@@ -1029,6 +1029,8 @@
       "setFocalPoint": "Set Focal Point",
       "focalPoint": "Focal Point: {x}%, {y}%",
       "editImage": "Edit Image",
+      "cleanupImage": "Cleanup Image",
+      "cleanupImageDescription": "Crop, rotate, and remove color inconsistencies from your image",
       "saving": "Saving...",
       "addToPortfolio": "Add to Portfolio",
       "saveChanges": "Save Changes",

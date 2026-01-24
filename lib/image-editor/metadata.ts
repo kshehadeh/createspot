@@ -16,18 +16,17 @@ export async function getImageMetadata(
   source: string | File,
 ): Promise<ImageMetadata> {
   return new Promise((resolve, reject) => {
-    const img = new Image();
+    if (source instanceof File) {
+      const img = new Image();
+      const reader = new FileReader();
 
-    img.onload = async () => {
-      const metadata: ImageMetadata = {
-        width: img.width,
-        height: img.height,
-        format: img.src.split(".").pop()?.toLowerCase() || "unknown",
-      };
-
-      // If source is a File, get additional metadata
-      if (source instanceof File) {
-        metadata.size = source.size;
+      img.onload = async () => {
+        const metadata: ImageMetadata = {
+          width: img.width,
+          height: img.height,
+          format: img.src.split(".").pop()?.toLowerCase() || "unknown",
+          size: source.size,
+        };
 
         // Try to get color depth from canvas
         try {
@@ -44,17 +43,14 @@ export async function getImageMetadata(
         } catch {
           // Ignore errors getting color depth
         }
-      }
 
-      resolve(metadata);
-    };
+        resolve(metadata);
+      };
 
-    img.onerror = () => {
-      reject(new Error("Failed to load image"));
-    };
+      img.onerror = () => {
+        reject(new Error("Failed to load image"));
+      };
 
-    if (source instanceof File) {
-      const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target?.result) {
           img.src = e.target.result as string;
@@ -65,8 +61,35 @@ export async function getImageMetadata(
       };
       reader.readAsDataURL(source);
     } else {
-      img.crossOrigin = "anonymous";
-      img.src = source;
+      // For URLs, try with crossOrigin first, then without if it fails
+      // This handles both CORS-enabled and same-origin images
+      const tryLoad = (useCrossOrigin: boolean) => {
+        const img = new Image();
+
+        img.onload = () => {
+          const metadata: ImageMetadata = {
+            width: img.width,
+            height: img.height,
+            format: source.split(".").pop()?.toLowerCase() || "unknown",
+          };
+          resolve(metadata);
+        };
+
+        img.onerror = () => {
+          if (useCrossOrigin) {
+            // Try again without crossOrigin for same-origin images
+            tryLoad(false);
+          } else {
+            reject(new Error("Failed to load image"));
+          }
+        };
+
+        if (useCrossOrigin) {
+          img.crossOrigin = "anonymous";
+        }
+        img.src = source;
+      };
+      tryLoad(true);
     }
   });
 }

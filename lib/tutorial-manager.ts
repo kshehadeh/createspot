@@ -144,8 +144,6 @@ export class TutorialManager {
   ): string | null {
     if (!this.isEnabled()) return null;
 
-    console.log("availableHints", availableHints);
-
     // Sort hints by order
     const sortedHints = [...availableHints].sort((a, b) => a.order - b.order);
 
