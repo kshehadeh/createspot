@@ -8,19 +8,6 @@ import {
   useLayoutEffect,
 } from "react";
 
-/**
- * Check if a URL is from a different origin
- */
-function isCrossOrigin(url: string): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const urlObj = new URL(url, window.location.href);
-    return urlObj.origin !== window.location.origin;
-  } catch {
-    return false;
-  }
-}
-
 interface CropArea {
   x: number;
   y: number;
@@ -356,11 +343,7 @@ export function ResizableCrop({
     >
       <img
         ref={imageRef}
-        src={
-          typeof window !== "undefined" && isCrossOrigin(imageUrl)
-            ? `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`
-            : imageUrl
-        }
+        src={imageUrl}
         alt="Crop preview"
         onLoad={handleImageLoad}
         className="max-w-full max-h-full object-contain"
@@ -370,11 +353,6 @@ export function ResizableCrop({
           height: displaySize.height || "auto",
         }}
         draggable={false}
-        crossOrigin={
-          typeof window !== "undefined" && isCrossOrigin(imageUrl)
-            ? undefined
-            : "anonymous"
-        }
       />
 
       {imageLoaded && (
