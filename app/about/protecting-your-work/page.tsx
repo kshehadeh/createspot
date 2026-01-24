@@ -25,7 +25,7 @@ export default async function ProtectingYourWorkPage() {
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
       <div className="grid gap-8">
-        <Card className="rounded-3xl border-none bg-linear-to-br from-violet-50/50 to-white shadow-sm dark:from-violet-950/10 dark:to-transparent">
+        <Card className="about-card-violet rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("theAgeOfAI.title")}
@@ -44,7 +44,7 @@ export default async function ProtectingYourWorkPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-amber-50/50 to-white shadow-sm dark:from-amber-950/10 dark:to-transparent">
+        <Card className="about-card-amber rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("howWeProtect.title")}
@@ -90,7 +90,7 @@ export default async function ProtectingYourWorkPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-emerald-50/50 to-white shadow-sm dark:from-emerald-950/10 dark:to-transparent">
+        <Card className="about-card-emerald rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("humanVsGenerated.title")}
@@ -109,7 +109,7 @@ export default async function ProtectingYourWorkPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-sky-50/50 to-white shadow-sm dark:from-sky-950/10 dark:to-transparent">
+        <Card className="about-card-sky rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("yourWorkYourRights.title")}

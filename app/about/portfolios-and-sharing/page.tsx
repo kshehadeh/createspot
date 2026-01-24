@@ -25,7 +25,7 @@ export default async function PortfoliosAndSharingPage() {
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
       <div className="grid gap-8">
-        <Card className="rounded-3xl border-none bg-linear-to-br from-orange-50/50 to-white shadow-sm dark:from-orange-950/10 dark:to-transparent">
+        <Card className="about-card-orange rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("sharingLevels.title")}
@@ -67,7 +67,7 @@ export default async function PortfoliosAndSharingPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-pink-50/50 to-white shadow-sm dark:from-pink-950/10 dark:to-transparent">
+        <Card className="about-card-pink rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("portfolioLinks.title")}
@@ -87,7 +87,7 @@ export default async function PortfoliosAndSharingPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-teal-50/50 to-white shadow-sm dark:from-teal-950/10 dark:to-transparent">
+        <Card className="about-card-teal rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("featuredWork.title")}
@@ -110,7 +110,7 @@ export default async function PortfoliosAndSharingPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-indigo-50/50 to-white shadow-sm dark:from-indigo-950/10 dark:to-transparent">
+        <Card className="about-card-indigo rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("promptsAndPortfolios.title")}

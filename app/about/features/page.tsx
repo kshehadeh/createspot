@@ -52,7 +52,7 @@ export default async function FeaturesPage() {
         {features.map((feature) => (
           <Card
             key={feature.key}
-            className="rounded-3xl border-none bg-linear-to-br from-indigo-50/50 to-white shadow-sm dark:from-indigo-950/10 dark:to-transparent hover:shadow-md transition-shadow"
+            className="about-card-indigo rounded-3xl border-none shadow-sm hover:shadow-md transition-shadow"
           >
             <CardContent className="p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">

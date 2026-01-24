@@ -60,7 +60,7 @@ export default async function AboutPage() {
           <div className="grid gap-8">
             <Card
               id="purpose"
-              className="rounded-3xl border-none bg-linear-to-br from-amber-50/50 to-white shadow-sm dark:from-amber-950/10 dark:to-transparent scroll-mt-24"
+              className="about-card-amber rounded-3xl border-none shadow-sm scroll-mt-24"
             >
               <CardContent className="p-8">
                 <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
@@ -98,7 +98,7 @@ export default async function AboutPage() {
 
             <Card
               id="features"
-              className="rounded-3xl border-none bg-linear-to-br from-indigo-50/50 to-white shadow-sm dark:from-indigo-950/10 dark:to-transparent scroll-mt-24"
+              className="about-card-indigo rounded-3xl border-none shadow-sm scroll-mt-24"
             >
               <CardContent className="p-8">
                 <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
@@ -120,7 +120,7 @@ export default async function AboutPage() {
 
             <Card
               id="organization"
-              className="rounded-3xl border-none bg-linear-to-br from-rose-50/50 to-white shadow-sm dark:from-rose-950/10 dark:to-transparent scroll-mt-24"
+              className="about-card-rose rounded-3xl border-none shadow-sm scroll-mt-24"
             >
               <CardContent className="p-8">
                 <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
@@ -154,7 +154,7 @@ export default async function AboutPage() {
 
             <Card
               id="prompt-inspiration"
-              className="rounded-3xl border-none bg-linear-to-br from-sky-50/50 to-white shadow-sm dark:from-sky-950/10 dark:to-transparent scroll-mt-24"
+              className="about-card-sky rounded-3xl border-none shadow-sm scroll-mt-24"
             >
               <CardContent className="p-8">
                 <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
@@ -188,7 +188,7 @@ export default async function AboutPage() {
 
             <Card
               id="badges"
-              className="rounded-3xl border-none bg-linear-to-br from-violet-50/50 to-white shadow-sm dark:from-violet-950/10 dark:to-transparent scroll-mt-24"
+              className="about-card-violet rounded-3xl border-none shadow-sm scroll-mt-24"
             >
               <CardContent className="p-8">
                 <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
@@ -218,7 +218,7 @@ export default async function AboutPage() {
 
             <Card
               id="protecting-your-work"
-              className="rounded-3xl border-none bg-linear-to-br from-emerald-50/50 to-white shadow-sm dark:from-emerald-950/10 dark:to-transparent scroll-mt-24"
+              className="about-card-emerald rounded-3xl border-none shadow-sm scroll-mt-24"
             >
               <CardContent className="p-8">
                 <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">

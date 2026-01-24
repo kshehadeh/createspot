@@ -25,7 +25,7 @@ export default async function PromptSubmissionsPage() {
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
       <div className="grid gap-8">
-        <Card className="rounded-3xl border-none bg-linear-to-br from-fuchsia-50/50 to-white shadow-sm dark:from-fuchsia-950/10 dark:to-transparent">
+        <Card className="about-card-fuchsia rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("whatYouCanSubmit.title")}
@@ -40,7 +40,7 @@ export default async function PromptSubmissionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-violet-50/50 to-white shadow-sm dark:from-violet-950/10 dark:to-transparent">
+        <Card className="about-card-violet rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("titlesInGallery.title")}
@@ -55,7 +55,7 @@ export default async function PromptSubmissionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-cyan-50/50 to-white shadow-sm dark:from-cyan-950/10 dark:to-transparent">
+        <Card className="about-card-cyan rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("clearingRemoving.title")}

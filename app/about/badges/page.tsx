@@ -54,11 +54,11 @@ export default async function BadgesPage() {
     }
   };
 
-  const badgeColors = [
-    "from-blue-50/50 to-white dark:from-blue-950/10 dark:to-transparent",
-    "from-emerald-50/50 to-white dark:from-emerald-950/10 dark:to-transparent",
-    "from-amber-50/50 to-white dark:from-amber-950/10 dark:to-transparent",
-    "from-purple-50/50 to-white dark:from-purple-950/10 dark:to-transparent",
+  const badgeCardClasses = [
+    "about-card-blue",
+    "about-card-emerald",
+    "about-card-amber",
+    "about-card-purple",
   ];
 
   return (
@@ -66,7 +66,7 @@ export default async function BadgesPage() {
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
       <div className="grid gap-8">
-        <Card className="rounded-3xl border-none bg-linear-to-br from-slate-50/50 to-white shadow-sm dark:from-slate-950/10 dark:to-transparent">
+        <Card className="about-card-slate rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("howBadgesWork.title")}
@@ -95,7 +95,7 @@ export default async function BadgesPage() {
             return (
               <Card
                 key={badge.key}
-                className={`rounded-3xl border-none bg-linear-to-br ${badgeColors[index % badgeColors.length]} shadow-sm`}
+                className={`${badgeCardClasses[index % badgeCardClasses.length]} rounded-3xl border-none shadow-sm`}
               >
                 <CardContent className="p-8">
                   <div className="flex flex-col sm:flex-row gap-6 items-start">

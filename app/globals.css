@@ -340,6 +340,203 @@ body {
   }
 }
 
+/* About page card styling with iOS Safari dark mode support */
+.about-card-amber {
+  background: linear-gradient(to bottom right, rgb(255 251 235 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-amber {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-amber:not(.light .about-card-amber) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-indigo {
+  background: linear-gradient(to bottom right, rgb(238 242 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-indigo {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-indigo:not(.light .about-card-indigo) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-rose {
+  background: linear-gradient(to bottom right, rgb(255 241 242 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-rose {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-rose:not(.light .about-card-rose) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-sky {
+  background: linear-gradient(to bottom right, rgb(240 249 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-sky {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-sky:not(.light .about-card-sky) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-violet {
+  background: linear-gradient(to bottom right, rgb(245 243 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-violet {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-violet:not(.light .about-card-violet) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-emerald {
+  background: linear-gradient(to bottom right, rgb(236 253 245 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-emerald {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-emerald:not(.light .about-card-emerald) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-slate {
+  background: linear-gradient(to bottom right, rgb(248 250 252 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-slate {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-slate:not(.light .about-card-slate) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-blue {
+  background: linear-gradient(to bottom right, rgb(239 246 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-blue {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-blue:not(.light .about-card-blue) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-purple {
+  background: linear-gradient(to bottom right, rgb(250 245 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-purple {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-purple:not(.light .about-card-purple) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-orange {
+  background: linear-gradient(to bottom right, rgb(255 247 237 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-orange {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-orange:not(.light .about-card-orange) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-pink {
+  background: linear-gradient(to bottom right, rgb(253 244 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-pink {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-pink:not(.light .about-card-pink) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-teal {
+  background: linear-gradient(to bottom right, rgb(240 253 250 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-teal {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-teal:not(.light .about-card-teal) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-fuchsia {
+  background: linear-gradient(to bottom right, rgb(253 244 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-fuchsia {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-fuchsia:not(.light .about-card-fuchsia) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
+.about-card-cyan {
+  background: linear-gradient(to bottom right, rgb(236 254 255 / 0.5), rgb(255 255 255)) !important;
+}
+
+.dark .about-card-cyan {
+  background: hsl(240 10% 3.9%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .about-card-cyan:not(.light .about-card-cyan) {
+    background: hsl(240 10% 3.9%) !important;
+  }
+}
+
 /* Image protection styles */
 .protected-image-wrapper {
   position: relative;

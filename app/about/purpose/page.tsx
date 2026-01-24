@@ -25,7 +25,7 @@ export default async function PurposePage() {
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
       <div className="grid gap-8">
-        <Card className="rounded-3xl border-none bg-linear-to-br from-emerald-50/50 to-white shadow-sm dark:from-emerald-950/10 dark:to-transparent">
+        <Card className="about-card-emerald rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("whyCreationMatters.title")}
@@ -44,7 +44,7 @@ export default async function PurposePage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-violet-50/50 to-white shadow-sm dark:from-violet-950/10 dark:to-transparent">
+        <Card className="about-card-violet rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("aweKeepsUsAlive.title")}
@@ -63,7 +63,7 @@ export default async function PurposePage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-none bg-linear-to-br from-indigo-50/50 to-white shadow-sm dark:from-indigo-950/10 dark:to-transparent">
+        <Card className="about-card-indigo rounded-3xl border-none shadow-sm">
           <CardContent className="p-8">
             <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
               {t("creativeCycle.title")}
