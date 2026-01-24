@@ -3,6 +3,19 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+
+/**
+ * Check if a URL is from a different origin
+ */
+function isCrossOrigin(url: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const urlObj = new URL(url, window.location.href);
+    return urlObj.origin !== window.location.origin;
+  } catch {
+    return false;
+  }
+}
 import { ResizableCrop } from "./resizable-crop";
 import {
   RotateCw,
@@ -342,7 +355,16 @@ export function ImageEditor({
               ) : (
                 <div className="relative h-full w-full overflow-hidden flex items-center justify-center bg-black/5">
                   <img
-                    src={previewImageUrl || imageUrl || undefined}
+                    src={(() => {
+                      const url = previewImageUrl || imageUrl;
+                      if (!url) return undefined;
+                      // Preview images are data URLs (same origin), so no proxy needed
+                      if (previewImageUrl) return url;
+                      // For regular image URLs, proxy if cross-origin
+                      return typeof window !== "undefined" && isCrossOrigin(url)
+                        ? `/api/image-proxy?url=${encodeURIComponent(url)}`
+                        : url;
+                    })()}
                     alt="Preview"
                     className="max-w-full max-h-full object-contain"
                     style={
@@ -352,6 +374,15 @@ export function ImageEditor({
                             transform: `rotate(${rotation}deg)`,
                             transformOrigin: "center center",
                           }
+                    }
+                    crossOrigin={
+                      previewImageUrl
+                        ? undefined
+                        : typeof window !== "undefined" &&
+                            imageUrl &&
+                            isCrossOrigin(imageUrl)
+                          ? undefined
+                          : "anonymous"
                     }
                   />
                 </div>

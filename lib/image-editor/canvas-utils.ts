@@ -13,14 +13,36 @@ export function createCanvas(width: number, height: number): HTMLCanvasElement {
 }
 
 /**
+ * Check if a URL is from a different origin
+ */
+function isCrossOrigin(url: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const urlObj = new URL(url, window.location.href);
+    return urlObj.origin !== window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Load an image from URL and draw it to a canvas
+ * Automatically proxies cross-origin images through the API to avoid CORS issues
  */
 export async function loadImageToCanvas(
   url: string,
 ): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+
+    // If the image is from a different origin, proxy it through our API
+    let imageUrl = url;
+    if (typeof window !== "undefined" && isCrossOrigin(url)) {
+      imageUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
+      // No need for crossOrigin when using same-origin proxy
+    } else {
+      img.crossOrigin = "anonymous";
+    }
 
     img.onload = () => {
       const canvas = createCanvas(img.width, img.height);
@@ -37,7 +59,7 @@ export async function loadImageToCanvas(
       reject(new Error("Failed to load image"));
     };
 
-    img.src = url;
+    img.src = imageUrl;
   });
 }
 
