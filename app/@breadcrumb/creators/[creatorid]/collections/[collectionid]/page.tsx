@@ -13,6 +13,7 @@ export default async function CollectionViewBreadcrumb({
 }: CollectionViewBreadcrumbProps) {
   const { creatorid, collectionid } = await params;
   const tCollections = await getTranslations("collections");
+  const tNavigation = await getTranslations("navigation");
 
   const [user, collection] = await Promise.all([
     prisma.user.findFirst({
@@ -32,6 +33,10 @@ export default async function CollectionViewBreadcrumb({
 
   // Build breadcrumb segments manually to ensure proper links
   const segments = [
+    {
+      label: tNavigation("creators"),
+      href: "/creators",
+    },
     {
       label: userName,
       href: `/creators/${creatorid}`,

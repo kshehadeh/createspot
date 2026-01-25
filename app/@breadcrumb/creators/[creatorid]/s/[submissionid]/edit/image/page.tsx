@@ -12,9 +12,9 @@ export default async function ImageEditorBreadcrumb({
   params,
 }: ImageEditorBreadcrumbProps) {
   const { creatorid, submissionid } = await params;
-  const tSubmission = await getTranslations("submission");
   const tExhibition = await getTranslations("exhibition");
   const tImageEditor = await getTranslations("imageEditor");
+  const tNavigation = await getTranslations("navigation");
 
   const submission = await prisma.submission.findUnique({
     where: { id: submissionid },
@@ -26,7 +26,7 @@ export default async function ImageEditorBreadcrumb({
     where: {
       OR: [{ slug: creatorid }, { id: creatorid }],
     },
-    select: { id: true },
+    select: { id: true, name: true },
   });
 
   if (!submission || !creator || submission.userId !== creator.id) {
@@ -42,7 +42,11 @@ export default async function ImageEditorBreadcrumb({
   return (
     <Breadcrumb
       segments={[
-        { label: tSubmission("label"), href: "/" },
+        { label: tNavigation("creators"), href: "/creators" },
+        {
+          label: creator.name || "Unknown",
+          href: `/creators/${creatorid}`,
+        },
         {
           label: submissionTitle,
           href: `/creators/${creatorid}/s/${submissionid}`,

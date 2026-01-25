@@ -31,6 +31,10 @@ export default async function PortfolioBreadcrumb({
     <Breadcrumb
       segments={[
         {
+          label: t("creators"),
+          href: "/creators",
+        },
+        {
           label: userName,
           href: `/creators/${creatorid}`,
         },

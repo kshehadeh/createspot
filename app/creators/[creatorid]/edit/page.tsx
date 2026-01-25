@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -7,9 +6,6 @@ import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { ProfileHeader } from "@/components/profile-header";
 import { ProfileEditForm } from "@/components/profile-edit-form";
-import { getCreatorUrl } from "@/lib/utils";
-import { Eye } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -120,26 +116,7 @@ export default async function ProfileEditPage({
             <PageHeader
               title={user.name || t("anonymous")}
               subtitle={t("editSubtitle")}
-              rightContent={
-                <div className="flex flex-row flex-wrap items-end justify-end gap-2">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={getCreatorUrl(user)}>
-                      <Eye className="h-4 w-4" />
-                      <span className="hidden md:inline">
-                        {t("viewProfile")}
-                      </span>
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`${getCreatorUrl(user)}?view=public`}>
-                      <Eye className="h-4 w-4" />
-                      <span className="hidden md:inline">
-                        {t("viewAsAnonymous")}
-                      </span>
-                    </Link>
-                  </Button>
-                </div>
-              }
+              rightContent={undefined}
             />
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/breadcrumb";
 
 interface ProfileEditBreadcrumbProps {
@@ -10,15 +10,24 @@ export default async function ProfileEditBreadcrumb({
   params,
 }: ProfileEditBreadcrumbProps) {
   const { creatorid } = await params;
-  const session = await auth();
   const t = await getTranslations("navigation");
-  const userName = session?.user?.name;
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
+    select: { name: true },
+  });
+  const userName = user?.name || "Unknown";
 
   return (
     <Breadcrumb
       segments={[
         {
-          label: userName || "Your Profile",
+          label: t("creators"),
+          href: "/creators",
+        },
+        {
+          label: userName,
           href: `/creators/${creatorid}`,
         },
         { label: t("edit") },

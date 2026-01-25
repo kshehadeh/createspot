@@ -8,7 +8,7 @@ import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Pencil, Lock, Globe } from "lucide-react";
+import { Pencil, Lock, Globe } from "lucide-react";
 import { getCreatorUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -216,29 +216,32 @@ export default async function CollectionViewPage({
                 </>
               }
               rightContent={
-                <div className="flex flex-row flex-wrap items-end justify-end gap-2">
+                isOwner ? (
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`${getCreatorUrl(user)}/collections`}>
-                      <ArrowLeft className="h-4 w-4" />
-                      <span className="hidden md:inline">
-                        {t("allCollections")}
-                      </span>
+                    <Link
+                      href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      <span className="hidden md:inline">{t("edit")}</span>
                     </Link>
                   </Button>
-                  {isOwner && (
-                    <Button asChild variant="outline" size="sm">
-                      <Link
-                        href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
-                      >
-                        <Pencil className="h-4 w-4" />
-                        <span className="hidden md:inline">{t("edit")}</span>
-                      </Link>
-                    </Button>
-                  )}
-                </div>
+                ) : undefined
               }
             />
           </div>
+
+          {isOwner && (
+            <div className="md:hidden mt-4 flex flex-wrap items-center gap-2">
+              <Button asChild variant="outline" size="sm">
+                <Link
+                  href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
+                >
+                  <Pencil className="h-4 w-4" />
+                  <span className="sr-only">{t("edit")}</span>
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Description */}

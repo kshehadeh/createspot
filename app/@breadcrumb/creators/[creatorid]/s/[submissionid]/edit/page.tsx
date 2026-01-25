@@ -26,7 +26,7 @@ export default async function SubmissionEditBreadcrumb({
     where: {
       OR: [{ slug: creatorid }, { id: creatorid }],
     },
-    select: { id: true },
+    select: { id: true, name: true },
   });
 
   if (!submission || !creator || submission.userId !== creator.id) {
@@ -38,7 +38,11 @@ export default async function SubmissionEditBreadcrumb({
   return (
     <Breadcrumb
       segments={[
-        { label: tNavigation("home"), href: "/" },
+        { label: tNavigation("creators"), href: "/creators" },
+        {
+          label: creator.name || "Unknown",
+          href: `/creators/${creatorid}`,
+        },
         {
           label: submissionTitle,
           href: `/creators/${creatorid}/s/${submissionid}`,

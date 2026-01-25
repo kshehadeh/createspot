@@ -34,6 +34,10 @@ export default async function CollectionEditBreadcrumb({
   // Build breadcrumb segments manually to ensure proper links
   const segments = [
     {
+      label: t("creators"),
+      href: "/creators",
+    },
+    {
       label: userName,
       href: `/creators/${creatorid}`,
     },

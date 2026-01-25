@@ -26,6 +26,10 @@ export default async function CollectionsBreadcrumb({
     <Breadcrumb
       segments={[
         {
+          label: t("creators"),
+          href: "/creators",
+        },
+        {
           label: userName,
           href: `/creators/${creatorid}`,
         },

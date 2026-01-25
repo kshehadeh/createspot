@@ -1,15 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { CollectionCard } from "@/components/collection-card";
-import { getCreatorUrl } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { CollectionCreateButton } from "@/components/collection-create-button";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +56,6 @@ export default async function CollectionsPage({
   const { creatorid } = await params;
   const session = await auth();
   const t = await getTranslations("collections");
-  const tProfile = await getTranslations("profile");
 
   const user = await getUser(creatorid);
 
@@ -129,17 +124,9 @@ export default async function CollectionsPage({
                 collections.length !== 1 ? t("collections") : t("collection")
               }`}
               rightContent={
-                <div className="flex flex-row flex-wrap items-end justify-end gap-2">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`${getCreatorUrl(user)}/portfolio`}>
-                      <ArrowLeft className="h-4 w-4" />
-                      <span className="hidden md:inline">
-                        {tProfile("portfolio")}
-                      </span>
-                    </Link>
-                  </Button>
-                  {isOwner && <CollectionCreateButton userId={user.id} />}
-                </div>
+                isOwner ? (
+                  <CollectionCreateButton userId={user.id} />
+                ) : undefined
               }
             />
           </div>

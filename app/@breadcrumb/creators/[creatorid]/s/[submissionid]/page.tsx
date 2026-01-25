@@ -13,6 +13,7 @@ export default async function SubmissionBreadcrumb({
 }: SubmissionBreadcrumbProps) {
   const { creatorid, submissionid } = await params;
   const tSubmission = await getTranslations("submission");
+  const tNavigation = await getTranslations("navigation");
   const tExhibition = await getTranslations("exhibition");
   const submission = await prisma.submission.findUnique({
     where: { id: submissionid },
@@ -24,7 +25,7 @@ export default async function SubmissionBreadcrumb({
     where: {
       OR: [{ slug: creatorid }, { id: creatorid }],
     },
-    select: { id: true },
+    select: { id: true, name: true },
   });
 
   if (!submission || !creator || submission.userId !== creator.id) {
@@ -39,7 +40,11 @@ export default async function SubmissionBreadcrumb({
     <Breadcrumb
       segments={[
         {
-          label: tSubmission("label"),
+          label: tNavigation("creators"),
+          href: "/creators",
+        },
+        {
+          label: creator.name || "Unknown",
           href: `/creators/${creatorid}`,
         },
         { label: submission.title || tExhibition("untitled") },

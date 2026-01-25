@@ -188,6 +188,12 @@
     "notifications": "Notifications",
     "imageEditor": "Image Editor"
   },
+  "creatorNav": {
+    "profile": "Profile",
+    "portfolio": "Portfolio",
+    "collections": "Collections",
+    "navigation": "Navigation"
+  },
   "favorites": {
     "title": "Your Favorites",
     "subtitle": "Submissions you've saved for later",

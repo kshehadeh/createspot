@@ -21,7 +21,7 @@ import { ProfileShareButton } from "@/components/profile-share-button";
 import { ProfileBadges } from "@/components/profile-badges";
 import { HintPopover } from "@/components/hint-popover";
 import { getNextPageHint } from "@/lib/hints-helper";
-import { Eye, Pencil, Briefcase } from "lucide-react";
+import { Pencil, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
@@ -287,19 +287,6 @@ export default async function ProfilePage({
       {/* Track profile view for non-owners (not in public view mode) */}
       {!effectiveIsOwnProfile && <ProfileViewTracker profileUserId={user.id} />}
 
-      {/* Public View indicator - fixed below navbar */}
-      {isOwnProfile && isPublicView && (
-        <div className="fixed top-16 right-4 z-50 flex items-center gap-3 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-lg">
-          <span>{t("publicView")}</span>
-          <Link
-            href={getCreatorUrl(user)}
-            className="text-white underline transition-opacity hover:opacity-80"
-          >
-            {t("exit")} →
-          </Link>
-        </div>
-      )}
-
       {!effectiveIsOwnProfile &&
       featuredSubmission &&
       (featuredSubmission.imageUrl || featuredSubmission.text) ? (
@@ -462,14 +449,6 @@ export default async function ProfilePage({
             </div>
             {isOwnProfile && !isPublicView && (
               <div className="flex flex-row flex-wrap items-end justify-end gap-2 md:shrink-0">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`${getCreatorUrl(user)}?view=public`}>
-                    <Eye className="h-4 w-4" />
-                    <span className="hidden md:inline">
-                      {t("viewAsAnonymous")}
-                    </span>
-                  </Link>
-                </Button>
                 <Button asChild variant="outline" size="sm">
                   <Link href={`${getCreatorUrl(user)}/edit`}>
                     <Pencil className="h-4 w-4" />
