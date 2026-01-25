@@ -80,7 +80,7 @@ export function RecentSubmissionsCarousel({
                 className="relative h-full min-w-0 flex-[0_0_100%]"
               >
                 <Link
-                  href={`/s/${submission.id}`}
+                  href={`/creators/${submission.user.id}/s/${submission.id}`}
                   className="group block h-full overflow-hidden rounded-xl bg-muted"
                 >
                   <Image

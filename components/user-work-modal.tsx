@@ -135,7 +135,11 @@ export function UserWorkModal({ userId, isOpen, onClose }: UserWorkModalProps) {
                       transition={{ duration: 0.3, delay: index * 0.05 }}
                     >
                       <Link
-                        href={`/s/${submission.id}`}
+                        href={
+                          userId
+                            ? `/creators/${userId}/s/${submission.id}`
+                            : `/s/${submission.id}`
+                        }
                         className="block relative aspect-square rounded-lg overflow-hidden border border-border bg-muted transition-transform hover:scale-[1.02]"
                       >
                         {submission.imageUrl ? (
@@ -169,7 +173,7 @@ export function UserWorkModal({ userId, isOpen, onClose }: UserWorkModalProps) {
         {!loading && !error && user && (
           <DialogFooter>
             <Button asChild variant="outline">
-              <Link href={`/profile/${user.id}`}>View Profile</Link>
+              <Link href={`/creators/${user.id}`}>View Profile</Link>
             </Button>
           </DialogFooter>
         )}

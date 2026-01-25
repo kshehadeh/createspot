@@ -16,7 +16,7 @@ export function ProfileShareButton({
 
   const shareUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/profile/${userId}`
+      ? `${window.location.origin}/creators/${userId}`
       : "";
 
   async function handleShare() {

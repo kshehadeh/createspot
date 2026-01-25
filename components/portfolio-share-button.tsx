@@ -16,7 +16,7 @@ export function PortfolioShareButton({
 
   const shareUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/portfolio/${userId}`
+      ? `${window.location.origin}/creators/${userId}/portfolio`
       : "";
 
   async function handleShare() {

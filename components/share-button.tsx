@@ -1,23 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 interface ShareButtonProps {
   submissionId: string;
   title?: string | null;
   className?: string;
+  userId?: string | null;
 }
 
 export function ShareButton({
   submissionId,
   className = "",
+  userId,
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
+  const [resolvedUserId, setResolvedUserId] = useState<string | null>(
+    userId || null,
+  );
+
+  // Fetch userId if not provided
+  useEffect(() => {
+    if (!resolvedUserId && typeof window !== "undefined") {
+      const fetchSubmission = async () => {
+        try {
+          const response = await fetch(`/api/submissions/${submissionId}`);
+          if (response.ok) {
+            const data = await response.json();
+            setResolvedUserId(data.submission.userId);
+          }
+        } catch {
+          // Silently fail
+        }
+      };
+      fetchSubmission();
+    }
+  }, [submissionId, resolvedUserId]);
 
   const shareUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/s/${submissionId}`
+      ? resolvedUserId
+        ? `${window.location.origin}/creators/${resolvedUserId}/s/${submissionId}`
+        : `${window.location.origin}/s/${submissionId}`
       : "";
 
   async function handleShare() {

@@ -28,7 +28,7 @@ function CreatorCard({ creator }: { creator: Creator }) {
 
   return (
     <Link
-      href={`/profile/${creator.id}`}
+      href={`/creators/${creator.id}`}
       className="group block transition-transform hover:-translate-y-1"
     >
       <Card className="overflow-hidden rounded-none border-0 border-border/60 bg-card/70 shadow-sm transition-all hover:border-border hover:bg-card hover:shadow-lg">

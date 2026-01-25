@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
 import {
   Crosshair,
   ImageIcon,
@@ -66,6 +67,7 @@ export function PortfolioItemForm({
   setIsPortfolio = false,
 }: PortfolioItemFormProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const t = useTranslations("modals.portfolioItemForm");
   const tCritique = useTranslations("critique");
   const tCommon = useTranslations("common");
@@ -101,8 +103,9 @@ export function PortfolioItemForm({
     null,
   );
   const [isImageInfoOpen, setIsImageInfoOpen] = useState(false);
+  const [submissionUserId, setSubmissionUserId] = useState<string | null>(null);
 
-  // Fetch watermark setting on mount
+  // Fetch watermark setting and submission user ID on mount
   useEffect(() => {
     const fetchWatermarkSetting = async () => {
       try {
@@ -117,6 +120,24 @@ export function PortfolioItemForm({
     };
     fetchWatermarkSetting();
   }, []);
+
+  // Fetch submission user ID if in edit mode
+  useEffect(() => {
+    if (mode === "edit" && initialData?.id) {
+      const fetchSubmission = async () => {
+        try {
+          const response = await fetch(`/api/submissions/${initialData.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setSubmissionUserId(data.submission.userId);
+          }
+        } catch {
+          // Silently fail
+        }
+      };
+      fetchSubmission();
+    }
+  }, [mode, initialData?.id]);
 
   // Load image metadata when imageUrl changes
   useEffect(() => {
@@ -415,7 +436,13 @@ export function PortfolioItemForm({
                   asChild
                   className="w-full sm:w-auto"
                 >
-                  <Link href={`/s/${initialData.id}/tools/image-editor`}>
+                  <Link
+                    href={
+                      submissionUserId
+                        ? `/creators/${submissionUserId}/s/${initialData.id}/edit/image`
+                        : `/s/${initialData.id}/tools/image-editor`
+                    }
+                  >
                     <ImageIcon className="mr-2 h-4 w-4" />
                     {t("cleanupImage")}
                   </Link>
@@ -567,12 +594,14 @@ export function PortfolioItemForm({
             </svg>
             <span>
               {tUpload("watermarkEnabled")}{" "}
-              <Link
-                href="/profile/edit"
-                className="underline hover:text-foreground"
-              >
-                {tUpload("changeSettings")}
-              </Link>
+              {session?.user?.id && (
+                <Link
+                  href={`/creators/${session.user.id}/edit`}
+                  className="underline hover:text-foreground"
+                >
+                  {tUpload("changeSettings")}
+                </Link>
+              )}
             </span>
           </div>
         )}

@@ -121,7 +121,7 @@ export default async function ProtectingYourWorkPage() {
               </strong>
               {t("yourWorkYourRights.continuation")}{" "}
               <Link
-                href="/terms"
+                href="/about/terms"
                 className="font-medium text-foreground underline underline-offset-4 decoration-muted-foreground/30 transition-colors hover:decoration-foreground"
               >
                 {t("yourWorkYourRights.termsLink")}

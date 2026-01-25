@@ -11,7 +11,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { CritiqueButton } from "@/components/critique-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
-import { SocialLinks } from "@/app/profile/[userId]/social-links";
+import { SocialLinks } from "@/components/social-links";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HintPopover } from "@/components/hint-popover";

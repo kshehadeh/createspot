@@ -10,7 +10,7 @@ import { Button } from "./ui/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { BugReportButton } from "./bug-report-button";
 import { cn } from "@/lib/utils";
-import { getRoute } from "@/lib/routes";
+import { getRoute, buildRoutePath } from "@/lib/routes";
 import { getUserImageUrl } from "@/lib/user-image";
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 
@@ -403,7 +403,7 @@ function MobileUserSection({
         <div className="mt-1">
           {user.id && (
             <Link
-              href={`${profileRoute.path}/${user.id}`}
+              href={buildRoutePath("profile", { creatorid: user.id })}
               className={cn(
                 linkClassName(profileRoute.path),
                 "flex items-center gap-2",
@@ -416,7 +416,7 @@ function MobileUserSection({
           )}
           {user.id && (
             <Link
-              href={`${portfolioRoute.path}/${user.id}`}
+              href={buildRoutePath("portfolio", { creatorid: user.id })}
               className={cn(
                 linkClassName(portfolioRoute.path),
                 "flex items-center gap-2",

@@ -1,0 +1,37 @@
+import { getTranslations } from "next-intl/server";
+import { prisma } from "@/lib/prisma";
+import { Breadcrumb } from "@/components/breadcrumb";
+
+export const dynamic = "force-dynamic";
+
+interface CollectionsBreadcrumbProps {
+  params: Promise<{ creatorid: string }>;
+}
+
+export default async function CollectionsBreadcrumb({
+  params,
+}: CollectionsBreadcrumbProps) {
+  const { creatorid } = await params;
+  const t = await getTranslations("navigation");
+  const user = await prisma.user.findUnique({
+    where: { id: creatorid },
+    select: { name: true },
+  });
+
+  const userName = user?.name || "Unknown";
+
+  return (
+    <Breadcrumb
+      segments={[
+        {
+          label: userName,
+          href: `/creators/${creatorid}`,
+        },
+        {
+          label: t("collections"),
+          // Last item - no link since it's the current page
+        },
+      ]}
+    />
+  );
+}

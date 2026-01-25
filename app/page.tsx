@@ -325,13 +325,13 @@ export default async function Home() {
                     ) : (
                       <>
                         <Link
-                          href={`/profile/${session.user.id}`}
+                          href={`/creators/${session.user.id}`}
                           className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                         >
                           {t("features.mediaManager.yourProfile")}
                         </Link>
                         <Link
-                          href="/portfolio/edit"
+                          href={`/creators/${session.user.id}/portfolio/edit`}
                           className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                         >
                           {t("features.mediaManager.yourPortfolio")}
@@ -368,7 +368,7 @@ export default async function Home() {
                       {t("features.exposureWithSafety.protectingYourWork")}
                     </Link>
                     <Link
-                      href="/terms"
+                      href="/about/terms"
                       className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                     >
                       {t("features.exposureWithSafety.browseTerms")}
@@ -388,7 +388,7 @@ export default async function Home() {
           </span>
           <span className="hidden sm:inline">|</span>
           <Link
-            href="/terms"
+            href="/about/terms"
             className="transition-colors hover:text-foreground underline underline-offset-4"
           >
             {tFooter("terms")}

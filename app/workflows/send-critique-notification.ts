@@ -203,10 +203,10 @@ export async function sendCritiqueNotification(
   }
 
   // Build URLs
-  const { getRoute } = await import("@/lib/routes");
+  const { buildRoutePath } = await import("@/lib/routes");
   const baseUrl = process.env.NEXTAUTH_URL || "https://prompts.art";
-  const submissionUrl = `${baseUrl}/s/${submissionId}`;
-  const critiquerProfileUrl = `${baseUrl}${getRoute("profile").path}/${critiquer.id}`;
+  const submissionUrl = `${baseUrl}/creators/${submission.userId}/s/${submissionId}`;
+  const critiquerProfileUrl = `${baseUrl}${buildRoutePath("profile", { creatorid: critiquer.id })}`;
 
   console.log("[Workflow] Proceeding to send email. URLs:", {
     submissionUrl,

@@ -675,7 +675,12 @@ function PortfolioGridContent({
                     if (item.imageUrl) {
                       setSelectedSubmission(item);
                     } else {
-                      router.push(`/s/${item.id}`);
+                      const creatorId = item.user?.id || user?.id;
+                      if (creatorId) {
+                        router.push(`/creators/${creatorId}/s/${item.id}`);
+                      } else {
+                        router.push(`/s/${item.id}`);
+                      }
                     }
                   }}
                   featuredSubmissionId={featuredSubmissionId}
@@ -695,7 +700,12 @@ function PortfolioGridContent({
                         if (item.imageUrl) {
                           setSelectedSubmission(item);
                         } else {
-                          router.push(`/s/${item.id}`);
+                          const creatorId = item.user?.id || user?.id;
+                          if (creatorId) {
+                            router.push(`/creators/${creatorId}/s/${item.id}`);
+                          } else {
+                            router.push(`/s/${item.id}`);
+                          }
                         }
                       }}
                       onContextMenu={handleImageContextMenu}
@@ -852,9 +862,9 @@ function PortfolioGridContent({
             <p className="text-muted-foreground">
               {isOwnProfile ? t("emptyOwnProfile") : t("emptyOtherProfile")}
             </p>
-            {isOwnProfile && (
+            {isOwnProfile && user && (
               <Link
-                href="/portfolio/edit"
+                href={`/creators/${user.id}/portfolio/edit`}
                 className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 {t("addPortfolioItem")}

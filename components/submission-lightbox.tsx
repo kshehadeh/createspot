@@ -136,7 +136,11 @@ export function SubmissionLightbox({
 
   // Navigate to edit page
   const handleEditClick = () => {
-    router.push(`/s/${submission.id}/edit`);
+    if (submission.user?.id) {
+      router.push(`/creators/${submission.user.id}/s/${submission.id}/edit`);
+    } else {
+      router.push(`/s/${submission.id}/edit`);
+    }
   };
 
   const handleImageMouseMove = useCallback(
@@ -646,7 +650,11 @@ export function SubmissionLightbox({
                       className="hidden xl:flex"
                     >
                       <Link
-                        href={`/s/${submission.id}`}
+                        href={
+                          submission.user?.id
+                            ? `/creators/${submission.user.id}/s/${submission.id}`
+                            : `/s/${submission.id}`
+                        }
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Eye className="h-4 w-4" />
@@ -669,7 +677,11 @@ export function SubmissionLightbox({
                       aria-label="View submission"
                     >
                       <Link
-                        href={`/s/${submission.id}`}
+                        href={
+                          submission.user?.id
+                            ? `/creators/${submission.user.id}/s/${submission.id}`
+                            : `/s/${submission.id}`
+                        }
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Eye className="h-4 w-4" />

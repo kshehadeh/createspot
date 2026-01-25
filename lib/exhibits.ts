@@ -28,6 +28,7 @@ export interface ExhibitWithDetails {
     title: string | null;
     imageUrl: string | null;
     text: string | null;
+    userId: string;
   } | null;
   _count: {
     submissions: number;
@@ -63,6 +64,7 @@ export async function getCurrentExhibits(): Promise<ExhibitWithDetails[]> {
           title: true,
           imageUrl: true,
           text: true,
+          userId: true,
         },
       },
       _count: {
@@ -106,6 +108,7 @@ export async function getUpcomingExhibits(): Promise<ExhibitWithDetails[]> {
           title: true,
           imageUrl: true,
           text: true,
+          userId: true,
         },
       },
       _count: {
@@ -149,6 +152,7 @@ export async function getExhibitById(
           title: true,
           imageUrl: true,
           text: true,
+          userId: true,
         },
       },
       _count: {

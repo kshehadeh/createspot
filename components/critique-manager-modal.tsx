@@ -369,7 +369,7 @@ export function CritiqueManagerModal({
                   {index > 0 && <div className="border-t border-border my-4" />}
                   <div className="flex items-start gap-3">
                     {isOwner && (
-                      <Link href={`/profile/${critique.critiquer.id}`}>
+                      <Link href={`/creators/${critique.critiquer.id}`}>
                         <Avatar>
                           <AvatarImage
                             src={critique.critiquer.image || undefined}
@@ -385,7 +385,7 @@ export function CritiqueManagerModal({
                         {isOwner && (
                           <div className="flex items-center gap-2 mb-2">
                             <Link
-                              href={`/profile/${critique.critiquer.id}`}
+                              href={`/creators/${critique.critiquer.id}`}
                               className="font-medium text-foreground hover:underline"
                             >
                               {critique.critiquer.name || t("critiquer")}

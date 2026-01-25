@@ -129,42 +129,42 @@ const ROUTES: Record<string, RouteConfig> = {
     parentPath: "/admin",
   },
 
-  // Profile routes
+  // Profile routes (now under creators/[creatorid])
   profile: {
-    path: "/profile",
+    path: "/creators/[creatorid]",
     label: "navigation.profile",
     isLink: false,
     icon: User,
   },
   profileEdit: {
-    path: "/profile/edit",
+    path: "/creators/[creatorid]/edit",
     label: "navigation.edit",
-    parentPath: "/profile",
+    parentPath: "/creators/[creatorid]",
   },
 
-  // Portfolio routes
+  // Portfolio routes (now under creators/[creatorid]/portfolio)
   portfolio: {
-    path: "/portfolio",
+    path: "/creators/[creatorid]/portfolio",
     label: "navigation.portfolio",
     icon: Briefcase,
     isLink: false,
   },
   portfolioEdit: {
-    path: "/portfolio/edit",
+    path: "/creators/[creatorid]/portfolio/edit",
     label: "navigation.edit",
-    parentPath: "/portfolio",
+    parentPath: "/creators/[creatorid]/portfolio",
   },
   submissionImageEditor: {
-    path: "/s/[id]/tools/image-editor",
+    path: "/creators/[creatorid]/s/[submissionid]/edit/image",
     label: "navigation.imageEditor",
-    parentPath: "/portfolio",
+    parentPath: "/creators/[creatorid]/portfolio",
   },
 
-  // Collections routes
+  // Collections routes (now under creators/[creatorid]/collections)
   collections: {
-    path: "/collections",
+    path: "/creators/[creatorid]/collections",
     label: "navigation.collections",
-    parentPath: "/portfolio",
+    parentPath: "/creators/[creatorid]/portfolio",
   },
 
   // Other routes
@@ -220,9 +220,9 @@ const ROUTES: Record<string, RouteConfig> = {
     icon: Mail,
   },
   terms: {
-    path: "/terms",
+    path: "/about/terms",
     label: "navigation.terms",
-    isLink: false,
+    parentPath: "/about",
   },
   logout: {
     path: "/logout",
@@ -279,6 +279,35 @@ function translateRoute(
  */
 export function getRoute(key: keyof typeof ROUTES): RouteConfig {
   return ROUTES[key];
+}
+
+/**
+ * Build a route path by replacing dynamic segments with actual values.
+ *
+ * @param key - Route key from ROUTES
+ * @param params - Object with parameter values to replace dynamic segments
+ * @returns The actual path with parameters replaced
+ *
+ * @example
+ * buildRoutePath("portfolio", { creatorid: "123" })
+ * // Returns: "/creators/123/portfolio"
+ *
+ * buildRoutePath("profileEdit", { creatorid: "123" })
+ * // Returns: "/creators/123/edit"
+ */
+export function buildRoutePath(
+  key: keyof typeof ROUTES,
+  params: Record<string, string>,
+): string {
+  const route = getRoute(key);
+  let path = route.path;
+
+  // Replace dynamic segments like [creatorid], [submissionid], etc.
+  for (const [paramName, paramValue] of Object.entries(params)) {
+    path = path.replace(`[${paramName}]`, paramValue);
+  }
+
+  return path;
 }
 
 /**

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
 import type { Submission } from "@/app/generated/prisma/client";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
@@ -36,6 +37,7 @@ export function SubmissionSlots({
   watermarkEnabled = false,
 }: SubmissionSlotsProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const t = useTranslations("upload");
   const [activeSlot, setActiveSlot] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -689,12 +691,14 @@ export function SubmissionSlots({
                     </svg>
                     <span>
                       {t("watermarkEnabled")}{" "}
-                      <Link
-                        href="/profile/edit"
-                        className="underline hover:text-foreground"
-                      >
-                        {t("changeSettings")}
-                      </Link>
+                      {session?.user?.id && (
+                        <Link
+                          href={`/creators/${session.user.id}/edit`}
+                          className="underline hover:text-foreground"
+                        >
+                          {t("changeSettings")}
+                        </Link>
+                      )}
                     </span>
                   </div>
                 )}

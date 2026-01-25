@@ -35,7 +35,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   const t = useTranslations("collections");
 
   const coverSubmission = collection.submissions[0]?.submission;
-  const href = `/portfolio/${collection.userId}/collections/${collection.id}`;
+  const href = `/creators/${collection.userId}/collections/${collection.id}`;
 
   return (
     <Link href={href}>

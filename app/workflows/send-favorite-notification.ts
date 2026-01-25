@@ -203,10 +203,10 @@ export async function sendFavoriteNotification(
   }
 
   // Build URLs
-  const { getRoute } = await import("@/lib/routes");
+  const { buildRoutePath } = await import("@/lib/routes");
   const baseUrl = process.env.NEXTAUTH_URL || "https://prompts.art";
-  const submissionUrl = `${baseUrl}/s/${submissionId}`;
-  const favorerProfileUrl = `${baseUrl}${getRoute("profile").path}/${favorer.id}`;
+  const submissionUrl = `${baseUrl}/creators/${submission.userId}/s/${submissionId}`;
+  const favorerProfileUrl = `${baseUrl}${buildRoutePath("profile", { creatorid: favorer.id })}`;
 
   console.log("[Workflow] Proceeding to send email. URLs:", {
     submissionUrl,
