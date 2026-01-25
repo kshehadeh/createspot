@@ -1,0 +1,23 @@
+[
+  {
+    "time": "2026-01-21T06:52:32-05:00",
+    "commit": "0dd7b65fad1c9f8a266771898f36eb92c838c628",
+    "type": "improvement",
+    "area": "global",
+    "description": "Added contact link to mobile and dashboard navigation with translations for improved accessibility."
+  },
+  {
+    "time": "2026-01-21T06:49:40-05:00",
+    "commit": "9835f0e45459fec432c7e481d48808e36a2432dd",
+    "type": "improvement",
+    "area": "global",
+    "description": "Enhanced contact support functionality with email notifications for bug reports, improved form feedback, and updated email templates with clickable links."
+  },
+  {
+    "time": "2026-01-21T06:09:11-05:00",
+    "commit": "84536c4e39f824c034e1257e62bdb0b071d3a767",
+    "type": "feature",
+    "area": "global",
+    "description": "Implemented contact page with support and bug report form, exhibit request form with submission selection, API endpoints, and email notifications."
+  }
+]

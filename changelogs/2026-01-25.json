@@ -1,0 +1,51 @@
+[
+  {
+    "time": "2026-01-25T08:23:24-05:00",
+    "commit": "1aac3efaa9c9684bec79944578c8d7f69e393ee1",
+    "type": "improvement",
+    "area": "profile",
+    "description": "Enhanced breadcrumb navigation for creator-related pages with translation support, added Creators link to breadcrumb segments, and introduced new mobile navigation and sidebar components."
+  },
+  {
+    "time": "2026-01-25T07:32:06-05:00",
+    "commit": "972367d28e61490e27f4325297521331669b476d",
+    "type": "improvement",
+    "area": "collection",
+    "description": "Simplified CollectionsPage interface by removing Pencil icon button for owners while retaining collection creation functionality."
+  },
+  {
+    "time": "2026-01-25T06:56:07-05:00",
+    "commit": "580c18a1855024782b59b328af1f21eaf7de9de3",
+    "type": "improvement",
+    "area": "profile",
+    "description": "Standardized creator-related URLs across the application, replacing profile and portfolio links with dynamic creator paths and implementing user slug support."
+  },
+  {
+    "time": "2026-01-25T06:56:07-05:00",
+    "commit": "580c18a1855024782b59b328af1f21eaf7de9de3",
+    "type": "improvement",
+    "area": "global",
+    "description": "Removed outdated portfolio and profile routes, streamlining the codebase and consolidating all creator-related functionality under the creators path."
+  },
+  {
+    "time": "2026-01-25T05:36:45-05:00",
+    "commit": "be93956fb3a220f398890b93f066065aa2ee8785",
+    "type": "improvement",
+    "area": "profile",
+    "description": "Refactored routing to standardize creator paths, replacing profile and portfolio links with creator-specific routes and implementing new breadcrumb navigation."
+  },
+  {
+    "time": "2026-01-25T05:36:45-05:00",
+    "commit": "be93956fb3a220f398890b93f066065aa2ee8785",
+    "type": "feature",
+    "area": "profile",
+    "description": "Created new creator pages for profiles, portfolios, collections, and submissions with comprehensive editing capabilities and OpenGraph image support."
+  },
+  {
+    "time": "2026-01-25T04:58:35-05:00",
+    "commit": "c102707907c636042fea55c0333edb3bd1bda46c",
+    "type": "documentation",
+    "area": "global",
+    "description": "Updated USERFLOW.md with enhanced sitemap diagram, improved page descriptions, and added legend for authentication requirements."
+  }
+]

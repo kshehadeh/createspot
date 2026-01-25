@@ -1,0 +1,30 @@
+[
+  {
+    "time": "2026-01-24T13:02:11-05:00",
+    "commit": "a44af31127683820a00a2b22da6df0471e67f6c3",
+    "type": "improvement",
+    "area": "content",
+    "description": "Added new card styles for About page sections with comprehensive dark mode support for iOS Safari compatibility."
+  },
+  {
+    "time": "2026-01-24T12:21:14-05:00",
+    "commit": "ca37fe3b9e8faa10488b8395a371a4541338530f",
+    "type": "improvement",
+    "area": "tools",
+    "description": "Removed image proxy route and refactored image editor components to directly use image URLs, simplifying logic and improving performance."
+  },
+  {
+    "time": "2026-01-24T09:17:15-05:00",
+    "commit": "77297a43068519fbb58b00e5cc8fd95ead0afcd4",
+    "type": "improvement",
+    "area": "tools",
+    "description": "Implemented cross-origin image handling in image editor with proxy support to avoid CORS issues when working with external images."
+  },
+  {
+    "time": "2026-01-24T09:09:33-05:00",
+    "commit": "ce756ca89d6b41c9c2ab4716498bd8a25efe1bca",
+    "type": "feature",
+    "area": "tools",
+    "description": "Added comprehensive image editor feature with cropping, rotation, and lighting adjustments including brightness, contrast, color correction, and shadow/highlight controls."
+  }
+]

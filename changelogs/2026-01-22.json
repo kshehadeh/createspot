@@ -1,0 +1,51 @@
+[
+  {
+    "time": "2026-01-22T12:47:04-05:00",
+    "commit": "af372cccfd030fb27205cb1164ca9e2da31a28d1",
+    "type": "improvement",
+    "area": "global",
+    "description": "Enhanced SupportFormModal to include current page URL in available URLs dropdown for better context in bug reports."
+  },
+  {
+    "time": "2026-01-22T12:39:13-05:00",
+    "commit": "ca96162c2c83ab48f37f7fe50ef7e628d6d51bd6",
+    "type": "feature",
+    "area": "global",
+    "description": "Added bug report functionality with BugReportButton integrated into header and mobile navigation, including URL tracking and support form modal."
+  },
+  {
+    "time": "2026-01-22T07:56:13-05:00",
+    "commit": "67b5feaafba87d82a8022628ab0224d5dfe085e8",
+    "type": "fix",
+    "area": "global",
+    "description": "Fixed iOS Safari dark mode support for gradient cards by adding specific CSS classes with important flags and updating documentation."
+  },
+  {
+    "time": "2026-01-22T05:29:48-05:00",
+    "commit": "3242104af8473e89a04fd246d8a96a5330a9a85c",
+    "type": "improvement",
+    "area": "content",
+    "description": "Enhanced About page layout with new AboutSidebar component and added features section showcasing Create Spot capabilities."
+  },
+  {
+    "time": "2026-01-22T05:05:27-05:00",
+    "commit": "07b61671a9ae5f7683c334a4b52554384f3736a8",
+    "type": "fix",
+    "area": "global",
+    "description": "Fixed build errors in SubmissionLightbox and use-pinch-zoom hook components."
+  },
+  {
+    "time": "2026-01-22T05:00:52-05:00",
+    "commit": "2a004e5dab802a0f7aad4383e087cd0319f6c578",
+    "type": "improvement",
+    "area": "content",
+    "description": "Updated SubmissionLightbox styles for improved mobile display with better overlay positioning and zoom state handling."
+  },
+  {
+    "time": "2026-01-22T04:54:43-05:00",
+    "commit": "152fa60f7436f6fb499d58606db2ff1b0dce5025",
+    "type": "feature",
+    "area": "content",
+    "description": "Added pinch-to-zoom functionality to SubmissionLightbox for mobile users with zoom percentage indicator and panning support."
+  }
+]
