@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/page-header";
 import { CollectionCard } from "@/components/collection-card";
 import { getCreatorUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { CollectionCreateButton } from "@/components/collection-create-button";
 
 export const dynamic = "force-dynamic";
@@ -138,19 +138,7 @@ export default async function CollectionsPage({
                       </span>
                     </Link>
                   </Button>
-                  {isOwner && (
-                    <>
-                      <CollectionCreateButton userId={user.id} />
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`${getCreatorUrl(user)}/collections`}>
-                          <Pencil className="h-4 w-4" />
-                          <span className="hidden md:inline">
-                            {t("manageCollections")}
-                          </span>
-                        </Link>
-                      </Button>
-                    </>
-                  )}
+                  {isOwner && <CollectionCreateButton userId={user.id} />}
                 </div>
               }
             />
