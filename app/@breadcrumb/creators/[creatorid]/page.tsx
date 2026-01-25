@@ -11,8 +11,10 @@ export default async function ProfileBreadcrumb({
   params,
 }: ProfileBreadcrumbProps) {
   const { creatorid } = await params;
-  const user = await prisma.user.findUnique({
-    where: { id: creatorid },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: { name: true },
   });
 

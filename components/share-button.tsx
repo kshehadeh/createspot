@@ -39,10 +39,8 @@ export function ShareButton({
   }, [submissionId, resolvedUserId]);
 
   const shareUrl =
-    typeof window !== "undefined"
-      ? resolvedUserId
-        ? `${window.location.origin}/creators/${resolvedUserId}/s/${submissionId}`
-        : `${window.location.origin}/s/${submissionId}`
+    typeof window !== "undefined" && resolvedUserId
+      ? `${window.location.origin}/creators/${resolvedUserId}/s/${submissionId}`
       : "";
 
   async function handleShare() {

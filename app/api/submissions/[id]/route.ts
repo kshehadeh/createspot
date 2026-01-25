@@ -46,6 +46,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           name: true,
           image: true,
           bio: true,
+          slug: true,
           instagram: true,
           twitter: true,
           linkedin: true,

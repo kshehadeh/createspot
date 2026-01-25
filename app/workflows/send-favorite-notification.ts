@@ -205,6 +205,7 @@ export async function sendFavoriteNotification(
   // Build URLs
   const { buildRoutePath } = await import("@/lib/routes");
   const baseUrl = process.env.NEXTAUTH_URL || "https://prompts.art";
+  // Note: Using ID here - the route will handle slug/ID lookup
   const submissionUrl = `${baseUrl}/creators/${submission.userId}/s/${submissionId}`;
   const favorerProfileUrl = `${baseUrl}${buildRoutePath("profile", { creatorid: favorer.id })}`;
 

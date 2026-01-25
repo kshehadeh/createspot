@@ -16,8 +16,10 @@ export default async function CollectionEditBreadcrumb({
   const tCollections = await getTranslations("collections");
 
   const [user, collection] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: creatorid },
+    prisma.user.findFirst({
+      where: {
+        OR: [{ slug: creatorid }, { id: creatorid }],
+      },
       select: { name: true },
     }),
     prisma.collection.findUnique({

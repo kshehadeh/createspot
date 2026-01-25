@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Pencil, Lock, Globe } from "lucide-react";
+import { getCreatorUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,15 @@ export async function generateMetadata({
     },
   });
 
-  if (!collection || collection.userId !== creatorid) {
+  // Find creator by slug or ID
+  const creator = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
+    select: { id: true },
+  });
+
+  if (!collection || !creator || collection.userId !== creator.id) {
     return { title: `${t("notFound")} | Create Spot` };
   }
 
@@ -92,6 +101,7 @@ export default async function CollectionViewPage({
           id: true,
           name: true,
           image: true,
+          slug: true,
         },
       },
       submissions: {
@@ -119,7 +129,15 @@ export default async function CollectionViewPage({
     },
   });
 
-  if (!collection || collection.userId !== creatorid) {
+  // Find creator by slug or ID
+  const creator = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
+    select: { id: true },
+  });
+
+  if (!collection || !creator || collection.userId !== creator.id) {
     notFound();
   }
 
@@ -200,7 +218,7 @@ export default async function CollectionViewPage({
               rightContent={
                 <div className="flex flex-row flex-wrap items-end justify-end gap-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/creators/${user.id}/collections`}>
+                    <Link href={`${getCreatorUrl(user)}/collections`}>
                       <ArrowLeft className="h-4 w-4" />
                       <span className="hidden md:inline">
                         {t("allCollections")}
@@ -210,7 +228,7 @@ export default async function CollectionViewPage({
                   {isOwner && (
                     <Button asChild variant="outline" size="sm">
                       <Link
-                        href={`/creators/${creatorid}/collections/${collection.id}/edit`}
+                        href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
                       >
                         <Pencil className="h-4 w-4" />
                         <span className="hidden md:inline">{t("edit")}</span>
@@ -246,7 +264,7 @@ export default async function CollectionViewPage({
           <p className="text-muted-foreground">{t("emptyCollection")}</p>
           {isOwner && (
             <Link
-              href={`/creators/${creatorid}/collections/${collection.id}/edit`}
+              href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
               className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {t("addItems")}

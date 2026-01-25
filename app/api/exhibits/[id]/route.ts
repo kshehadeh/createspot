@@ -41,6 +41,7 @@ export async function GET(
                   id: true,
                   name: true,
                   image: true,
+                  slug: true,
                 },
               },
               prompt: {

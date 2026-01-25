@@ -7,6 +7,7 @@ import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { ProfileHeader } from "@/components/profile-header";
 import { ProfileEditForm } from "@/components/profile-edit-form";
+import { getCreatorUrl } from "@/lib/utils";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -27,13 +28,11 @@ export default async function ProfileEditPage({
     redirect("/");
   }
 
-  // Ensure user can only edit their own profile
-  if (session.user.id !== creatorid) {
-    redirect(`/creators/${session.user.id}/edit`);
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: creatorid },
+  // Find user by slug or ID
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: {
       id: true,
       name: true,
@@ -47,6 +46,7 @@ export default async function ProfileEditPage({
       stateProvince: true,
       country: true,
       language: true,
+      slug: true,
       featuredSubmissionId: true,
       profileImageUrl: true,
       profileImageFocalPoint: true,
@@ -62,9 +62,13 @@ export default async function ProfileEditPage({
     },
   });
 
+  if (!user) {
+    redirect("/");
+  }
+
   // Fetch all user submissions for the featured piece selector (up to 100)
   const submissions = await prisma.submission.findMany({
-    where: { userId: creatorid },
+    where: { userId: user.id },
     include: {
       prompt: {
         select: {
@@ -81,13 +85,19 @@ export default async function ProfileEditPage({
   // Count portfolio items for display
   const portfolioItemCount = await prisma.submission.count({
     where: {
-      userId: creatorid,
+      userId: user.id,
       isPortfolio: true,
     },
   });
 
   if (!user) {
     redirect("/");
+  }
+
+  // Ensure user can only edit their own profile
+  if (session.user.id !== user.id) {
+    // Note: For redirects to own profile, we use ID since we don't have slug in session
+    redirect(`/creators/${session.user.id}/edit`);
   }
 
   return (
@@ -113,7 +123,7 @@ export default async function ProfileEditPage({
               rightContent={
                 <div className="flex flex-row flex-wrap items-end justify-end gap-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/creators/${user.id}`}>
+                    <Link href={getCreatorUrl(user)}>
                       <Eye className="h-4 w-4" />
                       <span className="hidden md:inline">
                         {t("viewProfile")}
@@ -121,7 +131,7 @@ export default async function ProfileEditPage({
                     </Link>
                   </Button>
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/creators/${user.id}?view=public`}>
+                    <Link href={`${getCreatorUrl(user)}?view=public`}>
                       <Eye className="h-4 w-4" />
                       <span className="hidden md:inline">
                         {t("viewAsAnonymous")}
@@ -147,6 +157,7 @@ export default async function ProfileEditPage({
         initialStateProvince={user.stateProvince || ""}
         initialCountry={user.country || ""}
         initialLanguage={user.language || "en"}
+        initialSlug={user.slug}
         initialFeaturedSubmissionId={user.featuredSubmissionId || ""}
         // Image protection settings
         initialEnableWatermark={user.enableWatermark}

@@ -22,6 +22,7 @@ import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
 import { usePinchZoom } from "@/lib/hooks/use-pinch-zoom";
+import { buildRoutePath } from "@/lib/routes";
 
 interface LightboxSubmission {
   id: string;
@@ -32,6 +33,7 @@ interface LightboxSubmission {
     id: string;
     name: string | null;
     image: string | null;
+    slug?: string | null;
   };
   _count?: {
     favorites: number;
@@ -79,6 +81,12 @@ export function SubmissionLightbox({
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const viewportHeight = useViewportHeight();
+  const [submissionUserId, setSubmissionUserId] = useState<string | null>(
+    submission.user?.id || null,
+  );
+  const [submissionUserSlug, setSubmissionUserSlug] = useState<string | null>(
+    submission.user?.slug || null,
+  );
 
   // Pinch-to-zoom hook for mobile
   const {
@@ -110,6 +118,48 @@ export function SubmissionLightbox({
     }
   }, []);
 
+  // Fetch submission userId and slug if not available
+  useEffect(() => {
+    if (!submissionUserId && submission.id) {
+      const fetchUserInfo = async () => {
+        try {
+          const response = await fetch(`/api/submissions/${submission.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setSubmissionUserId(data.submission.userId);
+            // If user info is included, also get the slug
+            if (data.submission.user?.slug) {
+              setSubmissionUserSlug(data.submission.user.slug);
+            }
+          }
+        } catch {
+          // Silently fail
+        }
+      };
+      fetchUserInfo();
+    }
+  }, [submissionUserId, submission.id]);
+
+  // Get creator ID for route building (slug if available, otherwise ID)
+  const getCreatorId = (): string | null => {
+    if (submission.user?.id) {
+      // Use slug if available, otherwise use ID
+      return submission.user.slug || submission.user.id;
+    }
+    // Fallback to fetched slug or userId
+    return submissionUserSlug || submissionUserId;
+  };
+
+  // Build submission URL using routes
+  const getSubmissionUrl = (): string | null => {
+    const creatorId = getCreatorId();
+    if (!creatorId || !submission.id) return null;
+    return buildRoutePath("submission", {
+      creatorid: creatorId,
+      submissionid: submission.id,
+    });
+  };
+
   // Handle Escape key to close text overlay
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -136,11 +186,16 @@ export function SubmissionLightbox({
 
   // Navigate to edit page
   const handleEditClick = () => {
-    if (submission.user?.id) {
-      router.push(`/creators/${submission.user.id}/s/${submission.id}/edit`);
-    } else {
-      router.push(`/s/${submission.id}/edit`);
+    const creatorId = getCreatorId();
+    if (creatorId && submission.id) {
+      router.push(
+        buildRoutePath("submissionEdit", {
+          creatorid: creatorId,
+          submissionid: submission.id,
+        }),
+      );
     }
+    // Note: If creator info is missing, we can't construct the route - this shouldn't happen
   };
 
   const handleImageMouseMove = useCallback(
@@ -650,12 +705,21 @@ export function SubmissionLightbox({
                       className="hidden xl:flex"
                     >
                       <Link
-                        href={
-                          submission.user?.id
-                            ? `/creators/${submission.user.id}/s/${submission.id}`
-                            : `/s/${submission.id}`
-                        }
-                        onClick={(e) => e.stopPropagation()}
+                        href={getSubmissionUrl() || "#"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // If we don't have a URL yet, try to navigate programmatically
+                          const url = getSubmissionUrl();
+                          if (!url && submissionUserId && submission.id) {
+                            e.preventDefault();
+                            router.push(
+                              buildRoutePath("submission", {
+                                creatorid: submissionUserId,
+                                submissionid: submission.id,
+                              }),
+                            );
+                          }
+                        }}
                       >
                         <Eye className="h-4 w-4" />
                         <span>View</span>
@@ -677,12 +741,21 @@ export function SubmissionLightbox({
                       aria-label="View submission"
                     >
                       <Link
-                        href={
-                          submission.user?.id
-                            ? `/creators/${submission.user.id}/s/${submission.id}`
-                            : `/s/${submission.id}`
-                        }
-                        onClick={(e) => e.stopPropagation()}
+                        href={getSubmissionUrl() || "#"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // If we don't have a URL yet, try to navigate programmatically
+                          const url = getSubmissionUrl();
+                          if (!url && submissionUserId && submission.id) {
+                            e.preventDefault();
+                            router.push(
+                              buildRoutePath("submission", {
+                                creatorid: submissionUserId,
+                                submissionid: submission.id,
+                              }),
+                            );
+                          }
+                        }}
                       >
                         <Eye className="h-4 w-4" />
                       </Link>

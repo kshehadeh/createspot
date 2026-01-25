@@ -32,6 +32,7 @@ async function getSubmission(id: string) {
           name: true,
           image: true,
           bio: true,
+          slug: true,
           instagram: true,
           twitter: true,
           linkedin: true,
@@ -128,7 +129,15 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
   }
 
   // Verify the submission belongs to the creator in the URL
-  if (submission.userId !== creatorid) {
+  // Check both slug and ID
+  const creator = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
+    select: { id: true },
+  });
+
+  if (!creator || submission.userId !== creator.id) {
     notFound();
   }
 

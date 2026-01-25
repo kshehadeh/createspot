@@ -440,7 +440,7 @@ export function PortfolioItemForm({
                     href={
                       submissionUserId
                         ? `/creators/${submissionUserId}/s/${initialData.id}/edit/image`
-                        : `/s/${initialData.id}/tools/image-editor`
+                        : "#"
                     }
                   >
                     <ImageIcon className="mr-2 h-4 w-4" />

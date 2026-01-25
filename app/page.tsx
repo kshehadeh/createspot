@@ -129,7 +129,7 @@ export default async function Home() {
           {
             id: "portfolio" as const,
             title: t("yourPortfolio"),
-            href: "/portfolio/edit",
+            href: `/creators/${session.user.id}/portfolio/edit`,
             icon: Briefcase,
           },
         ]

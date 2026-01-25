@@ -3,7 +3,7 @@ import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { geocodeLocation } from "@/lib/geocoding";
-import { normalizeUrl, isValidUrl } from "@/lib/utils";
+import { normalizeUrl, isValidUrl, isValidSlugFormat } from "@/lib/utils";
 import { isValidLocale } from "@/i18n/config";
 
 const s3Client = new S3Client({
@@ -59,6 +59,7 @@ export async function GET() {
       longitude: true,
       featuredSubmissionId: true,
       profileImageUrl: true,
+      slug: true,
       // Image protection settings
       enableWatermark: true,
       watermarkPosition: true,
@@ -84,6 +85,7 @@ export async function PUT(request: NextRequest) {
   let {
     name,
     bio,
+    slug,
     instagram,
     twitter,
     linkedin,
@@ -126,6 +128,49 @@ export async function PUT(request: NextRequest) {
         { error: "Invalid language code" },
         { status: 400 },
       );
+    }
+  }
+
+  // Validate slug if provided
+  if (slug !== undefined && slug !== null) {
+    if (typeof slug !== "string") {
+      return NextResponse.json(
+        { error: "Slug must be a string" },
+        { status: 400 },
+      );
+    }
+
+    const trimmedSlug = slug.trim();
+
+    // Empty slug is allowed (will use ID fallback)
+    if (trimmedSlug === "") {
+      slug = null;
+    } else {
+      // Validate format
+      if (!isValidSlugFormat(trimmedSlug)) {
+        return NextResponse.json(
+          {
+            error:
+              "Slug can only contain lowercase letters, numbers, and hyphens. It cannot start or end with a hyphen.",
+          },
+          { status: 400 },
+        );
+      }
+
+      // Check uniqueness (excluding current user)
+      const existingUser = await prisma.user.findUnique({
+        where: { slug: trimmedSlug },
+        select: { id: true },
+      });
+
+      if (existingUser && existingUser.id !== session.user.id) {
+        return NextResponse.json(
+          { error: "This slug is already taken" },
+          { status: 400 },
+        );
+      }
+
+      slug = trimmedSlug;
     }
   }
 
@@ -219,6 +264,7 @@ export async function PUT(request: NextRequest) {
   // Only include fields that are explicitly provided in the request
   if (name !== undefined) updateData.name = name ?? null;
   if (bio !== undefined) updateData.bio = bio ?? null;
+  if (slug !== undefined) updateData.slug = slug;
   if (instagram !== undefined) updateData.instagram = instagram ?? null;
   if (twitter !== undefined) updateData.twitter = twitter ?? null;
   if (linkedin !== undefined) updateData.linkedin = linkedin ?? null;
@@ -293,6 +339,7 @@ export async function PUT(request: NextRequest) {
       emailOnFavorite: true,
       emailFeatureUpdates: true,
       emailOnBadgeAward: true,
+      slug: true,
     },
   });
 

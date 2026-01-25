@@ -47,7 +47,20 @@ export default async function OpenGraphImage({ params }: RouteParams) {
 
   // Check if collection exists, belongs to the user, and is public
   // OG images are accessed by crawlers without auth, so we only show public collections
-  if (!collection || collection.userId !== creatorid || !collection.isPublic) {
+  // Find creator by slug or ID
+  const creator = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
+    select: { id: true },
+  });
+
+  if (
+    !collection ||
+    !creator ||
+    collection.userId !== creator.id ||
+    !collection.isPublic
+  ) {
     return new ImageResponse(
       <div
         style={{

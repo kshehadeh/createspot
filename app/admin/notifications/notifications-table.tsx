@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { UserAutocomplete } from "@/components/user-autocomplete";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface Notification {
   id: string;
@@ -204,7 +205,7 @@ export function NotificationsTable() {
                   <TableCell>
                     {notification.user ? (
                       <Link
-                        href={`/profile/${notification.user.id}`}
+                        href={getCreatorUrl(notification.user)}
                         className="text-primary hover:underline"
                       >
                         {notification.user.name ||

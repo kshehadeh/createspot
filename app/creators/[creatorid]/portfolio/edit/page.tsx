@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioEditForm } from "@/components/portfolio-edit-form";
+import { getCreatorUrl } from "@/lib/utils";
 import { Briefcase, Eye, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -26,17 +27,16 @@ export default async function PortfolioEditPage({
     redirect("/");
   }
 
-  // Ensure user can only edit their own portfolio
-  if (session.user.id !== creatorid) {
-    redirect(`/creators/${session.user.id}/portfolio/edit`);
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: creatorid },
+  // Find user by slug or ID
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: {
       id: true,
       name: true,
       image: true,
+      slug: true,
       featuredSubmissionId: true,
     },
   });
@@ -45,9 +45,14 @@ export default async function PortfolioEditPage({
     redirect("/");
   }
 
+  // Ensure user can only edit their own portfolio
+  if (session.user.id !== user.id) {
+    redirect(`/creators/${session.user.id}/portfolio/edit`);
+  }
+
   // Fetch all user submissions for adding to portfolio (up to 100)
   const submissions = await prisma.submission.findMany({
-    where: { userId: creatorid },
+    where: { userId: user.id },
     include: {
       prompt: {
         select: {
@@ -66,7 +71,7 @@ export default async function PortfolioEditPage({
   const [portfolioItems, totalPortfolioCount] = await Promise.all([
     prisma.submission.findMany({
       where: {
-        userId: creatorid,
+        userId: user.id,
         isPortfolio: true,
       },
       orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
@@ -89,7 +94,7 @@ export default async function PortfolioEditPage({
     }),
     prisma.submission.count({
       where: {
-        userId: creatorid,
+        userId: user.id,
         isPortfolio: true,
       },
     }),
@@ -103,19 +108,19 @@ export default async function PortfolioEditPage({
         rightContent={
           <div className="flex flex-row flex-wrap items-end justify-end gap-2">
             <Button asChild variant="outline" size="sm">
-              <Link href={`/creators/${user.id}/collections`}>
+              <Link href={`${getCreatorUrl(user)}/collections`}>
                 <FolderOpen className="h-4 w-4" />
                 <span className="hidden md:inline">{t("collections")}</span>
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm">
-              <Link href={`/creators/${user.id}/portfolio`}>
+              <Link href={`${getCreatorUrl(user)}/portfolio`}>
                 <Briefcase className="h-4 w-4" />
                 <span className="hidden md:inline">{t("browsePortfolio")}</span>
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm">
-              <Link href={`/creators/${user.id}`}>
+              <Link href={getCreatorUrl(user)}>
                 <Eye className="h-4 w-4" />
                 <span className="hidden md:inline">{t("viewProfile")}</span>
               </Link>

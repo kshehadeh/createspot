@@ -32,8 +32,11 @@ import {
   Shield,
   AlertTriangle,
   Mail,
+  Check,
+  X,
+  Loader2,
 } from "lucide-react";
-import { normalizeUrl, isValidUrl } from "@/lib/utils";
+import { normalizeUrl, isValidUrl, isValidSlugFormat } from "@/lib/utils";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { locales, localeNames, type Locale } from "@/i18n/config";
@@ -67,6 +70,7 @@ interface ProfileEditFormProps {
   initialStateProvince: string;
   initialCountry: string;
   initialLanguage: string;
+  initialSlug: string | null;
   initialFeaturedSubmissionId: string;
   // Image protection settings
   initialEnableWatermark: boolean;
@@ -93,6 +97,7 @@ export function ProfileEditForm({
   initialStateProvince,
   initialCountry,
   initialLanguage,
+  initialSlug,
   initialFeaturedSubmissionId,
   initialEnableWatermark,
   initialWatermarkPosition,
@@ -113,6 +118,11 @@ export function ProfileEditForm({
   const [bio, setBio] = useState(initialBio);
   const [bioHasFocus, setBioHasFocus] = useState(false);
   const [bioOriginalValue, setBioOriginalValue] = useState(initialBio);
+  const [slug, setSlug] = useState(initialSlug || "");
+  const [slugValidationState, setSlugValidationState] = useState<
+    "idle" | "checking" | "available" | "unavailable" | "invalid"
+  >("idle");
+  const [slugErrorMessage, setSlugErrorMessage] = useState<string | null>(null);
   const [instagram, setInstagram] = useState(initialInstagram);
   const [twitter, setTwitter] = useState(initialTwitter);
   const [linkedin, setLinkedin] = useState(initialLinkedin);
@@ -165,6 +175,7 @@ export function ProfileEditForm({
   const initialValuesRef = useRef({
     name: initialName || initialGoogleName || "",
     bio: initialBio,
+    slug: initialSlug || "",
     instagram: initialInstagram,
     twitter: initialTwitter,
     linkedin: initialLinkedin,
@@ -182,6 +193,7 @@ export function ProfileEditForm({
   const formStateRef = useRef({
     name: initialName || initialGoogleName || "",
     bio: initialBio,
+    slug: initialSlug || "",
     instagram: initialInstagram,
     twitter: initialTwitter,
     linkedin: initialLinkedin,
@@ -191,6 +203,9 @@ export function ProfileEditForm({
     country: initialCountry,
     featuredSubmissionId: initialFeaturedSubmissionId,
   });
+
+  // Slug validation debounce timer
+  const slugValidationTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get available states/provinces for selected country
   const availableStates = useMemo(
@@ -260,6 +275,7 @@ export function ProfileEditForm({
       showToast = true,
       overrides?: {
         name?: string;
+        slug?: string | null;
         featuredSubmissionId?: string;
         instagram?: string;
         twitter?: string;
@@ -319,6 +335,10 @@ export function ProfileEditForm({
         overrides?.country !== undefined
           ? overrides.country
           : formStateRef.current.country;
+      const slugValue =
+        overrides?.slug !== undefined
+          ? overrides.slug
+          : formStateRef.current.slug;
 
       try {
         const response = await fetch("/api/profile", {
@@ -327,6 +347,7 @@ export function ProfileEditForm({
           body: JSON.stringify({
             name: nameValue || null,
             bio: initialValuesRef.current.bio || null, // Use saved bio value, not current
+            slug: slugValue || null,
             instagram: instagramValue || null,
             twitter: twitterValue || null,
             linkedin: linkedinValue || null,
@@ -382,6 +403,7 @@ export function ProfileEditForm({
     formStateRef.current = {
       name,
       bio,
+      slug,
       instagram,
       twitter,
       linkedin,
@@ -394,6 +416,7 @@ export function ProfileEditForm({
   }, [
     name,
     bio,
+    slug,
     instagram,
     twitter,
     linkedin,
@@ -543,6 +566,119 @@ export function ProfileEditForm({
       saveProfile(true, { name });
     }
   }, [name, saveProfile]);
+
+  // Slug validation function
+  const checkSlugAvailability = useCallback(
+    async (slugToCheck: string) => {
+      if (!session?.user?.id) return;
+
+      // If slug is empty, it's valid (will use ID fallback)
+      if (!slugToCheck || slugToCheck.trim() === "") {
+        setSlugValidationState("idle");
+        setSlugErrorMessage(null);
+        return;
+      }
+
+      const trimmedSlug = slugToCheck.trim();
+
+      // Check format first
+      if (!isValidSlugFormat(trimmedSlug)) {
+        setSlugValidationState("invalid");
+        setSlugErrorMessage(
+          "Slug can only contain lowercase letters, numbers, and hyphens. It cannot start or end with a hyphen.",
+        );
+        return;
+      }
+
+      // If slug hasn't changed from initial, no need to validate
+      if (trimmedSlug === (initialSlug || "")) {
+        setSlugValidationState("idle");
+        setSlugErrorMessage(null);
+        return;
+      }
+
+      setSlugValidationState("checking");
+      setSlugErrorMessage(null);
+
+      try {
+        const response = await fetch(
+          `/api/profile/slug/check?slug=${encodeURIComponent(trimmedSlug)}&userId=${session.user.id}`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to check slug availability");
+        }
+
+        const data = await response.json();
+
+        if (data.available) {
+          setSlugValidationState("available");
+          setSlugErrorMessage(null);
+        } else {
+          setSlugValidationState("unavailable");
+          setSlugErrorMessage(data.message || "This slug is already taken");
+        }
+      } catch {
+        setSlugValidationState("invalid");
+        setSlugErrorMessage("Failed to validate slug. Please try again.");
+      }
+    },
+    [session?.user?.id, initialSlug],
+  );
+
+  const handleSlugChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSlug(value);
+      formStateRef.current.slug = value;
+
+      // Clear validation state when user starts typing
+      if (slugValidationState !== "idle") {
+        setSlugValidationState("idle");
+        setSlugErrorMessage(null);
+      }
+
+      // Debounce validation
+      if (slugValidationTimerRef.current) {
+        clearTimeout(slugValidationTimerRef.current);
+      }
+
+      slugValidationTimerRef.current = setTimeout(() => {
+        checkSlugAvailability(value);
+      }, 500);
+    },
+    [checkSlugAvailability, slugValidationState],
+  );
+
+  const handleSlugBlur = useCallback(() => {
+    // Clear debounce timer
+    if (slugValidationTimerRef.current) {
+      clearTimeout(slugValidationTimerRef.current);
+      slugValidationTimerRef.current = null;
+    }
+
+    // Validate immediately on blur
+    checkSlugAvailability(slug);
+
+    // Save if changed and valid
+    if (
+      slug !== initialValuesRef.current.slug &&
+      (slugValidationState === "available" ||
+        slugValidationState === "idle" ||
+        slug.trim() === "")
+    ) {
+      saveProfile(true, { slug: slug.trim() || undefined });
+    }
+  }, [slug, slugValidationState, checkSlugAvailability, saveProfile]);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (slugValidationTimerRef.current) {
+        clearTimeout(slugValidationTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleInstagramChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -920,6 +1056,67 @@ export function ProfileEditForm({
             onBlur={handleNameBlur}
             placeholder={t("namePlaceholder")}
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor="slug"
+            className="mb-2 block text-sm font-medium text-foreground"
+          >
+            Profile URL Slug
+          </label>
+          <p className="mb-2 text-xs text-muted-foreground">
+            Customize your profile URL. Leave empty to use your user ID.
+          </p>
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              /creators/
+            </div>
+            <Input
+              type="text"
+              id="slug"
+              value={slug}
+              onChange={handleSlugChange}
+              onBlur={handleSlugBlur}
+              placeholder="karim-shehadeh"
+              className={`pl-24 ${
+                slugValidationState === "invalid" ||
+                slugValidationState === "unavailable"
+                  ? "border-red-500 focus-visible:ring-red-500"
+                  : slugValidationState === "available"
+                    ? "border-green-500 focus-visible:ring-green-500"
+                    : ""
+              }`}
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              {slugValidationState === "checking" && (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              )}
+              {slugValidationState === "available" && (
+                <Check className="h-4 w-4 text-green-500" />
+              )}
+              {(slugValidationState === "invalid" ||
+                slugValidationState === "unavailable") && (
+                <X className="h-4 w-4 text-red-500" />
+              )}
+            </div>
+          </div>
+          {slugErrorMessage && (
+            <p className="mt-1 text-xs text-red-500">{slugErrorMessage}</p>
+          )}
+          {slugValidationState === "available" && !slugErrorMessage && (
+            <p className="mt-1 text-xs text-green-600 dark:text-green-400">
+              This slug is available
+            </p>
+          )}
+          {slug && slugValidationState !== "invalid" && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Your profile will be available at:{" "}
+              <span className="font-mono">
+                /creators/{slug.trim() || session?.user?.id}
+              </span>
+            </p>
+          )}
         </div>
 
         <div>

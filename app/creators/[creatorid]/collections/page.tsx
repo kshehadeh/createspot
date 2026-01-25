@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { CollectionCard } from "@/components/collection-card";
+import { getCreatorUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { CollectionCreateButton } from "@/components/collection-create-button";
@@ -17,13 +18,16 @@ interface CollectionsPageProps {
   params: Promise<{ creatorid: string }>;
 }
 
-async function getUser(userId: string) {
-  return prisma.user.findUnique({
-    where: { id: userId },
+async function getUser(creatorid: string) {
+  return prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: {
       id: true,
       name: true,
       image: true,
+      slug: true,
     },
   });
 }
@@ -69,7 +73,7 @@ export default async function CollectionsPage({
   // Get collections - if owner, show all; otherwise only public
   const collections = await prisma.collection.findMany({
     where: {
-      userId: creatorid,
+      userId: user.id,
       ...(isOwner ? {} : { isPublic: true }),
     },
     include: {
@@ -127,7 +131,7 @@ export default async function CollectionsPage({
               rightContent={
                 <div className="flex flex-row flex-wrap items-end justify-end gap-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/creators/${user.id}/portfolio`}>
+                    <Link href={`${getCreatorUrl(user)}/portfolio`}>
                       <ArrowLeft className="h-4 w-4" />
                       <span className="hidden md:inline">
                         {tProfile("portfolio")}
@@ -138,7 +142,7 @@ export default async function CollectionsPage({
                     <>
                       <CollectionCreateButton userId={user.id} />
                       <Button asChild variant="outline" size="sm">
-                        <Link href={`/creators/${user.id}/collections`}>
+                        <Link href={`${getCreatorUrl(user)}/collections`}>
                           <Pencil className="h-4 w-4" />
                           <span className="hidden md:inline">
                             {t("manageCollections")}

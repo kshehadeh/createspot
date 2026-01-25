@@ -21,8 +21,15 @@ export default async function SubmissionEditBreadcrumb({
     select: { title: true, userId: true },
   });
 
-  // Verify submission belongs to creator
-  if (!submission || submission.userId !== creatorid) {
+  // Find creator by slug or ID and verify submission belongs to creator
+  const creator = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
+    select: { id: true },
+  });
+
+  if (!submission || !creator || submission.userId !== creator.id) {
     return <Breadcrumb segments={[{ label: tSubmission("edit") || "Edit" }]} />;
   }
 

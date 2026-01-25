@@ -12,6 +12,7 @@ import { PortfolioFilters } from "@/components/portfolio-filters";
 import { HintPopover } from "@/components/hint-popover";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getNextPageHint } from "@/lib/hints-helper";
+import { getCreatorUrl } from "@/lib/utils";
 import { Eye, Pencil, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -26,9 +27,11 @@ interface PortfolioPageProps {
   }>;
 }
 
-async function getUser(userId: string) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+async function getUser(creatorid: string) {
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: {
       id: true,
       name: true,
@@ -87,8 +90,10 @@ export default async function PortfolioPage({
   const session = await auth();
   const t = await getTranslations("profile");
 
-  const user = await prisma.user.findUnique({
-    where: { id: creatorid },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: {
       id: true,
       name: true,
@@ -247,7 +252,7 @@ export default async function PortfolioPage({
                 <div className="flex flex-row flex-wrap items-end justify-end gap-2">
                   <Button asChild variant="outline" size="sm">
                     <Link
-                      href={`/creators/${user.id}/collections`}
+                      href={`${getCreatorUrl(user)}/collections`}
                       data-hint-target="collections-button"
                     >
                       <FolderOpen className="h-4 w-4" />
@@ -257,7 +262,7 @@ export default async function PortfolioPage({
                     </Link>
                   </Button>
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/creators/${user.id}`}>
+                    <Link href={getCreatorUrl(user)}>
                       <Eye className="h-4 w-4" />
                       <span className="hidden md:inline">
                         {t("viewProfile")}
@@ -266,7 +271,7 @@ export default async function PortfolioPage({
                   </Button>
                   {isOwnPortfolio && (
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/creators/${user.id}/portfolio/edit`}>
+                      <Link href={`${getCreatorUrl(user)}/portfolio/edit`}>
                         <Pencil className="h-4 w-4" />
                         <span className="hidden md:inline">
                           {t("managePortfolio")}
@@ -284,7 +289,7 @@ export default async function PortfolioPage({
           <PortfolioShareButton userId={user.id} />
           <Button asChild variant="outline" size="sm">
             <Link
-              href={`/creators/${user.id}/collections`}
+              href={`${getCreatorUrl(user)}/collections`}
               data-hint-target="collections-button"
             >
               <FolderOpen className="h-4 w-4" />
@@ -292,14 +297,14 @@ export default async function PortfolioPage({
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <Link href={`/creators/${user.id}`}>
+            <Link href={getCreatorUrl(user)}>
               <Eye className="h-4 w-4" />
               <span>{t("viewProfile")}</span>
             </Link>
           </Button>
           {isOwnPortfolio && (
             <Button asChild variant="outline" size="sm">
-              <Link href={`/creators/${user.id}/portfolio/edit`}>
+              <Link href={`${getCreatorUrl(user)}/portfolio/edit`}>
                 <Pencil className="h-4 w-4" />
                 <span>{t("managePortfolio")}</span>
               </Link>
@@ -345,7 +350,7 @@ export default async function PortfolioPage({
           </p>
           {isOwnPortfolio && (
             <Link
-              href={`/creators/${user.id}/portfolio/edit`}
+              href={`${getCreatorUrl(user)}/portfolio/edit`}
               className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {t("addPortfolioItem")}

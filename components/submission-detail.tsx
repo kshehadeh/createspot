@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { HintPopover } from "@/components/hint-popover";
 import { usePageHints } from "@/lib/hooks/use-page-hints";
 import { getCategoryIcon } from "@/lib/categories";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface SubmissionDetailProps {
   submission: {
@@ -35,6 +36,7 @@ interface SubmissionDetailProps {
       name: string | null;
       image: string | null;
       bio: string | null;
+      slug?: string | null;
       instagram: string | null;
       twitter: string | null;
       linkedin: string | null;
@@ -130,7 +132,7 @@ export function SubmissionDetail({
                 </div>
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/creators/${submission.user.id}`}
+                    href={getCreatorUrl(submission.user)}
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {submission.user.name || tProfile("anonymous")}
@@ -162,7 +164,7 @@ export function SubmissionDetail({
                       className="gap-1.5"
                     >
                       <Link
-                        href={`/creators/${submission.user.id}/s/${submission.id}/edit`}
+                        href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
                       >
                         <svg
                           className="h-4 w-4"

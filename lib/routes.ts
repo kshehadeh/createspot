@@ -154,10 +154,20 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.edit",
     parentPath: "/creators/[creatorid]/portfolio",
   },
+  submission: {
+    path: "/creators/[creatorid]/s/[submissionid]",
+    label: "navigation.submission",
+    parentPath: "/creators/[creatorid]/portfolio",
+  },
+  submissionEdit: {
+    path: "/creators/[creatorid]/s/[submissionid]/edit",
+    label: "navigation.edit",
+    parentPath: "/creators/[creatorid]/s/[submissionid]",
+  },
   submissionImageEditor: {
     path: "/creators/[creatorid]/s/[submissionid]/edit/image",
     label: "navigation.imageEditor",
-    parentPath: "/creators/[creatorid]/portfolio",
+    parentPath: "/creators/[creatorid]/s/[submissionid]/edit",
   },
 
   // Collections routes (now under creators/[creatorid]/collections)

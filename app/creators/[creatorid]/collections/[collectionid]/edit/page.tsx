@@ -74,10 +74,19 @@ export default async function CollectionEditPage({
     notFound();
   }
 
+  // Find creator by slug or ID
+  const creator = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
+    select: { id: true },
+  });
+
   // Only owner can edit and must match the creatorid in URL
   if (
+    !creator ||
     collection.userId !== session.user.id ||
-    collection.userId !== creatorid
+    collection.userId !== creator.id
   ) {
     notFound();
   }

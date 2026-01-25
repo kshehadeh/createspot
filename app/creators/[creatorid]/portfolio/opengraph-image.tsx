@@ -12,8 +12,10 @@ interface RouteParams {
 export default async function OpenGraphImage({ params }: RouteParams) {
   const { creatorid } = await params;
 
-  const user = await prisma.user.findUnique({
-    where: { id: creatorid },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: {
       id: true,
       name: true,

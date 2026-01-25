@@ -678,9 +678,8 @@ function PortfolioGridContent({
                       const creatorId = item.user?.id || user?.id;
                       if (creatorId) {
                         router.push(`/creators/${creatorId}/s/${item.id}`);
-                      } else {
-                        router.push(`/s/${item.id}`);
                       }
+                      // Note: If creatorId is missing, we can't navigate - this shouldn't happen
                     }
                   }}
                   featuredSubmissionId={featuredSubmissionId}
@@ -703,9 +702,8 @@ function PortfolioGridContent({
                           const creatorId = item.user?.id || user?.id;
                           if (creatorId) {
                             router.push(`/creators/${creatorId}/s/${item.id}`);
-                          } else {
-                            router.push(`/s/${item.id}`);
                           }
+                          // Note: If creatorId is missing, we can't navigate - this shouldn't happen
                         }
                       }}
                       onContextMenu={handleImageContextMenu}

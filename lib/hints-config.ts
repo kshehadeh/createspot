@@ -103,7 +103,7 @@ export const HINTS_CONFIG: Record<string, HintConfig[]> = {
     {
       key: "managePortfolio",
       order: 2,
-      targetSelector: "a[href='/portfolio/edit']",
+      targetSelector: "a[href*='/portfolio/edit']",
       side: "bottom",
       showArrow: true,
       translationKeys: {

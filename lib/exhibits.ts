@@ -22,6 +22,7 @@ export interface ExhibitWithDetails {
     id: string;
     name: string | null;
     image: string | null;
+    slug?: string | null;
   } | null;
   featuredSubmission: {
     id: string;
@@ -56,6 +57,7 @@ export async function getCurrentExhibits(): Promise<ExhibitWithDetails[]> {
           id: true,
           name: true,
           image: true,
+          slug: true,
         },
       },
       featuredSubmission: {
@@ -100,6 +102,7 @@ export async function getUpcomingExhibits(): Promise<ExhibitWithDetails[]> {
           id: true,
           name: true,
           image: true,
+          slug: true,
         },
       },
       featuredSubmission: {
@@ -144,6 +147,7 @@ export async function getExhibitById(
           id: true,
           name: true,
           image: true,
+          slug: true,
         },
       },
       featuredSubmission: {

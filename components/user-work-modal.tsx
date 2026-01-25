@@ -138,7 +138,7 @@ export function UserWorkModal({ userId, isOpen, onClose }: UserWorkModalProps) {
                         href={
                           userId
                             ? `/creators/${userId}/s/${submission.id}`
-                            : `/s/${submission.id}`
+                            : "#"
                         }
                         className="block relative aspect-square rounded-lg overflow-hidden border border-border bg-muted transition-transform hover:scale-[1.02]"
                       >

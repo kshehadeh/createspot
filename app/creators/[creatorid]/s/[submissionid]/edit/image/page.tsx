@@ -40,7 +40,15 @@ export default async function ImageEditorPage({
   }
 
   // Verify the submission belongs to the creator in the URL
-  if (submission.userId !== creatorid) {
+  // Check both slug and ID
+  const creator = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
+    select: { id: true },
+  });
+
+  if (!creator || submission.userId !== creator.id) {
     notFound();
   }
 
@@ -51,7 +59,7 @@ export default async function ImageEditorPage({
 
   // Must have an image
   if (!submission.imageUrl) {
-    redirect(`/creators/${creatorid}/s/${submissionid}`);
+    redirect(`/creators/${creator.id}/s/${submissionid}`);
   }
 
   const pageTitle = submission.title || t("untitled");

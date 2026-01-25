@@ -75,6 +75,7 @@ model User {
   language             String       @default("en") // ISO 639-1 code: "en", "es"
   latitude             Float?
   longitude            Float?
+  slug                 String?      @unique // URL-friendly identifier (e.g., "karim-shehadeh")
   featuredSubmissionId String?      @unique
   // Image protection settings
   enableWatermark      Boolean      @default(false)

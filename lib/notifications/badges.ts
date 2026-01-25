@@ -43,7 +43,9 @@ export async function sendBadgeAwardEmail(
   }
 
   const baseUrl = process.env.NEXTAUTH_URL || "https://prompts.art";
-  const profileUrl = `${baseUrl}/profile/${userId}`;
+  // Note: Using ID here since we don't have slug in this context
+  // The actual profile page will redirect to slug-based URL if available
+  const profileUrl = `${baseUrl}/creators/${userId}`;
 
   const { sendEmail } = await import("@/lib/email");
   const { getEmailTranslations } = await import("@/lib/email/translations");

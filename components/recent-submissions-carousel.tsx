@@ -7,6 +7,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getObjectPositionStyle } from "@/lib/image-utils";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface Submission {
   id: string;
@@ -80,7 +81,7 @@ export function RecentSubmissionsCarousel({
                 className="relative h-full min-w-0 flex-[0_0_100%]"
               >
                 <Link
-                  href={`/creators/${submission.user.id}/s/${submission.id}`}
+                  href={`${getCreatorUrl(submission.user)}/s/${submission.id}`}
                   className="group block h-full overflow-hidden rounded-xl bg-muted"
                 >
                   <Image

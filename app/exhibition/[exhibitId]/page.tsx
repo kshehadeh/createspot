@@ -17,6 +17,7 @@ import {
 import { FeaturedSubmission } from "@/components/featured-submission";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
+import { getCreatorUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -81,6 +82,7 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
             id: true,
             name: true,
             image: true,
+            slug: true,
           },
         },
         prompt: {
@@ -169,7 +171,7 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
                 </AvatarFallback>
               </Avatar>
               <Link
-                href={`/profile/${exhibit.featuredArtist.id}`}
+                href={getCreatorUrl(exhibit.featuredArtist)}
                 className="text-sm font-medium hover:underline"
               >
                 {exhibit.featuredArtist.name || "Anonymous"}

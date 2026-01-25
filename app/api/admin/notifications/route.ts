@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
           id: true,
           name: true,
           email: true,
+          slug: true,
         },
       },
     },
@@ -74,6 +75,7 @@ export async function GET(request: NextRequest) {
               id: notification.user.id,
               name: notification.user.name,
               email: notification.user.email,
+              slug: notification.user.slug,
             }
           : null,
         metadata: metadataDescription,

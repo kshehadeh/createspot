@@ -60,3 +60,46 @@ export function getUrlHostname(url: string | null | undefined): string {
     return url;
   }
 }
+
+/**
+ * Generates a URL-friendly slug from a name
+ * @param name - The name to convert to a slug
+ * @returns A slug string (e.g., "Karim Shehadeh" -> "karim-shehadeh")
+ */
+export function generateSlug(name: string): string {
+  if (!name || typeof name !== "string") return "";
+
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "") // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ""); // Trim hyphens from start and end
+}
+
+/**
+ * Validates if a slug matches the required format
+ * @param slug - The slug to validate
+ * @returns true if valid, false otherwise
+ */
+export function isValidSlugFormat(slug: string): boolean {
+  if (!slug || typeof slug !== "string") return false;
+  // Must be lowercase alphanumeric with hyphens, cannot start or end with hyphen
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+}
+
+/**
+ * Gets the creator URL using slug if available, otherwise falls back to ID
+ * @param user - User object with id and optional slug
+ * @returns The creator profile URL
+ */
+export function getCreatorUrl(user: {
+  id: string;
+  slug?: string | null;
+}): string {
+  if (user.slug) {
+    return `/creators/${user.slug}`;
+  }
+  return `/creators/${user.id}`;
+}

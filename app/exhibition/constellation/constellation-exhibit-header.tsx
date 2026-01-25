@@ -7,6 +7,7 @@ import { ConstellationPath } from "@/components/constellation-path";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getCreatorUrl } from "@/lib/utils";
 import { ExhibitViewSelector } from "@/components/exhibit-view-selector";
 import type { ConstellationItem } from "@/components/constellation-path";
 
@@ -25,6 +26,7 @@ interface ConstellationExhibitHeaderProps {
       id: string;
       name: string | null;
       image: string | null;
+      slug?: string | null;
     } | null;
     featuredSubmission: {
       id: string;
@@ -114,7 +116,7 @@ export function ConstellationExhibitHeader({
                           </AvatarFallback>
                         </Avatar>
                         <Link
-                          href={`/profile/${exhibit.featuredArtist.id}`}
+                          href={getCreatorUrl(exhibit.featuredArtist)}
                           className="font-medium hover:underline"
                         >
                           {exhibit.featuredArtist.name || "Anonymous"}

@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getObjectPositionStyle } from "@/lib/image-utils";
+import { getCreatorUrl } from "@/lib/utils";
 import { PageLayout } from "@/components/page-layout";
 import { ProfileImageViewer } from "@/components/profile-image-viewer";
 import { HistoryList } from "@/app/prompt/history/history-list";
@@ -32,9 +33,11 @@ interface ProfilePageProps {
   searchParams: Promise<{ view?: string | string[] }>;
 }
 
-async function getUser(userId: string) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+async function getUser(creatorid: string) {
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: {
       id: true,
       name: true,
@@ -108,8 +111,10 @@ export default async function ProfilePage({
     : paramsSearch.view;
   const isPublicViewRequested = viewParam === "public";
 
-  const user = await prisma.user.findUnique({
-    where: { id: creatorid },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug: creatorid }, { id: creatorid }],
+    },
     select: {
       id: true,
       name: true,
@@ -122,6 +127,7 @@ export default async function ProfilePage({
       linkedin: true,
       website: true,
       featuredSubmissionId: true,
+      slug: true,
       badgeAwards: {
         select: {
           badgeKey: true,
@@ -286,7 +292,7 @@ export default async function ProfilePage({
         <div className="fixed top-16 right-4 z-50 flex items-center gap-3 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-lg">
           <span>{t("publicView")}</span>
           <Link
-            href={`/creators/${user.id}`}
+            href={getCreatorUrl(user)}
             className="text-white underline transition-opacity hover:opacity-80"
           >
             {t("exit")} →
@@ -368,7 +374,7 @@ export default async function ProfilePage({
                       <h1 className="text-2xl font-semibold text-foreground truncate">
                         {user.name || t("anonymous")}
                       </h1>
-                      <ProfileShareButton userId={user.id} />
+                      <ProfileShareButton userId={user.id} slug={user.slug} />
                     </div>
                     <div className="flex items-center gap-3">
                       <p className="text-sm text-foreground/90">
@@ -435,7 +441,7 @@ export default async function ProfilePage({
                   <h1 className="text-2xl font-semibold text-foreground truncate">
                     {user.name || t("anonymous")}
                   </h1>
-                  <ProfileShareButton userId={user.id} />
+                  <ProfileShareButton userId={user.id} slug={user.slug} />
                 </div>
                 <div className="flex items-center gap-3">
                   <p className="text-sm text-muted-foreground">
@@ -457,7 +463,7 @@ export default async function ProfilePage({
             {isOwnProfile && !isPublicView && (
               <div className="flex flex-row flex-wrap items-end justify-end gap-2 md:shrink-0">
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/creators/${user.id}?view=public`}>
+                  <Link href={`${getCreatorUrl(user)}?view=public`}>
                     <Eye className="h-4 w-4" />
                     <span className="hidden md:inline">
                       {t("viewAsAnonymous")}
@@ -465,7 +471,7 @@ export default async function ProfilePage({
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/creators/${user.id}/edit`}>
+                  <Link href={`${getCreatorUrl(user)}/edit`}>
                     <Pencil className="h-4 w-4" />
                     <span className="hidden md:inline">{t("editProfile")}</span>
                   </Link>
@@ -500,7 +506,7 @@ export default async function ProfilePage({
             </div>
             <div className="flex flex-row flex-wrap items-end justify-end gap-2">
               <Button asChild variant="outline" size="sm">
-                <Link href={`/creators/${user.id}/portfolio`}>
+                <Link href={`${getCreatorUrl(user)}/portfolio`}>
                   <Briefcase className="h-4 w-4" />
                   <span className="hidden md:inline">
                     {t("browsePortfolio")}
@@ -509,7 +515,7 @@ export default async function ProfilePage({
               </Button>
               {effectiveIsOwnProfile && (
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/creators/${user.id}/portfolio/edit`}>
+                  <Link href={`${getCreatorUrl(user)}/portfolio/edit`}>
                     <Pencil className="h-4 w-4" />
                     <span className="hidden md:inline">
                       {t("managePortfolio")}
@@ -565,7 +571,7 @@ export default async function ProfilePage({
             {effectiveIsOwnProfile && (
               <div className="mt-4 flex justify-center gap-3">
                 <Link
-                  href={`/creators/${user.id}/portfolio/edit`}
+                  href={`${getCreatorUrl(user)}/portfolio/edit`}
                   className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   {t("addPortfolioItem")}

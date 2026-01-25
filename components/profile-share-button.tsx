@@ -2,21 +2,24 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface ProfileShareButtonProps {
   userId: string;
+  slug?: string | null;
   className?: string;
 }
 
 export function ProfileShareButton({
   userId,
+  slug,
   className = "",
 }: ProfileShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const shareUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/creators/${userId}`
+      ? `${window.location.origin}${getCreatorUrl({ id: userId, slug })}`
       : "";
 
   async function handleShare() {

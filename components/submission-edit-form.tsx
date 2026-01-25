@@ -35,11 +35,8 @@ export function SubmissionEditForm({
       // Navigate back to the submission page and refresh
       router.push(`/creators/${creatorId}/s/${submissionId}`);
       router.refresh();
-    } else {
-      // Fallback to old route if API fails
-      router.push(`/s/${submissionId}`);
-      router.refresh();
     }
+    // Note: If API fails, we can't navigate - this shouldn't happen
   };
 
   const handleCancel = async () => {
@@ -50,10 +47,8 @@ export function SubmissionEditForm({
       const creatorId = data.submission.userId;
       // Navigate back to the submission page
       router.push(`/creators/${creatorId}/s/${submissionId}`);
-    } else {
-      // Fallback to old route if API fails
-      router.push(`/s/${submissionId}`);
     }
+    // Note: If API fails, we can't navigate - this shouldn't happen
   };
 
   return (
