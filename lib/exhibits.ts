@@ -30,6 +30,10 @@ export interface ExhibitWithDetails {
     imageUrl: string | null;
     text: string | null;
     userId: string;
+    user: {
+      id: string;
+      slug: string | null;
+    };
   } | null;
   _count: {
     submissions: number;
@@ -67,6 +71,12 @@ export async function getCurrentExhibits(): Promise<ExhibitWithDetails[]> {
           imageUrl: true,
           text: true,
           userId: true,
+          user: {
+            select: {
+              id: true,
+              slug: true,
+            },
+          },
         },
       },
       _count: {
@@ -112,6 +122,12 @@ export async function getUpcomingExhibits(): Promise<ExhibitWithDetails[]> {
           imageUrl: true,
           text: true,
           userId: true,
+          user: {
+            select: {
+              id: true,
+              slug: true,
+            },
+          },
         },
       },
       _count: {
@@ -157,6 +173,12 @@ export async function getExhibitById(
           imageUrl: true,
           text: true,
           userId: true,
+          user: {
+            select: {
+              id: true,
+              slug: true,
+            },
+          },
         },
       },
       _count: {

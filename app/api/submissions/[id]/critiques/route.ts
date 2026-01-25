@@ -44,6 +44,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       critiquer: {
         select: {
           id: true,
+          slug: true,
           name: true,
           image: true,
         },
@@ -121,6 +122,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       critiquer: {
         select: {
           id: true,
+          slug: true,
           name: true,
           image: true,
         },

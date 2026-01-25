@@ -23,6 +23,7 @@ import { ConfirmModal } from "@/components/confirm-modal";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Edit, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface Critique {
   id: string;
@@ -33,6 +34,7 @@ interface Critique {
   updatedAt: string;
   critiquer: {
     id: string;
+    slug: string | null;
     name: string | null;
     image: string | null;
   };
@@ -369,7 +371,7 @@ export function CritiqueManagerModal({
                   {index > 0 && <div className="border-t border-border my-4" />}
                   <div className="flex items-start gap-3">
                     {isOwner && (
-                      <Link href={`/creators/${critique.critiquer.id}`}>
+                      <Link href={getCreatorUrl(critique.critiquer)}>
                         <Avatar>
                           <AvatarImage
                             src={critique.critiquer.image || undefined}
@@ -385,7 +387,7 @@ export function CritiqueManagerModal({
                         {isOwner && (
                           <div className="flex items-center gap-2 mb-2">
                             <Link
-                              href={`/creators/${critique.critiquer.id}`}
+                              href={getCreatorUrl(critique.critiquer)}
                               className="font-medium text-foreground hover:underline"
                             >
                               {critique.critiquer.name || t("critiquer")}

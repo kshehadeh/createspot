@@ -3,22 +3,36 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { User, Briefcase, FolderOpen, ChevronRight } from "lucide-react";
+import {
+  User,
+  Briefcase,
+  FolderOpen,
+  Pencil,
+  Eye,
+  Settings,
+  FileText,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CollectionCreateButton } from "@/components/collection-create-button";
 
+interface NavChild {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  isActive: boolean;
+  target?: string;
+  rel?: string;
+}
+
 interface CreatorSidebarProps {
   creatorUrl: string;
-  creatorName: string | null;
-  creatorImage: string | null;
   userId: string;
   collections: Array<{ id: string; name: string | null }>;
 }
 
 export function CreatorSidebar({
   creatorUrl,
-  creatorName,
-  creatorImage,
   userId,
   collections,
 }: CreatorSidebarProps) {
@@ -33,81 +47,74 @@ export function CreatorSidebar({
     return null;
   }
 
+  const profileChildren: NavChild[] = [
+    {
+      href: `${creatorUrl}/edit`,
+      label: tProfile("editProfile"),
+      icon: Pencil,
+      isActive: pathname === `${creatorUrl}/edit`,
+    },
+    {
+      href: `${creatorUrl}?view=public`,
+      label: tProfile("viewAsAnonymous"),
+      icon: Eye,
+      isActive: pathname === creatorUrl && isPublicView,
+      target: "_blank",
+      rel: "noreferrer",
+    },
+  ];
+
+  const portfolioChildren: NavChild[] = [
+    {
+      href: `${creatorUrl}/portfolio/edit`,
+      label: tProfile("managePortfolio"),
+      icon: Settings,
+      isActive: pathname === `${creatorUrl}/portfolio/edit`,
+    },
+  ];
+
+  const collectionChildren: NavChild[] = collections.map((collection) => ({
+    href: `${creatorUrl}/collections/${collection.id}`,
+    label: collection.name || tCollections("collection"),
+    icon: FileText,
+    isActive: pathname.startsWith(`${creatorUrl}/collections/${collection.id}`),
+  }));
+
   const navItems = [
     {
       href: creatorUrl,
       label: t("profile"),
       icon: User,
-      isActive: pathname === creatorUrl || pathname === `${creatorUrl}/edit`,
-      children: [
-        {
-          href: `${creatorUrl}/edit`,
-          label: tProfile("editProfile"),
-          isActive: pathname === `${creatorUrl}/edit`,
-        },
-        {
-          href: `${creatorUrl}?view=public`,
-          label: tProfile("viewAsAnonymous"),
-          isActive: pathname === creatorUrl && isPublicView,
-          target: "_blank",
-          rel: "noreferrer",
-        },
-      ],
+      isDirectlyActive: pathname === creatorUrl && !isPublicView,
+      hasActiveChild: profileChildren.some((c) => c.isActive),
+      children: profileChildren,
     },
     {
       href: `${creatorUrl}/portfolio`,
       label: t("portfolio"),
       icon: Briefcase,
-      isActive: pathname.startsWith(`${creatorUrl}/portfolio`),
-      children: [
-        {
-          href: `${creatorUrl}/portfolio/edit`,
-          label: tProfile("managePortfolio"),
-          isActive: pathname === `${creatorUrl}/portfolio/edit`,
-        },
-      ],
+      isDirectlyActive:
+        pathname === `${creatorUrl}/portfolio` ||
+        (pathname.startsWith(`${creatorUrl}/portfolio/`) &&
+          !portfolioChildren.some((c) => c.isActive)),
+      hasActiveChild: portfolioChildren.some((c) => c.isActive),
+      children: portfolioChildren,
     },
     {
       href: `${creatorUrl}/collections`,
       label: t("collections"),
       icon: FolderOpen,
-      isActive: pathname.startsWith(`${creatorUrl}/collections`),
-      children: collections.map((collection) => ({
-        href: `${creatorUrl}/collections/${collection.id}`,
-        label: collection.name || tCollections("collection"),
-        isActive: pathname.startsWith(
-          `${creatorUrl}/collections/${collection.id}`,
-        ),
-      })),
+      isDirectlyActive:
+        pathname === `${creatorUrl}/collections` &&
+        !collectionChildren.some((c) => c.isActive),
+      hasActiveChild: collectionChildren.some((c) => c.isActive),
+      children: collectionChildren,
     },
   ];
 
   return (
     <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-border bg-background">
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center gap-3">
-          {creatorImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={creatorImage}
-              alt={creatorName || "Creator"}
-              className="h-10 w-10 rounded-full shrink-0"
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted shrink-0">
-              <span className="text-sm font-medium text-muted-foreground">
-                {creatorName?.charAt(0) || "?"}
-              </span>
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-foreground truncate">
-              {creatorName || "Creator"}
-            </p>
-          </div>
-        </div>
-      </div>
-      <nav className="flex-1 p-2">
+      <nav className="flex-1 p-2 pt-4">
         <ul className="space-y-2">
           {navItems.map((item) => (
             <li key={item.href}>
@@ -115,17 +122,20 @@ export function CreatorSidebar({
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  item.isActive
+                  item.isDirectlyActive
                     ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                    : item.hasActiveChild
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                 )}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
                 {item.label}
               </Link>
-              {(item.children.length > 0 ||
+              {((item.children.length > 0 &&
+                (item.isDirectlyActive || item.hasActiveChild)) ||
                 item.href === `${creatorUrl}/collections`) && (
-                <div className="mt-2 space-y-1 pl-6">
+                <div className="mt-1 space-y-0.5 pl-3">
                   {item.children.map((child) => (
                     <Link
                       key={child.href}
@@ -139,7 +149,9 @@ export function CreatorSidebar({
                           : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                       )}
                     >
-                      <ChevronRight className="h-3 w-3" />
+                      {child.icon && (
+                        <child.icon className="h-3 w-3 shrink-0" />
+                      )}
                       <span className="truncate">{child.label}</span>
                     </Link>
                   ))}

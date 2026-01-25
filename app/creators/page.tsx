@@ -48,6 +48,7 @@ export default async function CreatorsPage({
       : undefined,
     select: {
       id: true,
+      slug: true,
       name: true,
       profileImageUrl: true,
       image: true,

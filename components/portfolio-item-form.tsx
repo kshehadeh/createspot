@@ -38,6 +38,7 @@ import {
   getImageMetadata,
   type ImageMetadata,
 } from "@/lib/image-editor/metadata";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface SubmissionData {
   id: string;
@@ -596,7 +597,7 @@ export function PortfolioItemForm({
               {tUpload("watermarkEnabled")}{" "}
               {session?.user?.id && (
                 <Link
-                  href={`/creators/${session.user.id}/edit`}
+                  href={`${getCreatorUrl({ id: session.user.id, slug: session.user.slug })}/edit`}
                   className="underline hover:text-foreground"
                 >
                   {tUpload("changeSettings")}

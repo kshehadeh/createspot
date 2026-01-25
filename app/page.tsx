@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getCreatorUrl } from "@/lib/utils";
 import {
   Card,
   CardHeader,
@@ -129,7 +130,7 @@ export default async function Home() {
           {
             id: "portfolio" as const,
             title: t("yourPortfolio"),
-            href: `/creators/${session.user.id}/portfolio/edit`,
+            href: `${getCreatorUrl({ id: session.user.id, slug: session.user.slug })}/portfolio/edit`,
             icon: Briefcase,
           },
         ]
@@ -325,13 +326,16 @@ export default async function Home() {
                     ) : (
                       <>
                         <Link
-                          href={`/creators/${session.user.id}`}
+                          href={getCreatorUrl({
+                            id: session.user.id,
+                            slug: session.user.slug,
+                          })}
                           className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                         >
                           {t("features.mediaManager.yourProfile")}
                         </Link>
                         <Link
-                          href={`/creators/${session.user.id}/portfolio/edit`}
+                          href={`${getCreatorUrl({ id: session.user.id, slug: session.user.slug })}/portfolio/edit`}
                           className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                         >
                           {t("features.mediaManager.yourPortfolio")}

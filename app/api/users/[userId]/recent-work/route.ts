@@ -15,6 +15,7 @@ export async function GET(
       where: { id: userId },
       select: {
         id: true,
+        slug: true,
         name: true,
         image: true,
         city: true,
@@ -55,6 +56,7 @@ export async function GET(
     return NextResponse.json({
       user: {
         id: user.id,
+        slug: user.slug,
         name: user.name,
         image: user.image,
         city: user.city,

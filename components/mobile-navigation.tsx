@@ -9,13 +9,14 @@ import { useTranslations } from "next-intl";
 import { Button } from "./ui/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { BugReportButton } from "./bug-report-button";
-import { cn } from "@/lib/utils";
-import { getRoute, buildRoutePath } from "@/lib/routes";
+import { cn, getCreatorUrl } from "@/lib/utils";
+import { getRoute } from "@/lib/routes";
 import { getUserImageUrl } from "@/lib/user-image";
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 
 interface MobileNavigationUser {
   id?: string;
+  slug?: string | null;
   name?: string | null;
   image?: string | null;
   profileImageUrl?: string | null;
@@ -403,7 +404,7 @@ function MobileUserSection({
         <div className="mt-1">
           {user.id && (
             <Link
-              href={buildRoutePath("profile", { creatorid: user.id })}
+              href={getCreatorUrl({ id: user.id, slug: user.slug })}
               className={cn(
                 linkClassName(profileRoute.path),
                 "flex items-center gap-2",
@@ -416,7 +417,7 @@ function MobileUserSection({
           )}
           {user.id && (
             <Link
-              href={buildRoutePath("portfolio", { creatorid: user.id })}
+              href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/portfolio`}
               className={cn(
                 linkClassName(portfolioRoute.path),
                 "flex items-center gap-2",

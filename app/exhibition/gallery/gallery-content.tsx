@@ -81,7 +81,7 @@ export async function GalleryContent({
             {hasFeaturedImage && exhibit?.featuredSubmission && (
               <div className="shrink-0">
                 <Link
-                  href={`/creators/${exhibit.featuredSubmission.userId}/s/${exhibit.featuredSubmission.id}`}
+                  href={`${getCreatorUrl(exhibit.featuredSubmission.user)}/s/${exhibit.featuredSubmission.id}`}
                   className="block relative w-full sm:w-48 md:w-56 aspect-square rounded-lg overflow-hidden border border-border bg-muted transition-transform hover:scale-[1.02]"
                 >
                   {exhibit.featuredSubmission.imageUrl ? (

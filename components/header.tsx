@@ -31,6 +31,7 @@ const UserDropdown = dynamic(
 
 interface HeaderUser {
   id?: string;
+  slug?: string | null;
   name?: string | null;
   image?: string | null;
   profileImageUrl?: string | null;
@@ -89,6 +90,7 @@ export function Header({ user }: HeaderProps) {
             {user ? (
               <UserDropdown
                 id={user.id}
+                slug={user.slug}
                 name={user.name}
                 image={user.image}
                 profileImageUrl={user.profileImageUrl}

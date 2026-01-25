@@ -69,7 +69,7 @@ export default async function SubmissionEditPage({
   }
 
   return (
-    <PageLayout maxWidth="max-w-3xl" className="w-full">
+    <PageLayout maxWidth="max-w-5xl" className="w-full">
       <PageHeader title={t("editTitle")} subtitle={t("editDescription")} />
       <SubmissionEditForm
         submissionId={submission.id}

@@ -41,10 +41,12 @@ export const { handlers, signIn, auth } = NextAuth({
             isAdmin: true,
             profileImageUrl: true,
             welcomeEmailSent: true,
+            slug: true,
           },
         });
         session.user.isAdmin = dbUser?.isAdmin ?? false;
         session.user.profileImageUrl = dbUser?.profileImageUrl ?? null;
+        session.user.slug = dbUser?.slug ?? null;
 
         // Send welcome email if needed (fire and forget - don't block session creation)
         if (dbUser && !dbUser.welcomeEmailSent) {

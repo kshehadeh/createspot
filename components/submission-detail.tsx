@@ -128,6 +128,7 @@ export function SubmissionDetail({
                     title={submission.title}
                     className="shrink-0"
                     userId={submission.user.id}
+                    userSlug={submission.user.slug}
                   />
                 </div>
                 <div className="flex items-center gap-2">

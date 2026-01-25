@@ -7,7 +7,14 @@ interface ChangelogEntry {
   time: string;
   commit: string;
   type: "fix" | "improvement" | "feature" | "documentation";
-  area: "global" | "content" | "profile" | "portfolio" | "collection" | "games" | "tools";
+  area:
+    | "global"
+    | "content"
+    | "profile"
+    | "portfolio"
+    | "collection"
+    | "games"
+    | "tools";
   description: string;
 }
 
@@ -90,7 +97,9 @@ async function readChangelogForDate(date: string): Promise<string | null> {
   }
 }
 
-async function loadChangelogEntries(filePath: string): Promise<ChangelogEntry[]> {
+async function loadChangelogEntries(
+  filePath: string,
+): Promise<ChangelogEntry[]> {
   try {
     const content = await readFile(filePath, "utf-8");
     const entries: ChangelogEntry[] = JSON.parse(content);
@@ -105,7 +114,11 @@ function formatDate(dateStr: string): string {
   // If it's already in YYYY-MM-DD format, parse it directly
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     const [year, month, day] = dateStr.split("-");
-    const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
+    const date = new Date(
+      parseInt(year, 10),
+      parseInt(month, 10) - 1,
+      parseInt(day, 10),
+    );
     return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -121,7 +134,9 @@ function formatDate(dateStr: string): string {
   });
 }
 
-function groupEntriesByType(entries: ChangelogEntry[]): Map<ChangelogEntry["type"], ChangelogEntry[]> {
+function groupEntriesByType(
+  entries: ChangelogEntry[],
+): Map<ChangelogEntry["type"], ChangelogEntry[]> {
   const grouped = new Map<ChangelogEntry["type"], ChangelogEntry[]>();
 
   for (const entry of entries) {
@@ -133,7 +148,10 @@ function groupEntriesByType(entries: ChangelogEntry[]): Map<ChangelogEntry["type
   return grouped;
 }
 
-function formatChangelogMessage(entries: ChangelogEntry[], date: string): string {
+function formatChangelogMessage(
+  entries: ChangelogEntry[],
+  date: string,
+): string {
   if (entries.length === 0) {
     return `**No changes found for ${date}**`;
   }
@@ -142,7 +160,12 @@ function formatChangelogMessage(entries: ChangelogEntry[], date: string): string
   let message = `## 📋 Updates for ${formattedDate}\n\n`;
 
   const grouped = groupEntriesByType(entries);
-  const typeOrder: ChangelogEntry["type"][] = ["feature", "improvement", "fix", "documentation"];
+  const typeOrder: ChangelogEntry["type"][] = [
+    "feature",
+    "improvement",
+    "fix",
+    "documentation",
+  ];
 
   for (const type of typeOrder) {
     const typeEntries = grouped.get(type);
@@ -304,7 +327,13 @@ async function main(): Promise<void> {
   console.log(`📝 Found ${entries.length} changelog entry/entries`);
 
   const message = formatChangelogMessage(entries, date);
-  console.log("\n" + (isDryRun ? "🔍 DRY RUN - Message preview:" : "📤 Posting to Discord...") + "\n");
+  console.log(
+    "\n" +
+      (isDryRun
+        ? "🔍 DRY RUN - Message preview:"
+        : "📤 Posting to Discord...") +
+      "\n",
+  );
   console.log("Message preview:");
   console.log("─".repeat(50));
   console.log(message);
@@ -312,7 +341,9 @@ async function main(): Promise<void> {
   console.log(`\nMessage length: ${message.length} characters`);
 
   if (isDryRun) {
-    console.log("\n✅ Dry run complete. Use without --dry-run to post to Discord.");
+    console.log(
+      "\n✅ Dry run complete. Use without --dry-run to post to Discord.",
+    );
     return;
   }
 

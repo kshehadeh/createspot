@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/tooltip";
 import { getCategoryIcon } from "@/lib/categories";
 import { getObjectPositionStyle } from "@/lib/image-utils";
+import { getCreatorUrl } from "@/lib/utils";
 import { Pencil, Trash2, Star, Lock, Eye, Globe } from "lucide-react";
 
 // Prevent right-click context menu on images for download protection
@@ -70,6 +71,7 @@ interface PortfolioItem {
   // For exhibit mode - items can come from different users
   user?: {
     id: string;
+    slug?: string | null;
     name: string | null;
     image: string | null;
   };
@@ -90,6 +92,7 @@ interface PortfolioGridProps {
   context?: "exhibit" | "collection"; // To distinguish between exhibits and collections
   user?: {
     id: string;
+    slug?: string | null;
     name: string | null;
     image: string | null;
   };
@@ -546,6 +549,7 @@ function PortfolioGridContent({
   context?: "exhibit" | "collection";
   user?: {
     id: string;
+    slug?: string | null;
     name: string | null;
     image: string | null;
   };
@@ -675,11 +679,11 @@ function PortfolioGridContent({
                     if (item.imageUrl) {
                       setSelectedSubmission(item);
                     } else {
-                      const creatorId = item.user?.id || user?.id;
-                      if (creatorId) {
-                        router.push(`/creators/${creatorId}/s/${item.id}`);
+                      const creator = item.user || user;
+                      if (creator) {
+                        router.push(`${getCreatorUrl(creator)}/s/${item.id}`);
                       }
-                      // Note: If creatorId is missing, we can't navigate - this shouldn't happen
+                      // Note: If creator is missing, we can't navigate - this shouldn't happen
                     }
                   }}
                   featuredSubmissionId={featuredSubmissionId}
@@ -699,11 +703,13 @@ function PortfolioGridContent({
                         if (item.imageUrl) {
                           setSelectedSubmission(item);
                         } else {
-                          const creatorId = item.user?.id || user?.id;
-                          if (creatorId) {
-                            router.push(`/creators/${creatorId}/s/${item.id}`);
+                          const creator = item.user || user;
+                          if (creator) {
+                            router.push(
+                              `${getCreatorUrl(creator)}/s/${item.id}`,
+                            );
                           }
-                          // Note: If creatorId is missing, we can't navigate - this shouldn't happen
+                          // Note: If creator is missing, we can't navigate - this shouldn't happen
                         }
                       }}
                       onContextMenu={handleImageContextMenu}
@@ -862,7 +868,7 @@ function PortfolioGridContent({
             </p>
             {isOwnProfile && user && (
               <Link
-                href={`/creators/${user.id}/portfolio/edit`}
+                href={`${getCreatorUrl(user)}/portfolio/edit`}
                 className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 {t("addPortfolioItem")}

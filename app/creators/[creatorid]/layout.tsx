@@ -16,8 +16,6 @@ async function getCreator(creatorid: string) {
     },
     select: {
       id: true,
-      name: true,
-      image: true,
       slug: true,
     },
   });
@@ -52,8 +50,6 @@ export default async function CreatorLayout({
     <div className="flex flex-1">
       <CreatorSidebar
         creatorUrl={creatorUrl}
-        creatorName={creator.name}
-        creatorImage={creator.image}
         userId={creator.id}
         collections={collections}
       />

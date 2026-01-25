@@ -11,6 +11,7 @@ import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { getObjectPositionStyle } from "@/lib/image-utils";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface PortfolioItem {
   id: string;
@@ -693,7 +694,7 @@ export function SubmissionSlots({
                       {t("watermarkEnabled")}{" "}
                       {session?.user?.id && (
                         <Link
-                          href={`/creators/${session.user.id}/edit`}
+                          href={`${getCreatorUrl({ id: session.user.id, slug: session.user.slug })}/edit`}
                           className="underline hover:text-foreground"
                         >
                           {t("changeSettings")}

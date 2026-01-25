@@ -2,33 +2,40 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface ShareButtonProps {
   submissionId: string;
   title?: string | null;
   className?: string;
   userId?: string | null;
+  userSlug?: string | null;
 }
 
 export function ShareButton({
   submissionId,
   className = "",
   userId,
+  userSlug,
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
-  const [resolvedUserId, setResolvedUserId] = useState<string | null>(
-    userId || null,
-  );
+  const [resolvedUser, setResolvedUser] = useState<{
+    id: string;
+    slug: string | null;
+  } | null>(userId ? { id: userId, slug: userSlug || null } : null);
 
-  // Fetch userId if not provided
+  // Fetch user info if not provided
   useEffect(() => {
-    if (!resolvedUserId && typeof window !== "undefined") {
+    if (!resolvedUser && typeof window !== "undefined") {
       const fetchSubmission = async () => {
         try {
           const response = await fetch(`/api/submissions/${submissionId}`);
           if (response.ok) {
             const data = await response.json();
-            setResolvedUserId(data.submission.userId);
+            setResolvedUser({
+              id: data.submission.userId,
+              slug: data.submission.user?.slug || null,
+            });
           }
         } catch {
           // Silently fail
@@ -36,11 +43,11 @@ export function ShareButton({
       };
       fetchSubmission();
     }
-  }, [submissionId, resolvedUserId]);
+  }, [submissionId, resolvedUser]);
 
   const shareUrl =
-    typeof window !== "undefined" && resolvedUserId
-      ? `${window.location.origin}/creators/${resolvedUserId}/s/${submissionId}`
+    typeof window !== "undefined" && resolvedUser
+      ? `${window.location.origin}${getCreatorUrl(resolvedUser)}/s/${submissionId}`
       : "";
 
   async function handleShare() {

@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { getObjectPositionStyle } from "@/lib/image-utils";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface Submission {
   id: string;
@@ -34,6 +35,7 @@ interface Submission {
 
 interface User {
   id: string;
+  slug: string | null;
   name: string | null;
   image: string | null;
   city: string | null;
@@ -136,8 +138,8 @@ export function UserWorkModal({ userId, isOpen, onClose }: UserWorkModalProps) {
                     >
                       <Link
                         href={
-                          userId
-                            ? `/creators/${userId}/s/${submission.id}`
+                          user
+                            ? `${getCreatorUrl(user)}/s/${submission.id}`
                             : "#"
                         }
                         className="block relative aspect-square rounded-lg overflow-hidden border border-border bg-muted transition-transform hover:scale-[1.02]"
@@ -173,7 +175,7 @@ export function UserWorkModal({ userId, isOpen, onClose }: UserWorkModalProps) {
         {!loading && !error && user && (
           <DialogFooter>
             <Button asChild variant="outline">
-              <Link href={`/creators/${user.id}`}>View Profile</Link>
+              <Link href={getCreatorUrl(user)}>View Profile</Link>
             </Button>
           </DialogFooter>
         )}

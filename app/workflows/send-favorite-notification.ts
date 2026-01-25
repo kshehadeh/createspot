@@ -19,6 +19,7 @@ interface SubmissionData {
 
 interface FavorerData {
   id: string;
+  slug: string | null;
   name: string | null;
 }
 
@@ -58,11 +59,16 @@ async function fetchSubmissionAndFavorer(
 
   const favorer = await prisma.user.findUnique({
     where: { id: favorerId },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+    },
   });
 
   console.log(
     "[Workflow] Favorer found:",
-    favorer ? { id: favorer.id, name: favorer.name } : null,
+    favorer ? { id: favorer.id, slug: favorer.slug, name: favorer.name } : null,
   );
 
   return { submission, favorer };
@@ -203,11 +209,10 @@ export async function sendFavoriteNotification(
   }
 
   // Build URLs
-  const { buildRoutePath } = await import("@/lib/routes");
+  const { getCreatorUrl } = await import("@/lib/utils");
   const baseUrl = process.env.NEXTAUTH_URL || "https://prompts.art";
-  // Note: Using ID here - the route will handle slug/ID lookup
   const submissionUrl = `${baseUrl}/creators/${submission.userId}/s/${submissionId}`;
-  const favorerProfileUrl = `${baseUrl}${buildRoutePath("profile", { creatorid: favorer.id })}`;
+  const favorerProfileUrl = `${baseUrl}${getCreatorUrl(favorer)}`;
 
   console.log("[Workflow] Proceeding to send email. URLs:", {
     submissionUrl,

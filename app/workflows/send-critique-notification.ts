@@ -19,6 +19,7 @@ interface SubmissionData {
 
 interface CritiquerData {
   id: string;
+  slug: string | null;
   name: string | null;
 }
 
@@ -58,11 +59,18 @@ async function fetchSubmissionAndCritiquer(
 
   const critiquer = await prisma.user.findUnique({
     where: { id: critiquerId },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+    },
   });
 
   console.log(
     "[Workflow] Critiquer found:",
-    critiquer ? { id: critiquer.id, name: critiquer.name } : null,
+    critiquer
+      ? { id: critiquer.id, slug: critiquer.slug, name: critiquer.name }
+      : null,
   );
 
   return { submission, critiquer };
@@ -203,11 +211,10 @@ export async function sendCritiqueNotification(
   }
 
   // Build URLs
-  const { buildRoutePath } = await import("@/lib/routes");
+  const { getCreatorUrl } = await import("@/lib/utils");
   const baseUrl = process.env.NEXTAUTH_URL || "https://prompts.art";
-  // Note: Using ID here - the route will handle slug/ID lookup
   const submissionUrl = `${baseUrl}/creators/${submission.userId}/s/${submissionId}`;
-  const critiquerProfileUrl = `${baseUrl}${buildRoutePath("profile", { creatorid: critiquer.id })}`;
+  const critiquerProfileUrl = `${baseUrl}${getCreatorUrl(critiquer)}`;
 
   console.log("[Workflow] Proceeding to send email. URLs:", {
     submissionUrl,

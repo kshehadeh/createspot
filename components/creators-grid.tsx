@@ -4,10 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { User } from "lucide-react";
 import { getUserImageUrl } from "@/lib/user-image";
+import { getCreatorUrl } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 
 interface Creator {
   id: string;
+  slug: string | null;
   name: string | null;
   profileImageUrl: string | null;
   image: string | null;
@@ -28,7 +30,7 @@ function CreatorCard({ creator }: { creator: Creator }) {
 
   return (
     <Link
-      href={`/creators/${creator.id}`}
+      href={getCreatorUrl(creator)}
       className="group block transition-transform hover:-translate-y-1"
     >
       <Card className="overflow-hidden rounded-none border-0 border-border/60 bg-card/70 shadow-sm transition-all hover:border-border hover:bg-card hover:shadow-lg">

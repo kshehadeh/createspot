@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { getRoute, buildRoutePath } from "@/lib/routes";
+import { cn, getCreatorUrl } from "@/lib/utils";
+import { getRoute } from "@/lib/routes";
 import { getUserImageUrl } from "@/lib/user-image";
 
 interface UserDropdownProps {
   id?: string;
+  slug?: string | null;
   name?: string | null;
   image?: string | null;
   profileImageUrl?: string | null;
@@ -28,6 +29,7 @@ interface UserDropdownProps {
 
 export function UserDropdown({
   id,
+  slug,
   name,
   image,
   profileImageUrl,
@@ -98,7 +100,7 @@ export function UserDropdown({
         {id && (
           <DropdownMenuItem asChild>
             <Link
-              href={buildRoutePath("profile", { creatorid: id })}
+              href={getCreatorUrl({ id, slug })}
               className="flex items-center gap-2"
             >
               {profileRoute.icon && <profileRoute.icon className="h-4 w-4" />}
@@ -109,7 +111,7 @@ export function UserDropdown({
         {id && (
           <DropdownMenuItem asChild>
             <Link
-              href={buildRoutePath("portfolio", { creatorid: id })}
+              href={`${getCreatorUrl({ id, slug })}/portfolio`}
               className="flex items-center gap-2"
             >
               {portfolioRoute.icon && (
