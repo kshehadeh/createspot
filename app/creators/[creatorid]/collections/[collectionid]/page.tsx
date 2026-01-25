@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
+import { CollectionShareButton } from "@/components/collection-share-button";
 import { Button } from "@/components/ui/button";
 import { Pencil, Lock, Globe } from "lucide-react";
 import { getCreatorUrl } from "@/lib/utils";
@@ -216,16 +217,25 @@ export default async function CollectionViewPage({
                 </>
               }
               rightContent={
-                isOwner ? (
-                  <Button asChild variant="outline" size="sm">
-                    <Link
-                      href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
-                    >
-                      <Pencil className="h-4 w-4" />
-                      <span className="hidden md:inline">{t("edit")}</span>
-                    </Link>
-                  </Button>
-                ) : undefined
+                <div className="flex items-center gap-2">
+                  {collection.isPublic && (
+                    <CollectionShareButton
+                      userId={user.id}
+                      slug={user.slug}
+                      collectionId={collection.id}
+                    />
+                  )}
+                  {isOwner && (
+                    <Button asChild variant="outline" size="sm">
+                      <Link
+                        href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
+                      >
+                        <Pencil className="h-4 w-4" />
+                        <span className="hidden md:inline">{t("edit")}</span>
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               }
             />
           </div>

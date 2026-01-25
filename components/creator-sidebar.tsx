@@ -10,11 +10,9 @@ import {
   Pencil,
   Eye,
   Settings,
-  FileText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CollectionCreateButton } from "@/components/collection-create-button";
 
 interface NavChild {
   href: string;
@@ -27,15 +25,9 @@ interface NavChild {
 
 interface CreatorSidebarProps {
   creatorUrl: string;
-  userId: string;
-  collections: Array<{ id: string; name: string | null }>;
 }
 
-export function CreatorSidebar({
-  creatorUrl,
-  userId,
-  collections,
-}: CreatorSidebarProps) {
+export function CreatorSidebar({ creatorUrl }: CreatorSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const t = useTranslations("creatorNav");
@@ -71,14 +63,13 @@ export function CreatorSidebar({
       icon: Settings,
       isActive: pathname === `${creatorUrl}/portfolio/edit`,
     },
+    {
+      href: `${creatorUrl}/collections`,
+      label: tCollections("manageCollections"),
+      icon: FolderOpen,
+      isActive: pathname.startsWith(`${creatorUrl}/collections`),
+    },
   ];
-
-  const collectionChildren: NavChild[] = collections.map((collection) => ({
-    href: `${creatorUrl}/collections/${collection.id}`,
-    label: collection.name || tCollections("collection"),
-    icon: FileText,
-    isActive: pathname.startsWith(`${creatorUrl}/collections/${collection.id}`),
-  }));
 
   const navItems = [
     {
@@ -99,16 +90,6 @@ export function CreatorSidebar({
           !portfolioChildren.some((c) => c.isActive)),
       hasActiveChild: portfolioChildren.some((c) => c.isActive),
       children: portfolioChildren,
-    },
-    {
-      href: `${creatorUrl}/collections`,
-      label: t("collections"),
-      icon: FolderOpen,
-      isDirectlyActive:
-        pathname === `${creatorUrl}/collections` &&
-        !collectionChildren.some((c) => c.isActive),
-      hasActiveChild: collectionChildren.some((c) => c.isActive),
-      children: collectionChildren,
     },
   ];
 
@@ -132,9 +113,7 @@ export function CreatorSidebar({
                 <item.icon className="h-4 w-4 shrink-0" />
                 {item.label}
               </Link>
-              {((item.children.length > 0 &&
-                (item.isDirectlyActive || item.hasActiveChild)) ||
-                item.href === `${creatorUrl}/collections`) && (
+              {item.children.length > 0 && (
                 <div className="mt-1 space-y-0.5 pl-3">
                   {item.children.map((child) => (
                     <Link
@@ -155,12 +134,6 @@ export function CreatorSidebar({
                       <span className="truncate">{child.label}</span>
                     </Link>
                   ))}
-                  {item.href === `${creatorUrl}/collections` && (
-                    <CollectionCreateButton
-                      userId={userId}
-                      className="w-full justify-start"
-                    />
-                  )}
                 </div>
               )}
             </li>

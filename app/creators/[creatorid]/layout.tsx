@@ -21,14 +21,6 @@ async function getCreator(creatorid: string) {
   });
 }
 
-async function getCollections(userId: string) {
-  return prisma.collection.findMany({
-    where: { userId },
-    select: { id: true, name: true },
-    orderBy: { updatedAt: "desc" },
-  });
-}
-
 export default async function CreatorLayout({
   children,
   params,
@@ -44,15 +36,10 @@ export default async function CreatorLayout({
   }
 
   const creatorUrl = getCreatorUrl(creator);
-  const collections = await getCollections(creator.id);
 
   return (
     <div className="flex flex-1">
-      <CreatorSidebar
-        creatorUrl={creatorUrl}
-        userId={creator.id}
-        collections={collections}
-      />
+      <CreatorSidebar creatorUrl={creatorUrl} />
       <div className="flex-1 min-w-0 pb-16 md:pb-0">{children}</div>
       <CreatorMobileNav creatorUrl={creatorUrl} />
     </div>

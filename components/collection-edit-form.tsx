@@ -8,7 +8,6 @@ import {
   Lock,
   Globe,
   Loader2,
-  Share2,
   Download,
   FileText,
   Archive,
@@ -23,12 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -210,11 +203,6 @@ export function CollectionEditForm({
     [collection.id, items.length],
   );
 
-  const handleShare = () => {
-    const url = `${window.location.origin}/creators/${userId}/collections/${collection.id}`;
-    navigator.clipboard.writeText(url);
-  };
-
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
@@ -264,196 +252,183 @@ export function CollectionEditForm({
   };
 
   return (
-    <TooltipProvider>
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <PageHeader
-            title={
-              <div className="flex items-center gap-2">
-                <span>{t("editCollection")}</span>
-                {isPublic ? (
-                  <Globe className="h-4 w-4 shrink-0 text-green-500" />
-                ) : (
-                  <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
-                )}
-              </div>
-            }
-            subtitle={`${items.length} ${items.length !== 1 ? t("items") : t("item")}`}
-          />
-          <div className="flex flex-row flex-wrap items-end justify-end gap-2">
-            {items.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" disabled={isDownloading}>
-                    {isDownloading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Download className="h-4 w-4" />
-                    )}
-                    <span className="hidden md:inline">
-                      {isDownloading ? t("downloading") : t("downloadAs")}
-                    </span>
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={handleDownloadPDF}
-                    disabled={isDownloading}
-                  >
-                    <FileText className="mr-2 h-4 w-4" />
-                    {t("downloadPDF")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleDownloadZIP}
-                    disabled={isDownloading}
-                  >
-                    <Archive className="mr-2 h-4 w-4" />
-                    {t("downloadZIP")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-            {isPublic && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="sm" onClick={handleShare}>
-                    <Share2 className="h-4 w-4" />
-                    <span className="hidden md:inline">{t("share")}</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t("copyLink")}</TooltipContent>
-              </Tooltip>
-            )}
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <PageHeader
+          title={
+            <div className="flex items-center gap-2">
+              <span>{t("editCollection")}</span>
+              {isPublic ? (
+                <Globe className="h-4 w-4 shrink-0 text-green-500" />
+              ) : (
+                <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
+              )}
+            </div>
+          }
+          subtitle={`${items.length} ${items.length !== 1 ? t("items") : t("item")}`}
+        />
+        <div className="flex flex-row flex-wrap items-end justify-end gap-2">
+          {items.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" disabled={isDownloading}>
+                  {isDownloading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                  <span className="hidden md:inline">
+                    {isDownloading ? t("downloading") : t("downloadAs")}
+                  </span>
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={handleDownloadPDF}
+                  disabled={isDownloading}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  {t("downloadPDF")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleDownloadZIP}
+                  disabled={isDownloading}
+                >
+                  <Archive className="mr-2 h-4 w-4" />
+                  {t("downloadZIP")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="hidden md:inline">{t("delete")}</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Settings */}
+      <div>
+        <h2 className="mb-4 text-lg font-medium">{t("settings")}</h2>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">{t("collectionName")}</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setHasChanges(true);
+              }}
+              placeholder={t("collectionNamePlaceholder")}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">{t("description")}</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                setHasChanges(true);
+              }}
+              placeholder={t("descriptionPlaceholder")}
+              rows={3}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="isPublic">{t("makePublic")}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t("makePublicDescription")}
+              </p>
+            </div>
+            <Switch
+              id="isPublic"
+              checked={isPublic}
+              onCheckedChange={(checked) => {
+                setIsPublic(checked);
+                setHasChanges(true);
+              }}
+            />
+          </div>
+
+          <div className="flex justify-end">
             <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setShowDeleteConfirm(true)}
+              onClick={handleSave}
+              disabled={!name.trim() || !hasChanges || isSaving}
             >
-              <Trash2 className="h-4 w-4" />
-              <span className="hidden md:inline">{t("delete")}</span>
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {tCommon("saving")}
+                </>
+              ) : (
+                t("saveSettings")
+              )}
             </Button>
           </div>
         </div>
+      </div>
 
-        {/* Settings */}
-        <div>
-          <h2 className="mb-4 text-lg font-medium">{t("settings")}</h2>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">{t("collectionName")}</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  setHasChanges(true);
-                }}
-                placeholder={t("collectionNamePlaceholder")}
-              />
-            </div>
+      {/* Add Submission */}
+      <div>
+        <h2 className="mb-4 text-lg font-medium">{t("addItems")}</h2>
+        <SubmissionSelector
+          onSelect={handleAddSubmission}
+          excludeIds={items.map((item) => item.id)}
+          placeholder={t("selectSubmissionPlaceholder")}
+        />
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">{t("description")}</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                  setHasChanges(true);
-                }}
-                placeholder={t("descriptionPlaceholder")}
-                rows={3}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="isPublic">{t("makePublic")}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t("makePublicDescription")}
-                </p>
-              </div>
-              <Switch
-                id="isPublic"
-                checked={isPublic}
-                onCheckedChange={(checked) => {
-                  setIsPublic(checked);
-                  setHasChanges(true);
-                }}
-              />
-            </div>
-
-            <div className="flex justify-end">
-              <Button
-                onClick={handleSave}
-                disabled={!name.trim() || !hasChanges || isSaving}
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {tCommon("saving")}
-                  </>
-                ) : (
-                  t("saveSettings")
-                )}
-              </Button>
-            </div>
+      {/* Items */}
+      <div>
+        {items.length > 0 ? (
+          <PortfolioGrid
+            items={items}
+            isLoggedIn={true}
+            isOwnProfile={true}
+            allowEdit={true}
+            mode="exhibit"
+            context="collection"
+            onReorder={handleReorder}
+            onRemove={handleRemoveItem}
+            user={{
+              id: userId,
+              name: null,
+              image: null,
+            }}
+          />
+        ) : (
+          <div className="rounded-lg border border-dashed border-border py-16 text-center">
+            <p className="text-muted-foreground">{t("emptyCollection")}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {t("addItemsHint")}
+            </p>
           </div>
-        </div>
-
-        {/* Add Submission */}
-        <div>
-          <h2 className="mb-4 text-lg font-medium">{t("addItems")}</h2>
-          <SubmissionSelector
-            onSelect={handleAddSubmission}
-            excludeIds={items.map((item) => item.id)}
-            placeholder={t("selectSubmissionPlaceholder")}
-          />
-        </div>
-
-        {/* Items */}
-        <div>
-          {items.length > 0 ? (
-            <PortfolioGrid
-              items={items}
-              isLoggedIn={true}
-              isOwnProfile={true}
-              allowEdit={true}
-              mode="exhibit"
-              context="collection"
-              onReorder={handleReorder}
-              onRemove={handleRemoveItem}
-              user={{
-                id: userId,
-                name: null,
-                image: null,
-              }}
-            />
-          ) : (
-            <div className="rounded-lg border border-dashed border-border py-16 text-center">
-              <p className="text-muted-foreground">{t("emptyCollection")}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t("addItemsHint")}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Delete Confirmation Modal */}
-        {showDeleteConfirm && (
-          <ConfirmModal
-            isOpen={true}
-            title={t("deleteCollection")}
-            message={t("deleteCollectionConfirm", { name: collection.name })}
-            confirmLabel={t("delete")}
-            onConfirm={handleDelete}
-            onCancel={() => setShowDeleteConfirm(false)}
-            isLoading={isDeleting}
-          />
         )}
       </div>
-    </TooltipProvider>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <ConfirmModal
+          isOpen={true}
+          title={t("deleteCollection")}
+          message={t("deleteCollectionConfirm", { name: collection.name })}
+          confirmLabel={t("delete")}
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+          isLoading={isDeleting}
+        />
+      )}
+    </div>
   );
 }

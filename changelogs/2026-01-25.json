@@ -1,5 +1,26 @@
 [
   {
+    "time": "2026-01-25T14:16:54-05:00",
+    "commit": "361eaab52db1ca86cecbbd21ea57241527f6735e",
+    "type": "improvement",
+    "area": "profile",
+    "description": "Introduced getCreatorUrl utility function to standardize creator URL generation across components, improving consistency and maintainability."
+  },
+  {
+    "time": "2026-01-25T14:16:54-05:00",
+    "commit": "361eaab52db1ca86cecbbd21ea57241527f6735e",
+    "type": "improvement",
+    "area": "profile",
+    "description": "Added slug property to user data structures to support dynamic URL generation for creator profiles."
+  },
+  {
+    "time": "2026-01-25T10:07:43-05:00",
+    "commit": "03792458c83f6889388493184900619ce6fdea86",
+    "type": "feature",
+    "area": "global",
+    "description": "Added Discord integration script to automatically post changelog updates to Discord channels."
+  },
+  {
     "time": "2026-01-25T08:23:24-05:00",
     "commit": "1aac3efaa9c9684bec79944578c8d7f69e393ee1",
     "type": "improvement",
