@@ -8,11 +8,17 @@ import { signOut, signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Button } from "./ui/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
-import { BugReportButton } from "./bug-report-button";
 import { cn, getCreatorUrl } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
 import { getUserImageUrl } from "@/lib/user-image";
-import { ChevronDown, ChevronRight, Plus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  ChevronLeft,
+  Bug,
+} from "lucide-react";
+import { SupportFormModal } from "./contact/support-form-modal";
 
 interface MobileNavigationUser {
   id?: string;
@@ -29,20 +35,33 @@ interface MobileNavigationProps {
 
 export function MobileNavigation({ user }: MobileNavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPromptsSidebarOpen, setIsPromptsSidebarOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const promptsSidebarRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const t = useTranslations("navigation");
 
   // Close menu when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isOutsideMenu =
+        menuRef.current && !menuRef.current.contains(target);
+      const isOutsidePromptsSidebar =
+        promptsSidebarRef.current &&
+        !promptsSidebarRef.current.contains(target);
+
+      if (isMenuOpen && isOutsideMenu && isOutsidePromptsSidebar) {
         setIsMenuOpen(false);
+      }
+      if (isPromptsSidebarOpen && isOutsidePromptsSidebar && isOutsideMenu) {
+        setIsPromptsSidebarOpen(false);
       }
     }
 
-    if (isMenuOpen) {
+    if (isMenuOpen || isPromptsSidebarOpen) {
       document.addEventListener("mousedown", handleClickOutside);
       // Prevent body scroll when menu is open
       document.body.style.overflow = "hidden";
@@ -54,12 +73,13 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
       document.removeEventListener("mousedown", handleClickOutside);
       document.body.style.overflow = "";
     };
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isPromptsSidebarOpen]);
 
   // Close menu on route change
   useEffect(() => {
     startTransition(() => {
       setIsMenuOpen(false);
+      setIsPromptsSidebarOpen(false);
     });
   }, [pathname]);
 
@@ -100,10 +120,13 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
       </button>
 
       {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
+      {(isMenuOpen || isPromptsSidebarOpen) && (
         <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          onClick={() => setIsMenuOpen(false)}
+          onClick={() => {
+            setIsMenuOpen(false);
+            setIsPromptsSidebarOpen(false);
+          }}
         />
       )}
 
@@ -143,10 +166,13 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
 
           {/* Menu Content */}
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-6">
-            <MobileNavigationLinks onLinkClick={() => setIsMenuOpen(false)} />
+            <MobileNavigationLinks
+              onLinkClick={() => setIsMenuOpen(false)}
+              onMoreClick={() => setIsPromptsSidebarOpen(true)}
+            />
             {user ? (
               <>
-                <div className="mb-2 mt-auto border-t border-border pt-4 px-4 space-y-2">
+                <div className="mb-2 mt-auto border-t border-border pt-4 px-4">
                   <Button
                     onClick={() => {
                       setIsCreateModalOpen(true);
@@ -159,13 +185,6 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
                     <Plus className="h-4 w-4" />
                     {t("create")}
                   </Button>
-                  <BugReportButton
-                    variant="outline"
-                    size="default"
-                    showLabel={true}
-                    className="w-full"
-                    onOpen={() => setIsMenuOpen(false)}
-                  />
                 </div>
                 <MobileUserSection
                   user={user}
@@ -174,15 +193,6 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
               </>
             ) : (
               <div className="mt-auto border-t border-border pt-4 px-4">
-                <div className="mb-4">
-                  <BugReportButton
-                    variant="outline"
-                    size="default"
-                    showLabel={true}
-                    className="w-full"
-                    onOpen={() => setIsMenuOpen(false)}
-                  />
-                </div>
                 <Button
                   onClick={() => {
                     signIn("google");
@@ -199,6 +209,65 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
           </nav>
         </div>
       </div>
+
+      {/* Secondary Sidebar for Prompts */}
+      <div
+        ref={promptsSidebarRef}
+        className={`fixed right-0 top-0 z-[60] h-full w-64 transform border-l border-border bg-background transition-transform duration-300 ease-in-out md:hidden ${
+          isPromptsSidebarOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex h-full flex-col">
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-between border-b border-border px-6 py-4">
+            <button
+              onClick={() => setIsPromptsSidebarOpen(false)}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              aria-label={t("closeMenu")}
+            >
+              <ChevronLeft className="h-5 w-5" />
+              <span className="text-base font-medium">{t("more")}</span>
+            </button>
+            <button
+              onClick={() => {
+                setIsPromptsSidebarOpen(false);
+                setIsMenuOpen(false);
+              }}
+              className="p-2 text-muted-foreground hover:text-foreground"
+              aria-label={t("closeMenu")}
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* Sidebar Content */}
+          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-6">
+            <MobilePromptsLinks
+              onLinkClick={() => {
+                setIsPromptsSidebarOpen(false);
+                setIsMenuOpen(false);
+              }}
+              onSupportClick={() => {
+                setIsSupportModalOpen(true);
+                setIsPromptsSidebarOpen(false);
+                setIsMenuOpen(false);
+              }}
+            />
+          </nav>
+        </div>
+      </div>
       {user && (
         <SubmissionEditModal
           isOpen={isCreateModalOpen}
@@ -206,6 +275,10 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
           mode="create"
         />
       )}
+      <SupportFormModal
+        isOpen={isSupportModalOpen}
+        onClose={() => setIsSupportModalOpen(false)}
+      />
     </>
   );
 }
@@ -213,18 +286,18 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
 // Mobile Navigation Links Component
 function MobileNavigationLinks({
   onLinkClick,
+  onMoreClick,
 }: {
   isAuthenticated?: boolean;
   isAdmin?: boolean;
   onLinkClick: () => void;
+  onMoreClick: () => void;
 }) {
   const pathname = usePathname();
   const t = useTranslations("navigation");
   const exhibitionRoute = getRoute("exhibition");
-  const promptRoute = getRoute("prompt");
   const creatorsRoute = getRoute("creators");
   const aboutRoute = getRoute("about");
-  const contactRoute = getRoute("contact");
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -258,19 +331,6 @@ function MobileNavigationLinks({
       </div>
       <div className="mb-2">
         <Link
-          href={promptRoute.path}
-          className={cn(
-            linkClassName(promptRoute.path),
-            "flex items-center gap-2",
-          )}
-          onClick={onLinkClick}
-        >
-          {promptRoute.icon && <promptRoute.icon className="h-5 w-5" />}
-          {t("prompts")}
-        </Link>
-      </div>
-      <div className="mb-2">
-        <Link
           href={creatorsRoute.path}
           className={cn(
             linkClassName(creatorsRoute.path),
@@ -296,17 +356,95 @@ function MobileNavigationLinks({
         </Link>
       </div>
       <div className="mb-2">
-        <Link
-          href={contactRoute.path}
+        <button
+          onClick={onMoreClick}
           className={cn(
-            linkClassName(contactRoute.path),
+            "block w-full px-4 py-3 text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+            "flex items-center gap-2",
+          )}
+        >
+          {t("more")}
+          <ChevronRight className="h-5 w-5" />
+        </button>
+      </div>
+    </>
+  );
+}
+
+// Mobile Prompts Links Component (for secondary sidebar)
+function MobilePromptsLinks({
+  onLinkClick,
+  onSupportClick,
+}: {
+  onLinkClick: () => void;
+  onSupportClick: () => void;
+}) {
+  const pathname = usePathname();
+  const t = useTranslations("navigation");
+  const tSupport = useTranslations("contact.support");
+  const promptRoute = getRoute("prompt");
+  const contactRoute = getRoute("contact");
+
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(path);
+  };
+
+  const linkClassName = (path: string) => {
+    const baseClasses =
+      "block px-4 py-3 text-base font-medium transition-colors rounded-lg";
+    const activeClasses = isActive(path)
+      ? "bg-accent text-accent-foreground"
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
+    return `${baseClasses} ${activeClasses}`;
+  };
+
+  return (
+    <>
+      <div className="mb-2">
+        <Link
+          href={promptRoute.path}
+          className={cn(
+            linkClassName(promptRoute.path),
             "flex items-center gap-2",
           )}
           onClick={onLinkClick}
         >
-          {contactRoute.icon && <contactRoute.icon className="h-5 w-5" />}
-          {t("contact")}
+          {promptRoute.icon && <promptRoute.icon className="h-5 w-5" />}
+          {t("prompts")}
         </Link>
+      </div>
+      <div className="mt-auto border-t border-border pt-4">
+        <div className="mb-2">
+          <button
+            onClick={() => {
+              onSupportClick();
+              onLinkClick();
+            }}
+            className={cn(
+              "block w-full px-4 py-3 text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+              "flex items-center gap-2",
+            )}
+          >
+            <Bug className="h-5 w-5" />
+            {tSupport("cta")}
+          </button>
+        </div>
+        <div className="mb-2">
+          <Link
+            href={contactRoute.path}
+            className={cn(
+              linkClassName(contactRoute.path),
+              "flex items-center gap-2",
+            )}
+            onClick={onLinkClick}
+          >
+            {contactRoute.icon && <contactRoute.icon className="h-5 w-5" />}
+            {t("contact")}
+          </Link>
+        </div>
       </div>
     </>
   );
