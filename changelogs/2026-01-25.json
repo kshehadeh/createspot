@@ -1,5 +1,26 @@
 [
   {
+    "time": "2026-01-25T15:16:25-05:00",
+    "commit": "e6e28c0586331b8acdc2b56b580f8f18df1153d6",
+    "type": "improvement",
+    "area": "profile",
+    "description": "Reorganized creator sidebar navigation by moving Collections under Portfolio as 'Manage Collections' subnav item."
+  },
+  {
+    "time": "2026-01-25T15:16:25-05:00",
+    "commit": "e6e28c0586331b8acdc2b56b580f8f18df1153d6",
+    "type": "feature",
+    "area": "collection",
+    "description": "Added share button to collection view page for public collections, using the same share functionality as profile pages."
+  },
+  {
+    "time": "2026-01-25T15:16:25-05:00",
+    "commit": "e6e28c0586331b8acdc2b56b580f8f18df1153d6",
+    "type": "improvement",
+    "area": "profile",
+    "description": "Creator sidebar now shows all subnav items at all times instead of only when parent is selected."
+  },
+  {
     "time": "2026-01-25T14:16:54-05:00",
     "commit": "361eaab52db1ca86cecbbd21ea57241527f6735e",
     "type": "improvement",

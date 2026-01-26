@@ -4,7 +4,6 @@ import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
-import { AboutSidebar } from "@/components/about-sidebar";
 import { getRoute } from "@/lib/routes";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -52,12 +51,7 @@ export default async function AboutPage() {
         }
       />
 
-      <div className="grid lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-1">
-          <AboutSidebar />
-        </div>
-        <div className="lg:col-span-3">
-          <div className="grid gap-8">
+      <div className="grid gap-8">
             <Card
               id="purpose"
               className="about-card-amber rounded-3xl border-none shadow-sm scroll-mt-24"
@@ -245,8 +239,6 @@ export default async function AboutPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
       </div>
     </PageLayout>
   );

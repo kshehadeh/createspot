@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
-import { getRoute } from "@/lib/routes";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("aboutFeatures");
@@ -21,7 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function FeaturesPage() {
   const t = await getTranslations("aboutFeatures");
-  const aboutRoute = getRoute("about");
 
   const features = [
     { key: "portfolio" },
@@ -38,15 +35,6 @@ export default async function FeaturesPage() {
   return (
     <PageLayout maxWidth="max-w-6xl" className="sm:py-16">
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
-
-      <div className="mb-6">
-        <Link
-          href={aboutRoute.path}
-          className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {t("backToAbout")}
-        </Link>
-      </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (

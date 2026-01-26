@@ -130,15 +130,6 @@ export default async function ProtectingYourWorkPage() {
           </CardContent>
         </Card>
       </div>
-
-      <div className="mt-10 text-center">
-        <Link
-          href="/about"
-          className="inline-flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground underline underline-offset-4 decoration-muted-foreground/30"
-        >
-          {t("backToAbout")}
-        </Link>
-      </div>
     </PageLayout>
   );
 }

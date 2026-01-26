@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
@@ -120,15 +119,6 @@ export default async function PortfoliosAndSharingPage() {
             </p>
           </CardContent>
         </Card>
-      </div>
-
-      <div className="mt-10 text-center">
-        <Link
-          href="/about"
-          className="inline-flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground underline underline-offset-4 decoration-muted-foreground/30"
-        >
-          {t("backToAbout")}
-        </Link>
       </div>
     </PageLayout>
   );
