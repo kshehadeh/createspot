@@ -550,7 +550,7 @@ function MobileUserSection({
               onClick={onActionClick}
             >
               {profileRoute.icon && <profileRoute.icon className="h-5 w-5" />}
-              {t("viewProfile")}
+              {t("profile")}
             </Link>
           )}
           {user.id && (
@@ -565,7 +565,7 @@ function MobileUserSection({
               {portfolioRoute.icon && (
                 <portfolioRoute.icon className="h-5 w-5" />
               )}
-              {t("browsePortfolio")}
+              {t("portfolio")}
             </Link>
           )}
           <Link
