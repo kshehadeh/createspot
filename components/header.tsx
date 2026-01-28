@@ -12,18 +12,8 @@ import { ThemeToggle } from "./theme-toggle";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
+import { SiDiscord } from "@icons-pack/react-simple-icons";
 import { getRoute } from "@/lib/routes";
-
-const DiscordIcon = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className={className}
-    aria-hidden="true"
-  >
-    <path d="M19.73 4.44A16.95 16.95 0 0 0 15.5 3a12.4 12.4 0 0 0-.6 1.22 16.2 16.2 0 0 0-4.79 0c-.18-.42-.38-.83-.6-1.22A16.9 16.9 0 0 0 5.27 4.44C2.7 8.3 1.97 12 2.36 15.64a16.7 16.7 0 0 0 5.06 2.6c.41-.56.78-1.15 1.09-1.76a10.8 10.8 0 0 1-1.71-.83c.14-.1.28-.2.42-.3a12.1 12.1 0 0 0 10.56 0c.14.1.28.2.42.3-.55.33-1.12.62-1.71.83.31.61.68 1.2 1.09 1.76a16.7 16.7 0 0 0 5.06-2.6c.49-4.36-.84-8.02-2.91-11.2ZM9.1 13.43c-.92 0-1.67-.86-1.67-1.92s.74-1.92 1.67-1.92c.93 0 1.69.86 1.67 1.92 0 1.06-.74 1.92-1.67 1.92Zm5.8 0c-.92 0-1.67-.86-1.67-1.92s.74-1.92 1.67-1.92c.93 0 1.69.86 1.67 1.92 0 1.06-.74 1.92-1.67 1.92Z" />
-  </svg>
-);
 
 // Dynamically import UserDropdown to avoid SSR hydration issues with Radix UI
 const UserDropdown = dynamic(
@@ -92,7 +82,7 @@ export function Header({ user }: HeaderProps) {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <DiscordIcon className="h-4 w-4" />
+                  <SiDiscord className="h-4 w-4" />
                 </a>
               </Button>
             </div>
@@ -142,7 +132,7 @@ export function Header({ user }: HeaderProps) {
                 target="_blank"
                 rel="noreferrer"
               >
-                <DiscordIcon className="h-4 w-4" />
+                <SiDiscord className="h-4 w-4" />
               </a>
             </Button>
             <ThemeToggle />
