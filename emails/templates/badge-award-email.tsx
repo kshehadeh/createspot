@@ -23,7 +23,7 @@ export const BadgeAwardEmail = ({
   t,
 }: BadgeAwardEmailProps) => {
   const previewText = t("badgeAward.preview", { badgeName });
-  const logoUrl = `${baseUrl}/images/create-spot-logo.svg`;
+  const logoUrl = `${baseUrl}/images/create-spot-logo-white-rectangle.png`;
 
   return (
     <BaseEmail previewText={previewText} userId={userId} baseUrl={baseUrl} t={t}>
