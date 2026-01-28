@@ -918,24 +918,42 @@ function PortfolioGridContent({
         )}
 
         {/* Lightbox */}
-        {selectedSubmission && (
-          <SubmissionLightbox
-            submission={{
-              id: selectedSubmission.id,
-              title: selectedSubmission.title,
-              imageUrl: selectedSubmission.imageUrl,
-              text: selectedSubmission.text,
-              user:
-                mode === "exhibit" && selectedSubmission.user
-                  ? selectedSubmission.user
-                  : user,
-              _count: selectedSubmission._count,
-            }}
-            word={getWord(selectedSubmission)}
-            onClose={() => setSelectedSubmission(null)}
-            isOpen={!!selectedSubmission}
-          />
-        )}
+        {selectedSubmission &&
+          (() => {
+            const currentIndex = items.findIndex(
+              (i) => i.id === selectedSubmission.id,
+            );
+            const hasPrevious = currentIndex > 0;
+            const hasNext =
+              currentIndex >= 0 && currentIndex < items.length - 1;
+            return (
+              <SubmissionLightbox
+                submission={{
+                  id: selectedSubmission.id,
+                  title: selectedSubmission.title,
+                  imageUrl: selectedSubmission.imageUrl,
+                  text: selectedSubmission.text,
+                  user:
+                    mode === "exhibit" && selectedSubmission.user
+                      ? selectedSubmission.user
+                      : user,
+                  _count: selectedSubmission._count,
+                }}
+                word={getWord(selectedSubmission)}
+                onClose={() => setSelectedSubmission(null)}
+                isOpen={!!selectedSubmission}
+                onGoToPrevious={() => {
+                  if (hasPrevious)
+                    setSelectedSubmission(items[currentIndex - 1]);
+                }}
+                onGoToNext={() => {
+                  if (hasNext) setSelectedSubmission(items[currentIndex + 1]);
+                }}
+                hasPrevious={hasPrevious}
+                hasNext={hasNext}
+              />
+            );
+          })()}
       </div>
     </TooltipProvider>
   );

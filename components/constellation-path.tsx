@@ -532,19 +532,37 @@ export function ConstellationPath({
       </div>
 
       {/* Lightbox */}
-      {selectedItem && (
-        <SubmissionLightbox
-          submission={{
-            id: selectedItem.id,
-            title: selectedItem.title,
-            imageUrl: selectedItem.imageUrl,
-            text: selectedItem.text,
-          }}
-          word={selectedItem.promptWord || ""}
-          isOpen={!!selectedItem}
-          onClose={() => setSelectedItem(null)}
-        />
-      )}
+      {selectedItem &&
+        (() => {
+          const currentIndex = orderedItems.findIndex(
+            (i) => i.id === selectedItem.id,
+          );
+          const hasPrevious = currentIndex > 0;
+          const hasNext =
+            currentIndex >= 0 && currentIndex < orderedItems.length - 1;
+          return (
+            <SubmissionLightbox
+              submission={{
+                id: selectedItem.id,
+                title: selectedItem.title,
+                imageUrl: selectedItem.imageUrl,
+                text: selectedItem.text,
+              }}
+              word={selectedItem.promptWord || ""}
+              isOpen={!!selectedItem}
+              onClose={() => setSelectedItem(null)}
+              onGoToPrevious={() => {
+                if (hasPrevious)
+                  setSelectedItem(orderedItems[currentIndex - 1]);
+              }}
+              onGoToNext={() => {
+                if (hasNext) setSelectedItem(orderedItems[currentIndex + 1]);
+              }}
+              hasPrevious={hasPrevious}
+              hasNext={hasNext}
+            />
+          );
+        })()}
     </>
   );
 }

@@ -210,7 +210,9 @@
     "untitled": "Sin título",
     "loadingMore": "Cargando más trabajos...",
     "retry": "Reintentar",
-    "reachedEnd": "Has llegado al final."
+    "reachedEnd": "Has llegado al final.",
+    "previousSubmission": "Anterior",
+    "nextSubmission": "Siguiente"
   },
   "submission": {
     "label": "Publicación",

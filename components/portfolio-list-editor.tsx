@@ -854,29 +854,48 @@ export function PortfolioListEditor({
 
         {/* Submission Lightbox */}
         {selectedSubmission &&
-          (selectedSubmission.imageUrl || selectedSubmission.text) && (
-            <SubmissionLightbox
-              submission={{
-                id: selectedSubmission.id,
-                title: selectedSubmission.title,
-                imageUrl: selectedSubmission.imageUrl,
-                text: selectedSubmission.text,
-                user: session?.user
-                  ? {
-                      id: session.user.id,
-                      name: session.user.name || null,
-                      image: session.user.image || null,
-                    }
-                  : undefined,
-                _count: selectedSubmission._count,
-              }}
-              word={getWord(selectedSubmission)}
-              onClose={() => setSelectedSubmission(null)}
-              isOpen={!!selectedSubmission}
-              hideGoToSubmission={false}
-              currentUserId={session?.user?.id || null}
-            />
-          )}
+          (selectedSubmission.imageUrl || selectedSubmission.text) &&
+          (() => {
+            const currentIndex = filteredItems.findIndex(
+              (i) => i.id === selectedSubmission.id,
+            );
+            const hasPrevious = currentIndex > 0;
+            const hasNext =
+              currentIndex >= 0 && currentIndex < filteredItems.length - 1;
+            return (
+              <SubmissionLightbox
+                submission={{
+                  id: selectedSubmission.id,
+                  title: selectedSubmission.title,
+                  imageUrl: selectedSubmission.imageUrl,
+                  text: selectedSubmission.text,
+                  user: session?.user
+                    ? {
+                        id: session.user.id,
+                        name: session.user.name || null,
+                        image: session.user.image || null,
+                      }
+                    : undefined,
+                  _count: selectedSubmission._count,
+                }}
+                word={getWord(selectedSubmission)}
+                onClose={() => setSelectedSubmission(null)}
+                isOpen={!!selectedSubmission}
+                hideGoToSubmission={false}
+                currentUserId={session?.user?.id || null}
+                onGoToPrevious={() => {
+                  if (hasPrevious)
+                    setSelectedSubmission(filteredItems[currentIndex - 1]);
+                }}
+                onGoToNext={() => {
+                  if (hasNext)
+                    setSelectedSubmission(filteredItems[currentIndex + 1]);
+                }}
+                hasPrevious={hasPrevious}
+                hasNext={hasNext}
+              />
+            );
+          })()}
       </div>
     </TooltipProvider>
   );

@@ -317,14 +317,33 @@ function GridContent({
         )}
       </div>
 
-      {selectedSubmission && (
-        <SubmissionLightbox
-          submission={selectedSubmission}
-          word={getWord(selectedSubmission)}
-          onClose={() => setSelectedSubmission(null)}
-          isOpen={!!selectedSubmission}
-        />
-      )}
+      {selectedSubmission &&
+        (() => {
+          const currentIndex = submissions.findIndex(
+            (s) => s.id === selectedSubmission.id,
+          );
+          const hasPrevious = currentIndex > 0;
+          const hasNext =
+            currentIndex >= 0 && currentIndex < submissions.length - 1;
+          return (
+            <SubmissionLightbox
+              submission={selectedSubmission}
+              word={getWord(selectedSubmission)}
+              onClose={() => setSelectedSubmission(null)}
+              isOpen={!!selectedSubmission}
+              onGoToPrevious={() => {
+                if (hasPrevious)
+                  setSelectedSubmission(submissions[currentIndex - 1]);
+              }}
+              onGoToNext={() => {
+                if (hasNext)
+                  setSelectedSubmission(submissions[currentIndex + 1]);
+              }}
+              hasPrevious={hasPrevious}
+              hasNext={hasNext}
+            />
+          );
+        })()}
     </>
   );
 }

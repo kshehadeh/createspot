@@ -210,7 +210,9 @@
     "untitled": "Untitled",
     "loadingMore": "Loading more work...",
     "retry": "Retry",
-    "reachedEnd": "You've reached the end."
+    "reachedEnd": "You've reached the end.",
+    "previousSubmission": "Previous",
+    "nextSubmission": "Next"
   },
   "submission": {
     "label": "Submission",

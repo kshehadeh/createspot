@@ -17,7 +17,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Heart, X, FileText, Edit, Eye } from "lucide-react";
+import {
+  Heart,
+  X,
+  FileText,
+  Edit,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
@@ -51,6 +59,14 @@ interface SubmissionLightboxProps {
   protectionEnabled?: boolean;
   /** Current logged-in user ID. If provided, edit button will show for owned submissions. */
   currentUserId?: string | null;
+  /** When provided, enables previous submission navigation (e.g. from a gallery). */
+  onGoToPrevious?: () => void;
+  /** When provided, enables next submission navigation. */
+  onGoToNext?: () => void;
+  /** When false, previous button is disabled (e.g. at first item). Defaults to true when onGoToPrevious is set. */
+  hasPrevious?: boolean;
+  /** When false, next button is disabled (e.g. at last item). Defaults to true when onGoToNext is set. */
+  hasNext?: boolean;
 }
 
 export function SubmissionLightbox({
@@ -60,6 +76,10 @@ export function SubmissionLightbox({
   hideGoToSubmission = false,
   protectionEnabled = true,
   currentUserId: propCurrentUserId,
+  onGoToPrevious,
+  onGoToNext,
+  hasPrevious = onGoToPrevious !== undefined,
+  hasNext = onGoToNext !== undefined,
 }: SubmissionLightboxProps) {
   const t = useTranslations("exhibition");
   const { data: session } = useSession();
@@ -170,6 +190,30 @@ export function SubmissionLightbox({
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isTextOverlayOpen]);
+
+  // Handle ArrowLeft/ArrowRight for previous/next when callbacks provided and text overlay closed
+  useEffect(() => {
+    if (!isOpen || isTextOverlayOpen) return;
+
+    const handleArrow = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" && onGoToPrevious && hasPrevious) {
+        e.preventDefault();
+        onGoToPrevious();
+      } else if (e.key === "ArrowRight" && onGoToNext && hasNext) {
+        e.preventDefault();
+        onGoToNext();
+      }
+    };
+    window.addEventListener("keydown", handleArrow);
+    return () => window.removeEventListener("keydown", handleArrow);
+  }, [
+    isOpen,
+    isTextOverlayOpen,
+    onGoToPrevious,
+    onGoToNext,
+    hasPrevious,
+    hasNext,
+  ]);
 
   // Control close button tooltip to only show on hover, not focus
   useEffect(() => {
@@ -607,6 +651,66 @@ export function SubmissionLightbox({
             </div>
           )}
         </div>
+
+        {/* Prev/Next - left and right edges, vertically centered */}
+        <TooltipProvider delayDuration={300}>
+          {onGoToPrevious != null && (
+            <div
+              className="absolute left-4 top-1/2 z-10 -translate-y-1/2"
+              style={{
+                left: "max(1rem, env(safe-area-inset-left, 0px) + 1rem)",
+              }}
+            >
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (hasPrevious) onGoToPrevious();
+                    }}
+                    disabled={!hasPrevious}
+                    aria-label={t("previousSubmission")}
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t("previousSubmission")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+          {onGoToNext != null && (
+            <div
+              className="absolute right-4 top-1/2 z-10 -translate-y-1/2"
+              style={{
+                right: "max(1rem, env(safe-area-inset-right, 0px) + 1rem)",
+              }}
+            >
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (hasNext) onGoToNext();
+                    }}
+                    disabled={!hasNext}
+                    aria-label={t("nextSubmission")}
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t("nextSubmission")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+        </TooltipProvider>
 
         {/* Buttons - lower right corner, absolute positioned */}
         <TooltipProvider delayDuration={300}>
