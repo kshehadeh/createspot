@@ -40,6 +40,7 @@ The app will be available at http://localhost:3000
 | Document | Description |
 |----------|-------------|
 | [docs/DATABASE.md](docs/DATABASE.md) | Database schema, Prisma usage, migrations, image storage |
+| [docs/IMAGE-HANDLING.md](docs/IMAGE-HANDLING.md) | Upload flow, presign, post-processing workflow, resize/WebP, metadata |
 | [docs/FRONTEND.md](docs/FRONTEND.md) | React components, theming, UI patterns |
 | [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md) | Translation system, i18n patterns, adding new languages |
 | [docs/CREATOR-PROTECTIONS.md](docs/CREATOR-PROTECTIONS.md) | Watermarking, download prevention, AI training opt-out |
