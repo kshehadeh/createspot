@@ -129,7 +129,7 @@ export function SubmissionSlots({
     if (!file) return;
 
     // Client-side validation before upload
-    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB
     const ALLOWED_TYPES = [
       "image/jpeg",
       "image/png",
@@ -149,7 +149,7 @@ export function SubmissionSlots({
     if (file.size > MAX_FILE_SIZE) {
       const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
       setError(
-        `File is too large (${fileSizeMB} MB). Maximum file size is 10 MB. Please choose a smaller image.`,
+        `File is too large (${fileSizeMB} MB). Maximum file size is 6 MB. Please choose a smaller image.`,
       );
       // Reset the file input
       e.target.value = "";
@@ -177,55 +177,29 @@ export function SubmissionSlots({
       }
 
       const presignData = await presignResponse.json();
+      const { presignedUrl, publicUrl } = presignData;
 
-      let finalPublicUrl: string;
+      // Upload directly to R2 using presigned URL (post-processing runs in workflow after save)
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
 
-      // Check if server requires server-side upload (e.g., for watermarking)
-      if (presignData.useServerUpload) {
-        // Fall back to server-side upload route
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("type", "submission");
-
-        const serverUploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!serverUploadResponse.ok) {
-          const errorData = await serverUploadResponse.json();
-          throw new Error(errorData.error || "Server upload failed");
-        }
-
-        const { imageUrl } = await serverUploadResponse.json();
-        finalPublicUrl = imageUrl;
-      } else {
-        // Use presigned URL for direct upload to R2
-        const { presignedUrl, publicUrl } = presignData;
-
-        // Step 2: Upload directly to R2 using presigned URL
-        const uploadResponse = await fetch(presignedUrl, {
-          method: "PUT",
-          body: file,
-          headers: {
-            "Content-Type": file.type,
-          },
-        });
-
-        if (!uploadResponse.ok) {
-          // Check for CORS errors specifically
-          if (uploadResponse.status === 0 || uploadResponse.status === 403) {
-            throw new Error(
-              "CORS error: Please configure CORS on your R2 bucket to allow uploads from this origin. See docs/DATABASE.md for instructions.",
-            );
-          }
+      if (!uploadResponse.ok) {
+        if (uploadResponse.status === 0 || uploadResponse.status === 403) {
           throw new Error(
-            `Upload to storage failed: ${uploadResponse.status} ${uploadResponse.statusText}`,
+            "CORS error: Please configure CORS on your R2 bucket to allow uploads from this origin. See docs/DATABASE.md for instructions.",
           );
         }
-
-        finalPublicUrl = publicUrl;
+        throw new Error(
+          `Upload to storage failed: ${uploadResponse.status} ${uploadResponse.statusText}`,
+        );
       }
+
+      const finalPublicUrl = publicUrl;
 
       // Track this upload for potential cleanup
       setUploadedImages((prev) => [...prev, finalPublicUrl]);

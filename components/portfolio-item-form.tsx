@@ -168,7 +168,7 @@ export function PortfolioItemForm({
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > 6 * 1024 * 1024) {
       setError(t("errors.imageTooLarge"));
       return;
     }
@@ -194,47 +194,20 @@ export function PortfolioItemForm({
       }
 
       const presignData = await presignResponse.json();
+      const { presignedUrl, publicUrl } = presignData;
 
-      let finalPublicUrl: string;
+      // Upload to R2 (post-processing runs in workflow after save)
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
 
-      // Check if server requires server-side upload (e.g., for watermarking)
-      if (presignData.useServerUpload) {
-        // Fall back to server-side upload route
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("type", "submission");
-
-        const serverUploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!serverUploadResponse.ok) {
-          const errorData = await serverUploadResponse.json().catch(() => null);
-          throw new Error(errorData?.error || "Server upload failed");
-        }
-
-        const { imageUrl } = await serverUploadResponse.json();
-        finalPublicUrl = imageUrl;
-      } else {
-        // Use presigned URL for direct upload to R2
-        const { presignedUrl, publicUrl } = presignData;
-
-        // Upload to R2
-        const uploadResponse = await fetch(presignedUrl, {
-          method: "PUT",
-          headers: { "Content-Type": file.type },
-          body: file,
-        });
-
-        if (!uploadResponse.ok) {
-          throw new Error("Failed to upload image");
-        }
-
-        finalPublicUrl = publicUrl;
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload image");
       }
 
-      setImageUrl(finalPublicUrl);
+      setImageUrl(publicUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("errors.uploadFailed"));
     } finally {

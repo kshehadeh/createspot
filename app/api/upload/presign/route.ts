@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-// Types that support watermarking
-const WATERMARKABLE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const PRESIGN_EXPIRES_IN = 300; // 5 minutes
 
 const s3Client = new S3Client({
@@ -37,23 +34,6 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as PresignRequest;
     const { fileType, fileSize, type = "submission" } = body;
 
-    // For submissions, check if user has watermarking enabled
-    // If so, they need to use the server-side upload route instead
-    if (type === "submission" && WATERMARKABLE_TYPES.includes(fileType)) {
-      const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { enableWatermark: true },
-      });
-
-      if (user?.enableWatermark) {
-        // Tell the client to use server-side upload for watermarking
-        return NextResponse.json({
-          useServerUpload: true,
-          reason: "Watermarking requires server-side upload",
-        });
-      }
-    }
-
     if (!fileType || typeof fileSize !== "number") {
       return NextResponse.json(
         { error: "fileType and fileSize are required" },
@@ -79,7 +59,7 @@ export async function POST(request: NextRequest) {
       const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2);
       return NextResponse.json(
         {
-          error: `File is too large (${fileSizeMB} MB). Maximum file size is 10 MB.`,
+          error: `File is too large (${fileSizeMB} MB). Maximum file size is 6 MB.`,
         },
         { status: 400 },
       );

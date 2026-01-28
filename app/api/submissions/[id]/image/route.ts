@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { processImageForStorage } from "@/lib/upload-process";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -18,7 +23,9 @@ interface RouteParams {
 
 /**
  * POST /api/submissions/[id]/image
- * Replace the image for a submission with an edited version
+ * Replace the image for a submission with an edited version.
+ * Runs through processImageForStorage (resize + WebP or GIF passthrough);
+ * updates key if extension changes and sets imageProcessingMetadata.
  */
 export async function POST(
   request: NextRequest,
@@ -32,7 +39,6 @@ export async function POST(
 
   const { id } = await params;
 
-  // Verify ownership
   const submission = await prisma.submission.findUnique({
     where: { id },
     select: {
@@ -60,8 +66,20 @@ export async function POST(
     );
   }
 
+  const publicUrlBase = process.env.R2_PUBLIC_URL;
+  const bucket = process.env.R2_BUCKET_NAME;
+  if (
+    !publicUrlBase ||
+    !submission.imageUrl.startsWith(publicUrlBase) ||
+    !bucket
+  ) {
+    return NextResponse.json(
+      { error: "Invalid image URL format" },
+      { status: 400 },
+    );
+  }
+
   try {
-    // Get the image file from request
     const formData = await request.formData();
     const file = formData.get("image") as File | null;
 
@@ -72,7 +90,6 @@ export async function POST(
       );
     }
 
-    // Validate file type
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
@@ -81,36 +98,61 @@ export async function POST(
       );
     }
 
-    // Extract R2 key from existing imageUrl
-    const publicUrl = process.env.R2_PUBLIC_URL;
-    if (!publicUrl || !submission.imageUrl.startsWith(publicUrl)) {
-      return NextResponse.json(
-        { error: "Invalid image URL format" },
-        { status: 400 },
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const result = await processImageForStorage(buffer);
+
+    const oldKey = submission.imageUrl.replace(`${publicUrlBase}/`, "");
+    const baseKeyWithoutExt = oldKey.replace(/\.[^.]+$/, "");
+    const newKey = `${baseKeyWithoutExt}.${result.extension}`;
+    const keyChanged = oldKey !== newKey;
+
+    if (keyChanged) {
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: bucket,
+          Key: newKey,
+          Body: result.buffer,
+          ContentType: result.contentType,
+        }),
+      );
+      try {
+        await s3Client.send(
+          new DeleteObjectCommand({ Bucket: bucket, Key: oldKey }),
+        );
+      } catch (err) {
+        console.error("Failed to delete old R2 object:", err);
+      }
+    } else {
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: bucket,
+          Key: newKey,
+          Body: result.buffer,
+          ContentType: result.contentType,
+        }),
       );
     }
 
-    const r2Key = submission.imageUrl.replace(`${publicUrl}/`, "");
+    const newImageUrl = `${publicUrlBase}/${newKey}`;
+    const now = new Date();
+    const imageProcessingMetadata = {
+      watermarked: false,
+      compressed: true,
+      format: result.extension,
+    };
 
-    // Convert file to buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    await prisma.submission.update({
+      where: { id },
+      data: {
+        imageUrl: newImageUrl,
+        imageProcessingMetadata: imageProcessingMetadata as object,
+        imageProcessedAt: now,
+      },
+    });
 
-    // Upload to R2, replacing the existing file
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME,
-        Key: r2Key,
-        Body: buffer,
-        ContentType: file.type,
-      }),
-    );
-
-    // Image URL stays the same (same R2 key), so no database update needed
-    // Return the imageUrl for the client
     return NextResponse.json({
       success: true,
-      imageUrl: submission.imageUrl,
+      imageUrl: newImageUrl,
     });
   } catch (error) {
     console.error("Error saving edited image:", error);

@@ -1,6 +1,10 @@
 #!/usr/bin/env bun
 
-import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  ListObjectsV2Command,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { prisma } from "@/lib/prisma";
 
 interface R2Object {
@@ -461,6 +465,41 @@ async function main(): Promise<void> {
     const reportData = generateReport(r2Objects, dbImages);
 
     printReport(reportData);
+
+    const execute = process.argv.includes("--execute");
+    if (!execute && reportData.orphanedFiles.length > 0) {
+      console.log("");
+      console.log(
+        "Run with --execute to delete the orphaned objects listed above.",
+      );
+    }
+    if (execute && reportData.orphanedFiles.length > 0) {
+      console.log("");
+      console.log(
+        `Deleting ${reportData.orphanedFiles.length} orphaned object(s)...`,
+      );
+      let deleted = 0;
+      for (const file of reportData.orphanedFiles) {
+        try {
+          await s3Client.send(
+            new DeleteObjectCommand({
+              Bucket: bucketName,
+              Key: file.key,
+            }),
+          );
+          deleted++;
+          console.log(`  Deleted: ${file.key}`);
+        } catch (err) {
+          console.error(`  Failed to delete ${file.key}:`, err);
+        }
+      }
+      console.log(
+        `Deleted ${deleted} of ${reportData.orphanedFiles.length} orphaned object(s).`,
+      );
+    } else if (execute && reportData.orphanedFiles.length === 0) {
+      console.log("");
+      console.log("No orphaned files to delete.");
+    }
   } catch (error) {
     console.error("Error analyzing R2 storage:", error);
     if (error instanceof Error) {

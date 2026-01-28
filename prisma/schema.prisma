@@ -130,8 +130,10 @@ model Submission {
   promptId       String?     // Nullable for portfolio-only items
   wordIndex      Int?        // Nullable for portfolio-only items (1, 2, or 3 when set)
   title          String?
-  imageUrl       String?
-  imageFocalPoint Json?      // {"x": 50, "y": 30} where x,y are 0-100 percentages
+  imageUrl                 String?
+  imageFocalPoint           Json?      // {"x": 50, "y": 30} where x,y are 0-100 percentages
+  imageProcessingMetadata   Json?      // { watermarked?, compressed?, format? } for UI display
+  imageProcessedAt         DateTime?   // When post-processing completed
   text           String?     @db.Text // Sanitized HTML
   isPortfolio    Boolean     @default(false) // Show in portfolio section
   portfolioOrder Int?        // Custom ordering for portfolio items (lower = first)

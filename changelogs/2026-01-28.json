@@ -1,0 +1,30 @@
+[
+  {
+    "time": "2026-01-28T04:45:03-05:00",
+    "commit": "d2d28e3f6119957d927a134156d586de53d9066b",
+    "type": "feature",
+    "area": "portfolio",
+    "description": "Added previous/next submission navigation to SubmissionLightbox in exhibition grid, constellation path, portfolio grid, and list editor with i18n."
+  },
+  {
+    "time": "2026-01-28T04:35:15-05:00",
+    "commit": "9e049d4565ed1878ca0bd514cc43746d3d4d5cf0",
+    "type": "improvement",
+    "area": "global",
+    "description": "Replaced custom SVG social icons with @icons-pack/react-simple-icons in header and social links components."
+  },
+  {
+    "time": "2026-01-28T04:26:20-05:00",
+    "commit": "8bf52c42251b9f9e4f7505f93badb590ba011c63",
+    "type": "improvement",
+    "area": "global",
+    "description": "Aligned MobileUserSection translation keys for consistency."
+  },
+  {
+    "time": "2026-01-28T04:11:37-05:00",
+    "commit": "d0a66b1942addaa2d21631a1dacb820549b26af2",
+    "type": "fix",
+    "area": "global",
+    "description": "Fixed email template logo rendering by switching to PNG assets."
+  }
+]

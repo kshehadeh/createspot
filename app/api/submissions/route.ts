@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -171,6 +172,20 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    const r2Base = process.env.R2_PUBLIC_URL;
+    if (
+      submission.imageUrl &&
+      r2Base &&
+      submission.imageUrl.startsWith(r2Base)
+    ) {
+      processUploadedImage({
+        publicUrl: submission.imageUrl,
+        type: "submission",
+        userId: session.user.id,
+        submissionId: submission.id,
+      }).catch((err) => console.error("[process-uploaded-image]", err));
+    }
+
     return NextResponse.json({ submission });
   }
 
@@ -258,6 +273,16 @@ export async function POST(request: NextRequest) {
       critiquesEnabled: critiquesEnabled ?? false,
     },
   });
+
+  const r2Base = process.env.R2_PUBLIC_URL;
+  if (submission.imageUrl && r2Base && submission.imageUrl.startsWith(r2Base)) {
+    processUploadedImage({
+      publicUrl: submission.imageUrl,
+      type: "submission",
+      userId: session.user.id,
+      submissionId: submission.id,
+    }).catch((err) => console.error("[process-uploaded-image]", err));
+  }
 
   return NextResponse.json({ submission });
 }

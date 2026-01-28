@@ -3,6 +3,7 @@ import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { geocodeLocation } from "@/lib/geocoding";
+import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
 import { normalizeUrl, isValidUrl, isValidSlugFormat } from "@/lib/utils";
 import { isValidLocale } from "@/i18n/config";
 
@@ -342,6 +343,19 @@ export async function PUT(request: NextRequest) {
       slug: true,
     },
   });
+
+  const r2Base = process.env.R2_PUBLIC_URL;
+  if (
+    user.profileImageUrl &&
+    r2Base &&
+    user.profileImageUrl.startsWith(r2Base)
+  ) {
+    processUploadedImage({
+      publicUrl: user.profileImageUrl,
+      type: "profile",
+      userId: session.user.id,
+    }).catch((err) => console.error("[process-uploaded-image]", err));
+  }
 
   // Create response
   const response = NextResponse.json({ user });
