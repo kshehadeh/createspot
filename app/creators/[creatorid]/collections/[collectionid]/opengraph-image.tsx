@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
+import { fetchImageAsPngDataUrlForOg } from "@/lib/og-image";
 import { prisma } from "@/lib/prisma";
-import sharp from "sharp";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -97,86 +97,18 @@ export default async function OpenGraphImage({ params }: RouteParams) {
     const cellWidth = size.width / gridCols;
     const cellHeight = size.height / gridRows;
 
-    // Fetch and convert images to data URLs
     const imageDataUrls: (string | null)[] = await Promise.all(
-      collection.submissions.map(async (cs) => {
+      collection.submissions.map((cs) => {
         if (!cs.submission.imageUrl) return null;
-        try {
-          const imageResponse = await fetch(cs.submission.imageUrl);
-          if (imageResponse.ok) {
-            const arrayBuffer = await imageResponse.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            // Process image with sharp to auto-rotate based on EXIF orientation
-            let processedBuffer = await sharp(buffer).rotate().toBuffer();
-
-            // Apply focal point if available
-            const focalPoint = cs.submission.imageFocalPoint as {
-              x: number;
-              y: number;
-            } | null;
-
-            if (focalPoint) {
-              const metadata = await sharp(processedBuffer).metadata();
-              const originalWidth = metadata.width || 1;
-              const originalHeight = metadata.height || 1;
-
-              // Target aspect ratio for grid cell
-              const targetAspectRatio = cellWidth / cellHeight;
-              const originalAspectRatio = originalWidth / originalHeight;
-
-              let cropWidth: number;
-              let cropHeight: number;
-
-              if (originalAspectRatio > targetAspectRatio) {
-                cropHeight = originalHeight;
-                cropWidth = cropHeight * targetAspectRatio;
-              } else {
-                cropWidth = originalWidth;
-                cropHeight = cropWidth / targetAspectRatio;
-              }
-
-              cropWidth = Math.min(cropWidth, originalWidth);
-              cropHeight = Math.min(cropHeight, originalHeight);
-
-              // Calculate crop position to center on focal point
-              const focalX = (focalPoint.x / 100) * originalWidth;
-              const focalY = (focalPoint.y / 100) * originalHeight;
-
-              let left = focalX - cropWidth / 2;
-              let top = focalY - cropHeight / 2;
-
-              left = Math.max(0, Math.min(left, originalWidth - cropWidth));
-              top = Math.max(0, Math.min(top, originalHeight - cropHeight));
-
-              processedBuffer = await sharp(processedBuffer)
-                .extract({
-                  left: Math.round(left),
-                  top: Math.round(top),
-                  width: Math.round(cropWidth),
-                  height: Math.round(cropHeight),
-                })
-                .resize(Math.round(cellWidth), Math.round(cellHeight), {
-                  fit: "cover",
-                })
-                .toBuffer();
-            } else {
-              processedBuffer = await sharp(processedBuffer)
-                .resize(Math.round(cellWidth), Math.round(cellHeight), {
-                  fit: "cover",
-                })
-                .toBuffer();
-            }
-
-            const base64 = processedBuffer.toString("base64");
-            const contentType =
-              imageResponse.headers.get("content-type") || "image/jpeg";
-            return `data:${contentType};base64,${base64}`;
-          }
-        } catch (error) {
-          console.error("Failed to load image for grid:", error);
-        }
-        return null;
+        const focalPoint = cs.submission.imageFocalPoint as {
+          x: number;
+          y: number;
+        } | null;
+        return fetchImageAsPngDataUrlForOg(cs.submission.imageUrl!, {
+          width: cellWidth,
+          height: cellHeight,
+          focalPoint: focalPoint ?? undefined,
+        });
       }),
     );
 

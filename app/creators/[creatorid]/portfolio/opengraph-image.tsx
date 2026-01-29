@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
+import { fetchImageAsPngDataUrl } from "@/lib/og-image";
 import { prisma } from "@/lib/prisma";
-import sharp from "sharp";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -73,31 +73,10 @@ export default async function OpenGraphImage({ params }: RouteParams) {
     const cellWidth = size.width / gridCols;
     const cellHeight = size.height / gridRows;
 
-    // Fetch and convert images to data URLs
     const imageDataUrls: (string | null)[] = await Promise.all(
-      portfolioItems.map(async (item) => {
-        if (!item.imageUrl) return null;
-        try {
-          const imageResponse = await fetch(item.imageUrl);
-          if (imageResponse.ok) {
-            const arrayBuffer = await imageResponse.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            // Process image with sharp to auto-rotate based on EXIF orientation
-            const processedBuffer = await sharp(buffer)
-              .rotate() // Auto-rotate based on EXIF orientation
-              .toBuffer();
-
-            const base64 = processedBuffer.toString("base64");
-            const contentType =
-              imageResponse.headers.get("content-type") || "image/jpeg";
-            return `data:${contentType};base64,${base64}`;
-          }
-        } catch (error) {
-          console.error("Failed to load image for grid:", error);
-        }
-        return null;
-      }),
+      portfolioItems.map((item) =>
+        item.imageUrl ? fetchImageAsPngDataUrl(item.imageUrl) : null,
+      ),
     );
 
     return new ImageResponse(

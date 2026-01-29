@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { fetchImageAsPngDataUrl } from "@/lib/og-image";
 import { prisma } from "@/lib/prisma";
 
 export const size = { width: 1200, height: 630 };
@@ -100,119 +101,109 @@ export default async function OpenGraphImage({ params }: RouteParams) {
   const hasFeaturedImage = !!exhibit.featuredSubmission?.imageUrl;
 
   if (hasFeaturedImage) {
-    try {
-      const imageResponse = await fetch(exhibit.featuredSubmission!.imageUrl!);
-      if (imageResponse.ok) {
-        const arrayBuffer = await imageResponse.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        const base64 = buffer.toString("base64");
-        const contentType =
-          imageResponse.headers.get("content-type") || "image/jpeg";
-        const imageDataUrl = `data:${contentType};base64,${base64}`;
-
-        return new ImageResponse(
-          <div
+    const imageDataUrl = await fetchImageAsPngDataUrl(
+      exhibit.featuredSubmission!.imageUrl!,
+    );
+    if (imageDataUrl) {
+      return new ImageResponse(
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            position: "relative",
+          }}
+        >
+          <img
+            src={imageDataUrl}
+            alt={title}
+            width={size.width}
+            height={size.height}
             style={{
               width: "100%",
               height: "100%",
+              objectFit: "cover",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, transparent 100%)",
+              padding: "60px 80px 80px",
               display: "flex",
-              position: "relative",
+              flexDirection: "column",
+              gap: "16px",
             }}
           >
-            <img
-              src={imageDataUrl}
-              alt={title}
-              width={size.width}
-              height={size.height}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
             <div
               style={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                background:
-                  "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, transparent 100%)",
-                padding: "60px 80px 80px",
                 display: "flex",
-                flexDirection: "column",
-                gap: "16px",
+                alignItems: "center",
+                gap: "12px",
               }}
             >
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
+                  backgroundColor: "rgba(255,255,255,0.2)",
+                  padding: "8px 16px",
+                  borderRadius: "9999px",
+                  fontSize: "20px",
+                  color: "#ffffff",
+                  fontWeight: "600",
                 }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    backgroundColor: "rgba(255,255,255,0.2)",
-                    padding: "8px 16px",
-                    borderRadius: "9999px",
-                    fontSize: "20px",
-                    color: "#ffffff",
-                    fontWeight: "600",
-                  }}
-                >
-                  Exhibit
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    fontSize: "18px",
-                    color: "#e4e4e7",
-                  }}
-                >
-                  {submissionCount} works
-                </div>
+                Exhibit
               </div>
               <div
                 style={{
                   display: "flex",
-                  fontSize: "64px",
-                  fontWeight: "bold",
-                  color: "#ffffff",
-                  lineHeight: "1.2",
-                  textShadow: "0 2px 8px rgba(0,0,0,0.5)",
+                  fontSize: "18px",
+                  color: "#e4e4e7",
                 }}
               >
-                {title}
-              </div>
-              {description && (
-                <div
-                  style={{
-                    fontSize: "24px",
-                    color: "#e4e4e7",
-                    maxWidth: "80%",
-                  }}
-                >
-                  {description}
-                </div>
-              )}
-              <div
-                style={{
-                  fontSize: "20px",
-                  color: "#a1a1aa",
-                }}
-              >
-                Create Spot
+                {submissionCount} works
               </div>
             </div>
-          </div>,
-          { ...size },
-        );
-      }
-    } catch (error) {
-      console.error("Failed to load image for OG:", error);
+            <div
+              style={{
+                display: "flex",
+                fontSize: "64px",
+                fontWeight: "bold",
+                color: "#ffffff",
+                lineHeight: "1.2",
+                textShadow: "0 2px 8px rgba(0,0,0,0.5)",
+              }}
+            >
+              {title}
+            </div>
+            {description && (
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#e4e4e7",
+                  maxWidth: "80%",
+                }}
+              >
+                {description}
+              </div>
+            )}
+            <div
+              style={{
+                fontSize: "20px",
+                color: "#a1a1aa",
+              }}
+            >
+              Create Spot
+            </div>
+          </div>
+        </div>,
+        { ...size },
+      );
     }
   }
 

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
+import { fetchImageAsPngDataUrlForOg } from "@/lib/og-image";
 import { prisma } from "@/lib/prisma";
-import sharp from "sharp";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -138,166 +138,98 @@ export default async function OpenGraphImage({ params }: RouteParams) {
     : "";
   const curatorName = exhibit.curator.name || "Anonymous";
 
-  // If there's an image, try to fetch it and convert to data URL for reliable rendering
   if (imageUrl) {
-    try {
-      const imageResponse = await fetch(imageUrl);
-      if (imageResponse.ok) {
-        const arrayBuffer = await imageResponse.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        // Get image metadata first (need to rotate to get correct dimensions)
-        const rotatedBuffer = await sharp(buffer).rotate().toBuffer();
-        const metadata = await sharp(rotatedBuffer).metadata();
-        const originalWidth = metadata.width || 1;
-        const originalHeight = metadata.height || 1;
-
-        const focalPoint = imageFocalPoint;
-
-        // Target aspect ratio for OG image
-        const targetAspectRatio = size.width / size.height;
-        const originalAspectRatio = originalWidth / originalHeight;
-
-        let processedBuffer: Buffer;
-
-        if (focalPoint) {
-          // Calculate crop dimensions to match target aspect ratio
-          let cropWidth: number;
-          let cropHeight: number;
-
-          if (originalAspectRatio > targetAspectRatio) {
-            cropHeight = originalHeight;
-            cropWidth = cropHeight * targetAspectRatio;
-          } else {
-            cropWidth = originalWidth;
-            cropHeight = cropWidth / targetAspectRatio;
-          }
-
-          cropWidth = Math.min(cropWidth, originalWidth);
-          cropHeight = Math.min(cropHeight, originalHeight);
-
-          const focalX = (focalPoint.x / 100) * originalWidth;
-          const focalY = (focalPoint.y / 100) * originalHeight;
-
-          let left = focalX - cropWidth / 2;
-          let top = focalY - cropHeight / 2;
-
-          left = Math.max(0, Math.min(left, originalWidth - cropWidth));
-          top = Math.max(0, Math.min(top, originalHeight - cropHeight));
-
-          processedBuffer = await sharp(rotatedBuffer)
-            .extract({
-              left: Math.round(left),
-              top: Math.round(top),
-              width: Math.round(cropWidth),
-              height: Math.round(cropHeight),
-            })
-            .resize(size.width, size.height, {
-              fit: "cover",
-            })
-            .toBuffer();
-        } else {
-          processedBuffer = await sharp(rotatedBuffer)
-            .resize(size.width, size.height, {
-              fit: "cover",
-            })
-            .toBuffer();
-        }
-
-        const base64 = processedBuffer.toString("base64");
-        const contentType =
-          imageResponse.headers.get("content-type") || "image/jpeg";
-        const imageDataUrl = `data:${contentType};base64,${base64}`;
-
-        return new ImageResponse(
-          <div
+    const imageDataUrl = await fetchImageAsPngDataUrlForOg(imageUrl, {
+      width: size.width,
+      height: size.height,
+      focalPoint: imageFocalPoint ?? undefined,
+    });
+    if (imageDataUrl) {
+      return new ImageResponse(
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            position: "relative",
+          }}
+        >
+          <img
+            src={imageDataUrl}
+            alt={title}
+            width={size.width}
+            height={size.height}
             style={{
               width: "100%",
               height: "100%",
+              objectFit: "cover",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
+              padding: "60px 80px 80px",
               display: "flex",
-              position: "relative",
+              flexDirection: "column",
+              gap: "16px",
             }}
           >
-            <img
-              src={imageDataUrl}
-              alt={title}
-              width={size.width}
-              height={size.height}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
             <div
               style={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                background:
-                  "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
-                padding: "60px 80px 80px",
                 display: "flex",
-                flexDirection: "column",
-                gap: "16px",
+                fontSize: "64px",
+                fontWeight: "bold",
+                color: "#ffffff",
+                lineHeight: "1.2",
+                textShadow: "0 2px 8px rgba(0,0,0,0.5)",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: "64px",
-                  fontWeight: "bold",
-                  color: "#ffffff",
-                  lineHeight: "1.2",
-                  textShadow: "0 2px 8px rgba(0,0,0,0.5)",
-                }}
-              >
-                {title}
-              </div>
-              <div
-                style={{
-                  fontSize: "32px",
-                  color: "#e4e4e7",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                }}
-              >
-                <span
-                  style={{
-                    display: "flex",
-                    backgroundColor: "rgba(255,255,255,0.2)",
-                    padding: "8px 16px",
-                    borderRadius: "9999px",
-                    fontSize: "24px",
-                  }}
-                >
-                  Exhibit
-                </span>
-                <span style={{ display: "flex", fontSize: "28px" }}>
-                  Curated by {curatorName}
-                </span>
-              </div>
-              {description && (
-                <div
-                  style={{
-                    fontSize: "24px",
-                    color: "#d4d4d8",
-                    maxWidth: 600,
-                  }}
-                >
-                  {description}
-                </div>
-              )}
+              {title}
             </div>
-          </div>,
-          { ...size },
-        );
-      }
-    } catch (error) {
-      console.error("Failed to load image for OG:", error);
-      // Fall through to text-only version
+            <div
+              style={{
+                fontSize: "32px",
+                color: "#e4e4e7",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+              }}
+            >
+              <span
+                style={{
+                  display: "flex",
+                  backgroundColor: "rgba(255,255,255,0.2)",
+                  padding: "8px 16px",
+                  borderRadius: "9999px",
+                  fontSize: "24px",
+                }}
+              >
+                Exhibit
+              </span>
+              <span style={{ display: "flex", fontSize: "28px" }}>
+                Curated by {curatorName}
+              </span>
+            </div>
+            {description && (
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#d4d4d8",
+                  maxWidth: 600,
+                }}
+              >
+                {description}
+              </div>
+            )}
+          </div>
+        </div>,
+        { ...size },
+      );
     }
   }
 
