@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getTutorialData } from "@/lib/get-tutorial-data";
+import { getSubmissionMetadata } from "@/lib/og-metadata";
 import { SubmissionDetail } from "@/components/submission-detail";
 
 export const dynamic = "force-dynamic";
@@ -67,55 +68,22 @@ export async function generateMetadata({
   const submission = await getSubmission(submissionid);
 
   if (!submission) {
-    return {
-      title: "Submission Not Found",
-    };
+    return { title: "Submission Not Found" };
   }
 
-  const title = submission.title || "Untitled";
-  const creatorName = submission.user.name || "Anonymous";
-  const description = submission.text
-    ? submission.text.replace(/<[^>]*>/g, "").trim()
-    : submission.prompt
-      ? `View this submission for the prompt: ${submission.prompt.word1}, ${submission.prompt.word2}, ${submission.prompt.word3}`
-      : "View this portfolio piece";
-
-  // Build keywords array from tags and category
-  const keywords: string[] = [];
-
-  // Add tags
-  if (submission.tags && submission.tags.length > 0) {
-    keywords.push(...submission.tags);
-  }
-
-  // Add category
-  if (submission.category) {
-    keywords.push(submission.category);
-  }
-
-  // Generate absolute OG image URL - Next.js will automatically use opengraph-image.tsx
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-  const ogImageUrl = `${baseUrl}/creators/${submission.userId}/s/${submissionid}/opengraph-image`;
-
-  const pageTitle = `${title} | ${creatorName} | Create Spot`;
-
-  return {
-    title: pageTitle,
-    description,
-    keywords: keywords.length > 0 ? keywords : undefined,
-    openGraph: {
-      title: pageTitle,
-      description,
-      images: [ogImageUrl],
-      type: "article",
+  return getSubmissionMetadata(
+    {
+      id: submission.id,
+      title: submission.title,
+      text: submission.text,
+      tags: submission.tags,
+      category: submission.category,
+      user: submission.user,
+      prompt: submission.prompt,
     },
-    twitter: {
-      card: "summary_large_image",
-      title: pageTitle,
-      description,
-      images: [ogImageUrl],
-    },
-  };
+    baseUrl,
+  );
 }
 
 export default async function SubmissionPage({ params }: SubmissionPageProps) {

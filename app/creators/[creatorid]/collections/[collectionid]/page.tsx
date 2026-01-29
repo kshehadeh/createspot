@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getCollectionMetadata } from "@/lib/og-metadata";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
@@ -28,7 +29,7 @@ export async function generateMetadata({
   const collection = await prisma.collection.findUnique({
     where: { id: collectionid },
     include: {
-      user: { select: { name: true } },
+      user: { select: { id: true, name: true, slug: true } },
       _count: {
         select: { submissions: true },
       },
@@ -47,8 +48,6 @@ export async function generateMetadata({
     return { title: `${t("notFound")} | Create Spot` };
   }
 
-  // Only generate OG metadata for public collections
-  // Private collections should not have shareable OG images
   if (!collection.isPublic) {
     const creatorName = collection.user.name || t("anonymous");
     return {
@@ -57,35 +56,18 @@ export async function generateMetadata({
     };
   }
 
-  const creatorName = collection.user.name || t("anonymous");
-  const itemCount = collection._count.submissions;
-  const description =
-    collection.description ||
-    `A collection by ${creatorName} with ${itemCount} ${itemCount !== 1 ? "items" : "item"}`;
-
-  // Generate absolute OG image URL - Next.js will automatically use opengraph-image.tsx
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-  const ogImageUrl = `${baseUrl}/creators/${creatorid}/collections/${collectionid}/opengraph-image`;
-
-  const pageTitle = `${collection.name} - ${creatorName} | Create Spot`;
-
-  return {
-    title: pageTitle,
-    description,
-    openGraph: {
-      title: pageTitle,
-      description,
-      images: [ogImageUrl],
-      type: "website",
-      url: `${baseUrl}/creators/${creatorid}/collections/${collectionid}`,
+  return getCollectionMetadata(
+    {
+      id: collection.id,
+      name: collection.name,
+      description: collection.description,
+      isPublic: collection.isPublic,
+      user: collection.user,
+      _count: collection._count,
     },
-    twitter: {
-      card: "summary_large_image",
-      title: pageTitle,
-      description,
-      images: [ogImageUrl],
-    },
-  };
+    baseUrl,
+  );
 }
 
 export default async function CollectionViewPage({

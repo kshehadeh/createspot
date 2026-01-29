@@ -153,6 +153,7 @@ model Submission {
   featuredInExhibits Exhibit[] @relation("FeaturedInExhibits")
   critiques  Critique[]
   collectionSubmissions CollectionSubmission[]
+  shortLinks ShortLink[]
 
   @@unique([userId, promptId, wordIndex])
   @@index([promptId])
@@ -223,6 +224,7 @@ model Exhibit {
   featuredArtist    User?    @relation("FeaturedArtistInExhibits", fields: [featuredArtistId], references: [id], onDelete: SetNull)
   featuredSubmission Submission? @relation("FeaturedInExhibits", fields: [featuredSubmissionId], references: [id], onDelete: SetNull)
   submissions       ExhibitSubmission[]
+  shortLinks        ShortLink[]
 
   @@index([startTime, endTime])
   @@index([isActive])
@@ -298,9 +300,25 @@ model Collection {
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   submissions CollectionSubmission[]
+  shortLinks  ShortLink[]
 
   @@index([userId])
   @@index([userId, isPublic])
+}
+
+model ShortLink {
+  id           String   @id @default(cuid())
+  code         String   @unique
+  submissionId  String?  @unique
+  collectionId  String?  @unique
+  exhibitId    String?  @unique
+  createdAt    DateTime @default(now())
+
+  submission  Submission?  @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  collection Collection?  @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  exhibit    Exhibit?     @relation(fields: [exhibitId], references: [id], onDelete: Cascade)
+
+  @@index([code])
 }
 
 model CollectionSubmission {

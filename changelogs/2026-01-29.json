@@ -1,0 +1,9 @@
+[
+  {
+    "time": "2026-01-29T08:11:16-05:00",
+    "commit": "7a80ffa969a2b97fdc1ba3920d4c31993c365389",
+    "type": "improvement",
+    "area": "portfolio",
+    "description": "Submission update (PUT) now triggers compression and watermarking workflow when the image is from R2 and either the image was changed or metadata indicates it was not yet processed."
+  }
+]

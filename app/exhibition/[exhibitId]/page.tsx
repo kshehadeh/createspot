@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getExhibitById } from "@/lib/exhibits";
+import { getExhibitMetadata } from "@/lib/og-metadata";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,32 +33,18 @@ export async function generateMetadata({
   const exhibit = await getExhibitById(exhibitId);
 
   if (!exhibit) {
-    return {
-      title: "Exhibit Not Found | Create Spot",
-    };
+    return { title: "Exhibit Not Found | Create Spot" };
   }
 
-  // Strip HTML tags from description for metadata
-  const plainDescription = exhibit.description
-    ? exhibit.description.replace(/<[^>]*>/g, "").trim()
-    : undefined;
-
-  // Get first sentence or first ~200 chars as description
-  const shortDescription = plainDescription
-    ? plainDescription.length > 200
-      ? plainDescription.slice(0, 200).replace(/\s+\S*$/, "...")
-      : plainDescription
-    : `View the ${exhibit.title} exhibit`;
-
-  return {
-    title: `${exhibit.title} | Exhibit | Create Spot`,
-    description: shortDescription,
-    openGraph: {
-      title: `${exhibit.title} | Exhibit | Create Spot`,
-      description: shortDescription,
-      type: "website",
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  return getExhibitMetadata(
+    {
+      id: exhibit.id,
+      title: exhibit.title,
+      description: exhibit.description,
     },
-  };
+    baseUrl,
+  );
 }
 
 export default async function ExhibitPage({ params }: ExhibitPageProps) {

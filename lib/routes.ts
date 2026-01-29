@@ -177,6 +177,13 @@ const ROUTES: Record<string, RouteConfig> = {
     parentPath: "/creators/[creatorid]/portfolio",
   },
 
+  // Short URL (share link redirect)
+  shortUrl: {
+    path: "/s/[code]",
+    label: "navigation.share",
+    isLink: false,
+  },
+
   // Other routes
   creators: {
     path: "/creators",
@@ -474,6 +481,17 @@ export function getBreadcrumbSegments(
     }
 
     return segments.length > 0 ? segments : null;
+  }
+
+  // Short URL: /s/[code]
+  const pathParts = pathname.split("/").filter(Boolean);
+  if (pathParts[0] === "s" && pathParts.length === 2) {
+    return [
+      {
+        label: t ? translateLabel("navigation.share", t) : "Share",
+        href: undefined,
+      },
+    ];
   }
 
   // Handle dynamic routes and special cases

@@ -45,33 +45,38 @@ export function ShareButton({
     }
   }, [submissionId, resolvedUser]);
 
-  const shareUrl =
+  const canonicalUrl =
     typeof window !== "undefined" && resolvedUser
       ? `${window.location.origin}${getCreatorUrl(resolvedUser)}/s/${submissionId}`
       : "";
 
   async function handleShare() {
-    // Try Web Share API first (mobile-friendly)
-    // Only include URL to ensure clean copying
-    const shareData = {
-      url: shareUrl,
-    };
+    let urlToShare = canonicalUrl;
+    try {
+      const res = await fetch(
+        `/api/short-link?type=submission&targetId=${encodeURIComponent(submissionId)}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (data.shortUrl) urlToShare = data.shortUrl;
+      }
+    } catch {
+      // Use canonical URL on error
+    }
+
+    const shareData = { url: urlToShare };
 
     if (navigator.share && navigator.canShare?.(shareData)) {
       try {
         await navigator.share(shareData);
         return;
       } catch (err) {
-        // User cancelled or error occurred, fall through to clipboard
-        if ((err as Error).name === "AbortError") {
-          return;
-        }
+        if ((err as Error).name === "AbortError") return;
       }
     }
 
-    // Fallback to clipboard - only copy the URL
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(urlToShare);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {

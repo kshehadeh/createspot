@@ -19,33 +19,38 @@ export function CollectionShareButton({
 }: CollectionShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
-  const shareUrl =
+  const canonicalUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}${getCreatorUrl({ id: userId, slug })}/collections/${collectionId}`
       : "";
 
   async function handleShare() {
-    // Try Web Share API first (mobile-friendly)
-    // Only include URL to ensure clean copying
-    const shareData = {
-      url: shareUrl,
-    };
+    let urlToShare = canonicalUrl;
+    try {
+      const res = await fetch(
+        `/api/short-link?type=collection&targetId=${encodeURIComponent(collectionId)}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (data.shortUrl) urlToShare = data.shortUrl;
+      }
+    } catch {
+      // Use canonical URL on error
+    }
+
+    const shareData = { url: urlToShare };
 
     if (navigator.share && navigator.canShare?.(shareData)) {
       try {
         await navigator.share(shareData);
         return;
       } catch (err) {
-        // User cancelled or error occurred, fall through to clipboard
-        if ((err as Error).name === "AbortError") {
-          return;
-        }
+        if ((err as Error).name === "AbortError") return;
       }
     }
 
-    // Fallback to clipboard - only copy the URL
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(urlToShare);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
