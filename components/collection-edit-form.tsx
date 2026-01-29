@@ -3,16 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  Trash2,
-  Lock,
-  Globe,
-  Loader2,
-  Download,
-  FileText,
-  Archive,
-  ChevronDown,
-} from "lucide-react";
+import { Trash2, Lock, Globe, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -22,12 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface PortfolioItem {
   id: string;
@@ -81,7 +66,6 @@ export function CollectionEditForm({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -203,54 +187,6 @@ export function CollectionEditForm({
     [collection.id, items.length],
   );
 
-  const handleDownloadPDF = async () => {
-    setIsDownloading(true);
-    try {
-      const response = await fetch(
-        `/api/collections/${collection.id}/download/pdf`,
-      );
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${collection.name.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      }
-    } catch (error) {
-      console.error("Failed to download PDF:", error);
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const handleDownloadZIP = async () => {
-    setIsDownloading(true);
-    try {
-      const response = await fetch(
-        `/api/collections/${collection.id}/download/zip`,
-      );
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${collection.name.replace(/[^a-zA-Z0-9]/g, "_")}.zip`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      }
-    } catch (error) {
-      console.error("Failed to download ZIP:", error);
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -269,39 +205,6 @@ export function CollectionEditForm({
           subtitle={`${items.length} ${items.length !== 1 ? t("items") : t("item")}`}
         />
         <div className="flex flex-row flex-wrap items-end justify-end gap-2">
-          {items.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" disabled={isDownloading}>
-                  {isDownloading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Download className="h-4 w-4" />
-                  )}
-                  <span className="hidden md:inline">
-                    {isDownloading ? t("downloading") : t("downloadAs")}
-                  </span>
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={handleDownloadPDF}
-                  disabled={isDownloading}
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  {t("downloadPDF")}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleDownloadZIP}
-                  disabled={isDownloading}
-                >
-                  <Archive className="mr-2 h-4 w-4" />
-                  {t("downloadZIP")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
           <Button
             variant="destructive"
             size="sm"

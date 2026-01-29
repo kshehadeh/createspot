@@ -17,7 +17,8 @@ async function fetchImageFromR2(publicUrl: string): Promise<Buffer> {
   if (!baseUrl || !bucket)
     throw new Error("R2_PUBLIC_URL or R2_BUCKET_NAME not set");
 
-  if (!publicUrl.startsWith(baseUrl)) throw new Error("Invalid publicUrl: not an R2 URL");
+  if (!publicUrl.startsWith(baseUrl))
+    throw new Error("Invalid publicUrl: not an R2 URL");
   const key = publicUrl.replace(`${baseUrl}/`, "");
 
   const s3Client = new S3Client({
@@ -34,7 +35,9 @@ async function fetchImageFromR2(publicUrl: string): Promise<Buffer> {
   );
 
   if (!response.Body) throw new Error("Empty body from R2");
-  const body = response.Body as { getReader?: () => ReadableStreamDefaultReader<Uint8Array> } | AsyncIterable<Uint8Array>;
+  const body = response.Body as
+    | { getReader?: () => ReadableStreamDefaultReader<Uint8Array> }
+    | AsyncIterable<Uint8Array>;
   if ("getReader" in body && typeof body.getReader === "function") {
     const reader = (body as ReadableStream).getReader();
     const chunks: Uint8Array[] = [];

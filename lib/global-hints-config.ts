@@ -46,6 +46,12 @@ export const GLOBAL_HINTS_CONFIG: GlobalHintConfig[] = [
     fixedPosition: { bottom: 24, right: 24 },
     showArrow: false,
   },
+  {
+    key: "socialPackDidYouKnow",
+    order: 4,
+    fixedPosition: { bottom: 24, right: 24 },
+    showArrow: false,
+  },
 ];
 
 /**

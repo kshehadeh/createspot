@@ -666,7 +666,9 @@
     "creatorHintTitle": "Meet Creators",
     "creatorHintDescription": "Follow creators to stay updated with their latest work and see how their creative journey evolves over time.",
     "critiqueDidYouKnowTitle": "Did You Know?",
-    "critiqueDidYouKnowDescription": "Critiques let you give and receive detailed feedback on creative work. Creators can enable critiques on their submissions, and you can edit your critiques until the creator sees them."
+    "critiqueDidYouKnowDescription": "Critiques let you give and receive detailed feedback on creative work. Creators can enable critiques on their submissions, and you can edit your critiques until the creator sees them.",
+    "socialPackDidYouKnowTitle": "Did You Know?",
+    "socialPackDidYouKnowDescription": "You can build a social media pack from any collection. Open a collection, use the Download menu, and choose \"Download as social pack\" to get platform-sized images and captions ready for Instagram and Twitter."
   },
   "about": {
     "title": "About | Create Spot",
@@ -1207,6 +1209,7 @@
     "downloadAs": "Download As",
     "downloadPDF": "Download PDF",
     "downloadZIP": "Download ZIP",
+    "downloadSocialPack": "Download as social pack",
     "downloading": "Downloading...",
     "downloadingPDF": "Generating PDF...",
     "downloadingZIP": "Generating ZIP..."

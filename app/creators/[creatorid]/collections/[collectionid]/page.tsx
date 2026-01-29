@@ -8,6 +8,7 @@ import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { CollectionShareButton } from "@/components/collection-share-button";
+import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { Button } from "@/components/ui/button";
 import { Pencil, Lock, Globe } from "lucide-react";
 import { getCreatorUrl } from "@/lib/utils";
@@ -225,6 +226,12 @@ export default async function CollectionViewPage({
                       collectionId={collection.id}
                     />
                   )}
+                  {isOwner && portfolioItems.length > 0 && (
+                    <CollectionDownloadDropdown
+                      collectionId={collection.id}
+                      collectionName={collection.name}
+                    />
+                  )}
                   {isOwner && (
                     <Button asChild variant="outline" size="sm">
                       <Link
@@ -242,6 +249,12 @@ export default async function CollectionViewPage({
 
           {isOwner && (
             <div className="md:hidden mt-4 flex flex-wrap items-center gap-2">
+              {portfolioItems.length > 0 && (
+                <CollectionDownloadDropdown
+                  collectionId={collection.id}
+                  collectionName={collection.name}
+                />
+              )}
               <Button asChild variant="outline" size="sm">
                 <Link
                   href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}

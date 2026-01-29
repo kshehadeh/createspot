@@ -72,6 +72,16 @@ export const HINTS_CONFIG: Record<string, HintConfig[]> = {
         description: "critiqueDidYouKnowDescription",
       },
     },
+    {
+      key: "socialPackDidYouKnow",
+      order: 4,
+      fixedPosition: { bottom: 24, right: 24 },
+      showArrow: false,
+      translationKeys: {
+        title: "socialPackDidYouKnowTitle",
+        description: "socialPackDidYouKnowDescription",
+      },
+    },
   ],
   "portfolio-view": [
     {
