@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -199,7 +200,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const updateData: Record<string, unknown> = {};
 
   if (title !== undefined) updateData.title = title;
-  if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+  if (imageUrl !== undefined) {
+    updateData.imageUrl = imageUrl;
+    // Clear processing metadata when image changes; workflow will set it when done
+    updateData.imageProcessingMetadata = null;
+    updateData.imageProcessedAt = null;
+  }
   if (imageFocalPoint !== undefined)
     updateData.imageFocalPoint = imageFocalPoint;
   if (text !== undefined) updateData.text = text;
@@ -236,6 +242,25 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       },
     },
   });
+
+  // Trigger post-processing (compression/watermark) if image is from R2 and not yet processed
+  const r2Base = process.env.R2_PUBLIC_URL;
+  if (submission.imageUrl && r2Base && submission.imageUrl.startsWith(r2Base)) {
+    const metadata = submission.imageProcessingMetadata as {
+      compressed?: boolean;
+    } | null;
+    const imageChanged = imageUrl !== undefined;
+    const notYetProcessed = metadata?.compressed !== true;
+    const needsProcessing = imageChanged || notYetProcessed;
+    if (needsProcessing) {
+      processUploadedImage({
+        publicUrl: submission.imageUrl,
+        type: "submission",
+        userId: session.user.id,
+        submissionId: submission.id,
+      }).catch((err) => console.error("[process-uploaded-image]", err));
+    }
+  }
 
   return NextResponse.json({ submission });
 }

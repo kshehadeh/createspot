@@ -32,7 +32,7 @@ Configuration lives in [app/api/upload/presign/route.ts](app/api/upload/presign/
    The API writes the raw URL to the database and returns success immediately.
 
 4. **Save API triggers the workflow (fire-and-forget)**  
-   If the image URL is from our R2 bucket, the submissions or profile API calls `processUploadedImage({ publicUrl, type, userId, submissionId? })` without awaiting. The workflow runs in the background.
+   If the image URL is from our R2 bucket, the submissions or profile API calls `processUploadedImage({ publicUrl, type, userId, submissionId? })` without awaiting. The workflow runs in the background. **Submission update** (`PUT /api/submissions/[id]`) also triggers the workflow when the image is from R2 and either the image was just changed in the request or metadata indicates it was not yet processed (so legacy submissions get processed on next edit).
 
 5. **Workflow post-processes and updates the database**  
    See [Post-processing workflow](#post-processing-workflow) below. When it finishes, it updates `Submission.imageUrl` (and metadata) or the user’s `profileImageUrl` to the new optimized URL and, for submissions, sets `imageProcessingMetadata` and `imageProcessedAt`.
@@ -116,7 +116,7 @@ The public URL is `{R2_PUBLIC_URL}/{key}`. CORS must be configured on the R2 buc
 | Shared resize/WebP helper | [lib/upload-process.ts](lib/upload-process.ts) |
 | Watermark | [lib/watermark.ts](lib/watermark.ts) |
 | Submission image replace | [app/api/submissions/[id]/image/route.ts](app/api/submissions/[id]/image/route.ts) |
-| Trigger workflow from save | [app/api/submissions/route.ts](app/api/submissions/route.ts), [app/api/profile/route.ts](app/api/profile/route.ts) |
+| Trigger workflow from save | [app/api/submissions/route.ts](app/api/submissions/route.ts), [app/api/submissions/[id]/route.ts](app/api/submissions/[id]/route.ts) (PUT), [app/api/profile/route.ts](app/api/profile/route.ts) |
 | Deprecated upload | [app/api/upload/route.ts](app/api/upload/route.ts) |
 
 For R2 bucket configuration, environment variables, and CORS, see [docs/DATABASE.md](DATABASE.md). For watermarking and creator protections, see [docs/CREATOR-PROTECTIONS.md](CREATOR-PROTECTIONS.md).
