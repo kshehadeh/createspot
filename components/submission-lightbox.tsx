@@ -62,6 +62,10 @@ interface SubmissionLightboxProps {
   hasNext?: boolean;
 }
 
+/** Shared style for lightbox controls: semi-transparent on black, capsule shape. */
+const LIGHTBOX_BUTTON_CLASS =
+  "rounded-full !bg-white/10 border border-white/20 text-white hover:!bg-white/20 hover:!text-white focus-visible:ring-white/30 focus-visible:ring-offset-transparent";
+
 export function SubmissionLightbox({
   submission,
   onClose,
@@ -207,6 +211,14 @@ export function SubmissionLightbox({
     hasPrevious,
     hasNext,
   ]);
+
+  // Reset close button tooltip when lightbox opens so it doesn't show immediately
+  useEffect(() => {
+    if (isOpen) {
+      setCloseTooltipOpen(false);
+      setCloseTooltipHovered(false);
+    }
+  }, [isOpen]);
 
   // Control close button tooltip to only show on hover, not focus
   useEffect(() => {
@@ -664,6 +676,7 @@ export function SubmissionLightbox({
                     }}
                     disabled={!hasPrevious}
                     aria-label={t("previousSubmission")}
+                    className={LIGHTBOX_BUTTON_CLASS}
                   />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -689,6 +702,7 @@ export function SubmissionLightbox({
                     }}
                     disabled={!hasNext}
                     aria-label={t("nextSubmission")}
+                    className={LIGHTBOX_BUTTON_CLASS}
                   />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -724,7 +738,7 @@ export function SubmissionLightbox({
                       e.stopPropagation();
                       setIsTextOverlayOpen(true);
                     }}
-                    className="xl:hidden"
+                    className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
                     aria-label="View text"
                   >
                     <FileText className="h-4 w-4" />
@@ -749,7 +763,7 @@ export function SubmissionLightbox({
                         e.stopPropagation();
                         handleEditClick();
                       }}
-                      className="hidden xl:flex"
+                      className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
                       aria-label="Edit submission"
                     >
                       <Edit className="h-4 w-4" />
@@ -770,7 +784,7 @@ export function SubmissionLightbox({
                         e.stopPropagation();
                         handleEditClick();
                       }}
-                      className="xl:hidden"
+                      className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
                       aria-label="Edit submission"
                     >
                       <Edit className="h-4 w-4" />
@@ -793,7 +807,7 @@ export function SubmissionLightbox({
                       variant="outline"
                       size="sm"
                       asChild
-                      className="hidden xl:flex"
+                      className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
                     >
                       <Link
                         href={getSubmissionUrl() || "#"}
@@ -828,7 +842,7 @@ export function SubmissionLightbox({
                       variant="outline"
                       size="icon"
                       asChild
-                      className="xl:hidden"
+                      className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
                       aria-label="View submission"
                     >
                       <Link
@@ -868,7 +882,7 @@ export function SubmissionLightbox({
                   onClick={onClose}
                   onMouseEnter={() => setCloseTooltipHovered(true)}
                   onMouseLeave={() => setCloseTooltipHovered(false)}
-                  className="xl:h-9 xl:w-auto xl:px-3 xl:gap-2"
+                  className={`xl:h-9 xl:w-auto xl:px-3 xl:gap-2 ${LIGHTBOX_BUTTON_CLASS}`}
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />
