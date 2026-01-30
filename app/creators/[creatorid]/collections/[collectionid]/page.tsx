@@ -74,52 +74,51 @@ export default async function CollectionViewPage({
   params,
 }: CollectionViewPageProps) {
   const { creatorid, collectionid } = await params;
-  const session = await auth();
-  const t = await getTranslations("collections");
-
-  const collection = await prisma.collection.findUnique({
-    where: { id: collectionid },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          slug: true,
+  const [session, t, collection, creator] = await Promise.all([
+    auth(),
+    getTranslations("collections"),
+    prisma.collection.findUnique({
+      where: { id: collectionid },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            slug: true,
+          },
         },
-      },
-      submissions: {
-        orderBy: { order: "asc" },
-        include: {
-          submission: {
-            include: {
-              prompt: {
-                select: {
-                  word1: true,
-                  word2: true,
-                  word3: true,
+        submissions: {
+          orderBy: { order: "asc" },
+          include: {
+            submission: {
+              include: {
+                prompt: {
+                  select: {
+                    word1: true,
+                    word2: true,
+                    word3: true,
+                  },
                 },
-              },
-              _count: {
-                select: { favorites: true },
+                _count: {
+                  select: { favorites: true },
+                },
               },
             },
           },
         },
+        _count: {
+          select: { submissions: true },
+        },
       },
-      _count: {
-        select: { submissions: true },
+    }),
+    prisma.user.findFirst({
+      where: {
+        OR: [{ slug: creatorid }, { id: creatorid }],
       },
-    },
-  });
-
-  // Find creator by slug or ID
-  const creator = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: { id: true },
-  });
+      select: { id: true },
+    }),
+  ]);
 
   if (!collection || !creator || collection.userId !== creator.id) {
     notFound();

@@ -20,10 +20,11 @@ export async function GET(request: NextRequest) {
   );
   const take = Number.isFinite(takeRaw) ? takeRaw : EXHIBITION_PAGE_SIZE;
 
-  const { submissions, hasMore } = await getPromptSubmissions(promptId, {
+  const { submissions, hasMore } = await getPromptSubmissions(
+    promptId,
     skip,
     take,
-  });
+  );
 
   return NextResponse.json({ submissions, hasMore });
 }

@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getCreator } from "@/lib/creators";
 import { getCreatorUrl } from "@/lib/utils";
 import { CreatorSidebar } from "@/components/creator-sidebar";
 import { CreatorMobileNav } from "@/components/creator-mobile-nav";
@@ -7,18 +7,6 @@ import { CreatorMobileNav } from "@/components/creator-mobile-nav";
 interface CreatorLayoutProps {
   children: React.ReactNode;
   params: Promise<{ creatorid: string }>;
-}
-
-async function getCreator(creatorid: string) {
-  return prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: {
-      id: true,
-      slug: true,
-    },
-  });
 }
 
 export default async function CreatorLayout({

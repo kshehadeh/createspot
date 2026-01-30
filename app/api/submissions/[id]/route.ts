@@ -36,41 +36,42 @@ interface RouteParams {
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
-  const session = await auth();
-
-  const submission = await prisma.submission.findUnique({
-    where: { id },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          bio: true,
-          slug: true,
-          instagram: true,
-          twitter: true,
-          linkedin: true,
-          website: true,
+  const [session, submission] = await Promise.all([
+    auth(),
+    prisma.submission.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            bio: true,
+            slug: true,
+            instagram: true,
+            twitter: true,
+            linkedin: true,
+            website: true,
+          },
+        },
+        prompt: {
+          select: {
+            id: true,
+            word1: true,
+            word2: true,
+            word3: true,
+            weekStart: true,
+            weekEnd: true,
+          },
+        },
+        _count: {
+          select: {
+            favorites: true,
+          },
         },
       },
-      prompt: {
-        select: {
-          id: true,
-          word1: true,
-          word2: true,
-          word3: true,
-          weekStart: true,
-          weekEnd: true,
-        },
-      },
-      _count: {
-        select: {
-          favorites: true,
-        },
-      },
-    },
-  });
+    }),
+  ]);
 
   if (!submission) {
     return NextResponse.json(

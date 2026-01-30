@@ -17,46 +17,46 @@ export default async function ProfileEditPage({
   params,
 }: ProfileEditPageProps) {
   const { creatorid } = await params;
-  const session = await auth();
-  const t = await getTranslations("profile");
+  const [session, t, user] = await Promise.all([
+    auth(),
+    getTranslations("profile"),
+    prisma.user.findFirst({
+      where: {
+        OR: [{ slug: creatorid }, { id: creatorid }],
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        bio: true,
+        instagram: true,
+        twitter: true,
+        linkedin: true,
+        website: true,
+        city: true,
+        stateProvince: true,
+        country: true,
+        language: true,
+        slug: true,
+        featuredSubmissionId: true,
+        profileImageUrl: true,
+        profileImageFocalPoint: true,
+        // Image protection settings
+        enableWatermark: true,
+        watermarkPosition: true,
+        protectFromDownload: true,
+        protectFromAI: true,
+        emailOnFavorite: true,
+        emailFeatureUpdates: true,
+        emailOnBadgeAward: true,
+        tutorial: true,
+      },
+    }),
+  ]);
 
   if (!session?.user?.id) {
     redirect("/");
   }
-
-  // Find user by slug or ID
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: {
-      id: true,
-      name: true,
-      image: true,
-      bio: true,
-      instagram: true,
-      twitter: true,
-      linkedin: true,
-      website: true,
-      city: true,
-      stateProvince: true,
-      country: true,
-      language: true,
-      slug: true,
-      featuredSubmissionId: true,
-      profileImageUrl: true,
-      profileImageFocalPoint: true,
-      // Image protection settings
-      enableWatermark: true,
-      watermarkPosition: true,
-      protectFromDownload: true,
-      protectFromAI: true,
-      emailOnFavorite: true,
-      emailFeatureUpdates: true,
-      emailOnBadgeAward: true,
-      tutorial: true,
-    },
-  });
 
   if (!user) {
     redirect("/");

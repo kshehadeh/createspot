@@ -2,8 +2,10 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
+import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { fetcher } from "@/lib/swr";
 import {
   Dialog,
   DialogContent,
@@ -98,12 +100,17 @@ export function SubmissionLightbox({
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const viewportHeight = useViewportHeight();
-  const [submissionUserId, setSubmissionUserId] = useState<string | null>(
-    submission.user?.id || null,
+
+  const { data: submissionData } = useSWR<{
+    submission: { userId: string; user?: { slug: string | null } };
+  }>(
+    isOpen && submission.id ? `/api/submissions/${submission.id}` : null,
+    fetcher,
   );
-  const [submissionUserSlug, setSubmissionUserSlug] = useState<string | null>(
-    submission.user?.slug || null,
-  );
+  const submissionUserId =
+    submissionData?.submission?.userId ?? submission.user?.id ?? null;
+  const submissionUserSlug =
+    submissionData?.submission?.user?.slug ?? submission.user?.slug ?? null;
 
   // Pinch-to-zoom hook for mobile
   const {
@@ -134,28 +141,6 @@ export function SubmissionLightbox({
       setSupportsHover(window.matchMedia("(hover: hover)").matches);
     }
   }, []);
-
-  // Fetch submission userId and slug if not available
-  useEffect(() => {
-    if (!submissionUserId && submission.id) {
-      const fetchUserInfo = async () => {
-        try {
-          const response = await fetch(`/api/submissions/${submission.id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setSubmissionUserId(data.submission.userId);
-            // If user info is included, also get the slug
-            if (data.submission.user?.slug) {
-              setSubmissionUserSlug(data.submission.user.slug);
-            }
-          }
-        } catch {
-          // Silently fail
-        }
-      };
-      fetchUserInfo();
-    }
-  }, [submissionUserId, submission.id]);
 
   // Get creator ID for route building (slug if available, otherwise ID)
   const getCreatorId = (): string | null => {

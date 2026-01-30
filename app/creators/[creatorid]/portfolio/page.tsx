@@ -87,19 +87,20 @@ export default async function PortfolioPage({
 }: PortfolioPageProps) {
   const { creatorid } = await params;
   const resolvedSearchParams = await searchParams;
-  const session = await auth();
-  const t = await getTranslations("profile");
-
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: {
-      id: true,
-      name: true,
-      image: true,
-    },
-  });
+  const [session, t, user] = await Promise.all([
+    auth(),
+    getTranslations("profile"),
+    prisma.user.findFirst({
+      where: {
+        OR: [{ slug: creatorid }, { id: creatorid }],
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+      },
+    }),
+  ]);
 
   if (!user) {
     notFound();
@@ -107,10 +108,6 @@ export default async function PortfolioPage({
 
   const isOwnPortfolio = session?.user?.id === user.id;
   const isLoggedIn = !!session?.user;
-
-  // Get tutorial data for hints
-  const tutorialData = await getTutorialData(session?.user?.id);
-  console.log("tutorialData", tutorialData);
 
   // Parse shareStatus from search params (can be string or array)
   const shareStatusParam = resolvedSearchParams.shareStatus;
@@ -171,45 +168,47 @@ export default async function PortfolioPage({
     categoryFilter = { category: { in: selectedCategories } };
   }
 
-  // Get available categories from portfolio items
-  const portfolioItemsForCategories = await prisma.submission.findMany({
-    where: {
-      userId: user.id,
-      isPortfolio: true,
-      ...shareStatusFilter,
-    },
-    select: { category: true },
-    distinct: ["category"],
-  });
+  // Get available categories, portfolio items, and tutorial data in parallel
+  const [portfolioItemsForCategories, portfolioItems, tutorialData] =
+    await Promise.all([
+      prisma.submission.findMany({
+        where: {
+          userId: user.id,
+          isPortfolio: true,
+          ...shareStatusFilter,
+        },
+        select: { category: true },
+        distinct: ["category"],
+      }),
+      prisma.submission.findMany({
+        where: {
+          userId: user.id,
+          isPortfolio: true,
+          ...shareStatusFilter,
+          ...tagFilter,
+          ...categoryFilter,
+        },
+        orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
+        include: {
+          prompt: {
+            select: {
+              word1: true,
+              word2: true,
+              word3: true,
+            },
+          },
+          _count: {
+            select: { favorites: true },
+          },
+        },
+      }),
+      getTutorialData(session?.user?.id),
+    ]);
 
   const availableCategories = portfolioItemsForCategories
     .map((item) => item.category)
     .filter((cat): cat is string => Boolean(cat))
     .sort((a, b) => a.localeCompare(b));
-
-  // Fetch portfolio items
-  const portfolioItems = await prisma.submission.findMany({
-    where: {
-      userId: user.id,
-      isPortfolio: true,
-      ...shareStatusFilter,
-      ...tagFilter,
-      ...categoryFilter,
-    },
-    orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
-      _count: {
-        select: { favorites: true },
-      },
-    },
-  });
 
   return (
     <PageLayout maxWidth="max-w-6xl">

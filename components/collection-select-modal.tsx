@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import useSWR from "swr";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Plus, FolderPlus, Lock, Globe, Loader2 } from "lucide-react";
+import { fetcher } from "@/lib/swr";
 import {
   Dialog,
   DialogContent,
@@ -53,34 +55,17 @@ export function CollectionSelectModal({
   const t = useTranslations("collections");
   const tCommon = useTranslations("common");
 
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading, mutate } = useSWR<{ collections: Collection[] }>(
+    isOpen ? "/api/collections" : null,
+    fetcher,
+  );
+  const collections = data?.collections ?? [];
+
   const [isAdding, setIsAdding] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newName, setNewName] = useState("");
   const [newIsPublic, setNewIsPublic] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchCollections();
-    }
-  }, [isOpen]);
-
-  const fetchCollections = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/collections");
-      if (response.ok) {
-        const data = await response.json();
-        setCollections(data.collections);
-      }
-    } catch (error) {
-      console.error("Failed to fetch collections:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleCreateCollection = async () => {
     if (!newName.trim()) return;
@@ -98,6 +83,7 @@ export function CollectionSelectModal({
 
       if (response.ok) {
         const data = await response.json();
+        await mutate(undefined, { revalidate: true });
         // Add to the collection and select it
         await handleSelect(data.collection.id);
       }

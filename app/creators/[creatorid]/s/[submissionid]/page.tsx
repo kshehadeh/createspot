@@ -88,9 +88,10 @@ export async function generateMetadata({
 
 export default async function SubmissionPage({ params }: SubmissionPageProps) {
   const { creatorid, submissionid } = await params;
-  const session = await auth();
-
-  const submission = await getSubmission(submissionid);
+  const [session, submission] = await Promise.all([
+    auth(),
+    getSubmission(submissionid),
+  ]);
 
   if (!submission) {
     notFound();
@@ -98,12 +99,15 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
 
   // Verify the submission belongs to the creator in the URL
   // Check both slug and ID
-  const creator = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: { id: true },
-  });
+  const [creator, tutorialData] = await Promise.all([
+    prisma.user.findFirst({
+      where: {
+        OR: [{ slug: creatorid }, { id: creatorid }],
+      },
+      select: { id: true },
+    }),
+    getTutorialData(session?.user?.id),
+  ]);
 
   if (!creator || submission.userId !== creator.id) {
     notFound();
@@ -119,9 +123,6 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
   // PROFILE and PUBLIC are visible to everyone
 
   const isOwner = !!session?.user && session.user.id === submission.userId;
-
-  // Fetch tutorial data for hints
-  const tutorialData = await getTutorialData(session?.user?.id);
 
   return (
     <SubmissionDetail

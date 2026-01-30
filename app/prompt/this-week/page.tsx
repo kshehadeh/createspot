@@ -13,10 +13,7 @@ export default async function ThisWeekPage() {
   const session = await auth();
   const prompt = await getCurrentPrompt();
   const { submissions, hasMore } = prompt
-    ? await getPromptSubmissions(prompt.id, {
-        skip: 0,
-        take: EXHIBITION_PAGE_SIZE,
-      })
+    ? await getPromptSubmissions(prompt.id, 0, EXHIBITION_PAGE_SIZE)
     : { submissions: [], hasMore: false };
 
   if (!prompt) {

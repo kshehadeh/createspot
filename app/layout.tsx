@@ -65,9 +65,11 @@ export default async function RootLayout({
   children: React.ReactNode;
   breadcrumb?: React.ReactNode;
 }) {
-  const session = await auth();
-  const locale = await getLocale();
-  const messages = await getMessages();
+  const [session, locale, messages] = await Promise.all([
+    auth(),
+    getLocale(),
+    getMessages(),
+  ]);
 
   // Fetch tutorial data for global hints
   const tutorialData = await getTutorialData(session?.user?.id);

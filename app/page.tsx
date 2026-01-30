@@ -60,10 +60,12 @@ async function getRecentWork() {
 }
 
 export default async function Home() {
-  const t = await getTranslations("home");
-  const tFooter = await getTranslations("footer");
-  const session = await auth();
-  const recentWork = await getRecentWork();
+  const [t, tFooter, session, recentWork] = await Promise.all([
+    getTranslations("home"),
+    getTranslations("footer"),
+    auth(),
+    getRecentWork(),
+  ]);
 
   type HeroCardId = "exhibits" | "portfolio" | "prompt";
 

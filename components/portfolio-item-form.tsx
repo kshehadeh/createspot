@@ -3,9 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
+import { fetcher } from "@/lib/swr";
 import {
   Crosshair,
   ImageIcon,
@@ -96,7 +98,6 @@ export function PortfolioItemForm({
     y: number;
   } | null>(initialData?.imageFocalPoint || null);
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
-  const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [critiquesEnabled, setCritiquesEnabled] = useState(
     initialData?.critiquesEnabled ?? false,
   );
@@ -104,41 +105,20 @@ export function PortfolioItemForm({
     null,
   );
   const [isImageInfoOpen, setIsImageInfoOpen] = useState(false);
-  const [submissionUserId, setSubmissionUserId] = useState<string | null>(null);
 
-  // Fetch watermark setting and submission user ID on mount
-  useEffect(() => {
-    const fetchWatermarkSetting = async () => {
-      try {
-        const response = await fetch("/api/profile");
-        if (response.ok) {
-          const data = await response.json();
-          setWatermarkEnabled(data.enableWatermark ?? false);
-        }
-      } catch {
-        // Silently fail - watermark indicator is not critical
-      }
-    };
-    fetchWatermarkSetting();
-  }, []);
+  const { data: profileData } = useSWR<{ user: { enableWatermark?: boolean } }>(
+    session ? "/api/profile" : null,
+    fetcher,
+  );
+  const watermarkEnabled = profileData?.user?.enableWatermark ?? false;
 
-  // Fetch submission user ID if in edit mode
-  useEffect(() => {
-    if (mode === "edit" && initialData?.id) {
-      const fetchSubmission = async () => {
-        try {
-          const response = await fetch(`/api/submissions/${initialData.id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setSubmissionUserId(data.submission.userId);
-          }
-        } catch {
-          // Silently fail
-        }
-      };
-      fetchSubmission();
-    }
-  }, [mode, initialData?.id]);
+  const { data: submissionData } = useSWR<{ submission: { userId: string } }>(
+    mode === "edit" && initialData?.id
+      ? `/api/submissions/${initialData.id}`
+      : null,
+    fetcher,
+  );
+  const submissionUserId = submissionData?.submission?.userId ?? null;
 
   // Load image metadata when imageUrl changes
   useEffect(() => {

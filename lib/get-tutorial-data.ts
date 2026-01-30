@@ -1,13 +1,15 @@
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 
 /**
  * Fetches tutorial data for a user by their ID.
  * Returns null if the user is not logged in or doesn't exist.
+ * Cached per request for deduplication.
  *
  * @param userId - User ID from session, or null/undefined if not logged in
  * @returns Tutorial data object, or null if user is not logged in or doesn't exist
  */
-export async function getTutorialData(
+export const getTutorialData = cache(async function getTutorialData(
   userId: string | null | undefined,
 ): Promise<any | null> {
   if (!userId) {
@@ -20,4 +22,4 @@ export async function getTutorialData(
   });
 
   return user?.tutorial || null;
-}
+});

@@ -1,6 +1,7 @@
+import { cache } from "react";
 import { prisma } from "./prisma";
 
-export async function getCurrentPrompt() {
+export const getCurrentPrompt = cache(async function getCurrentPrompt() {
   const now = new Date();
   return prisma.prompt.findFirst({
     where: {
@@ -9,15 +10,13 @@ export async function getCurrentPrompt() {
     },
     orderBy: { createdAt: "desc" },
   });
-}
+});
 
-export async function getPromptSubmissions(
+export const getPromptSubmissions = cache(async function getPromptSubmissions(
   promptId: string,
-  options?: { skip?: number; take?: number },
+  skip: number = 0,
+  take: number = 50,
 ) {
-  const skip = options?.skip ?? 0;
-  const take = options?.take ?? 50;
-
   const submissions = await prisma.submission.findMany({
     where: {
       promptId,
@@ -45,4 +44,4 @@ export async function getPromptSubmissions(
     submissions: submissions.slice(0, take),
     hasMore,
   };
-}
+});
