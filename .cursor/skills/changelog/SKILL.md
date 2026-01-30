@@ -1,3 +1,9 @@
+---
+name: changelog
+description: Add to Changelog - document recent changes in JSON for notifications
+disable-model-invocation: true
+---
+
 # Add to Changelog
 
 ## Overview
