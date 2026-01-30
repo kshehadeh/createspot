@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "./prisma";
 
 export interface ExhibitWithDetails {
@@ -145,7 +146,8 @@ export async function getUpcomingExhibits(): Promise<ExhibitWithDetails[]> {
   return exhibits;
 }
 
-export async function getExhibitById(
+// Wrap with React.cache() to deduplicate queries within a single request
+export const getExhibitById = cache(async function getExhibitById(
   id: string,
 ): Promise<ExhibitWithDetails | null> {
   const exhibit = await prisma.exhibit.findUnique({
@@ -190,4 +192,4 @@ export async function getExhibitById(
   });
 
   return exhibit;
-}
+});

@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import { ImageEditor } from "@/components/image-editor";
+import { ImageEditorWrapper } from "@/components/image-editor-wrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +67,7 @@ export default async function ImageEditorPage({
   return (
     <PageLayout maxWidth="max-w-7xl" className="w-full">
       <PageHeader title={pageTitle} subtitle={t("subtitle")} />
-      <ImageEditor
+      <ImageEditorWrapper
         submissionId={submission.id}
         imageUrl={submission.imageUrl}
         submissionTitle={submission.title}

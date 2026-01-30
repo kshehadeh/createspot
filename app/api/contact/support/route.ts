@@ -29,31 +29,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send bug report to admin
-    await sendEmail({
-      to: "karim@create.spot",
-      subject: `Bug Report from ${body.userName}`,
-      react: React.createElement(ContactSupportEmail, {
-        userName: body.userName,
-        description: body.description,
-        pageUrl: body.pageUrl,
-        baseUrl: process.env.NEXTAUTH_URL,
-        userEmail: body.userEmail,
-        isAdminCopy: true,
+    // Send both emails in parallel
+    await Promise.all([
+      // Send bug report to admin
+      sendEmail({
+        to: "karim@create.spot",
+        subject: `Bug Report from ${body.userName}`,
+        react: React.createElement(ContactSupportEmail, {
+          userName: body.userName,
+          description: body.description,
+          pageUrl: body.pageUrl,
+          baseUrl: process.env.NEXTAUTH_URL,
+          userEmail: body.userEmail,
+          isAdminCopy: true,
+        }),
       }),
-    });
-
-    // Send confirmation email to user
-    await sendEmail({
-      to: body.userEmail,
-      subject: "We received your bug report",
-      react: React.createElement(ContactSupportEmail, {
-        userName: body.userName,
-        description: body.description,
-        pageUrl: body.pageUrl,
-        baseUrl: process.env.NEXTAUTH_URL,
+      // Send confirmation email to user
+      sendEmail({
+        to: body.userEmail,
+        subject: "We received your bug report",
+        react: React.createElement(ContactSupportEmail, {
+          userName: body.userName,
+          description: body.description,
+          pageUrl: body.pageUrl,
+          baseUrl: process.env.NEXTAUTH_URL,
+        }),
       }),
-    });
+    ]);
 
     return NextResponse.json(
       { success: true, message: "Bug report submitted successfully" },

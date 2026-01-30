@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendNewPromptNotification } from "@/app/workflows/send-new-prompt-notification";
 import { checkBadgeAwards } from "@/app/workflows/check-badge-awards";
@@ -54,20 +55,24 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      // Trigger the workflow
-      sendNewPromptNotification({ promptId: prompt.id })
-        .then((result) => {
+      // Trigger the workflow after response is sent
+      const promptIdToNotify = prompt.id;
+      after(async () => {
+        try {
+          const result = await sendNewPromptNotification({
+            promptId: promptIdToNotify,
+          });
           console.log(
-            `[Cron] New prompt notification workflow completed for prompt ${prompt.id}:`,
+            `[Cron] New prompt notification workflow completed for prompt ${promptIdToNotify}:`,
             result,
           );
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error(
-            `[Cron] Failed to send new prompt notification for prompt ${prompt.id}:`,
+            `[Cron] Failed to send new prompt notification for prompt ${promptIdToNotify}:`,
             error,
           );
-        });
+        }
+      });
 
       results.newPromptNotifications.push({
         promptId: prompt.id,
@@ -75,9 +80,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Check and award badges
-    checkBadgeAwards({})
-      .then((result) => {
+    // Check and award badges after response is sent
+    after(async () => {
+      try {
+        const result = await checkBadgeAwards({});
         console.log(
           "[Cron] Badge award check workflow completed. Awarded:",
           result.awardedCount,
@@ -87,10 +93,10 @@ export async function GET(request: NextRequest) {
         if (result.errors.length > 0) {
           console.error("[Cron] Badge award errors:", result.errors);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("[Cron] Badge award check workflow failed:", error);
-      });
+      }
+    });
 
     results.badgeAwards = { status: "triggered" };
 

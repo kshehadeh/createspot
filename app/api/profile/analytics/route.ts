@@ -17,49 +17,54 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Get unique visitors count
-  const uniqueVisitors = await prisma.profileView.count({
-    where: { profileUserId: userId },
-  });
-
-  // Get total favorites on all user's submissions
-  const totalFavorites = await prisma.favorite.count({
-    where: {
-      submission: {
-        userId: userId,
+  // Fetch all analytics counts in parallel
+  const [
+    uniqueVisitors,
+    totalFavorites,
+    totalViews,
+    submissionCount,
+    portfolioCount,
+    totalWorkCount,
+  ] = await Promise.all([
+    // Get unique visitors count
+    prisma.profileView.count({
+      where: { profileUserId: userId },
+    }),
+    // Get total favorites on all user's submissions
+    prisma.favorite.count({
+      where: {
+        submission: {
+          userId: userId,
+        },
       },
-    },
-  });
-
-  // Get total views on all user's submissions
-  const totalViews = await prisma.submissionView.count({
-    where: {
-      submission: {
-        userId: userId,
+    }),
+    // Get total views on all user's submissions
+    prisma.submissionView.count({
+      where: {
+        submission: {
+          userId: userId,
+        },
       },
-    },
-  });
-
-  // Get submission count (prompt submissions only)
-  const submissionCount = await prisma.submission.count({
-    where: {
-      userId: userId,
-      promptId: { not: null },
-    },
-  });
-
-  // Get portfolio count (items marked as portfolio)
-  const portfolioCount = await prisma.submission.count({
-    where: {
-      userId: userId,
-      isPortfolio: true,
-    },
-  });
-
-  // Get total work count (all submissions)
-  const totalWorkCount = await prisma.submission.count({
-    where: { userId: userId },
-  });
+    }),
+    // Get submission count (prompt submissions only)
+    prisma.submission.count({
+      where: {
+        userId: userId,
+        promptId: { not: null },
+      },
+    }),
+    // Get portfolio count (items marked as portfolio)
+    prisma.submission.count({
+      where: {
+        userId: userId,
+        isPortfolio: true,
+      },
+    }),
+    // Get total work count (all submissions)
+    prisma.submission.count({
+      where: { userId: userId },
+    }),
+  ]);
 
   return NextResponse.json({
     analytics: {

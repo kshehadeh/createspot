@@ -73,33 +73,33 @@ export async function GET(
   const { userId } = await params;
 
   try {
-    // Fetch user data
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        profileImageUrl: true,
-      },
-    });
+    // Fetch user data and submissions in parallel
+    const [user, submissions] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+          profileImageUrl: true,
+        },
+      }),
+      prisma.submission.findMany({
+        where: { userId },
+        select: {
+          id: true,
+          title: true,
+          imageUrl: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
-    // Fetch user's submissions
-    const submissions = await prisma.submission.findMany({
-      where: { userId },
-      select: {
-        id: true,
-        title: true,
-        imageUrl: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
 
     // Initialize S3 client for R2
     const s3Client = new S3Client({

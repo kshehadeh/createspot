@@ -261,10 +261,8 @@ export function ConstellationPath({
   );
   const itemRefs = useRef<Map<number, HTMLElement>>(new Map());
 
-  // Ensure items are in the correct order (preserve array order)
-  const orderedItems = useMemo(() => {
-    return [...items];
-  }, [items]);
+  // Items are already in the correct order from props
+  const orderedItems = items;
 
   // Measure container width
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendCritiqueNotification } from "@/app/workflows/send-critique-notification";
@@ -130,12 +131,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     },
   });
 
-  // Send email notification to creator (async, don't wait)
-  sendCritiqueNotification({
-    critiquerId: session.user.id,
-    submissionId: id,
-  }).catch((error) => {
-    console.error("Failed to send critique notification:", error);
+  // Send email notification to creator after response is sent
+  after(async () => {
+    try {
+      await sendCritiqueNotification({
+        critiquerId: session.user.id,
+        submissionId: id,
+      });
+    } catch (error) {
+      console.error("Failed to send critique notification:", error);
+    }
   });
 
   return NextResponse.json({ critique: newCritique });

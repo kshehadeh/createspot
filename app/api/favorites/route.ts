@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendFavoriteNotification } from "@/app/workflows/send-favorite-notification";
@@ -99,21 +100,22 @@ export async function POST(request: NextRequest) {
     submissionId,
   });
 
-  // Trigger workflow asynchronously without awaiting
-  console.log("[API] Triggering sendFavoriteNotification workflow...");
-  sendFavoriteNotification({
-    favorerId: session.user.id,
-    submissionId,
-  })
-    .then((result) => {
+  // Trigger workflow after response is sent
+  after(async () => {
+    try {
+      console.log("[API] Triggering sendFavoriteNotification workflow...");
+      const result = await sendFavoriteNotification({
+        favorerId: session.user.id,
+        submissionId,
+      });
       console.log("[API] Workflow result:", result);
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error(
         "[API] Failed to trigger favorite notification workflow:",
         error,
       );
-    });
+    }
+  });
 
   return NextResponse.json({ favorite });
 }

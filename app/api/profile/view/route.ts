@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { createHash } from "crypto";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -49,49 +50,50 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, tracked: false });
   }
 
-  try {
-    // Try to upsert based on user ID first (if logged in)
-    if (viewerUserId) {
-      await prisma.profileView.upsert({
-        where: {
-          profileUserId_viewerUserId: {
+  // Track view after response is sent
+  after(async () => {
+    try {
+      // Try to upsert based on user ID first (if logged in)
+      if (viewerUserId) {
+        await prisma.profileView.upsert({
+          where: {
+            profileUserId_viewerUserId: {
+              profileUserId,
+              viewerUserId,
+            },
+          },
+          update: {
+            viewedAt: new Date(),
+          },
+          create: {
             profileUserId,
             viewerUserId,
-          },
-        },
-        update: {
-          viewedAt: new Date(),
-        },
-        create: {
-          profileUserId,
-          viewerUserId,
-          viewerIpHash,
-        },
-      });
-    } else {
-      // Anonymous user - track by IP hash
-      await prisma.profileView.upsert({
-        where: {
-          profileUserId_viewerIpHash: {
-            profileUserId,
             viewerIpHash,
           },
-        },
-        update: {
-          viewedAt: new Date(),
-        },
-        create: {
-          profileUserId,
-          viewerUserId: null,
-          viewerIpHash,
-        },
-      });
+        });
+      } else {
+        // Anonymous user - track by IP hash
+        await prisma.profileView.upsert({
+          where: {
+            profileUserId_viewerIpHash: {
+              profileUserId,
+              viewerIpHash,
+            },
+          },
+          update: {
+            viewedAt: new Date(),
+          },
+          create: {
+            profileUserId,
+            viewerUserId: null,
+            viewerIpHash,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error tracking profile view:", error);
     }
+  });
 
-    return NextResponse.json({ success: true, tracked: true });
-  } catch (error) {
-    console.error("Error tracking profile view:", error);
-    // Don't fail the request if tracking fails
-    return NextResponse.json({ success: true, tracked: false });
-  }
+  return NextResponse.json({ success: true, tracked: true });
 }

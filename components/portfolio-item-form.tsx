@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import useSWR from "swr";
@@ -15,7 +16,18 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { RichTextEditor } from "@/components/rich-text-editor";
+
+// Heavy TipTap editor - dynamically import
+const RichTextEditor = dynamic(
+  () =>
+    import("@/components/rich-text-editor").then((mod) => mod.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-32 rounded-md border border-input bg-muted/50 animate-pulse" />
+    ),
+  },
+);
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FocalPointModal } from "@/components/focal-point-modal";
 import { Input } from "@/components/ui/input";
@@ -643,7 +655,7 @@ export function PortfolioItemForm({
                 const currentValue = e.currentTarget.value;
                 const trimmed = currentValue.trim();
                 if (trimmed && !tags.includes(trimmed)) {
-                  setTags([...tags, trimmed]);
+                  setTags((curr) => [...curr, trimmed]);
                   setTagInput("");
                 } else if (trimmed) {
                   setTagInput("");
@@ -653,7 +665,7 @@ export function PortfolioItemForm({
                 e.currentTarget.value === "" &&
                 tags.length > 0
               ) {
-                setTags(tags.slice(0, -1));
+                setTags((curr) => curr.slice(0, -1));
               }
             }}
             placeholder={tags.length === 0 ? t("tagPlaceholderEmpty") : ""}

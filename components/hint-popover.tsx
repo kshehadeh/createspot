@@ -245,7 +245,7 @@ export function HintPopover({
     if (findAndSetup()) {
       // Element found, set up window listeners
       window.addEventListener("resize", updatePosition);
-      window.addEventListener("scroll", updatePosition);
+      window.addEventListener("scroll", updatePosition, { passive: true });
       return () => {
         if (mutationObserver) mutationObserver.disconnect();
         if (resizeObserver) resizeObserver.disconnect();
@@ -265,7 +265,7 @@ export function HintPopover({
         // Element found, set up listeners and clear retry
         clearInterval(retryTimer);
         window.addEventListener("resize", updatePosition);
-        window.addEventListener("scroll", updatePosition);
+        window.addEventListener("scroll", updatePosition, { passive: true });
       } else if (retryCount >= maxRetries) {
         // Give up after max retries - fall back to fixed position (Did You Know style)
         clearInterval(retryTimer);

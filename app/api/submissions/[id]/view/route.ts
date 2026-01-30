@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { createHash } from "crypto";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -60,49 +61,50 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true, tracked: false });
   }
 
-  try {
-    // Try to upsert based on user ID first (if logged in)
-    if (viewerUserId) {
-      await prisma.submissionView.upsert({
-        where: {
-          submissionId_viewerUserId: {
+  // Track view after response is sent
+  after(async () => {
+    try {
+      // Try to upsert based on user ID first (if logged in)
+      if (viewerUserId) {
+        await prisma.submissionView.upsert({
+          where: {
+            submissionId_viewerUserId: {
+              submissionId,
+              viewerUserId,
+            },
+          },
+          update: {
+            viewedAt: new Date(),
+          },
+          create: {
             submissionId,
             viewerUserId,
-          },
-        },
-        update: {
-          viewedAt: new Date(),
-        },
-        create: {
-          submissionId,
-          viewerUserId,
-          viewerIpHash,
-        },
-      });
-    } else {
-      // Anonymous user - track by IP hash
-      await prisma.submissionView.upsert({
-        where: {
-          submissionId_viewerIpHash: {
-            submissionId,
             viewerIpHash,
           },
-        },
-        update: {
-          viewedAt: new Date(),
-        },
-        create: {
-          submissionId,
-          viewerUserId: null,
-          viewerIpHash,
-        },
-      });
+        });
+      } else {
+        // Anonymous user - track by IP hash
+        await prisma.submissionView.upsert({
+          where: {
+            submissionId_viewerIpHash: {
+              submissionId,
+              viewerIpHash,
+            },
+          },
+          update: {
+            viewedAt: new Date(),
+          },
+          create: {
+            submissionId,
+            viewerUserId: null,
+            viewerIpHash,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error tracking submission view:", error);
     }
+  });
 
-    return NextResponse.json({ success: true, tracked: true });
-  } catch (error) {
-    console.error("Error tracking submission view:", error);
-    // Don't fail the request if tracking fails
-    return NextResponse.json({ success: true, tracked: false });
-  }
+  return NextResponse.json({ success: true, tracked: true });
 }

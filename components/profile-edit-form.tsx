@@ -1,14 +1,26 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { buildRoutePath } from "@/lib/routes";
-import { RichTextEditor } from "@/components/rich-text-editor";
 import { TextThumbnail } from "@/components/text-thumbnail";
+
+// Heavy TipTap editor - dynamically import
+const RichTextEditor = dynamic(
+  () =>
+    import("@/components/rich-text-editor").then((mod) => mod.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-32 rounded-md border border-input bg-muted/50 animate-pulse" />
+    ),
+  },
+);
 import { Badge } from "@/components/ui/badge";
 import {
   Select,

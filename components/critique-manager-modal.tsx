@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import {
@@ -18,12 +19,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RichTextEditor } from "@/components/rich-text-editor";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Edit, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { getCreatorUrl } from "@/lib/utils";
+
+// Heavy TipTap editor - dynamically import
+const RichTextEditor = dynamic(
+  () =>
+    import("@/components/rich-text-editor").then((mod) => mod.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-32 rounded-md border border-input bg-muted/50 animate-pulse" />
+    ),
+  },
+);
 
 interface Critique {
   id: string;

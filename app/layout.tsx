@@ -3,12 +3,12 @@ import { Geist, Geist_Mono, Permanent_Marker } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { GlobalHints } from "@/components/global-hints";
 import { UrlTracker } from "@/components/url-tracker";
+import { DeferredAnalytics } from "@/components/deferred-analytics";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import "./globals.css";
@@ -92,7 +92,7 @@ export default async function RootLayout({
                 userId={session?.user?.id}
               />
               <UrlTracker />
-              <Analytics />
+              <DeferredAnalytics />
             </SessionProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

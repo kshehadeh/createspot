@@ -9,9 +9,12 @@ import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 export const dynamic = "force-dynamic";
 
 export default async function ThisWeekPage() {
-  const t = await getTranslations("prompt.thisWeek");
-  const session = await auth();
-  const prompt = await getCurrentPrompt();
+  // Fetch translations, session, and prompt in parallel
+  const [t, session, prompt] = await Promise.all([
+    getTranslations("prompt.thisWeek"),
+    auth(),
+    getCurrentPrompt(),
+  ]);
   const { submissions, hasMore } = prompt
     ? await getPromptSubmissions(prompt.id, 0, EXHIBITION_PAGE_SIZE)
     : { submissions: [], hasMore: false };
