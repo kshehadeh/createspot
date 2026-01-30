@@ -17,15 +17,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Heart,
-  X,
-  FileText,
-  Edit,
-  Eye,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Heart, X, FileText, Edit, Eye } from "lucide-react";
+import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
@@ -663,18 +656,15 @@ export function SubmissionLightbox({
             >
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
+                  <CarouselNavButton
+                    side="prev"
                     onClick={(e) => {
                       e.stopPropagation();
                       if (hasPrevious) onGoToPrevious();
                     }}
                     disabled={!hasPrevious}
                     aria-label={t("previousSubmission")}
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </Button>
+                  />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{t("previousSubmission")}</p>
@@ -691,18 +681,15 @@ export function SubmissionLightbox({
             >
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
+                  <CarouselNavButton
+                    side="next"
                     onClick={(e) => {
                       e.stopPropagation();
                       if (hasNext) onGoToNext();
                     }}
                     disabled={!hasNext}
                     aria-label={t("nextSubmission")}
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </Button>
+                  />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{t("nextSubmission")}</p>

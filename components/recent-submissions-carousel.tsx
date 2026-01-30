@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { getCreatorUrl } from "@/lib/utils";
 
@@ -124,24 +124,24 @@ export function RecentSubmissionsCarousel({
         </div>
 
         {/* Navigation buttons */}
-        <button
-          type="button"
-          onClick={scrollPrev}
-          disabled={!canScrollPrev}
-          className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-background/80 p-2 shadow-md backdrop-blur-sm transition-opacity hover:bg-background disabled:pointer-events-none disabled:opacity-0 opacity-0 group-hover:opacity-100"
-          aria-label="Previous submission"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={scrollNext}
-          disabled={!canScrollNext}
-          className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-background/80 p-2 shadow-md backdrop-blur-sm transition-opacity hover:bg-background disabled:pointer-events-none disabled:opacity-0 opacity-0 group-hover:opacity-100"
-          aria-label="Next submission"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
+        <div className="absolute left-3 top-1/2 z-10 -translate-y-1/2">
+          <CarouselNavButton
+            side="prev"
+            onClick={scrollPrev}
+            disabled={!canScrollPrev}
+            aria-label="Previous submission"
+            showOnHover
+          />
+        </div>
+        <div className="absolute right-3 top-1/2 z-10 -translate-y-1/2">
+          <CarouselNavButton
+            side="next"
+            onClick={scrollNext}
+            disabled={!canScrollNext}
+            aria-label="Next submission"
+            showOnHover
+          />
+        </div>
       </div>
 
       {/* View all link */}
