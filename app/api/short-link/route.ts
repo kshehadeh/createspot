@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   getOrCreateShortLink,
@@ -13,11 +12,7 @@ const VALID_TYPES: ShortLinkTargetType[] = [
 ];
 
 export async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+  // No auth required: short links are allowed for public content only (enforced below).
   const searchParams = request.nextUrl.searchParams;
   const type = searchParams.get("type") as ShortLinkTargetType | null;
   const targetId = searchParams.get("targetId");
@@ -32,21 +27,28 @@ export async function GET(request: NextRequest) {
   if (type === "submission") {
     const submission = await prisma.submission.findUnique({
       where: { id: targetId },
-      select: { userId: true },
+      select: { shareStatus: true },
     });
-    if (!submission || submission.userId !== session.user.id) {
+    if (!submission || submission.shareStatus === "PRIVATE") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   } else if (type === "collection") {
     const collection = await prisma.collection.findUnique({
       where: { id: targetId },
-      select: { userId: true },
+      select: { isPublic: true },
     });
-    if (!collection || collection.userId !== session.user.id) {
+    if (!collection || !collection.isPublic) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  } else if (type === "exhibit") {
+    const exhibit = await prisma.exhibit.findUnique({
+      where: { id: targetId },
+      select: { id: true },
+    });
+    if (!exhibit) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   }
-  // exhibit: shareable by anyone (public content), no ownership check
 
   const code = await getOrCreateShortLink(type, targetId);
   if (!code) {
