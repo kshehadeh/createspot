@@ -13,6 +13,34 @@ export function stripHtml(html: string): string {
 }
 
 /**
+ * Return first sentences of plain text up to maxLength. Uses stripHtml first.
+ * Used for OG descriptions and text previews.
+ */
+export function getFirstSentences(
+  text: string,
+  maxLength: number = 200,
+): string {
+  const cleanText = stripHtml(text);
+  if (cleanText.length <= maxLength) {
+    return cleanText;
+  }
+  const sentences = cleanText.match(/[^.!?]+[.!?]+/g);
+  if (sentences) {
+    let result = "";
+    for (const sentence of sentences) {
+      if (result.length + sentence.length > maxLength) {
+        break;
+      }
+      result += sentence;
+    }
+    if (result) {
+      return result.trim() + "...";
+    }
+  }
+  return cleanText.slice(0, maxLength).trim() + "...";
+}
+
+/**
  * Fetch an image from a URL and return it as a Buffer
  */
 export async function fetchImageBuffer(imageUrl: string): Promise<Buffer> {

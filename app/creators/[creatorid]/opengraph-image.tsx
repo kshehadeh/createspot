@@ -2,12 +2,17 @@ import { ImageResponse } from "next/og";
 import { prisma } from "@/lib/prisma";
 import { getUserImageUrl } from "@/lib/user-image";
 import {
+  canShowSubmissionForOg,
+  createOgFullBleedImageResponse,
+  createOgGridImageResponse,
+  createOgNotFoundResponse,
   fetchImageAsPngDataUrl,
   fetchImageAsPngDataUrlForOg,
+  OG_IMAGE_CONTENT_TYPE as contentType,
+  OG_IMAGE_SIZE as size,
 } from "@/lib/og-image";
 
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+export { size, contentType };
 
 interface RouteParams {
   params: Promise<{ creatorid: string }>;
@@ -31,29 +36,7 @@ export default async function OpenGraphImage({ params }: RouteParams) {
   });
 
   if (!user) {
-    return new ImageResponse(
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(135deg, #ffffff 0%, #f4f4f5 100%)",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "48px",
-            fontWeight: "bold",
-            color: "#000000",
-          }}
-        >
-          Profile Not Found
-        </div>
-      </div>,
-      { ...size },
-    );
+    return createOgNotFoundResponse("Profile Not Found");
   }
 
   const userName = user.name || "Anonymous";
@@ -67,14 +50,13 @@ export default async function OpenGraphImage({ params }: RouteParams) {
       select: {
         imageUrl: true,
         shareStatus: true,
+        userId: true,
       },
     });
 
-    // Only use featured image if it's publicly viewable
     if (
-      featuredSubmission?.imageUrl &&
-      (featuredSubmission.shareStatus === "PROFILE" ||
-        featuredSubmission.shareStatus === "PUBLIC")
+      canShowSubmissionForOg(featuredSubmission, user.id) &&
+      featuredSubmission.imageUrl
     ) {
       featuredImageUrl = featuredSubmission.imageUrl;
     }
@@ -83,57 +65,7 @@ export default async function OpenGraphImage({ params }: RouteParams) {
   if (featuredImageUrl) {
     const imageDataUrl = await fetchImageAsPngDataUrl(featuredImageUrl);
     if (imageDataUrl) {
-      return new ImageResponse(
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            position: "relative",
-          }}
-        >
-          {/* Background image */}
-          <img
-            src={imageDataUrl}
-            alt={portfolioTitle}
-            width={size.width}
-            height={size.height}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-          {/* Overlay with title */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              background:
-                "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
-              padding: "60px 80px 80px",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                fontSize: "72px",
-                fontWeight: "bold",
-                color: "#ffffff",
-                lineHeight: "1.2",
-                textShadow: "0 2px 8px rgba(0,0,0,0.5)",
-              }}
-            >
-              {portfolioTitle}
-            </div>
-          </div>
-        </div>,
-        { ...size },
-      );
+      return createOgFullBleedImageResponse(imageDataUrl, portfolioTitle);
     }
   }
 
@@ -150,66 +82,17 @@ export default async function OpenGraphImage({ params }: RouteParams) {
       focalPoint: focalPoint ?? undefined,
     });
     if (imageDataUrl) {
-      return new ImageResponse(
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            position: "relative",
-          }}
-        >
-          {/* Background image */}
-          <img
-            src={imageDataUrl}
-            alt={portfolioTitle}
-            width={size.width}
-            height={size.height}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-          {/* Overlay with title */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              background:
-                "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
-              padding: "60px 80px 80px",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                fontSize: "72px",
-                fontWeight: "bold",
-                color: "#ffffff",
-                lineHeight: "1.2",
-                textShadow: "0 2px 8px rgba(0,0,0,0.5)",
-              }}
-            >
-              {portfolioTitle}
-            </div>
-          </div>
-        </div>,
-        { ...size },
-      );
+      return createOgFullBleedImageResponse(imageDataUrl, portfolioTitle);
     }
   }
 
   // Otherwise, fetch recent portfolio items/submissions with images for grid
+  // Same visibility as single-submission OG: PUBLIC, PROFILE, or owner's PRIVATE
   const recentWork = await prisma.submission.findMany({
     where: {
       userId: user.id,
       imageUrl: { not: null },
-      shareStatus: { in: ["PROFILE", "PUBLIC"] },
+      shareStatus: { in: ["PROFILE", "PUBLIC", "PRIVATE"] },
     },
     select: {
       imageUrl: true,
@@ -220,80 +103,12 @@ export default async function OpenGraphImage({ params }: RouteParams) {
 
   // If we have recent work with images, create a grid
   if (recentWork.length > 0) {
-    const gridCols = 3;
-    const gridRows = Math.ceil(recentWork.length / gridCols);
-    const cellWidth = size.width / gridCols;
-    const cellHeight = size.height / gridRows;
-
     const imageDataUrls: (string | null)[] = await Promise.all(
       recentWork.map((item) =>
         item.imageUrl ? fetchImageAsPngDataUrl(item.imageUrl) : null,
       ),
     );
-
-    return new ImageResponse(
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          position: "relative",
-          flexWrap: "wrap",
-        }}
-      >
-        {/* Grid of images */}
-        {imageDataUrls.map((imageDataUrl, index) => {
-          if (!imageDataUrl) return null;
-          const row = Math.floor(index / gridCols);
-          const col = index % gridCols;
-          return (
-            <img
-              key={index}
-              src={imageDataUrl}
-              alt={`Work ${index + 1}`}
-              width={cellWidth}
-              height={cellHeight}
-              style={{
-                width: `${cellWidth}px`,
-                height: `${cellHeight}px`,
-                objectFit: "cover",
-                position: "absolute",
-                left: `${col * cellWidth}px`,
-                top: `${row * cellHeight}px`,
-              }}
-            />
-          );
-        })}
-        {/* Overlay with title */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background:
-              "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
-            padding: "60px 80px 80px",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              fontSize: "72px",
-              fontWeight: "bold",
-              color: "#ffffff",
-              lineHeight: "1.2",
-              textShadow: "0 2px 8px rgba(0,0,0,0.5)",
-            }}
-          >
-            {portfolioTitle}
-          </div>
-        </div>
-      </div>,
-      { ...size },
-    );
+    return createOgGridImageResponse(imageDataUrls);
   }
 
   // Fallback: no images available, show simple design

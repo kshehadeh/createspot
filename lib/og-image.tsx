@@ -216,9 +216,8 @@ export function createOgGridImageResponse(
     return createOgNotFoundResponse("No images");
   }
   const gridCols = Math.min(maxCols, valid.length);
-  const gridRows = Math.ceil(valid.length / gridCols);
   const cellWidth = OG_IMAGE_SIZE.width / gridCols;
-  const cellHeight = OG_IMAGE_SIZE.height / gridRows;
+  const cellHeight = OG_IMAGE_SIZE.height / Math.ceil(valid.length / gridCols);
 
   return new ImageResponse(
     <div
