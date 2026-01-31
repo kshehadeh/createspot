@@ -189,6 +189,7 @@
     "exhibit": "Exposición",
     "details": "Detalles",
     "notifications": "Notificaciones",
+    "siteSettings": "Configuración del Sitio",
     "imageEditor": "Editor de Imágenes"
   },
   "creatorNav": {
@@ -319,7 +320,31 @@
       "manageExhibitsDescription": "Crea y cura exposiciones. Organiza publicaciones en colecciones temáticas y gestiona el contenido de las exposiciones.",
       "manageNotifications": "Gestionar Notificaciones",
       "manageNotificationsDescription": "Explora y filtra todas las notificaciones enviadas a los usuarios. Ver historial de notificaciones y metadatos.",
+      "siteSettings": "Configuración del Sitio",
+      "siteSettingsDescription": "Configura los ajustes globales del sitio.",
       "goTo": "Ir a {title}"
+    },
+    "settings": {
+      "title": "Configuración del Sitio",
+      "description": "Configura los ajustes globales del sitio.",
+      "homepageCarousel": "Carrusel de la Página de Inicio",
+      "homepageCarouselDescription": "Elige qué exposición alimenta el carrusel de la página de inicio.",
+      "selectExhibit": "Seleccionar Exposición",
+      "noExhibitSelected": "Ninguna exposición seleccionada",
+      "createNewExhibit": "Crear Nueva Exposición",
+      "fallbackBehavior": "Cuando no haya una exposición seleccionada",
+      "fallbackLatest": "Mostrar las publicaciones más recientes",
+      "fallbackHero": "Mostrar imagen hero predeterminada",
+      "selectHeroSubmission": "Seleccionar Imagen Hero",
+      "selectHeroDescription": "Elige una publicación pública para mostrarla como fondo del hero.",
+      "chooseSubmission": "Elegir publicación",
+      "change": "Cambiar",
+      "clearSelection": "Limpiar",
+      "searchSubmissions": "Buscar publicaciones...",
+      "noSubmissions": "No se encontraron publicaciones",
+      "untitled": "Sin título",
+      "anonymous": "Anónimo",
+      "saved": "Configuración guardada"
     },
     "users": {
       "title": "Todos los Usuarios ({count})",

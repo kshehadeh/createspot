@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
+import { getSiteSettings } from "@/lib/settings";
 import {
   Card,
   CardHeader,
@@ -12,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { FolderOpen, Lightbulb, MessageCircle, Share2 } from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
+import { getObjectPositionStyle } from "@/lib/image-utils";
+import { getCreatorUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -51,11 +55,80 @@ async function getRecentWork() {
   });
 }
 
+type HomepageHeroData =
+  | {
+      type: "carousel";
+      submissions: Awaited<ReturnType<typeof getRecentWork>>;
+    }
+  | {
+      type: "hero";
+      submission: Awaited<ReturnType<typeof getRecentWork>>[number];
+    }
+  | {
+      type: "none";
+    };
+
+async function getHomepageHeroData(): Promise<HomepageHeroData> {
+  const settings = await getSiteSettings();
+
+  if (settings.homepageCarouselExhibitId) {
+    const rows = await prisma.exhibitSubmission.findMany({
+      where: {
+        exhibitId: settings.homepageCarouselExhibitId,
+        submission: {
+          shareStatus: "PUBLIC",
+          OR: [{ imageUrl: { not: null } }, { text: { not: null } }],
+        },
+      },
+      orderBy: { order: "asc" },
+      take: 8,
+      include: {
+        submission: {
+          include: {
+            user: { select: { id: true, name: true, image: true } },
+          },
+        },
+      },
+    });
+
+    const submissions = rows.map((r) => r.submission);
+    if (submissions.length > 0) {
+      return { type: "carousel", submissions };
+    }
+  }
+
+  if (settings.homepageCarouselFallback === "hero") {
+    if (!settings.homepageHeroSubmissionId) {
+      return { type: "none" };
+    }
+
+    const submission = await prisma.submission.findFirst({
+      where: {
+        id: settings.homepageHeroSubmissionId,
+        shareStatus: "PUBLIC",
+        imageUrl: { not: null },
+      },
+      include: {
+        user: { select: { id: true, name: true, image: true } },
+      },
+    });
+
+    if (!submission) {
+      return { type: "none" };
+    }
+
+    return { type: "hero", submission };
+  }
+
+  const submissions = await getRecentWork();
+  return { type: "carousel", submissions };
+}
+
 export default async function Home() {
-  const [t, tFooter, recentWork] = await Promise.all([
+  const [t, tFooter, heroData] = await Promise.all([
     getTranslations("home"),
     getTranslations("footer"),
-    getRecentWork(),
+    getHomepageHeroData(),
   ]);
 
   return (
@@ -63,9 +136,9 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[420px] overflow-hidden sm:min-h-[520px] lg:min-h-[640px]">
         <div className="absolute inset-0 hero-background" />
-        {recentWork.length > 0 && (
+        {heroData.type === "carousel" && heroData.submissions.length > 0 ? (
           <RecentSubmissionsCarousel
-            submissions={recentWork.map((submission) => ({
+            submissions={heroData.submissions.map((submission) => ({
               ...submission,
               imageFocalPoint: submission.imageFocalPoint as {
                 x: number;
@@ -76,7 +149,28 @@ export default async function Home() {
             viewportClassName="rounded-none"
             imageSizes="100vw"
           />
-        )}
+        ) : heroData.type === "hero" ? (
+          <Link
+            href={`${getCreatorUrl(heroData.submission.user)}/s/${heroData.submission.id}`}
+            className="absolute inset-0 block overflow-hidden bg-muted"
+          >
+            <Image
+              src={heroData.submission.imageUrl!}
+              alt={heroData.submission.title || "Creative work"}
+              fill
+              className="object-cover transition-transform duration-300 hover:scale-105"
+              sizes="100vw"
+              style={{
+                objectPosition: getObjectPositionStyle(
+                  heroData.submission.imageFocalPoint as {
+                    x: number;
+                    y: number;
+                  } | null,
+                ),
+              }}
+            />
+          </Link>
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/10" />
         <div className="relative mx-auto flex h-full max-w-6xl items-center px-6 py-16 sm:py-24 lg:py-28">
           <div className="max-w-2xl text-left">

@@ -189,6 +189,7 @@
     "exhibit": "Exhibit",
     "details": "Details",
     "notifications": "Notifications",
+    "siteSettings": "Site Settings",
     "imageEditor": "Image Editor"
   },
   "creatorNav": {
@@ -319,7 +320,31 @@
       "manageExhibitsDescription": "Create and curate exhibits. Organize submissions into themed collections and manage exhibit content.",
       "manageNotifications": "Manage Notifications",
       "manageNotificationsDescription": "Browse and filter all notifications sent to users. View notification history and metadata.",
+      "siteSettings": "Site Settings",
+      "siteSettingsDescription": "Configure global site settings.",
       "goTo": "Go to {title}"
+    },
+    "settings": {
+      "title": "Site Settings",
+      "description": "Configure global site settings.",
+      "homepageCarousel": "Homepage Carousel",
+      "homepageCarouselDescription": "Choose which exhibit powers the homepage carousel.",
+      "selectExhibit": "Select Exhibit",
+      "noExhibitSelected": "No exhibit selected",
+      "createNewExhibit": "Create New Exhibit",
+      "fallbackBehavior": "When no exhibit is selected",
+      "fallbackLatest": "Show latest submissions",
+      "fallbackHero": "Show default hero image",
+      "selectHeroSubmission": "Select Hero Image",
+      "selectHeroDescription": "Choose a public submission to display as the hero background.",
+      "chooseSubmission": "Choose submission",
+      "change": "Change",
+      "clearSelection": "Clear",
+      "searchSubmissions": "Search submissions...",
+      "noSubmissions": "No submissions found",
+      "untitled": "Untitled",
+      "anonymous": "Anonymous",
+      "saved": "Settings saved"
     },
     "users": {
       "title": "All Users ({count})",

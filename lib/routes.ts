@@ -11,6 +11,7 @@ import {
   Sparkles,
   Info,
   Mail,
+  Settings,
 } from "lucide-react";
 import { EXHIBITION_CONFIGS } from "./exhibition-constants";
 import { Home } from "lucide-react";
@@ -127,6 +128,12 @@ const ROUTES: Record<string, RouteConfig> = {
     path: "/admin/notifications",
     label: "navigation.notifications",
     parentPath: "/admin",
+  },
+  adminSettings: {
+    path: "/admin/settings",
+    label: "navigation.siteSettings",
+    parentPath: "/admin",
+    icon: Settings,
   },
 
   // Profile routes (now under creators/[creatorid])

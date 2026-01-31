@@ -334,3 +334,10 @@ model CollectionSubmission {
   @@unique([collectionId, submissionId])
   @@index([collectionId, order])
 }
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
