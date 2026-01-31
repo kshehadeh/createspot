@@ -9,6 +9,7 @@ import {
   Sparkles,
   Briefcase,
   Lightbulb,
+  MessageSquare,
   Award,
   Shield,
   FileText,
@@ -35,6 +36,7 @@ export function AboutSidebar() {
   const featuresRoute = getRoute("aboutFeatures");
   const portfoliosRoute = getRoute("aboutPortfoliosAndSharing");
   const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
+  const critiquesRoute = getRoute("aboutCritiques");
   const badgesRoute = getRoute("aboutBadges");
   const protectingRoute = getRoute("aboutProtectingYourWork");
   const termsRoute = getRoute("terms");
@@ -74,6 +76,13 @@ export function AboutSidebar() {
       translationNamespace: "about",
       icon: Lightbulb,
       isActive: pathname === promptSubmissionsRoute.path,
+    },
+    {
+      href: critiquesRoute.path,
+      labelKey: "critiques",
+      translationNamespace: "navigation",
+      icon: MessageSquare,
+      isActive: pathname === critiquesRoute.path,
     },
     {
       href: badgesRoute.path,

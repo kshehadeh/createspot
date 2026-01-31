@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getCreatorUrl } from "@/lib/utils";
 import {
   Card,
   CardHeader,
@@ -11,14 +9,8 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import {
-  Briefcase,
-  FolderOpen,
-  LayoutGrid,
-  Lightbulb,
-  Shield,
-  Sparkles,
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FolderOpen, Lightbulb, MessageCircle, Share2 } from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
 
 export const dynamic = "force-dynamic";
@@ -60,194 +52,66 @@ async function getRecentWork() {
 }
 
 export default async function Home() {
-  const [t, tFooter, session, recentWork] = await Promise.all([
+  const [t, tFooter, recentWork] = await Promise.all([
     getTranslations("home"),
     getTranslations("footer"),
-    auth(),
     getRecentWork(),
   ]);
-
-  type HeroCardId = "exhibits" | "portfolio" | "prompt";
-
-  const heroCardDecor: Record<
-    HeroCardId,
-    {
-      gradient: string;
-      orb1: string;
-      orb2: string;
-      icon: string;
-      badge: string;
-    }
-  > = {
-    exhibits: {
-      gradient:
-        "from-amber-500/12 via-violet-500/10 to-emerald-500/10 dark:from-amber-400/10 dark:via-violet-400/10 dark:to-emerald-400/10",
-      orb1: "bg-gradient-to-br from-amber-500/35 to-violet-500/25 dark:from-amber-400/25 dark:to-violet-400/20",
-      orb2: "bg-gradient-to-br from-emerald-500/25 to-sky-500/15 dark:from-emerald-400/20 dark:to-sky-400/10",
-      icon: "text-foreground/80 dark:text-foreground/80",
-      badge:
-        "bg-foreground/5 ring-foreground/15 dark:bg-foreground/5 dark:ring-foreground/15",
-    },
-    prompt: {
-      gradient:
-        "from-violet-500/12 via-rose-500/10 to-amber-500/10 dark:from-violet-400/10 dark:via-rose-400/10 dark:to-amber-400/10",
-      orb1: "bg-gradient-to-br from-violet-500/35 to-rose-500/25 dark:from-violet-400/25 dark:to-rose-400/20",
-      orb2: "bg-gradient-to-br from-amber-500/25 to-fuchsia-500/15 dark:from-amber-400/20 dark:to-fuchsia-400/10",
-      icon: "text-violet-700 dark:text-violet-300",
-      badge:
-        "bg-violet-500/10 ring-violet-500/20 dark:bg-violet-400/10 dark:ring-violet-300/20",
-    },
-    portfolio: {
-      gradient:
-        "from-sky-500/12 via-emerald-500/10 to-indigo-500/10 dark:from-sky-400/10 dark:via-emerald-400/10 dark:to-indigo-400/10",
-      orb1: "bg-gradient-to-br from-sky-500/35 to-emerald-500/25 dark:from-sky-400/25 dark:to-emerald-400/20",
-      orb2: "bg-gradient-to-br from-indigo-500/25 to-violet-500/15 dark:from-indigo-400/20 dark:to-violet-400/10",
-      icon: "text-sky-700 dark:text-sky-300",
-      badge:
-        "bg-sky-500/10 ring-sky-500/20 dark:bg-sky-400/10 dark:ring-sky-300/20",
-    },
-  };
-
-  const descriptions: Record<HeroCardId, string> = {
-    exhibits: t("exhibitsDescription"),
-    prompt: t("promptsDescription"),
-    portfolio: t("yourPortfolioDescription"),
-  };
-
-  const heroCards: Array<{
-    id: HeroCardId;
-    title: string;
-    href: string;
-    icon: React.ComponentType<{ className?: string }>;
-  }> = [
-    {
-      id: "exhibits",
-      title: t("exhibits"),
-      href: "/exhibition",
-      icon: LayoutGrid,
-    },
-    { id: "prompt", title: t("prompts"), href: "/prompt", icon: Sparkles },
-    ...(session?.user
-      ? [
-          {
-            id: "portfolio" as const,
-            title: t("yourPortfolio"),
-            href: `${getCreatorUrl({ id: session.user.id, slug: session.user.slug })}/portfolio/edit`,
-            icon: Briefcase,
-          },
-        ]
-      : []),
-  ];
 
   return (
     <main className="flex-1">
       {/* Hero Section */}
-      <section className="relative overflow-hidden px-6 py-14 sm:py-20">
+      <section className="relative min-h-[420px] overflow-hidden sm:min-h-[520px] lg:min-h-[640px]">
         <div className="absolute inset-0 hero-background" />
-        <div className="relative mx-auto max-w-6xl">
-          <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-stretch lg:gap-12">
-            {/* Left: Hero content */}
-            <div className="flex flex-1 flex-col items-start gap-5 text-left">
-              <div className="w-full">
-                <h1 className="mb-6 text-5xl font-bold tracking-tight text-foreground sm:text-7xl">
-                  {t("heroTitle")}{" "}
-                  <span className="block bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent font-permanent-marker">
-                    {t("heroTitleHighlight")}
-                  </span>
-                </h1>
-                <p className="max-w-2xl text-lg text-muted-foreground">
-                  {t("heroDescription")}
-                </p>
-                <Link
-                  href="/about"
-                  className="mt-3 inline-block text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {t("learnMore")}
-                </Link>
-              </div>
-              <div className="w-full">
-                <div
-                  className={
-                    !session?.user
-                      ? "flex flex-wrap justify-start gap-3"
-                      : "grid gap-3 grid-cols-1 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]"
-                  }
-                >
-                  {heroCards.map((card) => {
-                    const Icon = card.icon;
-                    const decor = heroCardDecor[card.id];
-                    return (
-                      <Link
-                        key={`${card.id}:${card.href}`}
-                        href={card.href}
-                        aria-label={`Open ${card.title}`}
-                        className={`block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${!session?.user ? "w-full sm:w-[240px]" : ""}`}
-                      >
-                        <Card className="group relative h-full overflow-hidden border-border/60 bg-card/70 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-border hover:bg-card hover:shadow-lg">
-                          <div
-                            className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${decor.gradient}`}
-                          />
-                          <div
-                            className={`pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl opacity-70 ${decor.orb1}`}
-                          />
-                          <div
-                            className={`pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full blur-2xl opacity-60 ${decor.orb2}`}
-                          />
-
-                          <div className="relative">
-                            <CardHeader className="p-4 pb-3">
-                              <div className="mb-1 flex items-center gap-3">
-                                <span
-                                  className={`inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ring-1 ${decor.badge}`}
-                                >
-                                  <Icon
-                                    className={`h-5 w-5 stroke-[1.5] ${decor.icon}`}
-                                  />
-                                </span>
-                                <CardTitle className="whitespace-nowrap text-base sm:text-lg">
-                                  {card.title}
-                                </CardTitle>
-                              </div>
-                              <CardDescription className="text-sm">
-                                {descriptions[card.id]}
-                              </CardDescription>
-                            </CardHeader>
-                            <CardContent className="px-4 pb-4 pt-0">
-                              <div className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 transition-colors group-hover:text-foreground">
-                                {t("open")} <span aria-hidden>→</span>
-                              </div>
-                            </CardContent>
-                          </div>
-                        </Card>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
+        {recentWork.length > 0 && (
+          <RecentSubmissionsCarousel
+            submissions={recentWork.map((submission) => ({
+              ...submission,
+              imageFocalPoint: submission.imageFocalPoint as {
+                x: number;
+                y: number;
+              } | null,
+            }))}
+            className="absolute inset-0"
+            viewportClassName="rounded-none"
+            imageSizes="100vw"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/10" />
+        <div className="relative mx-auto flex h-full max-w-6xl items-center px-6 py-16 sm:py-24 lg:py-28">
+          <div className="max-w-2xl text-left">
+            <h1 className="mb-6 text-5xl font-semibold tracking-tight text-white drop-shadow-sm sm:text-7xl">
+              {t("heroTitle")}{" "}
+              <span className="block bg-gradient-to-r from-amber-400 via-rose-400 to-violet-400 bg-clip-text text-transparent font-permanent-marker">
+                {t("heroTitleHighlight")}
+              </span>
+            </h1>
+            <p className="max-w-2xl text-lg text-white/80 sm:text-xl">
+              {t("heroDescription")}
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <Button
+                asChild
+                size="lg"
+                className="bg-white text-black shadow-lg shadow-black/25 hover:bg-white/90"
+              >
+                <Link href="/exhibition">{t("heroExploreCta")}</Link>
+              </Button>
+              <Link
+                href="/about"
+                className="text-sm font-medium text-white/90 underline underline-offset-4 decoration-white/40 transition-colors hover:text-white"
+              >
+                {t("learnMore")}
+              </Link>
             </div>
-
-            {/* Right: Recent Submissions Carousel (appears below on mobile) */}
-            {recentWork.length > 0 && (
-              <div className="flex w-full flex-col lg:w-[40%] lg:max-w-md lg:flex-shrink-0">
-                <RecentSubmissionsCarousel
-                  submissions={recentWork.map((s) => ({
-                    ...s,
-                    imageFocalPoint: s.imageFocalPoint as {
-                      x: number;
-                      y: number;
-                    } | null,
-                  }))}
-                />
-              </div>
-            )}
           </div>
         </div>
       </section>
 
       {/* Mission Statement Section */}
-      <section className="px-6 pb-8 pt-0 sm:pb-12 sm:pt-2">
+      <section className="px-6 pb-12 pt-10 sm:pb-16">
         <div className="mx-auto max-w-5xl text-center">
-          <p className="text-2xl leading-relaxed text-muted-foreground sm:text-3xl sm:leading-relaxed md:text-4xl md:leading-relaxed lg:text-5xl lg:leading-relaxed">
+          <p className="text-3xl font-medium leading-relaxed text-foreground/80 sm:text-4xl sm:leading-relaxed md:text-5xl md:leading-relaxed lg:text-6xl lg:leading-relaxed">
             {t("missionStatement")}{" "}
             <strong className="rainbow-sheen">{t("missionExhibit")}</strong>,
             find inspiration to{" "}
@@ -257,132 +121,119 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Feature Sections */}
-      <section className="border-t border-border/50 bg-muted/30">
-        {/* Inspiration Section */}
-        <div className="border-b border-border/50 px-6 py-16 sm:py-20">
-          <div className="mx-auto max-w-4xl">
-            <div className="flex flex-col gap-6">
-              <div className="flex items-start gap-6">
-                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 ring-1 ring-amber-500/30 dark:from-amber-400/15 dark:to-rose-400/15 dark:ring-amber-400/25">
-                  <Lightbulb className="h-8 w-8 text-amber-600 dark:text-amber-400" />
-                </div>
-                <div className="flex-1">
-                  <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+      {/* Feature Quadrants */}
+      <section className="border-t border-border/50 bg-muted/30 px-6 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 shadow-sm">
+              <CardHeader className="p-6 pb-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 ring-1 ring-amber-500/30 dark:from-amber-400/15 dark:to-rose-400/15 dark:ring-amber-400/25">
+                    <Lightbulb className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
                     {t("features.inspiration.title")}
-                  </h2>
-                  <p className="text-lg leading-relaxed text-muted-foreground">
-                    {t("features.inspiration.description")}
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-                    {!session?.user && (
-                      <Link
-                        href="/auth/signin"
-                        className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                      >
-                        {t("features.inspiration.startCreating")}
-                      </Link>
-                    )}
-                    <Link
-                      href="/prompt"
-                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
-                      {t("features.inspiration.thisWeekPrompts")}
-                    </Link>
-                    <Link
-                      href="/exhibition/gallery/grid"
-                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
-                      {t("features.inspiration.browseCollection")}
-                    </Link>
-                  </div>
+                  </CardTitle>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                <CardDescription className="mt-4 text-base leading-relaxed text-muted-foreground">
+                  {t("features.inspiration.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-6 pb-6 pt-0">
+                <div className="flex flex-wrap gap-4">
+                  <Link
+                    href="/exhibition/gallery/grid"
+                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("features.inspiration.ctaGallery")}
+                  </Link>
+                  <Link
+                    href="/exhibition"
+                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("features.inspiration.ctaExhibits")}
+                  </Link>
+                  <Link
+                    href="/about/prompt-submissions"
+                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("features.inspiration.ctaAboutPrompts")}
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Media Manager Section */}
-        <div className="border-b border-border/50 px-6 py-16 sm:py-20">
-          <div className="mx-auto max-w-4xl">
-            <div className="flex flex-col gap-6">
-              <div className="flex items-start gap-6">
-                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500/20 to-emerald-500/20 ring-1 ring-sky-500/30 dark:from-sky-400/15 dark:to-emerald-400/15 dark:ring-sky-400/25">
-                  <FolderOpen className="h-8 w-8 text-sky-600 dark:text-sky-400" />
-                </div>
-                <div className="flex-1">
-                  <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                    {t("features.mediaManager.title")}
-                  </h2>
-                  <p className="text-lg leading-relaxed text-muted-foreground">
-                    {t("features.mediaManager.description")}
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-                    {!session?.user ? (
-                      <Link
-                        href="/auth/signin"
-                        className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                      >
-                        {t("features.mediaManager.startCreating")}
-                      </Link>
-                    ) : (
-                      <>
-                        <Link
-                          href={getCreatorUrl({
-                            id: session.user.id,
-                            slug: session.user.slug,
-                          })}
-                          className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                        >
-                          {t("features.mediaManager.yourProfile")}
-                        </Link>
-                        <Link
-                          href={`${getCreatorUrl({ id: session.user.id, slug: session.user.slug })}/portfolio/edit`}
-                          className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                        >
-                          {t("features.mediaManager.yourPortfolio")}
-                        </Link>
-                      </>
-                    )}
+            <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 shadow-sm">
+              <CardHeader className="p-6 pb-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 ring-1 ring-sky-500/30 dark:from-sky-400/15 dark:to-indigo-400/15 dark:ring-sky-400/25">
+                    <MessageCircle className="h-6 w-6 text-sky-600 dark:text-sky-400" />
                   </div>
+                  <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                    {t("features.critique.title")}
+                  </CardTitle>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                <CardDescription className="mt-4 text-base leading-relaxed text-muted-foreground">
+                  {t("features.critique.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-6 pb-6 pt-0">
+                <Link
+                  href="/about/critiques"
+                  className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                >
+                  {t("features.critique.ctaLearnMore")}
+                </Link>
+              </CardContent>
+            </Card>
 
-        {/* Exposure with Safety Section */}
-        <div className="px-6 py-16 sm:py-20">
-          <div className="mx-auto max-w-4xl">
-            <div className="flex flex-col gap-6">
-              <div className="flex items-start gap-6">
-                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 ring-1 ring-violet-500/30 dark:from-violet-400/15 dark:to-fuchsia-400/15 dark:ring-violet-400/25">
-                  <Shield className="h-8 w-8 text-violet-600 dark:text-violet-400" />
-                </div>
-                <div className="flex-1">
-                  <h2 className="mb-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                    {t("features.exposureWithSafety.title")}
-                  </h2>
-                  <p className="text-lg leading-relaxed text-muted-foreground">
-                    {t("features.exposureWithSafety.description")}
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-                    <Link
-                      href="/about/protecting-your-work"
-                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
-                      {t("features.exposureWithSafety.protectingYourWork")}
-                    </Link>
-                    <Link
-                      href="/about/terms"
-                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
-                      {t("features.exposureWithSafety.browseTerms")}
-                    </Link>
+            <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 shadow-sm">
+              <CardHeader className="p-6 pb-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 ring-1 ring-violet-500/30 dark:from-violet-400/15 dark:to-fuchsia-400/15 dark:ring-violet-400/25">
+                    <Share2 className="h-6 w-6 text-violet-600 dark:text-violet-400" />
                   </div>
+                  <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                    {t("features.exposure.title")}
+                  </CardTitle>
                 </div>
-              </div>
-            </div>
+                <CardDescription className="mt-4 text-base leading-relaxed text-muted-foreground">
+                  {t("features.exposure.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-6 pb-6 pt-0">
+                <Link
+                  href="/about/features"
+                  className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                >
+                  {t("features.exposure.ctaLearnMore")}
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 shadow-sm">
+              <CardHeader className="p-6 pb-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-sky-500/20 ring-1 ring-emerald-500/30 dark:from-emerald-400/15 dark:to-sky-400/15 dark:ring-emerald-400/25">
+                    <FolderOpen className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                    {t("features.management.title")}
+                  </CardTitle>
+                </div>
+                <CardDescription className="mt-4 text-base leading-relaxed text-muted-foreground">
+                  {t("features.management.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-6 pb-6 pt-0">
+                <Link
+                  href="/about/portfolios-and-sharing"
+                  className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                >
+                  {t("features.management.ctaLearnMore")}
+                </Link>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

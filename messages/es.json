@@ -163,6 +163,7 @@
     "creators": "Creadores",
     "about": "Acerca de",
     "features": "Características",
+    "critiques": "Críticas",
     "contact": "Contacto",
     "more": "Más",
     "terms": "Términos de Servicio",
@@ -625,6 +626,7 @@
     "heroTitle": "Un hogar para tu",
     "heroTitleHighlight": "creatividad",
     "heroDescription": "Un hogar para fotógrafos, pintores, ilustradores, escritores, escultores y cualquier otra persona que quiera crear. Construye tu portafolio, comparte tu viaje creativo e inspírate con indicaciones semanales.",
+    "heroExploreCta": "Explora Exposiciones",
     "learnMore": "Más información →",
     "exhibits": "Exposiciones",
     "exhibitsDescription": "Explora todas las exposiciones — navega, orbita en 3D y viaja por el mundo.",
@@ -640,23 +642,25 @@
     "features": {
       "inspiration": {
         "title": "Inspiración",
-        "description": "Los desafíos semanales de tres palabras despiertan ideas frescas y te impulsan a probar cosas nuevas. Explora la galería para ver cómo otros interpretaron las mismas palabras, descubre creadores que admiras y gana insignias mientras construyes tu práctica creativa. Todo aquí está diseñado para mantenerte inspirado y creando.",
-        "startCreating": "Empieza a Crear",
-        "thisWeekPrompts": "Indicaciones de Esta Semana",
-        "browseCollection": "Explora la Colección Permanente"
+        "description": "Explora la galería permanente y las exposiciones curadas para ver cómo otros interpretan las indicaciones, descubrir creadores que admiras e impulsar tu próxima idea.",
+        "ctaGallery": "Explora la Galería Permanente",
+        "ctaExhibits": "Explora Exposiciones",
+        "ctaAboutPrompts": "Aprende cómo funcionan las indicaciones"
       },
-      "mediaManager": {
-        "title": "Gestor de Medios",
-        "description": "Tu perfil es el hogar de tu portafolio — un archivo creciente de tu mejor trabajo. Organiza piezas en colecciones para propósitos específicos como solicitudes escolares, postulaciones a premios o exhibiciones temáticas. Comparte un solo enlace a tu portafolio completo o cura mini-portafolios para exactamente la audiencia que necesitas.",
-        "startCreating": "Empieza a Crear",
-        "yourProfile": "Tu Perfil",
-        "yourPortfolio": "Tu Portafolio"
+      "critique": {
+        "title": "Crítica",
+        "description": "Solicita críticas privadas en tus publicaciones y recibe comentarios cuidadosos antes de compartir más.",
+        "ctaLearnMore": "Más sobre críticas"
       },
-      "exposureWithSafety": {
-        "title": "Exposición con Seguridad",
-        "description": "Sé descubierto a través de exhibiciones y galerías mientras mantienes el control de tu trabajo. Ofrecemos marcas de agua, disuasión de descargas y señales que piden a las empresas de IA que no entrenen con tus imágenes. Lo más importante, tu trabajo es tuyo — no reclamamos ningún derecho sobre nada que subas.",
-        "protectingYourWork": "Protegiendo Tu Trabajo",
-        "browseTerms": "Explora nuestros términos"
+      "exposure": {
+        "title": "Exposición",
+        "description": "Haz crecer tu audiencia con seguidores, colecciones y funciones de galería que muestran tu trabajo a las personas adecuadas.",
+        "ctaLearnMore": "Descubre herramientas de exposición"
+      },
+      "management": {
+        "title": "Gestión",
+        "description": "Organiza tu portafolio en colecciones, ordena tu trabajo y mantén piezas privadas hasta que estés listo para compartirlas.",
+        "ctaLearnMore": "Organiza tu portafolio"
       }
     }
   },
@@ -838,6 +842,40 @@
       "forCurrentPrompt": "para la indicación actual o",
       "removeIndividual": "eliminar publicaciones individuales",
       "fullDescription": "siempre que quieras refinar lo que compartes. Esto facilita actualizar tus entradas de indicaciones sin perder impulso."
+    },
+    "backToAbout": "← Volver a Acerca de"
+  },
+  "aboutCritiques": {
+    "title": "Críticas | Create Spot",
+    "description": "Cómo funcionan las críticas en Create Spot: cómo solicitarlas, responder y administrar los controles.",
+    "mainTitle": "Las críticas mantienen el feedback enfocado.",
+    "mainDescription": "Invita a personas de confianza a dejar notas privadas mientras todavía estás moldeando una pieza, y usa ese feedback para pulirla antes de compartirla más ampliamente.",
+    "requesting": {
+      "title": "Solicitar feedback",
+      "description": "Las críticas viven dentro de cada envío y se mantienen privadas entre tú y quien responde. Cuando quieras input, abre la publicación, activa \"Permitir críticas\" y deja una nota breve sobre lo que estás trabajando: composición, ritmo, narrativa, lo que sea.",
+      "points": {
+        "toggle": "Empieza activando \"Permitir críticas\" en la publicación que quieres revisar.",
+        "context": "Agrega una nota corta para que sepan qué tipo de ayuda necesitas.",
+        "notifications": "Recibirás una notificación cuando llegue feedback y puedes archivar el hilo cuando lo hayas atendido."
+      }
+    },
+    "replying": {
+      "title": "Respuestas e iteración",
+      "description": "Las críticas funcionan mejor como conversación. Responde debajo de una nota para pedir aclaraciones o compartir una nueva versión, y mantén el hilo conectado con lo que cambió.",
+      "points": {
+        "inline": "Responde debajo de una crítica para hacer seguimiento o mostrar una nueva versión.",
+        "edits": "Quien comenta puede editar su crítica hasta que la leas, así los borradores se pulen.",
+        "thanks": "Cierra el ciclo con un agradecimiento o un breve resumen de lo que actualizaste."
+      }
+    },
+    "controls": {
+      "title": "Controles y seguridad",
+      "description": "Tú decides cuándo están abiertas las críticas y quién puede participar, para que el feedback sea útil y seguro.",
+      "points": {
+        "perSubmission": "Activa críticas por publicación en trabajos en progreso y apágalas en piezas terminadas.",
+        "members": "Solo los miembros con sesión iniciada pueden dejar críticas, lo que mantiene el spam fuera.",
+        "disable": "Puedes desactivar las críticas en cualquier momento; el feedback existente queda archivado."
+      }
     },
     "backToAbout": "← Volver a Acerca de"
   },

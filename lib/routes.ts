@@ -231,6 +231,11 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "about.protectingYourWork.title",
     parentPath: "/about",
   },
+  aboutCritiques: {
+    path: "/about/critiques",
+    label: "navigation.critiques",
+    parentPath: "/about",
+  },
   contact: {
     path: "/contact",
     label: "navigation.contact",

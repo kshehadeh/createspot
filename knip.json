@@ -11,7 +11,7 @@
     "interface": true,
     "type": true
   },
-  "ignore": ["postcss.config.mjs", "scripts/**/*.ts"],
+  "ignore": ["postcss.config.mjs", "scripts/**/*.ts", "app/@breadcrumb/**"],
   "ignoreBinaries": [],
   "tags": ["-lintignore"]
 }

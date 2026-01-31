@@ -163,6 +163,7 @@
     "creators": "Creators",
     "about": "About",
     "features": "Features",
+    "critiques": "Critiques",
     "contact": "Contact",
     "more": "More",
     "terms": "Terms of Service",
@@ -625,6 +626,7 @@
     "heroTitle": "A home for your",
     "heroTitleHighlight": "creativity",
     "heroDescription": "A home for photographers, painters, illustrators, writers, sculptors, and anyone else who wants to create. Build your portfolio, share your creative journey, and get inspired by weekly prompts.",
+    "heroExploreCta": "Explore Exhibits",
     "learnMore": "Learn more →",
     "exhibits": "Exhibits",
     "exhibitsDescription": "Explore all exhibits — browse, orbit in 3D, and travel the globe.",
@@ -640,23 +642,25 @@
     "features": {
       "inspiration": {
         "title": "Inspiration",
-        "description": "Weekly three-word prompts spark fresh ideas and push you to try new things. Browse the gallery to see how others interpreted the same words, discover creators you admire, and earn badges as you build your creative practice. Everything here is designed to keep you inspired and making.",
-        "startCreating": "Start Creating",
-        "thisWeekPrompts": "This Week's Prompts",
-        "browseCollection": "Browse the Permanent Collection"
+        "description": "Explore the permanent gallery and curated exhibits to see how others interpret prompts, discover creators you admire, and spark your next idea.",
+        "ctaGallery": "Browse the Permanent Gallery",
+        "ctaExhibits": "Explore Exhibits",
+        "ctaAboutPrompts": "Learn how prompts work"
       },
-      "mediaManager": {
-        "title": "Media Manager",
-        "description": "Your profile is home to your portfolio — a growing archive of your best work. Organize pieces into collections for specific purposes like school applications, award submissions, or themed showcases. Share a single link to your full portfolio or curate mini-portfolios for exactly the audience you need.",
-        "startCreating": "Start Creating",
-        "yourProfile": "Your Profile",
-        "yourPortfolio": "Your Portfolio"
+      "critique": {
+        "title": "Critique",
+        "description": "Request private critiques on your submissions and get thoughtful feedback before sharing more widely.",
+        "ctaLearnMore": "Learn about critiques"
       },
-      "exposureWithSafety": {
-        "title": "Exposure with Safety",
-        "description": "Get discovered through exhibits and galleries while keeping control of your work. We offer watermarking, download deterrents, and signals that ask AI companies not to train on your images. Most importantly, your work is yours — we claim no rights to anything you upload.",
-        "protectingYourWork": "Protecting Your Work",
-        "browseTerms": "Browse our terms"
+      "exposure": {
+        "title": "Exposure",
+        "description": "Grow your audience through follows, collections, and gallery features that surface your work to the right people.",
+        "ctaLearnMore": "Discover exposure tools"
+      },
+      "management": {
+        "title": "Management",
+        "description": "Organize your portfolio into collections, reorder your work, and keep select pieces private until you are ready to share.",
+        "ctaLearnMore": "Organize your portfolio"
       }
     }
   },
@@ -694,7 +698,7 @@
       "readMore": "Read more about our purpose →"
     },
     "organization": {
-      "title": "How the site is organized",
+      "title": "Organization",
       "yourPortfolioIs": "Your portfolio is",
       "personalSpace": "your personal space",
       "youCanBuild": "You can build it over time,",
@@ -838,6 +842,40 @@
       "forCurrentPrompt": "for the current prompt or",
       "removeIndividual": "remove individual submissions",
       "fullDescription": "whenever you want to refine what you share. This makes it easy to refresh your prompt entries without losing momentum."
+    },
+    "backToAbout": "← Back to About"
+  },
+  "aboutCritiques": {
+    "title": "Critiques | Create Spot",
+    "description": "How critiques work on Create Spot—requesting feedback, replying, and managing controls.",
+    "mainTitle": "Critiques keep feedback focused.",
+    "mainDescription": "Invite trusted peers to leave private notes while you’re still shaping a piece, then use that feedback to refine before you share it widely.",
+    "requesting": {
+      "title": "Requesting feedback",
+      "description": "Critiques live inside each submission and stay private between you and the reviewer. When you want input, open the submission, turn on \"Allow critiques,\" and leave a short note about what you’re working through—composition, pacing, story beats, anything.",
+      "points": {
+        "toggle": "Start by toggling \"Allow critiques\" on the submission you want eyes on.",
+        "context": "Add a quick request note so reviewers know what kind of help you need.",
+        "notifications": "You’ll get a notification when feedback arrives, and you can archive the thread once you’ve addressed it."
+      }
+    },
+    "replying": {
+      "title": "Replying & iterating",
+      "description": "Critiques work best as a conversation. Reply under a note to ask follow-up questions or share a new version, and keep the thread grounded in what changed.",
+      "points": {
+        "inline": "Reply beneath a critique to ask a follow-up or share a new pass.",
+        "edits": "Reviewers can edit their critique until you’ve seen it, so drafts stay polished.",
+        "thanks": "Close the loop with a quick thank-you or a short summary of updates."
+      }
+    },
+    "controls": {
+      "title": "Controls & safety",
+      "description": "You decide when critiques are open and who can participate, so the feedback stays useful and safe.",
+      "points": {
+        "perSubmission": "Enable critiques per submission for works in progress, and switch them off for finished pieces.",
+        "members": "Only signed-in members can leave critiques, which keeps spam out.",
+        "disable": "Turn critiques off anytime; existing feedback stays archived for later reference."
+      }
     },
     "backToAbout": "← Back to About"
   },
