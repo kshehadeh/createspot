@@ -2,21 +2,34 @@
 
 import {
   createContext,
-  useContext,
+  use,
   useState,
   useEffect,
   useCallback,
   type ReactNode,
 } from "react";
 
-interface FavoritesContextType {
+/** Generic contract for favorites context; any provider can implement this. */
+export interface FavoritesState {
   favoriteIds: Set<string>;
   isLoading: boolean;
+}
+
+export interface FavoritesActions {
   toggleFavorite: (submissionId: string) => Promise<void>;
+}
+
+export interface FavoritesMeta {
   isFavorited: (submissionId: string) => boolean;
 }
 
-const FavoritesContext = createContext<FavoritesContextType | null>(null);
+export interface FavoritesContextValue {
+  state: FavoritesState;
+  actions: FavoritesActions;
+  meta: FavoritesMeta;
+}
+
+const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
 interface FavoritesProviderProps {
   children: ReactNode;
@@ -114,17 +127,21 @@ export function FavoritesProvider({
     [favoriteIds],
   );
 
+  const value: FavoritesContextValue = {
+    state: { favoriteIds, isLoading },
+    actions: { toggleFavorite },
+    meta: { isFavorited },
+  };
+
   return (
-    <FavoritesContext.Provider
-      value={{ favoriteIds, isLoading, toggleFavorite, isFavorited }}
-    >
+    <FavoritesContext.Provider value={value}>
       {children}
     </FavoritesContext.Provider>
   );
 }
 
-export function useFavorites() {
-  const context = useContext(FavoritesContext);
+export function useFavorites(): FavoritesContextValue {
+  const context = use(FavoritesContext);
   if (!context) {
     throw new Error("useFavorites must be used within a FavoritesProvider");
   }

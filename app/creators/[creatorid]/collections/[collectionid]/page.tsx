@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { getCollectionMetadata } from "@/lib/og-metadata";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import { PortfolioGrid } from "@/components/portfolio-grid";
+import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { CollectionShareButton } from "@/components/collection-share-button";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { Button } from "@/components/ui/button";
@@ -256,7 +256,7 @@ export default async function CollectionViewPage({
 
       {/* Collection Items Grid */}
       {portfolioItems.length > 0 ? (
-        <PortfolioGrid
+        <PortfolioGridProfile
           items={portfolioItems}
           isLoggedIn={isLoggedIn}
           isOwnProfile={isOwner}

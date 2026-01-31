@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { SubmissionBrowser } from "./submission-browser";
-import { PortfolioGrid } from "@/components/portfolio-grid";
+import { PortfolioGridExhibit } from "@/components/portfolio-grid";
 import { Button } from "@/components/ui/button";
 
 interface Submission {
@@ -135,13 +135,8 @@ export function ExhibitContentManager({
         </Button>
       </div>
 
-      <PortfolioGrid
+      <PortfolioGridExhibit
         items={portfolioItems}
-        isLoggedIn={true}
-        isOwnProfile={false}
-        showPromptBadge={true}
-        allowEdit={true}
-        mode="exhibit"
         onRemove={handleRemoveSubmission}
         onReorder={handleReorder}
       />

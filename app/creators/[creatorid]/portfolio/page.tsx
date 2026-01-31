@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import { PortfolioGrid } from "@/components/portfolio-grid";
+import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { PortfolioShareButton } from "@/components/portfolio-share-button";
 import { PortfolioFilters } from "@/components/portfolio-filters";
 import { HintPopover } from "@/components/hint-popover";
@@ -278,7 +278,7 @@ export default async function PortfolioPage({
 
       {/* Portfolio Grid */}
       {portfolioItems.length > 0 ? (
-        <PortfolioGrid
+        <PortfolioGridProfile
           items={portfolioItems.map((item) => ({
             ...item,
             imageFocalPoint: item.imageFocalPoint as {

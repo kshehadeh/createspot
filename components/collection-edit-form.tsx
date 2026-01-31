@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Trash2, Lock, Globe, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { PortfolioGrid } from "@/components/portfolio-grid";
+import { PortfolioGridCollection } from "@/components/portfolio-grid";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { SubmissionSelector } from "@/components/submission-selector";
 import { Button } from "@/components/ui/button";
@@ -295,13 +295,9 @@ export function CollectionEditForm({
       {/* Items */}
       <div>
         {items.length > 0 ? (
-          <PortfolioGrid
+          <PortfolioGridCollection
             items={items}
             isLoggedIn={true}
-            isOwnProfile={true}
-            allowEdit={true}
-            mode="exhibit"
-            context="collection"
             onReorder={handleReorder}
             onRemove={handleRemoveItem}
             user={{

@@ -13,7 +13,7 @@ import { PageLayout } from "@/components/page-layout";
 import { ProfileImageViewer } from "@/components/profile-image-viewer";
 import { HistoryList } from "@/app/prompt/history/history-list";
 import { SocialLinks } from "@/components/social-links";
-import { PortfolioGrid } from "@/components/portfolio-grid";
+import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ExpandableBio } from "@/components/expandable-bio";
@@ -504,7 +504,7 @@ export default async function ProfilePage({
               )}
             </div>
           </div>
-          <PortfolioGrid
+          <PortfolioGridProfile
             items={allPortfolioItems
               .slice(0, MAX_PORTFOLIO_ITEMS)
               .map((item) => ({
@@ -516,6 +516,16 @@ export default async function ProfilePage({
               }))}
             isLoggedIn={isLoggedIn}
             isOwnProfile={effectiveIsOwnProfile}
+            user={
+              user
+                ? {
+                    id: user.id,
+                    name: user.name,
+                    image: user.image,
+                    slug: user.slug,
+                  }
+                : undefined
+            }
             featuredSubmissionId={featuredSubmission?.id}
           />
         </div>

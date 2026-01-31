@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import type { Ref } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,22 +15,18 @@ interface CarouselNavButtonProps {
    */
   showOnHover?: boolean;
   className?: string;
+  ref?: Ref<HTMLButtonElement>;
 }
 
-export const CarouselNavButton = forwardRef<
-  HTMLButtonElement,
-  CarouselNavButtonProps
->(function CarouselNavButton(
-  {
-    side,
-    onClick,
-    disabled = false,
-    "aria-label": ariaLabel,
-    showOnHover = false,
-    className,
-  },
+export function CarouselNavButton({
+  side,
+  onClick,
+  disabled = false,
+  "aria-label": ariaLabel,
+  showOnHover = false,
+  className,
   ref,
-) {
+}: CarouselNavButtonProps) {
   const Icon = side === "prev" ? ChevronLeft : ChevronRight;
 
   return (
@@ -49,4 +45,4 @@ export const CarouselNavButton = forwardRef<
       <Icon className="h-5 w-5" />
     </button>
   );
-});
+}

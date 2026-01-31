@@ -43,24 +43,42 @@ interface LightboxSubmission {
   };
 }
 
+export interface SubmissionLightboxOptions {
+  /** Hide the "Go To Submission" button (e.g., when already on the submission page). Default: false */
+  hideGoToSubmission?: boolean;
+  /** Whether to enable download protection. Default: true */
+  protectionEnabled?: boolean;
+}
+
+export interface SubmissionLightboxNavigation {
+  onGoToPrevious: () => void;
+  onGoToNext: () => void;
+  hasPrevious: boolean;
+  hasNext: boolean;
+}
+
 interface SubmissionLightboxProps {
   submission: LightboxSubmission;
   word: string;
   onClose: () => void;
   isOpen: boolean;
-  /** Hide the "Go To Submission" button (e.g., when already on the submission page) */
-  hideGoToSubmission?: boolean;
-  /** Whether to enable download protection. Default: true */
-  protectionEnabled?: boolean;
   /** Current logged-in user ID. If provided, edit button will show for owned submissions. */
   currentUserId?: string | null;
-  /** When provided, enables previous submission navigation (e.g. from a gallery). */
+  /** Visibility and behavior options. Prefer this over flat boolean props. */
+  options?: SubmissionLightboxOptions;
+  /** When provided, enables prev/next submission navigation (e.g. from a gallery). Prefer this over flat navigation props. */
+  navigation?: SubmissionLightboxNavigation;
+  /** @deprecated Use options.hideGoToSubmission */
+  hideGoToSubmission?: boolean;
+  /** @deprecated Use options.protectionEnabled */
+  protectionEnabled?: boolean;
+  /** @deprecated Use navigation.onGoToPrevious */
   onGoToPrevious?: () => void;
-  /** When provided, enables next submission navigation. */
+  /** @deprecated Use navigation.onGoToNext */
   onGoToNext?: () => void;
-  /** When false, previous button is disabled (e.g. at first item). Defaults to true when onGoToPrevious is set. */
+  /** @deprecated Use navigation.hasPrevious */
   hasPrevious?: boolean;
-  /** When false, next button is disabled (e.g. at last item). Defaults to true when onGoToNext is set. */
+  /** @deprecated Use navigation.hasNext */
   hasNext?: boolean;
 }
 
@@ -72,14 +90,26 @@ export function SubmissionLightbox({
   submission,
   onClose,
   isOpen,
-  hideGoToSubmission = false,
-  protectionEnabled = true,
   currentUserId: propCurrentUserId,
-  onGoToPrevious,
-  onGoToNext,
-  hasPrevious = onGoToPrevious !== undefined,
-  hasNext = onGoToNext !== undefined,
+  options,
+  navigation,
+  hideGoToSubmission: hideGoToSubmissionProp,
+  protectionEnabled: protectionEnabledProp,
+  onGoToPrevious: onGoToPreviousProp,
+  onGoToNext: onGoToNextProp,
+  hasPrevious: hasPreviousProp,
+  hasNext: hasNextProp,
 }: SubmissionLightboxProps) {
+  const hideGoToSubmission =
+    options?.hideGoToSubmission ?? hideGoToSubmissionProp ?? false;
+  const protectionEnabled =
+    options?.protectionEnabled ?? protectionEnabledProp ?? true;
+  const onGoToPrevious = navigation?.onGoToPrevious ?? onGoToPreviousProp;
+  const onGoToNext = navigation?.onGoToNext ?? onGoToNextProp;
+  const hasPrevious =
+    navigation?.hasPrevious ?? hasPreviousProp ?? onGoToPrevious !== undefined;
+  const hasNext =
+    navigation?.hasNext ?? hasNextProp ?? onGoToNext !== undefined;
   const t = useTranslations("exhibition");
   const { data: session } = useSession();
   // Use session user ID if available, otherwise fall back to prop

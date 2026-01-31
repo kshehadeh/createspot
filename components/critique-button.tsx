@@ -81,15 +81,25 @@ export function CritiqueButton({
           </Badge>
         )}
       </Button>
-      <CritiqueManagerModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        submissionId={submissionId}
-        isOwner={isOwner}
-        currentUserId={currentUserId}
-        submissionTitle={submissionTitle}
-        onUnseenCountChange={setUnseenCount}
-      />
+      {isOwner ? (
+        <CritiqueManagerModal.Owner
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          submissionId={submissionId}
+          currentUserId={currentUserId}
+          submissionTitle={submissionTitle}
+          onUnseenCountChange={setUnseenCount}
+        />
+      ) : (
+        <CritiqueManagerModal.Viewer
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          submissionId={submissionId}
+          currentUserId={currentUserId}
+          submissionTitle={submissionTitle}
+          onUnseenCountChange={setUnseenCount}
+        />
+      )}
     </>
   );
 }

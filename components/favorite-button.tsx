@@ -14,13 +14,13 @@ export function FavoriteButton({
   size = "md",
   className = "",
 }: FavoriteButtonProps) {
-  const { isFavorited, toggleFavorite, isLoading } = useFavorites();
-  const favorited = isFavorited(submissionId);
+  const { state, actions, meta } = useFavorites();
+  const favorited = meta.isFavorited(submissionId);
 
   const handleToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    await toggleFavorite(submissionId);
+    await actions.toggleFavorite(submissionId);
   };
 
   const iconSize = size === "sm" ? "h-4 w-4" : "h-5 w-5";
@@ -30,7 +30,7 @@ export function FavoriteButton({
     <motion.button
       type="button"
       onClick={handleToggle}
-      disabled={isLoading}
+      disabled={state.isLoading}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       className={`flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70 disabled:opacity-50 ${buttonSize} ${className}`}

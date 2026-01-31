@@ -47,7 +47,7 @@ const handleImageContextMenu = (e: React.MouseEvent) => {
   return false;
 };
 
-interface PortfolioItem {
+export interface PortfolioItem {
   id: string;
   title: string | null;
   imageUrl: string | null;
@@ -68,7 +68,6 @@ interface PortfolioItem {
     favorites: number;
   };
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
-  // For exhibit mode - items can come from different users
   user?: {
     id: string;
     slug?: string | null;
@@ -77,60 +76,59 @@ interface PortfolioItem {
   };
 }
 
-interface PortfolioGridProps {
+function PortfolioGridFrame({
+  items: _items,
+  isLoggedIn,
+  submissionIds,
+  children,
+}: {
   items: PortfolioItem[];
   isLoggedIn: boolean;
-  isOwnProfile?: boolean;
-  showPromptBadge?: boolean;
-  allowEdit?: boolean;
-  onEdit?: (item: PortfolioItem) => void;
-  onDelete?: (item: PortfolioItem) => Promise<void>;
-  onReorder?: (items: PortfolioItem[]) => void;
-  // For exhibit mode
-  mode?: "portfolio" | "exhibit";
-  onRemove?: (item: PortfolioItem) => Promise<void>;
-  context?: "exhibit" | "collection"; // To distinguish between exhibits and collections
+  submissionIds: string[];
+  children: React.ReactNode;
+}) {
+  return (
+    <FavoritesProvider
+      isLoggedIn={isLoggedIn}
+      initialSubmissionIds={submissionIds}
+    >
+      {children}
+    </FavoritesProvider>
+  );
+}
+
+interface PortfolioGridProfileProps {
+  items: PortfolioItem[];
+  isLoggedIn: boolean;
+  isOwnProfile: boolean;
   user?: {
     id: string;
     slug?: string | null;
     name: string | null;
     image: string | null;
   };
+  showPromptBadge?: boolean;
   featuredSubmissionId?: string | null;
   onSetFeatured?: (item: PortfolioItem) => void;
 }
 
-export function PortfolioGrid({
+export function PortfolioGridProfile({
   items,
   isLoggedIn,
-  isOwnProfile = false,
-  showPromptBadge = true,
-  allowEdit = false,
-  onEdit,
-  onDelete,
-  onReorder,
-  mode = "portfolio",
-  onRemove,
-  context = "exhibit",
+  isOwnProfile,
   user,
+  showPromptBadge = true,
   featuredSubmissionId,
   onSetFeatured,
-}: PortfolioGridProps) {
-  const router = useRouter();
+}: PortfolioGridProfileProps) {
   const [orderedItems, setOrderedItems] = useState<PortfolioItem[]>(items);
-  const [isSaving, setIsSaving] = useState(false);
-  const isReorderingRef = useRef(false);
   const lastItemsRef = useRef<PortfolioItem[]>(items);
-
-  // Update ordered items when items prop changes (but not during reordering)
   useEffect(() => {
-    // Check if items prop actually changed (from server or parent state update)
     const itemsChanged =
       items.length !== lastItemsRef.current.length ||
       items.some((item, idx) => {
         const lastItem = lastItemsRef.current[idx];
         if (!lastItem) return true;
-        // Check ID and key properties that might change during editing
         return (
           item.id !== lastItem.id ||
           item.title !== lastItem.title ||
@@ -139,83 +137,99 @@ export function PortfolioGrid({
           item.category !== lastItem.category
         );
       });
+    if (itemsChanged) {
+      setOrderedItems(items);
+      lastItemsRef.current = items;
+    }
+  }, [items]);
+  const submissionIds = orderedItems.map((s) => s.id);
+  const handleReorder = useCallback(() => {}, []);
+  return (
+    <PortfolioGridFrame
+      items={orderedItems}
+      isLoggedIn={isLoggedIn}
+      submissionIds={submissionIds}
+    >
+      <PortfolioGridContent
+        items={orderedItems}
+        allItems={orderedItems}
+        isLoggedIn={isLoggedIn}
+        isOwnProfile={isOwnProfile}
+        showPromptBadge={showPromptBadge}
+        allowEdit={false}
+        onReorder={handleReorder}
+        isSaving={false}
+        mode="portfolio"
+        context="exhibit"
+        user={user}
+        featuredSubmissionId={featuredSubmissionId}
+        onSetFeatured={onSetFeatured}
+      />
+    </PortfolioGridFrame>
+  );
+}
 
+interface PortfolioGridCollectionProps {
+  items: PortfolioItem[];
+  isLoggedIn: boolean;
+  user?: {
+    id: string;
+    slug?: string | null;
+    name: string | null;
+    image: string | null;
+  };
+  onReorder: (items: PortfolioItem[]) => void;
+  onRemove: (item: PortfolioItem) => Promise<void>;
+}
+
+export function PortfolioGridCollection({
+  items,
+  isLoggedIn,
+  user,
+  onReorder,
+  onRemove,
+}: PortfolioGridCollectionProps) {
+  const router = useRouter();
+  const [orderedItems, setOrderedItems] = useState<PortfolioItem[]>(items);
+  const [isSaving, setIsSaving] = useState(false);
+  const isReorderingRef = useRef(false);
+  const lastItemsRef = useRef<PortfolioItem[]>(items);
+  useEffect(() => {
+    const itemsChanged =
+      items.length !== lastItemsRef.current.length ||
+      items.some((item, idx) => {
+        const lastItem = lastItemsRef.current[idx];
+        if (!lastItem) return true;
+        return (
+          item.id !== lastItem.id ||
+          item.title !== lastItem.title ||
+          item.imageUrl !== lastItem.imageUrl ||
+          item.text !== lastItem.text ||
+          item.category !== lastItem.category
+        );
+      });
     if (itemsChanged && !isReorderingRef.current && !isSaving) {
       setOrderedItems(items);
       lastItemsRef.current = items;
     }
   }, [items, isSaving]);
-
-  const filteredItems = orderedItems;
-
   const submissionIds = orderedItems.map((s) => s.id);
-
   const handleReorder = useCallback(
     async (newItems: PortfolioItem[]) => {
-      // If onReorder is provided, use it (for exhibit mode)
-      if (onReorder) {
-        isReorderingRef.current = true;
-        setOrderedItems(newItems);
-        setIsSaving(true);
-        try {
-          await onReorder(newItems);
-          lastItemsRef.current = newItems;
-          setTimeout(() => {
-            router.refresh();
-            setTimeout(() => {
-              isReorderingRef.current = false;
-            }, 500);
-          }, 200);
-        } catch (error) {
-          console.error("Failed to save order:", error);
-          setOrderedItems(items);
-          lastItemsRef.current = items;
-          isReorderingRef.current = false;
-        } finally {
-          setIsSaving(false);
-        }
-        return;
-      }
-
-      // Default portfolio reordering
-      // Update portfolioOrder values in the items
-      const itemsWithOrder = newItems.map((item, index) => ({
-        ...item,
-        portfolioOrder: index + 1,
-      }));
-
-      // Optimistically update the UI
       isReorderingRef.current = true;
-      setOrderedItems(itemsWithOrder);
+      setOrderedItems(newItems);
       setIsSaving(true);
-
       try {
-        const response = await fetch("/api/submissions/reorder", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            submissionIds: newItems.map((item) => item.id),
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to save order");
-        }
-
-        // Update the ref to match the new order so we don't reset on next prop update
-        lastItemsRef.current = itemsWithOrder;
-
-        // Refresh to get updated data from server after a delay to ensure state is stable
+        await onReorder(newItems);
+        lastItemsRef.current = newItems;
         setTimeout(() => {
           router.refresh();
-          // Allow prop updates after refresh completes
           setTimeout(() => {
             isReorderingRef.current = false;
           }, 500);
         }, 200);
       } catch (error) {
-        console.error("Failed to save portfolio order:", error);
-        // Revert to original order on error
+        console.error("Failed to save order:", error);
         setOrderedItems(items);
         lastItemsRef.current = items;
         isReorderingRef.current = false;
@@ -225,33 +239,119 @@ export function PortfolioGrid({
     },
     [items, onReorder, router],
   );
-
   return (
-    <FavoritesProvider
+    <PortfolioGridFrame
+      items={orderedItems}
       isLoggedIn={isLoggedIn}
-      initialSubmissionIds={submissionIds}
+      submissionIds={submissionIds}
     >
       <PortfolioGridContent
-        items={filteredItems}
+        items={orderedItems}
         allItems={orderedItems}
         isLoggedIn={isLoggedIn}
-        isOwnProfile={isOwnProfile}
-        showPromptBadge={showPromptBadge}
-        allowEdit={allowEdit}
-        onEdit={onEdit}
-        onDelete={onDelete}
+        isOwnProfile={true}
+        showPromptBadge={true}
+        allowEdit={true}
         onReorder={handleReorder}
         isSaving={isSaving}
-        mode={mode}
+        mode="exhibit"
         onRemove={onRemove}
-        context={context}
+        context="collection"
         user={user}
-        featuredSubmissionId={featuredSubmissionId}
-        onSetFeatured={onSetFeatured}
       />
-    </FavoritesProvider>
+    </PortfolioGridFrame>
   );
 }
+
+interface PortfolioGridExhibitProps {
+  items: PortfolioItem[];
+  onReorder: (items: PortfolioItem[]) => void;
+  onRemove: (item: PortfolioItem) => Promise<void>;
+}
+
+export function PortfolioGridExhibit({
+  items,
+  onReorder,
+  onRemove,
+}: PortfolioGridExhibitProps) {
+  const router = useRouter();
+  const [orderedItems, setOrderedItems] = useState<PortfolioItem[]>(items);
+  const [isSaving, setIsSaving] = useState(false);
+  const isReorderingRef = useRef(false);
+  const lastItemsRef = useRef<PortfolioItem[]>(items);
+  useEffect(() => {
+    const itemsChanged =
+      items.length !== lastItemsRef.current.length ||
+      items.some((item, idx) => {
+        const lastItem = lastItemsRef.current[idx];
+        if (!lastItem) return true;
+        return (
+          item.id !== lastItem.id ||
+          item.title !== lastItem.title ||
+          item.imageUrl !== lastItem.imageUrl ||
+          item.text !== lastItem.text ||
+          item.category !== lastItem.category
+        );
+      });
+    if (itemsChanged && !isReorderingRef.current && !isSaving) {
+      setOrderedItems(items);
+      lastItemsRef.current = items;
+    }
+  }, [items, isSaving]);
+  const submissionIds = orderedItems.map((s) => s.id);
+  const handleReorder = useCallback(
+    async (newItems: PortfolioItem[]) => {
+      isReorderingRef.current = true;
+      setOrderedItems(newItems);
+      setIsSaving(true);
+      try {
+        await onReorder(newItems);
+        lastItemsRef.current = newItems;
+        setTimeout(() => {
+          router.refresh();
+          setTimeout(() => {
+            isReorderingRef.current = false;
+          }, 500);
+        }, 200);
+      } catch (error) {
+        console.error("Failed to save order:", error);
+        setOrderedItems(items);
+        lastItemsRef.current = items;
+        isReorderingRef.current = false;
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [items, onReorder, router],
+  );
+  return (
+    <PortfolioGridFrame
+      items={orderedItems}
+      isLoggedIn={true}
+      submissionIds={submissionIds}
+    >
+      <PortfolioGridContent
+        items={orderedItems}
+        allItems={orderedItems}
+        isLoggedIn={true}
+        isOwnProfile={false}
+        showPromptBadge={true}
+        allowEdit={true}
+        onReorder={handleReorder}
+        isSaving={isSaving}
+        mode="exhibit"
+        onRemove={onRemove}
+        context="exhibit"
+      />
+    </PortfolioGridFrame>
+  );
+}
+
+export const PortfolioGrid = {
+  Profile: PortfolioGridProfile,
+  Collection: PortfolioGridCollection,
+  Exhibit: PortfolioGridExhibit,
+};
 
 interface SortablePortfolioItemProps {
   item: PortfolioItem;

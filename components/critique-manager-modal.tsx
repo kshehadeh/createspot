@@ -52,7 +52,7 @@ interface Critique {
   };
 }
 
-interface CritiqueManagerModalProps {
+interface CritiqueManagerModalContentProps {
   isOpen: boolean;
   onClose: () => void;
   submissionId: string;
@@ -62,14 +62,14 @@ interface CritiqueManagerModalProps {
   onUnseenCountChange?: (count: number) => void;
 }
 
-export function CritiqueManagerModal({
+function CritiqueManagerModalContent({
   isOpen,
   onClose,
   submissionId,
   isOwner,
   submissionTitle,
   onUnseenCountChange,
-}: CritiqueManagerModalProps) {
+}: CritiqueManagerModalContentProps) {
   const t = useTranslations("critique");
   const tCommon = useTranslations("common");
   const [critiques, setCritiques] = useState<Critique[]>([]);
@@ -762,3 +762,34 @@ export function CritiqueManagerModal({
     </>
   );
 }
+
+interface CritiqueManagerModalOwnerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  submissionId: string;
+  currentUserId?: string | null;
+  submissionTitle?: string | null;
+  onUnseenCountChange?: (count: number) => void;
+}
+
+function CritiqueManagerModalOwner(props: CritiqueManagerModalOwnerProps) {
+  return <CritiqueManagerModalContent {...props} isOwner={true} />;
+}
+
+interface CritiqueManagerModalViewerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  submissionId: string;
+  currentUserId?: string | null;
+  submissionTitle?: string | null;
+  onUnseenCountChange?: (count: number) => void;
+}
+
+function CritiqueManagerModalViewer(props: CritiqueManagerModalViewerProps) {
+  return <CritiqueManagerModalContent {...props} isOwner={false} />;
+}
+
+export const CritiqueManagerModal = {
+  Owner: CritiqueManagerModalOwner,
+  Viewer: CritiqueManagerModalViewer,
+};
