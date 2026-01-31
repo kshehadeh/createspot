@@ -94,25 +94,10 @@ export function RecentSubmissionsCarousel({
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 transition-opacity group-hover:opacity-100">
-                  <div className="flex items-center gap-2">
-                    {submission.user.image ? (
-                      <Image
-                        src={submission.user.image}
-                        alt={submission.user.name || "User"}
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs font-medium text-white">
-                        {submission.user.name?.charAt(0).toUpperCase() || "?"}
-                      </div>
-                    )}
-                    <span className="truncate text-sm text-white">
-                      {submission.user.name || "Anonymous"}
-                    </span>
-                  </div>
+                <div className="absolute bottom-0 right-0 rounded-tl-md bg-black/50 px-3 py-2">
+                  <span className="text-sm font-medium text-white drop-shadow-sm">
+                    {submission.user.name || "Anonymous"}
+                  </span>
                 </div>
               </Link>
             </div>

@@ -17,7 +17,10 @@ interface MoreMenuProps {
   moreButtonClassName: string;
 }
 
-export function MoreMenu({ onSupportClick, moreButtonClassName }: MoreMenuProps) {
+export function MoreMenu({
+  onSupportClick,
+  moreButtonClassName,
+}: MoreMenuProps) {
   const t = useTranslations("navigation");
   const tSupport = useTranslations("contact.support");
   const promptRoute = getRoute("prompt");
@@ -47,10 +50,7 @@ export function MoreMenu({ onSupportClick, moreButtonClassName }: MoreMenuProps)
           {tSupport("cta")}
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link
-            href={contactRoute.path}
-            className="flex items-center gap-2"
-          >
+          <Link href={contactRoute.path} className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
             {t("contact")}
           </Link>

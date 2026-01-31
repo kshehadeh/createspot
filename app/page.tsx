@@ -142,12 +142,6 @@ export default async function Home() {
               <CardContent className="px-6 pb-6 pt-0">
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    href="/exhibition/gallery/grid"
-                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
-                    {t("features.inspiration.ctaGallery")}
-                  </Link>
-                  <Link
                     href="/exhibition"
                     className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                   >
