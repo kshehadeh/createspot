@@ -407,222 +407,217 @@ function CritiqueManagerModalContent({
                         </span>
                       )}
                     </div>
-                        {editingId === critique.id ? (
-                          <div className="space-y-3">
-                            <RichTextEditor
-                              value={editCritique}
-                              onChange={setEditCritique}
-                              placeholder={t("critiquePlaceholder")}
-                            />
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                onClick={() => handleEditCritique(critique.id)}
-                                disabled={saving}
-                              >
-                                {saving ? t("saving") : tCommon("save")}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  setEditingId(null);
-                                  setEditCritique("");
-                                }}
-                              >
-                                {tCommon("cancel")}
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div
-                              className="prose prose-sm dark:prose-invert max-w-none mb-1"
-                              dangerouslySetInnerHTML={{
-                                __html: critique.critique,
-                              }}
-                            />
-                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                              {!isOwner && (
-                                <>
-                                  {canEdit(critique) && (
-                                    <button
-                                      type="button"
-                                      className="hover:text-foreground hover:underline"
-                                      onClick={() => startEdit(critique)}
-                                    >
-                                      {tCommon("edit")}
-                                    </button>
-                                  )}
-                                  {canEdit(critique) && canDelete(critique) && (
-                                    <span aria-hidden> · </span>
-                                  )}
-                                  {canDelete(critique) && (
-                                    <button
-                                      type="button"
-                                      className="text-destructive hover:text-destructive hover:underline"
-                                      onClick={() =>
-                                        setShowDeleteConfirm(critique.id)
-                                      }
-                                    >
-                                      {tCommon("delete")}
-                                    </button>
-                                  )}
-                                </>
+                    {editingId === critique.id ? (
+                      <div className="space-y-3">
+                        <RichTextEditor
+                          value={editCritique}
+                          onChange={setEditCritique}
+                          placeholder={t("critiquePlaceholder")}
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleEditCritique(critique.id)}
+                            disabled={saving}
+                          >
+                            {saving ? t("saving") : tCommon("save")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setEditingId(null);
+                              setEditCritique("");
+                            }}
+                          >
+                            {tCommon("cancel")}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div
+                          className="prose prose-sm dark:prose-invert max-w-none mb-1"
+                          dangerouslySetInnerHTML={{
+                            __html: critique.critique,
+                          }}
+                        />
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                          {!isOwner && (
+                            <>
+                              {canEdit(critique) && (
+                                <button
+                                  type="button"
+                                  className="hover:text-foreground hover:underline"
+                                  onClick={() => startEdit(critique)}
+                                >
+                                  {tCommon("edit")}
+                                </button>
                               )}
-                              {isOwner && (
+                              {canEdit(critique) && canDelete(critique) && (
+                                <span aria-hidden> · </span>
+                              )}
+                              {canDelete(critique) && (
+                                <button
+                                  type="button"
+                                  className="text-destructive hover:text-destructive hover:underline"
+                                  onClick={() =>
+                                    setShowDeleteConfirm(critique.id)
+                                  }
+                                >
+                                  {tCommon("delete")}
+                                </button>
+                              )}
+                            </>
+                          )}
+                          {isOwner && (
+                            <>
+                              <button
+                                type="button"
+                                className="text-destructive hover:text-destructive hover:underline"
+                                onClick={() =>
+                                  setShowDeleteCreatorConfirm(critique.id)
+                                }
+                              >
+                                {tCommon("delete")}
+                              </button>
+                              {!critique.response && (
                                 <>
+                                  <span aria-hidden> · </span>
                                   <button
                                     type="button"
-                                    className="text-destructive hover:text-destructive hover:underline"
-                                    onClick={() =>
-                                      setShowDeleteCreatorConfirm(critique.id)
-                                    }
+                                    className="hover:text-foreground hover:underline"
+                                    onClick={() => {
+                                      setReplyingId(critique.id);
+                                      setReplyText("");
+                                    }}
                                   >
-                                    {tCommon("delete")}
+                                    {t("reply")}
                                   </button>
-                                  {!critique.response && (
-                                    <>
-                                      <span aria-hidden> · </span>
-                                      <button
-                                        type="button"
-                                        className="hover:text-foreground hover:underline"
-                                        onClick={() => {
-                                          setReplyingId(critique.id);
-                                          setReplyText("");
-                                        }}
-                                      >
-                                        {t("reply")}
-                                      </button>
-                                    </>
-                                  )}
                                 </>
                               )}
-                            </div>
-                          </>
-                        )}
-                        {(critique.response || replyingId === critique.id) && (
-                          <div className="mt-4 ml-3">
-                            <div className="flex flex-row items-center gap-2">
-                              <div
-                                className="shrink-0 text-muted-foreground"
-                                aria-hidden
-                              >
-                                <MessageCircle
-                                  size={14}
-                                  strokeWidth={1.5}
-                                  className="block"
-                                />
-                              </div>
-                              <div className="text-sm font-medium">
-                                {isOwner ? t("yourReply") : t("creatorReply")}
-                              </div>
-                            </div>
-                            <div className="mt-2 pl-6">
-                              {critique.response && !(replyingId === critique.id) ? (
-                                <>
-                                  {editingResponseId === critique.id ? (
-                                    <div className="space-y-3">
-                                      <RichTextEditor
-                                        value={editResponseText}
-                                        onChange={setEditResponseText}
-                                        placeholder={t("responsePlaceholder")}
-                                      />
-                                      <div className="flex gap-2">
-                                        <Button
-                                          size="sm"
-                                          onClick={() =>
-                                            handleEditResponse(critique.id)
-                                          }
-                                          disabled={saving}
-                                        >
-                                          {saving
-                                            ? t("saving")
-                                            : tCommon("save")}
-                                        </Button>
-                                        <Button
-                                          size="sm"
-                                          variant="outline"
-                                          onClick={() => {
-                                            setEditingResponseId(null);
-                                            setEditResponseText("");
-                                          }}
-                                        >
-                                          {tCommon("cancel")}
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <>
-                                      <div
-                                        className="prose prose-sm dark:prose-invert max-w-none mb-1"
-                                        dangerouslySetInnerHTML={{
-                                          __html: critique.response,
-                                        }}
-                                      />
-                                      {isOwner && (
-                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                                          <button
-                                            type="button"
-                                            className="hover:text-foreground hover:underline"
-                                            onClick={() =>
-                                              startEditResponse(critique)
-                                            }
-                                          >
-                                            {tCommon("edit")}
-                                          </button>
-                                          <span aria-hidden> · </span>
-                                          <button
-                                            type="button"
-                                            className="text-destructive hover:text-destructive hover:underline"
-                                            onClick={() =>
-                                              setShowDeleteResponseConfirm(
-                                                critique.id,
-                                              )
-                                            }
-                                          >
-                                            {tCommon("delete")}
-                                          </button>
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                </>
-                              ) : replyingId === critique.id ? (
+                            </>
+                          )}
+                        </div>
+                      </>
+                    )}
+                    {(critique.response || replyingId === critique.id) && (
+                      <div className="mt-4 ml-3">
+                        <div className="flex flex-row items-center gap-2">
+                          <div
+                            className="shrink-0 text-muted-foreground"
+                            aria-hidden
+                          >
+                            <MessageCircle
+                              size={14}
+                              strokeWidth={1.5}
+                              className="block"
+                            />
+                          </div>
+                          <div className="text-sm font-medium">
+                            {isOwner ? t("yourReply") : t("creatorReply")}
+                          </div>
+                        </div>
+                        <div className="mt-2 pl-6">
+                          {critique.response &&
+                          !(replyingId === critique.id) ? (
+                            <>
+                              {editingResponseId === critique.id ? (
                                 <div className="space-y-3">
                                   <RichTextEditor
-                                    value={replyText}
-                                    onChange={setReplyText}
+                                    value={editResponseText}
+                                    onChange={setEditResponseText}
                                     placeholder={t("responsePlaceholder")}
                                   />
                                   <div className="flex gap-2">
                                     <Button
                                       size="sm"
                                       onClick={() =>
-                                        handleReply(critique.id)
+                                        handleEditResponse(critique.id)
                                       }
                                       disabled={saving}
                                     >
-                                      {saving
-                                        ? t("saving")
-                                        : tCommon("save")}
+                                      {saving ? t("saving") : tCommon("save")}
                                     </Button>
                                     <Button
                                       size="sm"
                                       variant="outline"
                                       onClick={() => {
-                                        setReplyingId(null);
-                                        setReplyText("");
+                                        setEditingResponseId(null);
+                                        setEditResponseText("");
                                       }}
                                     >
                                       {tCommon("cancel")}
                                     </Button>
                                   </div>
                                 </div>
-                              ) : null}
+                              ) : (
+                                <>
+                                  <div
+                                    className="prose prose-sm dark:prose-invert max-w-none mb-1"
+                                    dangerouslySetInnerHTML={{
+                                      __html: critique.response,
+                                    }}
+                                  />
+                                  {isOwner && (
+                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                                      <button
+                                        type="button"
+                                        className="hover:text-foreground hover:underline"
+                                        onClick={() =>
+                                          startEditResponse(critique)
+                                        }
+                                      >
+                                        {tCommon("edit")}
+                                      </button>
+                                      <span aria-hidden> · </span>
+                                      <button
+                                        type="button"
+                                        className="text-destructive hover:text-destructive hover:underline"
+                                        onClick={() =>
+                                          setShowDeleteResponseConfirm(
+                                            critique.id,
+                                          )
+                                        }
+                                      >
+                                        {tCommon("delete")}
+                                      </button>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </>
+                          ) : replyingId === critique.id ? (
+                            <div className="space-y-3">
+                              <RichTextEditor
+                                value={replyText}
+                                onChange={setReplyText}
+                                placeholder={t("responsePlaceholder")}
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleReply(critique.id)}
+                                  disabled={saving}
+                                >
+                                  {saving ? t("saving") : tCommon("save")}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setReplyingId(null);
+                                    setReplyText("");
+                                  }}
+                                >
+                                  {tCommon("cancel")}
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          ) : null}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
