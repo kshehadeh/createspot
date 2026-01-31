@@ -742,8 +742,14 @@ export function PortfolioItemForm({
             id="critiquesEnabled"
             checked={critiquesEnabled}
             onCheckedChange={setCritiquesEnabled}
+            disabled={shareStatus === "PRIVATE"}
           />
         </div>
+        {shareStatus === "PRIVATE" && (
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {tCritique("critiquesDisabledWhenPrivate")}
+          </p>
+        )}
       </div>
 
       <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">

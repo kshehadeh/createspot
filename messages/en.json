@@ -1127,6 +1127,7 @@
   "critique": {
     "enableCritiques": "Enable critiques",
     "enableCritiquesDescription": "Allow others to provide feedback on this work",
+    "critiquesDisabledWhenPrivate": "Critiques are not visible to other users because the submission is marked as private.",
     "critiqueButton": "Critique",
     "manageCritiques": "Manage Critiques",
     "addCritique": "Add Critique",
@@ -1134,6 +1135,7 @@
     "deleteCritique": "Delete Critique",
     "reply": "Reply",
     "creatorReply": "Creator Reply",
+    "yourReply": "Your Reply",
     "editReply": "Edit Reply",
     "deleteReply": "Delete Reply",
     "noCritiques": "No critiques yet",
@@ -1146,6 +1148,7 @@
     "saving": "Saving...",
     "deleting": "Deleting...",
     "critiquer": "Critiquer",
+    "yourCritique": "Your critique",
     "yourCritiques": "Your Critiques",
     "allCritiques": "All Critiques",
     "deleteCritiqueConfirm": "Are you sure you want to delete this critique? This action cannot be undone."

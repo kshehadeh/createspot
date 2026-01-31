@@ -13,15 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ConfirmModal } from "@/components/confirm-modal";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Edit, Trash2 } from "lucide-react";
+import { MessageCircle, NotebookPen } from "lucide-react";
 import { toast } from "sonner";
 import { getCreatorUrl } from "@/lib/utils";
 
@@ -373,7 +366,7 @@ function CritiqueManagerModalContent({
               <div className="text-center py-8 text-muted-foreground">
                 {tCommon("loading")}
               </div>
-            ) : critiques.length === 0 ? (
+            ) : critiques.length === 0 && !showAddForm ? (
               <div className="text-center py-8 text-muted-foreground">
                 {t("noCritiques")}
               </div>
@@ -381,37 +374,39 @@ function CritiqueManagerModalContent({
               critiques.map((critique, index) => (
                 <div key={critique.id}>
                   {index > 0 && <div className="border-t border-border my-4" />}
-                  <div className="flex items-start gap-3">
-                    {isOwner && (
-                      <Link href={getCreatorUrl(critique.critiquer)}>
-                        <Avatar>
-                          <AvatarImage
-                            src={critique.critiquer.image || undefined}
-                          />
-                          <AvatarFallback>
-                            {critique.critiquer.name?.[0] || "?"}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Link>
-                    )}
-                    <div className="flex-1 min-w-0 flex flex-col md:flex-row md:items-start md:gap-3">
-                      <div className="flex-1 min-w-0">
-                        {isOwner && (
-                          <div className="flex items-center gap-2 mb-2">
-                            <Link
-                              href={getCreatorUrl(critique.critiquer)}
-                              className="font-medium text-foreground hover:underline"
-                            >
-                              {critique.critiquer.name || t("critiquer")}
-                            </Link>
-                            {critique.seenAt === null && (
-                              <Badge variant="secondary">{t("unseen")}</Badge>
-                            )}
-                            {critique.seenAt !== null && (
-                              <Badge variant="outline">{t("seen")}</Badge>
-                            )}
-                          </div>
-                        )}
+                  <div className="flex-1 min-w-0">
+                    <div className="mb-2 flex items-center gap-2">
+                      <div
+                        className="shrink-0 text-muted-foreground"
+                        aria-hidden
+                      >
+                        <NotebookPen
+                          size={14}
+                          strokeWidth={1.5}
+                          className="block"
+                        />
+                      </div>
+                      {isOwner ? (
+                        <>
+                          <Link
+                            href={getCreatorUrl(critique.critiquer)}
+                            className="text-sm font-medium text-foreground hover:underline"
+                          >
+                            {critique.critiquer.name || t("critiquer")}
+                          </Link>
+                          {critique.seenAt === null && (
+                            <Badge variant="secondary">{t("unseen")}</Badge>
+                          )}
+                          {critique.seenAt !== null && (
+                            <Badge variant="outline">{t("seen")}</Badge>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-sm font-medium text-foreground">
+                          {t("yourCritique")}
+                        </span>
+                      )}
+                    </div>
                         {editingId === critique.id ? (
                           <div className="space-y-3">
                             <RichTextEditor
@@ -442,239 +437,192 @@ function CritiqueManagerModalContent({
                         ) : (
                           <>
                             <div
-                              className="prose prose-sm dark:prose-invert max-w-none mb-3"
+                              className="prose prose-sm dark:prose-invert max-w-none mb-1"
                               dangerouslySetInnerHTML={{
                                 __html: critique.critique,
                               }}
                             />
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                              {!isOwner && (
+                                <>
+                                  {canEdit(critique) && (
+                                    <button
+                                      type="button"
+                                      className="hover:text-foreground hover:underline"
+                                      onClick={() => startEdit(critique)}
+                                    >
+                                      {tCommon("edit")}
+                                    </button>
+                                  )}
+                                  {canEdit(critique) && canDelete(critique) && (
+                                    <span aria-hidden> · </span>
+                                  )}
+                                  {canDelete(critique) && (
+                                    <button
+                                      type="button"
+                                      className="text-destructive hover:text-destructive hover:underline"
+                                      onClick={() =>
+                                        setShowDeleteConfirm(critique.id)
+                                      }
+                                    >
+                                      {tCommon("delete")}
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                              {isOwner && (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="text-destructive hover:text-destructive hover:underline"
+                                    onClick={() =>
+                                      setShowDeleteCreatorConfirm(critique.id)
+                                    }
+                                  >
+                                    {tCommon("delete")}
+                                  </button>
+                                  {!critique.response && (
+                                    <>
+                                      <span aria-hidden> · </span>
+                                      <button
+                                        type="button"
+                                        className="hover:text-foreground hover:underline"
+                                        onClick={() => {
+                                          setReplyingId(critique.id);
+                                          setReplyText("");
+                                        }}
+                                      >
+                                        {t("reply")}
+                                      </button>
+                                    </>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           </>
                         )}
-                        {critique.response && (
-                          <div className="mt-4 pt-4">
-                            <div className="text-sm font-medium mb-2">
-                              {t("creatorReply")}
-                            </div>
-                            {editingResponseId === critique.id ? (
-                              <div className="space-y-3">
-                                <RichTextEditor
-                                  value={editResponseText}
-                                  onChange={setEditResponseText}
-                                  placeholder={t("responsePlaceholder")}
+                        {(critique.response || replyingId === critique.id) && (
+                          <div className="mt-4 ml-3">
+                            <div className="flex flex-row items-center gap-2">
+                              <div
+                                className="shrink-0 text-muted-foreground"
+                                aria-hidden
+                              >
+                                <MessageCircle
+                                  size={14}
+                                  strokeWidth={1.5}
+                                  className="block"
                                 />
-                                <div className="flex gap-2">
-                                  <Button
-                                    size="sm"
-                                    onClick={() =>
-                                      handleEditResponse(critique.id)
-                                    }
-                                    disabled={saving}
-                                  >
-                                    {saving ? t("saving") : tCommon("save")}
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setEditingResponseId(null);
-                                      setEditResponseText("");
-                                    }}
-                                  >
-                                    {tCommon("cancel")}
-                                  </Button>
-                                </div>
                               </div>
-                            ) : (
-                              <>
-                                <div
-                                  className="prose prose-sm dark:prose-invert max-w-none mb-3"
-                                  dangerouslySetInnerHTML={{
-                                    __html: critique.response,
-                                  }}
-                                />
-                                {isOwner && (
-                                  <div className="flex gap-2">
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <Button
-                                            size="icon"
-                                            variant="outline"
+                              <div className="text-sm font-medium">
+                                {isOwner ? t("yourReply") : t("creatorReply")}
+                              </div>
+                            </div>
+                            <div className="mt-2 pl-6">
+                              {critique.response && !(replyingId === critique.id) ? (
+                                <>
+                                  {editingResponseId === critique.id ? (
+                                    <div className="space-y-3">
+                                      <RichTextEditor
+                                        value={editResponseText}
+                                        onChange={setEditResponseText}
+                                        placeholder={t("responsePlaceholder")}
+                                      />
+                                      <div className="flex gap-2">
+                                        <Button
+                                          size="sm"
+                                          onClick={() =>
+                                            handleEditResponse(critique.id)
+                                          }
+                                          disabled={saving}
+                                        >
+                                          {saving
+                                            ? t("saving")
+                                            : tCommon("save")}
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => {
+                                            setEditingResponseId(null);
+                                            setEditResponseText("");
+                                          }}
+                                        >
+                                          {tCommon("cancel")}
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <div
+                                        className="prose prose-sm dark:prose-invert max-w-none mb-1"
+                                        dangerouslySetInnerHTML={{
+                                          __html: critique.response,
+                                        }}
+                                      />
+                                      {isOwner && (
+                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                                          <button
+                                            type="button"
+                                            className="hover:text-foreground hover:underline"
                                             onClick={() =>
                                               startEditResponse(critique)
                                             }
                                           >
-                                            <Edit className="h-4 w-4" />
-                                          </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>{t("editReply")}</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <Button
-                                            size="icon"
-                                            variant="destructive"
+                                            {tCommon("edit")}
+                                          </button>
+                                          <span aria-hidden> · </span>
+                                          <button
+                                            type="button"
+                                            className="text-destructive hover:text-destructive hover:underline"
                                             onClick={() =>
                                               setShowDeleteResponseConfirm(
                                                 critique.id,
                                               )
                                             }
                                           >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>{t("deleteReply")}</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
+                                            {tCommon("delete")}
+                                          </button>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                </>
+                              ) : replyingId === critique.id ? (
+                                <div className="space-y-3">
+                                  <RichTextEditor
+                                    value={replyText}
+                                    onChange={setReplyText}
+                                    placeholder={t("responsePlaceholder")}
+                                  />
+                                  <div className="flex gap-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() =>
+                                        handleReply(critique.id)
+                                      }
+                                      disabled={saving}
+                                    >
+                                      {saving
+                                        ? t("saving")
+                                        : tCommon("save")}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        setReplyingId(null);
+                                        setReplyText("");
+                                      }}
+                                    >
+                                      {tCommon("cancel")}
+                                    </Button>
                                   </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        )}
-                        {!critique.response && isOwner && (
-                          <div className="mt-4 pt-4">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                setReplyingId(critique.id);
-                                setReplyText("");
-                              }}
-                            >
-                              {t("reply")}
-                            </Button>
-                          </div>
-                        )}
-                        {replyingId === critique.id && (
-                          <div className="mt-4 pt-4 space-y-3">
-                            <RichTextEditor
-                              value={replyText}
-                              onChange={setReplyText}
-                              placeholder={t("responsePlaceholder")}
-                            />
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                onClick={() => handleReply(critique.id)}
-                                disabled={saving}
-                              >
-                                {saving ? t("saving") : tCommon("save")}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  setReplyingId(null);
-                                  setReplyText("");
-                                }}
-                              >
-                                {tCommon("cancel")}
-                              </Button>
+                                </div>
+                              ) : null}
                             </div>
                           </div>
                         )}
-                      </div>
-                      {!isOwner && (
-                        <div className="flex gap-2 md:flex-col md:mt-0 mt-2 shrink-0">
-                          <TooltipProvider>
-                            {canEdit(critique) ? (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    size="icon"
-                                    variant="outline"
-                                    onClick={() => startEdit(critique)}
-                                  >
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{t("editCritique")}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            ) : (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span>
-                                    <Button
-                                      size="icon"
-                                      variant="outline"
-                                      disabled
-                                    >
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
-                                  </span>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{t("cannotEdit")}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            )}
-                            {canDelete(critique) ? (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    size="icon"
-                                    variant="destructive"
-                                    onClick={() =>
-                                      setShowDeleteConfirm(critique.id)
-                                    }
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{t("deleteCritique")}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            ) : (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span>
-                                    <Button
-                                      size="icon"
-                                      variant="destructive"
-                                      disabled
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </span>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{t("cannotDelete")}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            )}
-                          </TooltipProvider>
-                        </div>
-                      )}
-                      {isOwner && (
-                        <div className="flex gap-2 md:flex-col md:mt-0 mt-2 shrink-0">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  size="icon"
-                                  variant="destructive"
-                                  onClick={() =>
-                                    setShowDeleteCreatorConfirm(critique.id)
-                                  }
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{t("deleteCritique")}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      )}
-                    </div>
                   </div>
                 </div>
               ))
@@ -721,7 +669,7 @@ function CritiqueManagerModalContent({
       <ConfirmModal
         isOpen={showDeleteConfirm !== null}
         title={t("deleteCritique")}
-        message={t("cannotDelete")}
+        message={t("deleteCritiqueConfirm")}
         confirmLabel={t("deleteCritique")}
         onConfirm={() => {
           if (showDeleteConfirm) {

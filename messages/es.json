@@ -1127,6 +1127,7 @@
   "critique": {
     "enableCritiques": "Habilitar críticas",
     "enableCritiquesDescription": "Permitir que otros proporcionen comentarios sobre este trabajo",
+    "critiquesDisabledWhenPrivate": "Las críticas no son visibles para otros usuarios porque la publicación está marcada como privada.",
     "critiqueButton": "Crítica",
     "manageCritiques": "Gestionar Críticas",
     "addCritique": "Añadir Crítica",
@@ -1134,6 +1135,7 @@
     "deleteCritique": "Eliminar Crítica",
     "reply": "Responder",
     "creatorReply": "Respuesta del Creador",
+    "yourReply": "Tu respuesta",
     "editReply": "Editar Respuesta",
     "deleteReply": "Eliminar Respuesta",
     "noCritiques": "Aún no hay críticas",
@@ -1146,6 +1148,7 @@
     "saving": "Guardando...",
     "deleting": "Eliminando...",
     "critiquer": "Crítico",
+    "yourCritique": "Tu crítica",
     "yourCritiques": "Tus Críticas",
     "allCritiques": "Todas las Críticas",
     "deleteCritiqueConfirm": "¿Estás seguro de que quieres eliminar esta crítica? Esta acción no se puede deshacer."
