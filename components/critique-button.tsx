@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CritiqueManagerModal } from "@/components/critique-manager-modal";
+import { getCreatorUrl } from "@/lib/utils";
 
 interface CritiqueButtonProps {
   submissionId: string;
@@ -12,6 +13,8 @@ interface CritiqueButtonProps {
   isOwner: boolean;
   currentUserId?: string | null;
   submissionTitle?: string | null;
+  /** User (creator) for building critiques page URL. Required for link. */
+  user: { id: string; slug?: string | null };
 }
 
 export function CritiqueButton({
@@ -19,13 +22,13 @@ export function CritiqueButton({
   critiquesEnabled,
   isOwner,
   currentUserId,
-  submissionTitle,
+  user,
 }: CritiqueButtonProps) {
   const t = useTranslations("critique");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [unseenCount, setUnseenCount] = useState(0);
 
-  // Fetch unseen count for creators
+  const critiquesHref = `${getCreatorUrl(user)}/s/${submissionId}/critiques`;
+
   useEffect(() => {
     if (isOwner && critiquesEnabled && currentUserId) {
       const fetchUnseenCount = async () => {
@@ -53,14 +56,14 @@ export function CritiqueButton({
   }
 
   return (
-    <>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsModalOpen(true)}
-        className="gap-1.5"
-        data-hint-target="critique-button"
-      >
+    <Button
+      variant="outline"
+      size="sm"
+      asChild
+      className="gap-1.5"
+      data-hint-target="critique-button"
+    >
+      <Link href={critiquesHref}>
         <svg
           className="h-4 w-4"
           fill="none"
@@ -80,26 +83,7 @@ export function CritiqueButton({
             {unseenCount}
           </Badge>
         )}
-      </Button>
-      {isOwner ? (
-        <CritiqueManagerModal.Owner
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          submissionId={submissionId}
-          currentUserId={currentUserId}
-          submissionTitle={submissionTitle}
-          onUnseenCountChange={setUnseenCount}
-        />
-      ) : (
-        <CritiqueManagerModal.Viewer
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          submissionId={submissionId}
-          currentUserId={currentUserId}
-          submissionTitle={submissionTitle}
-          onUnseenCountChange={setUnseenCount}
-        />
-      )}
-    </>
+      </Link>
+    </Button>
   );
 }

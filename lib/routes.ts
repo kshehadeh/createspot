@@ -176,6 +176,11 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.imageEditor",
     parentPath: "/creators/[creatorid]/s/[submissionid]/edit",
   },
+  submissionCritiques: {
+    path: "/creators/[creatorid]/s/[submissionid]/critiques",
+    label: "navigation.critiques",
+    parentPath: "/creators/[creatorid]/s/[submissionid]",
+  },
 
   // Collections routes (now under creators/[creatorid]/collections)
   collections: {

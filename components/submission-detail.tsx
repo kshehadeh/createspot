@@ -184,15 +184,18 @@ export function SubmissionDetail({
                       </Link>
                     </Button>
                   )}
-                  {isLoggedIn && submission.critiquesEnabled && (
-                    <CritiqueButton
-                      submissionId={submission.id}
-                      critiquesEnabled={submission.critiquesEnabled}
-                      isOwner={isOwner}
-                      currentUserId={currentUserId}
-                      submissionTitle={submission.title}
-                    />
-                  )}
+                  {isLoggedIn &&
+                    submission.critiquesEnabled &&
+                    (isOwner || submission.shareStatus === "PUBLIC") && (
+                      <CritiqueButton
+                        submissionId={submission.id}
+                        critiquesEnabled={submission.critiquesEnabled}
+                        isOwner={isOwner}
+                        currentUserId={currentUserId}
+                        submissionTitle={submission.title}
+                        user={submission.user}
+                      />
+                    )}
                 </div>
                 {/* Favorite button with count */}
                 <div className="flex items-center gap-1.5">

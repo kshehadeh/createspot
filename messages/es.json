@@ -1141,6 +1141,7 @@
     "noCritiques": "Aún no hay críticas",
     "unseen": "No vista",
     "seen": "Vista",
+    "seenOn": "Visto el {date}",
     "cannotEdit": "No se puede editar después de que el creador haya visto esta crítica",
     "cannotDelete": "No se puede eliminar después de que el creador haya visto esta crítica",
     "critiquePlaceholder": "Escribe tu crítica...",
@@ -1151,6 +1152,8 @@
     "yourCritique": "Tu crítica",
     "yourCritiques": "Tus Críticas",
     "allCritiques": "Todas las Críticas",
+    "allCritiquesFor": "Todas las Críticas de <link>{title}</link>",
+    "yourCritiquesFor": "Tus Críticas de <link>{title}</link>",
     "deleteCritiqueConfirm": "¿Estás seguro de que quieres eliminar esta crítica? Esta acción no se puede deshacer."
   },
   "email": {

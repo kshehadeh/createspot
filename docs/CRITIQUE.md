@@ -194,7 +194,7 @@ Marks a critique as seen by the creator.
 
 **Location**: `components/critique-button.tsx`
 
-**Purpose**: Entry point for accessing the critique system on submission pages.
+**Purpose**: Entry point for accessing the critique system on submission pages. Renders a link to the dedicated critiques page.
 
 **Props**:
 - `submissionId: string`
@@ -202,51 +202,61 @@ Marks a critique as seen by the creator.
 - `isOwner: boolean`
 - `currentUserId?: string | null`
 - `submissionTitle?: string | null`
+- `user: { id: string; slug?: string | null }` — creator for building the critiques page URL
 
 **Features**:
-- Only displays if `critiquesEnabled` is `true`
+- Only displays if `critiquesEnabled` is `true` and (creator **or** submission is public)
+- Links to `/creators/[creatorid]/s/[submissionid]/critiques`
 - Shows badge with unseen critique count for creators
-- Opens `CritiqueManagerModal` on click
 
-### CritiqueManagerModal
+### Critiques Page
 
-**Location**: `components/critique-manager-modal.tsx`
+**Route**: `/creators/[creatorid]/s/[submissionid]/critiques`
 
-**Purpose**: Main interface for managing critiques.
+**Location**: `app/creators/[creatorid]/s/[submissionid]/critiques/page.tsx`
+
+**Purpose**: Dedicated page for viewing and managing critiques. Desktop: two columns (critiques list left, submission panel right). Mobile: critiques full width with a "View submission" button that opens the submission in a sheet.
+
+**Access control**:
+- **Creator**: Can always access when authenticated.
+- **Non-creator**: Can access only if the submission is **public** (`shareStatus === "PUBLIC"`) and **critiques enabled**. Otherwise `notFound()`.
+- Unauthenticated users are redirected to sign-in.
+
+### CritiquesPanel
+
+**Location**: `components/critiques-panel.tsx`
+
+**Purpose**: Main interface for the critique list (add, edit, delete, reply). Used on the critiques page.
 
 **Props**:
-- `isOpen: boolean`
-- `onClose: () => void`
 - `submissionId: string`
 - `isOwner: boolean`
+- `currentUserId?: string | null`
 - `submissionTitle?: string | null`
 - `onUnseenCountChange?: (count: number) => void`
 
 **Features**:
 
+Both creators and critiquers see the same collapsible list UI; only the grouping and header differ:
+
 #### For Creators (`isOwner: true`):
-- Displays all critiques for the submission
-- Shows critiquer's name and avatar (linked to profile)
-- Shows "unseen" or "seen" badges
+- One collapsible group per critiquer; header is the critiquer's name (linked to profile) and an "Unseen" badge when applicable
 - Can reply to critiques
 - Can edit/delete their own responses
 - Can delete any critique on their submission
-- Automatically marks all critiques as seen when modal opens
-- Updates unseen count badge
+- Automatically marks all critiques as seen when page loads
+- Updates unseen count via callback
 
 #### For Critiquers (`isOwner: false`):
-- Displays only their own critiques
+- Single collapsible group titled **"Your Critiques"** containing all of their critiques (same structure as creator view)
 - Can add new critiques
 - Can edit critiques (only if `seenAt` is `null`)
 - Can delete critiques (only if `seenAt` is `null`)
-- Edit/delete buttons are disabled with tooltips if critique has been seen
-- No name/avatar shown (since all critiques are their own)
 
 **UI Elements**:
+- Collapsible sections with chevron; dotted separators between items within a group
 - Rich text editor for critique and response input
-- Icon-only action buttons (Edit/Delete) positioned to the right on desktop, below on mobile
-- Tooltips for disabled buttons explaining why they can't be used
-- Separators between critiques
+- Edit/Delete/Reply action links
 - Confirmation modals for deletions
 
 ### PortfolioItemForm Integration
@@ -270,33 +280,30 @@ Marks a critique as seen by the creator.
 
 ### Adding a Critique
 
-1. User views a submission with critiques enabled
-2. User clicks "Critique" button
-3. `CritiqueManagerModal` opens
-4. User clicks "Add Critique" button
-5. Rich text editor appears
-6. User writes critique and clicks "Save"
-7. Critique is created via `POST /api/submissions/[id]/critiques`
-8. Email notification is sent to creator (async via Inngest workflow)
-9. Modal refreshes to show new critique
+1. User views a submission with critiques enabled (and public, if not the creator)
+2. User clicks "Critique" button and navigates to the critiques page
+3. User clicks "Add Critique" button
+4. Rich text editor appears
+5. User writes critique and clicks "Save"
+6. Critique is created via `POST /api/submissions/[id]/critiques`
+7. Email notification is sent to creator (async via Inngest workflow)
+8. Page refreshes to show new critique
 
 ### Creator Viewing Critiques
 
 1. Creator views their submission
 2. "Critique" button shows badge with unseen count (if any)
-3. Creator clicks "Critique" button
-4. `CritiqueManagerModal` opens
-5. All critiques are automatically marked as seen
-6. Creator sees:
-   - Critiquer's name and avatar
-   - Critique text
-   - "Unseen" or "Seen" badge
-   - Option to reply
-   - Option to delete critique
+3. Creator clicks "Critique" button and navigates to the critiques page
+4. All critiques are automatically marked as seen
+5. Creator sees:
+   - Critiques list on the left; submission panel (image above text) on the right (desktop); on mobile, same content in one column (critiques then submission)
+   - One collapsible group per critiquer with name (linked to profile) and "Unseen" badge when applicable
+   - Critique text and creator reply
+   - Option to reply and option to delete critique
 
 ### Creator Replying to Critique
 
-1. Creator views critique in modal
+1. Creator views critique on the critiques page
 2. Creator clicks "Reply" button
 3. Rich text editor appears
 4. Creator writes response and clicks "Save"
@@ -306,26 +313,26 @@ Marks a critique as seen by the creator.
 
 ### Editing a Critique (Critiquer)
 
-1. Critiquer views their critique in modal
+1. Critiquer views their critique on the critiques page
 2. If `seenAt` is `null`, "Edit" button is enabled
 3. Critiquer clicks "Edit" button
 4. Rich text editor appears with current critique text
 5. Critiquer modifies text and clicks "Save"
 6. Critique is updated via `PUT /api/critiques/[id]`
-7. If `seenAt` is not `null`, "Edit" button is disabled with tooltip
+7. If `seenAt` is not `null`, "Edit" is not shown
 
 ### Deleting a Critique
 
 **As Critiquer**:
-1. Critiquer views their critique
+1. Critiquer views their critique on the critiques page
 2. If `seenAt` is `null`, "Delete" button is enabled
 3. Critiquer clicks "Delete" button
 4. Confirmation modal appears
 5. On confirm, critique is deleted via `DELETE /api/critiques/[id]`
-6. If `seenAt` is not `null`, "Delete" button is disabled with tooltip
+6. If `seenAt` is not `null`, "Delete" is not shown
 
 **As Creator**:
-1. Creator views any critique on their submission
+1. Creator views any critique on their submission (on the critiques page)
 2. Creator clicks "Delete" button
 3. Confirmation modal appears
 4. On confirm, critique is deleted (no restrictions)
@@ -353,9 +360,10 @@ Marks a critique as seen by the creator.
 - ✅ No restrictions on when responses can be modified
 
 ### Viewing Critiques
-- ✅ Creators see all critiques for their submission
+- ✅ Creators see all critiques for their submission (always when authenticated)
 - ✅ Critiquers see only their own critiques
-- ✅ All users must be authenticated
+- ✅ Non-creators can access the critiques page only if the submission is **public** and **critiques enabled**
+- ✅ All users must be authenticated (redirect to sign-in otherwise)
 
 ## Email Notifications
 
@@ -437,36 +445,36 @@ The feature uses the existing `RichTextEditor` component for both critiques and 
 
 ### State Management
 
-The `CritiqueManagerModal` uses React state to manage:
+The `CritiquesPanel` uses React state to manage:
 - Critique list
 - Loading states
 - Form states (adding, editing, replying)
 - Confirmation modals
-- Unseen count tracking
+- Unseen count tracking (via callback to parent/CritiqueButton)
 
 ### Optimistic Updates
 
 After successful API calls, the component:
 - Refreshes the critique list
 - Updates local state
-- Triggers `router.refresh()` if needed
-- Updates unseen count via callback
+- Updates unseen count via callback (for badge on submission page)
 
-### Modal Behavior
+### Critiques Page Behavior
 
-- Automatically marks all critiques as seen when creator opens modal
+- Automatically marks all critiques as seen when creator loads the page
 - Uses `hasMarkedAsSeen` flag to prevent duplicate API calls
-- Fetches critiques on modal open
-- Resets state on modal close
+- Fetches critiques on mount
+- Desktop: two columns (critiques left, submission right with image above text)
+- Mobile: critiques full width; "View submission" opens a bottom sheet with the submission
 
 ## Integration Points
 
 ### Submission Pages
 
-**Location**: `app/s/[id]/submission-detail.tsx`
+**Location**: `components/submission-detail.tsx` (used by `app/creators/[creatorid]/s/[submissionid]/page.tsx`)
 
-- Displays `CritiqueButton` when `critiquesEnabled` is `true`
-- Passes submission data to button component
+- Displays `CritiqueButton` when `critiquesEnabled` is `true` and (user is creator **or** submission is public)
+- Passes submission data and `user` to build the link to the critiques page
 
 ### Submission API
 
