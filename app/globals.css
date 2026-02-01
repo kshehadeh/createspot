@@ -374,3 +374,20 @@ body {
   mask-image: none;
   -webkit-mask-image: none;
 }
+
+/* Submission lightbox: slide transition when navigating prev/next */
+/* Using CSS transitions (not keyframe animations) for iOS Safari compatibility */
+/* The transform is applied via inline styles; this class handles positioning and GPU hints */
+.lightbox-slide-panel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  /* GPU compositing hints for smooth animations on iOS */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  will-change: transform;
+}

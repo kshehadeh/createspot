@@ -125,11 +125,26 @@ export function SubmissionLightbox({
   const [isTextOverlayOpen, setIsTextOverlayOpen] = useState(false);
   const [closeTooltipOpen, setCloseTooltipOpen] = useState(false);
   const [closeTooltipHovered, setCloseTooltipHovered] = useState(false);
+  // Slide transition state for iOS-compatible animations
+  // Phase: "start" = element at off-screen position, "end" = element at final position
+  const [slideState, setSlideState] = useState<{
+    direction: "left" | "right" | null;
+    phase: "start" | "end";
+  }>({ direction: null, phase: "end" });
+  const prevSubmissionIdRef = useRef<string | null>(null);
   const router = useRouter();
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const viewportHeight = useViewportHeight();
+
+  // Swipe-to-navigate state (mobile only, when prev/next exist)
+  const SWIPE_THRESHOLD_PX = 50;
+  const swipeStartRef = useRef<{
+    x: number;
+    y: number;
+    wasZoomed: boolean;
+  } | null>(null);
 
   const { data: submissionData } = useSWR<{
     submission: { userId: string; user?: { slug: string | null } };
@@ -149,11 +164,133 @@ export function SubmissionLightbox({
     handleTouchMove,
     handleTouchEnd,
     setBaseDimensions,
+    resetTouchZoom,
   } = usePinchZoom({
     supportsHover,
     imageRef,
     imageContainerRef,
   });
+  // Wrapped nav handlers: set slide direction then call parent (so new content slides in)
+  const handleGoToPrevious = useCallback(() => {
+    if (!hasPrevious || !onGoToPrevious) return;
+    setSlideState({ direction: "left", phase: "start" });
+    onGoToPrevious();
+  }, [hasPrevious, onGoToPrevious]);
+
+  const handleGoToNext = useCallback(() => {
+    if (!hasNext || !onGoToNext) return;
+    setSlideState({ direction: "right", phase: "start" });
+    onGoToNext();
+  }, [hasNext, onGoToNext]);
+
+  const hasNavigation =
+    onGoToPrevious != null && onGoToNext != null && (hasPrevious || hasNext);
+  const canSwipeToNavigate =
+    !supportsHover && hasNavigation && !touchZoom.isZoomed;
+
+  const handleTouchStartWithSwipe = useCallback(
+    (e: React.TouchEvent<HTMLImageElement>) => {
+      if (canSwipeToNavigate && e.touches.length === 1) {
+        swipeStartRef.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+          wasZoomed: touchZoom.isZoomed,
+        };
+      }
+      handleTouchStart(e);
+    },
+    [canSwipeToNavigate, touchZoom.isZoomed, handleTouchStart],
+  );
+
+  const handleTouchEndWithSwipe = useCallback(
+    (e: React.TouchEvent<HTMLImageElement>) => {
+      if (
+        canSwipeToNavigate &&
+        swipeStartRef.current &&
+        e.touches.length === 0 &&
+        e.changedTouches.length > 0
+      ) {
+        const start = swipeStartRef.current;
+        const released = e.changedTouches[0];
+        const deltaX = released.clientX - start.x;
+        const deltaY = released.clientY - start.y;
+
+        if (
+          !start.wasZoomed &&
+          Math.abs(deltaX) >= SWIPE_THRESHOLD_PX &&
+          Math.abs(deltaX) > Math.abs(deltaY)
+        ) {
+          if (deltaX > 0 && hasPrevious) {
+            handleGoToPrevious();
+          } else if (deltaX < 0 && hasNext) {
+            handleGoToNext();
+          }
+        }
+        swipeStartRef.current = null;
+      }
+      handleTouchEnd(e);
+    },
+    [
+      canSwipeToNavigate,
+      hasPrevious,
+      hasNext,
+      handleGoToPrevious,
+      handleGoToNext,
+      handleTouchEnd,
+    ],
+  );
+
+  // Simpler swipe handlers for text-only content (no pinch-zoom)
+  const canSwipeTextOnly = !supportsHover && hasNavigation;
+
+  const handleTextTouchStart = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      if (canSwipeTextOnly && e.touches.length === 1) {
+        swipeStartRef.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+          wasZoomed: false,
+        };
+      }
+    },
+    [canSwipeTextOnly],
+  );
+
+  const handleTextTouchEnd = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      if (
+        canSwipeTextOnly &&
+        swipeStartRef.current &&
+        e.touches.length === 0 &&
+        e.changedTouches.length > 0
+      ) {
+        const start = swipeStartRef.current;
+        const released = e.changedTouches[0];
+        const deltaX = released.clientX - start.x;
+        const deltaY = released.clientY - start.y;
+
+        if (
+          Math.abs(deltaX) >= SWIPE_THRESHOLD_PX &&
+          Math.abs(deltaX) > Math.abs(deltaY)
+        ) {
+          if (deltaX > 0 && hasPrevious) {
+            handleGoToPrevious();
+          } else if (deltaX < 0 && hasNext) {
+            handleGoToNext();
+          }
+        }
+        swipeStartRef.current = null;
+      }
+    },
+    [
+      canSwipeTextOnly,
+      hasPrevious,
+      hasNext,
+      handleGoToPrevious,
+      handleGoToNext,
+    ],
+  );
+
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const isOwner =
@@ -203,17 +340,53 @@ export function SubmissionLightbox({
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isTextOverlayOpen]);
 
+  // Reset pinch-zoom when switching to another submission
+  useEffect(() => {
+    if (isOpen) {
+      resetTouchZoom();
+    }
+  }, [isOpen, submission.id, resetTouchZoom]);
+
+  // iOS Safari fix: use CSS transitions with explicit start/end phases
+  // 1. Element mounts at off-screen position (phase: "start")
+  // 2. After paint, transition to final position (phase: "end")
+  useEffect(() => {
+    const prevId = prevSubmissionIdRef.current;
+    prevSubmissionIdRef.current = submission.id;
+
+    // When submission changes and we have a pending slide direction
+    if (
+      prevId !== null &&
+      prevId !== submission.id &&
+      slideState.direction &&
+      slideState.phase === "start"
+    ) {
+      // Force a reflow to ensure the start position is applied
+      // Then trigger the transition to end position
+      let cancelled = false;
+      // Use setTimeout instead of rAF for more reliable iOS behavior
+      const timer = setTimeout(() => {
+        if (cancelled) return;
+        setSlideState((s) => ({ ...s, phase: "end" }));
+      }, 20);
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
+    }
+  }, [submission.id, slideState.direction, slideState.phase]);
+
   // Handle ArrowLeft/ArrowRight for previous/next when callbacks provided and text overlay closed
   useEffect(() => {
     if (!isOpen || isTextOverlayOpen) return;
 
     const handleArrow = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" && onGoToPrevious && hasPrevious) {
+      if (e.key === "ArrowLeft" && hasPrevious) {
         e.preventDefault();
-        onGoToPrevious();
-      } else if (e.key === "ArrowRight" && onGoToNext && hasNext) {
+        handleGoToPrevious();
+      } else if (e.key === "ArrowRight" && hasNext) {
         e.preventDefault();
-        onGoToNext();
+        handleGoToNext();
       }
     };
     window.addEventListener("keydown", handleArrow);
@@ -221,8 +394,8 @@ export function SubmissionLightbox({
   }, [
     isOpen,
     isTextOverlayOpen,
-    onGoToPrevious,
-    onGoToNext,
+    handleGoToPrevious,
+    handleGoToNext,
     hasPrevious,
     hasNext,
   ]);
@@ -457,219 +630,251 @@ export function SubmissionLightbox({
             {submission.user?.name ? `by ${submission.user.name}` : ""}
           </DialogTitle>
         </VisuallyHidden>
-        <div
-          className={`flex h-full w-full p-0 overflow-y-auto md:overflow-hidden ${
-            hasImage ? "flex-col xl:flex-row" : "flex-col"
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Image section */}
-          {hasImage && (
-            <div
-              ref={imageContainerRef}
-              className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden"
-              style={{
-                // Allow panning but prevent page zoom
-                touchAction: supportsHover ? "none" : "pan-x pan-y",
-              }}
-              onContextMenu={handleContextMenu}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                ref={imageRef}
-                src={submission.imageUrl!}
-                alt={submission.title || "Submission"}
-                className="h-auto w-auto max-h-[100dvh] max-w-full object-contain select-none"
+        <div className="relative h-full w-full min-w-0 flex-1 overflow-hidden">
+          <div
+            key={submission.id}
+            className={`flex h-full w-full p-0 overflow-y-auto md:overflow-hidden ${
+              hasImage ? "flex-col xl:flex-row" : "flex-col"
+            } ${slideState.direction ? "lightbox-slide-panel" : ""}`}
+            style={
+              slideState.direction
+                ? {
+                    transform:
+                      slideState.phase === "start"
+                        ? `translate3d(${slideState.direction === "right" ? "100%" : "-100%"}, 0, 0)`
+                        : "translate3d(0, 0, 0)",
+                    transition:
+                      slideState.phase === "end"
+                        ? "transform 0.28s ease-out"
+                        : "none",
+                  }
+                : undefined
+            }
+            onClick={(e) => e.stopPropagation()}
+            onTransitionEnd={() =>
+              setSlideState({ direction: null, phase: "end" })
+            }
+          >
+            {/* Image section */}
+            {hasImage && (
+              <div
+                ref={imageContainerRef}
+                className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden"
                 style={{
-                  maxHeight:
-                    viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
-                  maxWidth: "100%",
-                  // Apply touch zoom transforms only on mobile
-                  ...(!supportsHover && touchZoom.isZoomed
-                    ? {
-                        transform: `translate(${touchZoom.translateX}px, ${touchZoom.translateY}px) scale(${touchZoom.scale})`,
-                        transformOrigin: "center center",
-                        transition: "none",
-                      }
-                    : {}),
-                  ...(protectionEnabled
-                    ? { WebkitUserSelect: "none", userSelect: "none" }
-                    : {}),
+                  // Allow panning but prevent page zoom
+                  touchAction: supportsHover ? "none" : "pan-x pan-y",
                 }}
-                onLoad={() => {
-                  setImageLoaded(true);
-                  // Store base image dimensions when image loads (before any transforms)
-                  setBaseDimensions();
-                }}
-                onMouseMove={handleImageMouseMove}
-                onMouseLeave={handleImageMouseLeave}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-                draggable={!protectionEnabled}
-                onDragStart={handleDragStart}
-              />
-
-              {/* Zoom square overlay - only shown when NOT in sidebar mode */}
-              {zoomState.isActive && supportsHover && (
-                <div
-                  className="pointer-events-none absolute z-20 border-2 border-white bg-white/10 xl:hidden"
+                onContextMenu={handleContextMenu}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  ref={imageRef}
+                  src={submission.imageUrl!}
+                  alt={submission.title || "Submission"}
+                  className="h-auto w-auto max-h-[100dvh] max-w-full object-contain select-none"
                   style={{
-                    width: `${ZOOM_SQUARE_SIZE}px`,
-                    height: `${ZOOM_SQUARE_SIZE}px`,
-                    ...getZoomSquareStyle(),
+                    maxHeight:
+                      viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
+                    maxWidth: "100%",
+                    // Apply touch zoom transforms only on mobile
+                    ...(!supportsHover && touchZoom.isZoomed
+                      ? {
+                          transform: `translate(${touchZoom.translateX}px, ${touchZoom.translateY}px) scale(${touchZoom.scale})`,
+                          transformOrigin: "center center",
+                          transition: "none",
+                        }
+                      : {}),
+                    ...(protectionEnabled
+                      ? { WebkitUserSelect: "none", userSelect: "none" }
+                      : {}),
                   }}
+                  onLoad={() => {
+                    setImageLoaded(true);
+                    // Store base image dimensions when image loads (before any transforms)
+                    setBaseDimensions();
+                  }}
+                  onMouseMove={handleImageMouseMove}
+                  onMouseLeave={handleImageMouseLeave}
+                  onTouchStart={handleTouchStartWithSwipe}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEndWithSwipe}
+                  draggable={!protectionEnabled}
+                  onDragStart={handleDragStart}
                 />
-              )}
 
-              {/* Zoom preview box - overlay mode (when sidebar not visible) */}
-              {zoomState.isActive && supportsHover && (
-                <div
-                  className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl xl:hidden"
-                  style={{
-                    width: `${ZOOM_PREVIEW_SIZE}px`,
-                    height: `${ZOOM_PREVIEW_SIZE}px`,
-                    ...getZoomPreviewStyle(),
-                  }}
-                />
-              )}
-
-              {/* Zoom percentage indicator - mobile only */}
-              {!supportsHover && touchZoom.isZoomed && (
-                <div
-                  className="absolute left-4 top-4 z-20 rounded-lg bg-black/70 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm"
-                  style={{
-                    top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
-                    left: `max(1rem, env(safe-area-inset-left, 0px) + 1rem)`,
-                  }}
-                >
-                  {Math.round(touchZoom.scale * 100)}%
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Sidebar - shown on xl+ screens when image exists */}
-          {hasImage && (
-            <div
-              ref={sidebarRef}
-              className="hidden xl:flex xl:w-[400px] xl:flex-shrink-0 xl:flex-col xl:overflow-hidden xl:border-l xl:border-border/50 xl:bg-black/40"
-            >
-              {/* Zoom preview window - near top when zooming */}
-              {zoomState.isActive && supportsHover && (
-                <div className="relative flex-shrink-0 p-4">
+                {/* Zoom square overlay - only shown when NOT in sidebar mode */}
+                {zoomState.isActive && supportsHover && (
                   <div
-                    className="border-2 border-white/90 shadow-2xl"
+                    className="pointer-events-none absolute z-20 border-2 border-white bg-white/10 xl:hidden"
+                    style={{
+                      width: `${ZOOM_SQUARE_SIZE}px`,
+                      height: `${ZOOM_SQUARE_SIZE}px`,
+                      ...getZoomSquareStyle(),
+                    }}
+                  />
+                )}
+
+                {/* Zoom preview box - overlay mode (when sidebar not visible) */}
+                {zoomState.isActive && supportsHover && (
+                  <div
+                    className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl xl:hidden"
                     style={{
                       width: `${ZOOM_PREVIEW_SIZE}px`,
                       height: `${ZOOM_PREVIEW_SIZE}px`,
                       ...getZoomPreviewStyle(),
                     }}
                   />
-                </div>
-              )}
-
-              {/* Title and creator - always shown at top */}
-              <div className="flex-shrink-0 p-6 xl:p-8 pb-4">
-                <h2 className="mb-2 text-2xl font-semibold text-muted-foreground">
-                  {submission.title || t("untitled")}
-                </h2>
-                {submission.user?.name && (
-                  <p className="text-sm text-muted-foreground/70 mb-2">
-                    {submission.user.name}
-                  </p>
                 )}
-                {favoriteCount > 0 && (
-                  <div className="flex items-center gap-1.5 text-muted-foreground/70">
-                    <Heart className="h-4 w-4 fill-red-400 text-red-400" />
-                    <span className="text-sm">{favoriteCount}</span>
+
+                {/* Zoom percentage indicator - mobile only */}
+                {!supportsHover && touchZoom.isZoomed && (
+                  <div
+                    className="absolute left-4 top-4 z-20 rounded-lg bg-black/70 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm"
+                    style={{
+                      top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
+                      left: `max(1rem, env(safe-area-inset-left, 0px) + 1rem)`,
+                    }}
+                  >
+                    {Math.round(touchZoom.scale * 100)}%
                   </div>
                 )}
               </div>
+            )}
 
-              {/* Text content - below title */}
-              {hasText && (
-                <div className="flex-1 overflow-y-auto px-6 xl:px-8 pb-6 xl:pb-8">
+            {/* Sidebar - shown on xl+ screens when image exists */}
+            {hasImage && (
+              <div
+                ref={sidebarRef}
+                className="hidden xl:flex xl:w-[400px] xl:flex-shrink-0 xl:flex-col xl:overflow-hidden xl:border-l xl:border-border/50 xl:bg-black/40"
+              >
+                {/* Zoom preview window - near top when zooming */}
+                {zoomState.isActive && supportsHover && (
+                  <div className="relative flex-shrink-0 p-4">
+                    <div
+                      className="border-2 border-white/90 shadow-2xl"
+                      style={{
+                        width: `${ZOOM_PREVIEW_SIZE}px`,
+                        height: `${ZOOM_PREVIEW_SIZE}px`,
+                        ...getZoomPreviewStyle(),
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Title and creator - always shown at top */}
+                <div className="flex-shrink-0 p-6 xl:p-8 pb-4">
+                  <h2 className="mb-2 text-2xl font-semibold text-muted-foreground">
+                    {submission.title || t("untitled")}
+                  </h2>
+                  {submission.user?.name && (
+                    <p className="text-sm text-muted-foreground/70 mb-2">
+                      {submission.user.name}
+                    </p>
+                  )}
+                  {favoriteCount > 0 && (
+                    <div className="flex items-center gap-1.5 text-muted-foreground/70">
+                      <Heart className="h-4 w-4 fill-red-400 text-red-400" />
+                      <span className="text-sm">{favoriteCount}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text content - below title */}
+                {hasText && (
+                  <div className="flex-1 overflow-y-auto px-6 xl:px-8 pb-6 xl:pb-8">
+                    <div
+                      className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
+                      dangerouslySetInnerHTML={{ __html: submission.text! }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Text-only section */}
+            {hasText && !hasImage && (
+              <div
+                className="relative flex h-full w-full flex-1 items-center justify-center overflow-y-auto p-8 sm:p-12"
+                style={{
+                  // Allow vertical scrolling while capturing horizontal swipes
+                  touchAction: supportsHover ? "auto" : "pan-y",
+                }}
+                onTouchStart={handleTextTouchStart}
+                onTouchEnd={handleTextTouchEnd}
+              >
+                <div className="mx-auto w-full max-w-4xl">
+                  {submission.title && (
+                    <h2 className="mb-6 text-3xl font-semibold text-muted-foreground sm:text-4xl">
+                      {submission.title}
+                    </h2>
+                  )}
                   <div
                     className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
                     dangerouslySetInnerHTML={{ __html: submission.text! }}
                   />
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* Text-only section */}
-          {hasText && !hasImage && (
-            <div className="relative flex h-full w-full flex-1 items-center justify-center overflow-y-auto p-8 sm:p-12">
-              <div className="mx-auto w-full max-w-4xl">
-                {submission.title && (
-                  <h2 className="mb-6 text-3xl font-semibold text-muted-foreground sm:text-4xl">
-                    {submission.title}
-                  </h2>
-                )}
-                <div
-                  className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: submission.text! }}
-                />
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Image metadata overlay - hidden when sidebar is visible (xl+) */}
-          {hasImage && (
-            <div
-              className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
-              style={{
-                // Position at top, but add offset when zoom indicator is visible
-                top:
-                  !supportsHover && touchZoom.isZoomed
-                    ? `max(4.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem))`
-                    : `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
-              }}
-            >
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <span className="text-white font-medium text-sm sm:text-base">
-                  {submission.title || "Untitled"}
-                </span>
-                {submission.user && (
-                  <span className="text-zinc-300 text-xs sm:text-sm">
-                    {submission.user.name || "Anonymous"}
+            {/* Image metadata overlay - hidden when sidebar is visible (xl+) */}
+            {hasImage && (
+              <div
+                className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
+                style={{
+                  // Position at top, but add offset when zoom indicator is visible
+                  top:
+                    !supportsHover && touchZoom.isZoomed
+                      ? `max(4.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem))`
+                      : `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
+                }}
+              >
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="text-white font-medium text-sm sm:text-base">
+                    {submission.title || "Untitled"}
                   </span>
-                )}
-                {favoriteCount > 0 && (
-                  <div className="flex items-center gap-1.5 text-white">
-                    <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
-                    <span className="text-xs sm:text-sm">{favoriteCount}</span>
-                  </div>
-                )}
+                  {submission.user && (
+                    <span className="text-zinc-300 text-xs sm:text-sm">
+                      {submission.user.name || "Anonymous"}
+                    </span>
+                  )}
+                  {favoriteCount > 0 && (
+                    <div className="flex items-center gap-1.5 text-white">
+                      <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
+                      <span className="text-xs sm:text-sm">
+                        {favoriteCount}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Text-only metadata overlay - top on mobile only */}
-          {hasText && !hasImage && (
-            <div
-              className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
-              style={{
-                top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
-              }}
-            >
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                {submission.user && (
-                  <span className="text-zinc-300 text-xs sm:text-sm">
-                    {submission.user.name || "Anonymous"}
-                  </span>
-                )}
-                {favoriteCount > 0 && (
-                  <div className="flex items-center gap-1.5 text-white">
-                    <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
-                    <span className="text-xs sm:text-sm">{favoriteCount}</span>
-                  </div>
-                )}
+            {/* Text-only metadata overlay - top on mobile only */}
+            {hasText && !hasImage && (
+              <div
+                className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
+                style={{
+                  top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
+                }}
+              >
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  {submission.user && (
+                    <span className="text-zinc-300 text-xs sm:text-sm">
+                      {submission.user.name || "Anonymous"}
+                    </span>
+                  )}
+                  {favoriteCount > 0 && (
+                    <div className="flex items-center gap-1.5 text-white">
+                      <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
+                      <span className="text-xs sm:text-sm">
+                        {favoriteCount}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Prev/Next - left and right edges, vertically centered */}
@@ -687,7 +892,7 @@ export function SubmissionLightbox({
                     side="prev"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (hasPrevious) onGoToPrevious();
+                      handleGoToPrevious();
                     }}
                     disabled={!hasPrevious}
                     aria-label={t("previousSubmission")}
@@ -713,7 +918,7 @@ export function SubmissionLightbox({
                     side="next"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (hasNext) onGoToNext();
+                      handleGoToNext();
                     }}
                     disabled={!hasNext}
                     aria-label={t("nextSubmission")}

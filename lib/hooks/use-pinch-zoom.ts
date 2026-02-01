@@ -333,6 +333,18 @@ export function usePinchZoom({
     [supportsHover, touchZoom, constrainPan],
   );
 
+  // Reset zoom/pan to initial state (e.g. when switching to another image)
+  const resetTouchZoom = useCallback(() => {
+    setTouchZoom({
+      scale: 1,
+      translateX: 0,
+      translateY: 0,
+      isZoomed: false,
+    });
+    touchStartRef.current = null;
+    panStartRef.current = null;
+  }, []);
+
   // Handle touch end
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent<HTMLImageElement>) => {
@@ -368,5 +380,6 @@ export function usePinchZoom({
     handleTouchMove,
     handleTouchEnd,
     setBaseDimensions,
+    resetTouchZoom,
   };
 }
