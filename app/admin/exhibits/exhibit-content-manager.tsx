@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { SubmissionBrowser } from "./submission-browser";
+import { SubmissionBrowser } from "@/components/submission-browser";
 import { PortfolioGridExhibit } from "@/components/portfolio-grid";
 import { Button } from "@/components/ui/button";
 

@@ -124,8 +124,8 @@ export function SubmissionDetail({
                     {submission.title || tExhibition("untitled")}
                   </h1>
                   <ShareButton
+                    type="submission"
                     submissionId={submission.id}
-                    title={submission.title}
                     className="shrink-0"
                     userId={submission.user.id}
                     userSlug={submission.user.slug}

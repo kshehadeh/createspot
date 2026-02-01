@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -14,13 +12,12 @@ import {
   Award,
   Shield,
   FileText,
-  ChevronUp,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
+import { MobileNavBar } from "@/components/mobile-nav-bar";
 
-interface NavItem {
+interface NavItemConfig {
   href: string;
   labelKey: string;
   translationNamespace: string;
@@ -29,7 +26,6 @@ interface NavItem {
 }
 
 export function AboutMobileNav() {
-  const [isExpanded, setIsExpanded] = useState(false);
   const pathname = usePathname();
   const t = useTranslations("navigation");
   const tAbout = useTranslations("about");
@@ -44,7 +40,7 @@ export function AboutMobileNav() {
   const protectingRoute = getRoute("aboutProtectingYourWork");
   const termsRoute = getRoute("terms");
 
-  const navItems: NavItem[] = [
+  const navConfig: NavItemConfig[] = [
     {
       href: aboutRoute.path,
       labelKey: "about",
@@ -110,67 +106,15 @@ export function AboutMobileNav() {
     },
   ];
 
-  const getLabel = (item: NavItem) => {
-    if (item.translationNamespace === "navigation") {
-      return t(item.labelKey);
-    }
-    return tAbout(item.labelKey);
-  };
+  const items = navConfig.map((item) => ({
+    href: item.href,
+    label:
+      item.translationNamespace === "navigation"
+        ? t(item.labelKey)
+        : tAbout(item.labelKey),
+    icon: item.icon,
+    isActive: item.isActive,
+  }));
 
-  const activeItem = navItems.find((item) => item.isActive) || navItems[0];
-
-  return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40">
-      {/* Backdrop when expanded */}
-      {isExpanded && (
-        <div
-          className="fixed inset-0 bg-black/20"
-          onClick={() => setIsExpanded(false)}
-        />
-      )}
-
-      {/* Navigation bar */}
-      <div className="relative border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        {isExpanded ? (
-          <nav className="p-2">
-            <ul className="grid grid-cols-4 gap-1">
-              {navItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setIsExpanded(false)}
-                    className={cn(
-                      "flex flex-col items-center gap-1 rounded-lg px-1 py-2 text-xs font-medium transition-colors",
-                      item.isActive
-                        ? "text-foreground"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    <item.icon
-                      className={cn("h-5 w-5", item.isActive && "text-primary")}
-                    />
-                    <span className="truncate text-center w-full">
-                      {getLabel(item)}
-                    </span>
-                    {item.isActive && (
-                      <span className="h-1 w-1 rounded-full bg-primary" />
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ) : (
-          <button
-            onClick={() => setIsExpanded(true)}
-            className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-foreground"
-          >
-            <activeItem.icon className="h-4 w-4" />
-            <span className="truncate">{getLabel(activeItem)}</span>
-            <ChevronUp className="h-4 w-4 text-muted-foreground" />
-          </button>
-        )}
-      </div>
-    </div>
-  );
+  return <MobileNavBar items={items} layout="grid" />;
 }

@@ -4,68 +4,159 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { getCreatorUrl } from "@/lib/utils";
 
-interface ShareButtonProps {
-  submissionId: string;
-  title?: string | null;
+type ShareButtonPropsBase = {
   className?: string;
-  userId?: string | null;
-  userSlug?: string | null;
+  /** Override default aria-label/title (e.g. "Share submission"). */
+  ariaLabel?: string;
+};
+
+type ShareButtonProps =
+  | (ShareButtonPropsBase & {
+      type: "submission";
+      submissionId: string;
+      userId?: string | null;
+      userSlug?: string | null;
+    })
+  | (ShareButtonPropsBase & {
+      type: "collection";
+      userId: string;
+      slug?: string | null;
+      collectionId: string;
+    })
+  | (ShareButtonPropsBase & {
+      type: "profile";
+      userId: string;
+      slug?: string | null;
+    })
+  | (ShareButtonPropsBase & {
+      type: "portfolio";
+      userId: string;
+    });
+
+const DEFAULT_LABELS: Record<
+  NonNullable<ShareButtonProps["type"]>,
+  { share: string; copied: string }
+> = {
+  submission: { share: "Share submission", copied: "Link copied!" },
+  collection: { share: "Share collection", copied: "Link copied!" },
+  profile: { share: "Share profile", copied: "Link copied!" },
+  portfolio: { share: "Share portfolio", copied: "Link copied!" },
+};
+
+function getCanonicalUrl(
+  props: ShareButtonProps,
+  resolvedUser: { id: string; slug: string | null } | null,
+): string {
+  if (typeof window === "undefined") return "";
+  const origin = window.location.origin;
+  switch (props.type) {
+    case "submission":
+      return resolvedUser
+        ? `${origin}${getCreatorUrl(resolvedUser)}/s/${props.submissionId}`
+        : "";
+    case "collection":
+      return `${origin}${getCreatorUrl({ id: props.userId, slug: props.slug ?? null })}/collections/${props.collectionId}`;
+    case "profile":
+      return `${origin}${getCreatorUrl({ id: props.userId, slug: props.slug ?? null })}`;
+    case "portfolio":
+      return `${origin}/creators/${props.userId}/portfolio`;
+    default:
+      return "";
+  }
 }
 
-export function ShareButton({
-  submissionId,
-  className = "",
-  userId,
-  userSlug,
-}: ShareButtonProps) {
+function getShortLinkType(
+  type: ShareButtonProps["type"],
+): { type: string; targetId: string } | null {
+  switch (type) {
+    case "submission":
+      return { type: "submission", targetId: "" };
+    case "collection":
+      return { type: "collection", targetId: "" };
+    default:
+      return null;
+  }
+}
+
+export function ShareButton(props: ShareButtonProps) {
+  const { type, className = "", ariaLabel } = props;
+
   const [copied, setCopied] = useState(false);
   const [resolvedUser, setResolvedUser] = useState<{
     id: string;
     slug: string | null;
-  } | null>(userId ? { id: userId, slug: userSlug || null } : null);
+  } | null>(
+    type === "submission" && props.userId
+      ? { id: props.userId, slug: props.userSlug ?? null }
+      : null,
+  );
 
-  // Fetch user info if not provided
+  const submissionId = type === "submission" ? props.submissionId : undefined;
   useEffect(() => {
-    if (!resolvedUser && typeof window !== "undefined") {
-      const fetchSubmission = async () => {
-        try {
-          const response = await fetch(`/api/submissions/${submissionId}`);
-          if (response.ok) {
-            const data = await response.json();
-            setResolvedUser({
-              id: data.submission.userId,
-              slug: data.submission.user?.slug || null,
-            });
-          }
-        } catch {
-          // Silently fail
-        }
-      };
-      fetchSubmission();
+    if (
+      type !== "submission" ||
+      resolvedUser ||
+      typeof window === "undefined" ||
+      !submissionId
+    ) {
+      return;
     }
-  }, [submissionId, resolvedUser]);
+    const fetchSubmission = async () => {
+      try {
+        const response = await fetch(`/api/submissions/${submissionId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setResolvedUser({
+            id: data.submission.userId,
+            slug: data.submission.user?.slug ?? null,
+          });
+        }
+      } catch {
+        // Silently fail
+      }
+    };
+    fetchSubmission();
+  }, [type, submissionId, resolvedUser]);
 
-  const canonicalUrl =
-    typeof window !== "undefined" && resolvedUser
-      ? `${window.location.origin}${getCreatorUrl(resolvedUser)}/s/${submissionId}`
-      : "";
+  const canonicalUrl = getCanonicalUrl(
+    props,
+    type === "submission" ? resolvedUser : null,
+  );
 
   async function handleShare() {
     let urlToShare = canonicalUrl;
-    try {
-      const res = await fetch(
-        `/api/short-link?type=submission&targetId=${encodeURIComponent(submissionId)}`,
-      );
-      if (res.ok) {
-        const data = await res.json();
-        if (data.shortUrl) urlToShare = data.shortUrl;
+    const shortLink = getShortLinkType(type);
+    if (shortLink) {
+      const targetId =
+        type === "submission"
+          ? props.submissionId
+          : type === "collection"
+            ? props.collectionId
+            : "";
+      try {
+        const res = await fetch(
+          `/api/short-link?type=${shortLink.type}&targetId=${encodeURIComponent(targetId)}`,
+        );
+        if (res.ok) {
+          const data = (await res.json()) as {
+            code?: string;
+            shortUrl?: string;
+          };
+          if (data.shortUrl && typeof data.shortUrl === "string") {
+            urlToShare = data.shortUrl;
+          } else if (data.code && typeof window !== "undefined") {
+            const base = window.location.origin.replace(/\/$/, "");
+            urlToShare = `${base}/s/${data.code}`;
+          }
+        }
+      } catch {
+        // Use canonical URL on error
       }
-    } catch {
-      // Use canonical URL on error
     }
 
-    const shareData = { url: urlToShare };
+    if (!urlToShare) return;
 
+    const shareData = { url: urlToShare };
     if (navigator.share && navigator.canShare?.(shareData)) {
       try {
         await navigator.share(shareData);
@@ -74,7 +165,6 @@ export function ShareButton({
         if ((err as Error).name === "AbortError") return;
       }
     }
-
     try {
       await navigator.clipboard.writeText(urlToShare);
       setCopied(true);
@@ -84,15 +174,18 @@ export function ShareButton({
     }
   }
 
+  const labels = DEFAULT_LABELS[type];
+  const label = ariaLabel ?? (copied ? labels.copied : labels.share);
+
   return (
     <motion.button
       type="button"
       onClick={handleShare}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className={`flex items-center justify-center rounded-lg bg-zinc-900 p-2 text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200 ${className}`}
-      aria-label={copied ? "Link copied!" : "Share submission"}
-      title={copied ? "Link copied!" : "Share submission"}
+      className={`flex items-center justify-center rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${className}`}
+      aria-label={label}
+      title={label}
     >
       {copied ? (
         <svg

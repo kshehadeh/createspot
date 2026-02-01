@@ -8,7 +8,7 @@ import { getCollectionMetadata } from "@/lib/og-metadata";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
-import { CollectionShareButton } from "@/components/collection-share-button";
+import { ShareButton } from "@/components/share-button";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { Button } from "@/components/ui/button";
 import { Pencil, Lock, Globe } from "lucide-react";
@@ -201,7 +201,8 @@ export default async function CollectionViewPage({
               rightContent={
                 <div className="flex items-center gap-2">
                   {collection.isPublic && (
-                    <CollectionShareButton
+                    <ShareButton
+                      type="collection"
                       userId={user.id}
                       slug={user.slug}
                       collectionId={collection.id}

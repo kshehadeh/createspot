@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
-import { PortfolioShareButton } from "@/components/portfolio-share-button";
+import { ShareButton } from "@/components/share-button";
 import { PortfolioFilters } from "@/components/portfolio-filters";
 import { HintPopover } from "@/components/hint-popover";
 import { getTutorialData } from "@/lib/get-tutorial-data";
@@ -240,7 +240,7 @@ export default async function PortfolioPage({
                   </span>
                   {/* Share button - hidden on mobile, shown in action buttons below */}
                   <div className="hidden md:block shrink-0">
-                    <PortfolioShareButton userId={user.id} />
+                    <ShareButton type="portfolio" userId={user.id} />
                   </div>
                 </div>
               }
@@ -253,7 +253,7 @@ export default async function PortfolioPage({
         </div>
         {/* Mobile action buttons - shown below header on mobile */}
         <div className="md:hidden mt-4 flex flex-wrap items-center gap-2">
-          <PortfolioShareButton userId={user.id} />
+          <ShareButton type="portfolio" userId={user.id} />
           {isOwnPortfolio && (
             <Button asChild variant="outline" size="sm">
               <Link href={`${getCreatorUrl(user)}/portfolio/edit`}>

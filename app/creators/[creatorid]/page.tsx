@@ -17,7 +17,7 @@ import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ExpandableBio } from "@/components/expandable-bio";
-import { ProfileShareButton } from "@/components/profile-share-button";
+import { ShareButton } from "@/components/share-button";
 import { ProfileBadges } from "@/components/profile-badges";
 import { HintPopover } from "@/components/hint-popover";
 import { getNextPageHint } from "@/lib/hints-helper";
@@ -361,7 +361,11 @@ export default async function ProfilePage({
                       <h1 className="text-2xl font-semibold text-foreground truncate">
                         {user.name || t("anonymous")}
                       </h1>
-                      <ProfileShareButton userId={user.id} slug={user.slug} />
+                      <ShareButton
+                        type="profile"
+                        userId={user.id}
+                        slug={user.slug}
+                      />
                     </div>
                     <div className="flex items-center gap-3">
                       <p className="text-sm text-foreground/90">
@@ -428,7 +432,11 @@ export default async function ProfilePage({
                   <h1 className="text-2xl font-semibold text-foreground truncate">
                     {user.name || t("anonymous")}
                   </h1>
-                  <ProfileShareButton userId={user.id} slug={user.slug} />
+                  <ShareButton
+                    type="profile"
+                    userId={user.id}
+                    slug={user.slug}
+                  />
                 </div>
                 <div className="flex items-center gap-3">
                   <p className="text-sm text-muted-foreground">
