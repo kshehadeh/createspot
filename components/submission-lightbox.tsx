@@ -1092,27 +1092,6 @@ export function SubmissionLightbox({
               </>
             )}
 
-            {/* Share button - when submission is not private */}
-            {showShare && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="inline-flex">
-                    <ShareButton
-                      type="submission"
-                      submissionId={submission.id}
-                      userId={submissionUserId ?? undefined}
-                      userSlug={submissionUserSlug ?? undefined}
-                      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 [&_svg]:size-4 ${LIGHTBOX_BUTTON_CLASS} border`}
-                      ariaLabel={t("shareSubmission")}
-                    />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Share submission</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-
             {/* Critique button - when not private, critiques enabled, user logged in */}
             {showCritique &&
               (() => {
@@ -1171,6 +1150,27 @@ export function SubmissionLightbox({
                   </>
                 );
               })()}
+
+            {/* Share button - when submission is not private; directly left of Close */}
+            {showShare && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex">
+                    <ShareButton
+                      type="submission"
+                      submissionId={submission.id}
+                      userId={submissionUserId ?? undefined}
+                      userSlug={submissionUserSlug ?? undefined}
+                      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 [&_svg]:size-4 ${LIGHTBOX_BUTTON_CLASS} border`}
+                      ariaLabel={t("shareSubmission")}
+                    />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Share submission</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
 
             {/* Close button */}
             <Tooltip open={closeTooltipOpen} onOpenChange={() => {}}>
