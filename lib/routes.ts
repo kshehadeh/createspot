@@ -181,6 +181,11 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.critiques",
     parentPath: "/creators/[creatorid]/s/[submissionid]",
   },
+  creatorCritiquesList: {
+    path: "/creators/[creatorid]/critiques",
+    label: "navigation.critiques",
+    parentPath: "/creators/[creatorid]",
+  },
 
   // Collections routes (now under creators/[creatorid]/collections)
   collections: {

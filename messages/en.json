@@ -195,6 +195,7 @@
   "creatorNav": {
     "profile": "Profile",
     "portfolio": "Portfolio",
+    "critiques": "Critiques",
     "collections": "Collections",
     "navigation": "Navigation"
   },
@@ -1152,6 +1153,13 @@
     "yourCritique": "Your critique",
     "yourCritiques": "Your Critiques",
     "allCritiques": "All Critiques",
+    "allCritiquesDescription": "Submissions that have received critiques",
+    "submissionsWithCritiquesCount": "{count} submissions with critiques",
+    "noSubmissionsWithCritiques": "No submissions with critiques yet.",
+    "viewPortfolio": "View portfolio",
+    "submissionName": "Submission",
+    "critiquers": "Critiquers",
+    "viewCritiques": "View critiques",
     "allCritiquesFor": "All Critiques for <link>{title}</link>",
     "yourCritiquesFor": "Your Critiques for <link>{title}</link>",
     "deleteCritiqueConfirm": "Are you sure you want to delete this critique? This action cannot be undone."

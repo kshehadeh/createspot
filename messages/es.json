@@ -195,6 +195,7 @@
   "creatorNav": {
     "profile": "Perfil",
     "portfolio": "Portafolio",
+    "critiques": "Críticas",
     "collections": "Colecciones",
     "navigation": "Navegación"
   },
@@ -1152,6 +1153,13 @@
     "yourCritique": "Tu crítica",
     "yourCritiques": "Tus Críticas",
     "allCritiques": "Todas las Críticas",
+    "allCritiquesDescription": "Publicaciones que han recibido críticas",
+    "submissionsWithCritiquesCount": "{count} publicaciones con críticas",
+    "noSubmissionsWithCritiques": "Aún no hay publicaciones con críticas.",
+    "viewPortfolio": "Ver portafolio",
+    "submissionName": "Publicación",
+    "critiquers": "Críticos",
+    "viewCritiques": "Ver críticas",
     "allCritiquesFor": "Todas las Críticas de <link>{title}</link>",
     "yourCritiquesFor": "Tus Críticas de <link>{title}</link>",
     "deleteCritiqueConfirm": "¿Estás seguro de que quieres eliminar esta crítica? Esta acción no se puede deshacer."

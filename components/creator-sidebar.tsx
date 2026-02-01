@@ -10,6 +10,7 @@ import {
   Pencil,
   Eye,
   Settings,
+  MessageSquare,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,12 @@ export function CreatorSidebar({ creatorUrl }: CreatorSidebarProps) {
       isActive: pathname === creatorUrl && isPublicView,
       target: "_blank",
       rel: "noreferrer",
+    },
+    {
+      href: `${creatorUrl}/critiques`,
+      label: t("critiques"),
+      icon: MessageSquare,
+      isActive: pathname === `${creatorUrl}/critiques`,
     },
   ];
 

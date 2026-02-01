@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { User, Briefcase, ChevronUp } from "lucide-react";
+import { User, Briefcase, MessageSquare, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CreatorMobileNavProps {
@@ -27,7 +27,15 @@ export function CreatorMobileNav({ creatorUrl }: CreatorMobileNavProps) {
       href: creatorUrl,
       label: t("profile"),
       icon: User,
-      isActive: pathname === creatorUrl || pathname === `${creatorUrl}/edit`,
+      isActive:
+        (pathname === creatorUrl || pathname === `${creatorUrl}/edit`) &&
+        pathname !== `${creatorUrl}/critiques`,
+    },
+    {
+      href: `${creatorUrl}/critiques`,
+      label: t("critiques"),
+      icon: MessageSquare,
+      isActive: pathname === `${creatorUrl}/critiques`,
     },
     {
       href: `${creatorUrl}/portfolio`,
