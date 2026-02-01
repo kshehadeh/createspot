@@ -18,6 +18,9 @@ I want to look at the last commit that was made and summarize the changes in as 
 * "time" is the date time of the commit
 * "commit" is the sha (multiple records could have the same commit)
 * "type" is the type of change: fix, improvement, feature, documentation
+* "audience" is whether this is a behind the scenes change and shouldn't be shared publically. The topions are:
+  * "public": A user facing improvement that substantively improves the user experience either because it's a visible change or that it improves performance 
+  * "development": A developer experience improvement which includes things like refactoring (not for performance) or linting improvements, etc.
 * "area" is the area the change was made in: "global" "content", "profile", "portfolio", "collection", "games", "tools"
   * Global: Navigation, Authentication
   * Content: About pages, home page, etc

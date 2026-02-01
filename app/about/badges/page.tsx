@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent } from "@/components/ui/card";
+import { AboutCard } from "@/components/about-card";
 import { badgeDefinitions } from "@/lib/badges";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -53,81 +53,67 @@ export default async function BadgesPage() {
     }
   };
 
-  const badgeCardClasses = [
-    "about-card-blue",
-    "about-card-emerald",
-    "about-card-amber",
-    "about-card-purple",
-  ];
-
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
       <div className="grid gap-8">
-        <Card className="about-card-slate rounded-3xl border-none shadow-sm">
-          <CardContent className="p-8">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("howBadgesWork.title")}
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("howBadgesWork.description")}{" "}
-              <strong className="text-foreground">
-                {t("howBadgesWork.automaticallyAwarded")}
-              </strong>
-              . {t("howBadgesWork.displayed")}{" "}
-              <strong className="text-foreground">
-                {t("howBadgesWork.profilePage")}
-              </strong>
-              . {t("howBadgesWork.emailNotification")}
-            </p>
-          </CardContent>
-        </Card>
+        <AboutCard>
+          <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
+            {t("howBadgesWork.title")}
+          </h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {t("howBadgesWork.description")}{" "}
+            <strong className="text-foreground">
+              {t("howBadgesWork.automaticallyAwarded")}
+            </strong>
+            . {t("howBadgesWork.displayed")}{" "}
+            <strong className="text-foreground">
+              {t("howBadgesWork.profilePage")}
+            </strong>
+            . {t("howBadgesWork.emailNotification")}
+          </p>
+        </AboutCard>
 
         <div className="grid gap-6">
           <h2 className="text-2xl font-semibold text-foreground">
             {t("allBadges")}
           </h2>
-          {badgeDefinitions.map((badge, index) => {
+          {badgeDefinitions.map((badge) => {
             const translationKey = getBadgeTranslationKey(badge.key);
             const howToEarnKey = getHowToEarnKey(badge.key);
             return (
-              <Card
-                key={badge.key}
-                className={`${badgeCardClasses[index % badgeCardClasses.length]} rounded-3xl border-none shadow-sm`}
-              >
-                <CardContent className="p-8">
-                  <div className="flex flex-col sm:flex-row gap-6 items-start">
-                    <div className="flex-shrink-0">
-                      <div className="relative w-32 h-32">
-                        <Image
-                          src={badge.image}
-                          alt={tBadge(translationKey)}
-                          fill
-                          className="object-contain"
-                          sizes="128px"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="mb-2 text-2xl font-semibold text-foreground">
-                        {tBadge(translationKey)}
-                      </h3>
-                      <p className="mb-4 text-base text-muted-foreground">
-                        {tBadge(`${translationKey}Description`)}
-                      </p>
-                      <div className="rounded-xl border border-border/50 bg-background/50 p-4">
-                        <p className="text-sm font-semibold text-foreground mb-1">
-                          {t("howToEarn")}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {t(howToEarnKey)}
-                        </p>
-                      </div>
+              <AboutCard key={badge.key}>
+                <div className="flex flex-col sm:flex-row gap-6 items-start">
+                  <div className="flex-shrink-0">
+                    <div className="relative w-32 h-32">
+                      <Image
+                        src={badge.image}
+                        alt={tBadge(translationKey)}
+                        fill
+                        className="object-contain"
+                        sizes="128px"
+                      />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="mb-2 text-2xl font-semibold text-foreground">
+                      {tBadge(translationKey)}
+                    </h3>
+                    <p className="mb-4 text-base text-muted-foreground">
+                      {tBadge(`${translationKey}Description`)}
+                    </p>
+                    <div className="rounded-xl border border-border bg-muted/50 p-4">
+                      <p className="text-sm font-semibold text-foreground mb-1">
+                        {t("howToEarn")}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {t(howToEarnKey)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </AboutCard>
             );
           })}
         </div>

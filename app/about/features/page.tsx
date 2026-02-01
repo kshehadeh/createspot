@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent } from "@/components/ui/card";
+import { AboutCard } from "@/components/about-card";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("aboutFeatures");
@@ -38,19 +38,18 @@ export default async function FeaturesPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
-          <Card
+          <AboutCard
             key={feature.key}
-            className="about-card-indigo rounded-3xl border-none shadow-sm hover:shadow-md transition-shadow"
+            className="hover:shadow-md transition-shadow"
+            contentClassName="p-6"
           >
-            <CardContent className="p-6">
-              <h3 className="mb-2 text-lg font-semibold text-foreground">
-                {t(`features.${feature.key}.title`)}
-              </h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {t(`features.${feature.key}.description`)}
-              </p>
-            </CardContent>
-          </Card>
+            <h3 className="mb-2 text-lg font-semibold text-foreground">
+              {t(`features.${feature.key}.title`)}
+            </h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {t(`features.${feature.key}.description`)}
+            </p>
+          </AboutCard>
         ))}
       </div>
     </PageLayout>
