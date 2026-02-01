@@ -78,6 +78,7 @@ interface PortfolioItem {
     views: number;
   };
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled?: boolean;
 }
 
 interface PortfolioListEditorProps {
@@ -869,6 +870,9 @@ export function PortfolioListEditor({
                   title: selectedSubmission.title,
                   imageUrl: selectedSubmission.imageUrl,
                   text: selectedSubmission.text,
+                  shareStatus: selectedSubmission.shareStatus ?? "PUBLIC",
+                  critiquesEnabled:
+                    selectedSubmission.critiquesEnabled ?? false,
                   user: session?.user
                     ? {
                         id: session.user.id,

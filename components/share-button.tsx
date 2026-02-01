@@ -177,19 +177,25 @@ export function ShareButton(props: ShareButtonProps) {
   const labels = DEFAULT_LABELS[type];
   const label = ariaLabel ?? (copied ? labels.copied : labels.share);
 
+  const useCustomStyle = className.length > 0;
+  const buttonClassName = useCustomStyle
+    ? className
+    : `flex items-center justify-center rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${className}`;
+
   return (
     <motion.button
       type="button"
       onClick={handleShare}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className={`flex items-center justify-center rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${className}`}
+      {...(useCustomStyle
+        ? {}
+        : { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } })}
+      className={buttonClassName}
       aria-label={label}
       title={label}
     >
       {copied ? (
         <svg
-          className="h-5 w-5"
+          className={useCustomStyle ? "h-4 w-4" : "h-5 w-5"}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -203,7 +209,7 @@ export function ShareButton(props: ShareButtonProps) {
         </svg>
       ) : (
         <svg
-          className="h-5 w-5"
+          className={useCustomStyle ? "h-4 w-4" : "h-5 w-5"}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

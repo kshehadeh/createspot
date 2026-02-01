@@ -49,6 +49,8 @@ export default async function FavoritesPage() {
     category: favorite.submission.category,
     wordIndex: favorite.submission.wordIndex,
     createdAt: favorite.submission.createdAt,
+    shareStatus: favorite.submission.shareStatus,
+    critiquesEnabled: favorite.submission.critiquesEnabled,
     user: favorite.submission.user,
     prompt: favorite.submission.prompt,
   }));

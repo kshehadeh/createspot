@@ -11,6 +11,14 @@ export interface ConstellationItem {
   text: string | null;
   title: string | null;
   promptWord: string | null;
+  shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled: boolean;
+  user?: {
+    id: string;
+    name: string | null;
+    image: string | null;
+    slug?: string | null;
+  };
 }
 
 interface PathPoint {
@@ -545,6 +553,10 @@ export function ConstellationPath({
                 title: selectedItem.title,
                 imageUrl: selectedItem.imageUrl,
                 text: selectedItem.text,
+                shareStatus: selectedItem.shareStatus ?? "PUBLIC",
+                critiquesEnabled: selectedItem.critiquesEnabled ?? false,
+                user: selectedItem.user,
+                _count: undefined,
               }}
               word={selectedItem.promptWord || ""}
               isOpen={!!selectedItem}

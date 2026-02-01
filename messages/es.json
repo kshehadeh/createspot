@@ -215,7 +215,8 @@
     "retry": "Reintentar",
     "reachedEnd": "Has llegado al final.",
     "previousSubmission": "Anterior",
-    "nextSubmission": "Siguiente"
+    "nextSubmission": "Siguiente",
+    "shareSubmission": "Compartir publicación"
   },
   "submission": {
     "label": "Publicación",

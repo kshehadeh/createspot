@@ -295,6 +295,8 @@ export function SubmissionDetail({
             title: submission.title,
             imageUrl: submission.imageUrl,
             text: submission.text,
+            shareStatus: submission.shareStatus ?? "PUBLIC",
+            critiquesEnabled: submission.critiquesEnabled ?? false,
             user: submission.user,
             _count: submission._count,
           }}

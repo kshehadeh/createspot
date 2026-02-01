@@ -80,6 +80,7 @@ export async function GET(request: NextRequest) {
       wordIndex: item.wordIndex,
       prompt: item.prompt,
       shareStatus: item.shareStatus,
+      critiquesEnabled: item.critiquesEnabled,
       _count: item._count,
     })),
     totalCount,

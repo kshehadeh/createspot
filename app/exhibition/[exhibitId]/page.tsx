@@ -94,6 +94,8 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
         text: submission.text,
         wordIndex: submission.wordIndex,
         prompt: submission.prompt,
+        shareStatus: submission.shareStatus,
+        critiquesEnabled: submission.critiquesEnabled,
         user: submission.user,
         _count: submission._count,
       };

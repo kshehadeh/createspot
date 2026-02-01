@@ -66,6 +66,9 @@ export default async function PathExhibitionPage({
       text: submission.text,
       title: submission.title,
       promptWord,
+      shareStatus: submission.shareStatus,
+      critiquesEnabled: submission.critiquesEnabled,
+      user: submission.user,
     };
   });
 

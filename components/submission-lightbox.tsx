@@ -19,8 +19,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Heart, X, FileText, Edit, Eye } from "lucide-react";
+import { Heart, X, FileText, Edit, Eye, MessageSquare } from "lucide-react";
 import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
+import { ShareButton } from "@/components/share-button";
 import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
@@ -32,6 +33,8 @@ interface LightboxSubmission {
   title: string | null;
   imageUrl: string | null;
   text: string | null;
+  shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled: boolean;
   user?: {
     id: string;
     name: string | null;
@@ -100,7 +103,7 @@ export function SubmissionLightbox({
   hasPrevious: hasPreviousProp,
   hasNext: hasNextProp,
 }: SubmissionLightboxProps) {
-  const hideGoToSubmission =
+  const _hideGoToSubmission =
     options?.hideGoToSubmission ?? hideGoToSubmissionProp ?? false;
   const protectionEnabled =
     options?.protectionEnabled ?? protectionEnabledProp ?? true;
@@ -297,6 +300,10 @@ export function SubmissionLightbox({
     !!currentUserId &&
     !!submission.user?.id &&
     currentUserId === submission.user.id;
+  const isPrivate = submission.shareStatus === "PRIVATE";
+  const showShare = !isPrivate;
+  const showCritique =
+    !isPrivate && submission.critiquesEnabled && !!currentUserId;
 
   // Get favorite count - handle both _count and direct favoriteCount
   const favoriteCount =
@@ -970,10 +977,79 @@ export function SubmissionLightbox({
               </Tooltip>
             )}
 
+            {/* View button - always visible */}
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
+                  >
+                    <Link
+                      href={getSubmissionUrl() || "#"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = getSubmissionUrl();
+                        if (!url && submissionUserId && submission.id) {
+                          e.preventDefault();
+                          router.push(
+                            buildRoutePath("submission", {
+                              creatorid: submissionUserId,
+                              submissionid: submission.id,
+                            }),
+                          );
+                        }
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>View</span>
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View full submission page</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    asChild
+                    className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                    aria-label="View submission"
+                  >
+                    <Link
+                      href={getSubmissionUrl() || "#"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = getSubmissionUrl();
+                        if (!url && submissionUserId && submission.id) {
+                          e.preventDefault();
+                          router.push(
+                            buildRoutePath("submission", {
+                              creatorid: submissionUserId,
+                              submissionid: submission.id,
+                            }),
+                          );
+                        }
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View submission</p>
+                </TooltipContent>
+              </Tooltip>
+            </>
+
             {/* Edit button - shown if user owns the submission */}
             {isOwner && (
               <>
-                {/* Full button on xl+ */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -994,7 +1070,6 @@ export function SubmissionLightbox({
                     <p>Edit submission</p>
                   </TooltipContent>
                 </Tooltip>
-                {/* Icon button on < xl */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -1017,81 +1092,85 @@ export function SubmissionLightbox({
               </>
             )}
 
-            {/* View Submission button */}
-            {!hideGoToSubmission && (
-              <>
-                {/* Full button on xl+ */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
-                      className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
-                    >
-                      <Link
-                        href={getSubmissionUrl() || "#"}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // If we don't have a URL yet, try to navigate programmatically
-                          const url = getSubmissionUrl();
-                          if (!url && submissionUserId && submission.id) {
-                            e.preventDefault();
-                            router.push(
-                              buildRoutePath("submission", {
-                                creatorid: submissionUserId,
-                                submissionid: submission.id,
-                              }),
-                            );
-                          }
-                        }}
-                      >
-                        <Eye className="h-4 w-4" />
-                        <span>View</span>
-                      </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>View full submission page</p>
-                  </TooltipContent>
-                </Tooltip>
-                {/* Icon button on < xl */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      asChild
-                      className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
-                      aria-label="View submission"
-                    >
-                      <Link
-                        href={getSubmissionUrl() || "#"}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // If we don't have a URL yet, try to navigate programmatically
-                          const url = getSubmissionUrl();
-                          if (!url && submissionUserId && submission.id) {
-                            e.preventDefault();
-                            router.push(
-                              buildRoutePath("submission", {
-                                creatorid: submissionUserId,
-                                submissionid: submission.id,
-                              }),
-                            );
-                          }
-                        }}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>View submission</p>
-                  </TooltipContent>
-                </Tooltip>
-              </>
+            {/* Share button - when submission is not private */}
+            {showShare && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex">
+                    <ShareButton
+                      type="submission"
+                      submissionId={submission.id}
+                      userId={submissionUserId ?? undefined}
+                      userSlug={submissionUserSlug ?? undefined}
+                      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 [&_svg]:size-4 ${LIGHTBOX_BUTTON_CLASS} border`}
+                      ariaLabel={t("shareSubmission")}
+                    />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Share submission</p>
+                </TooltipContent>
+              </Tooltip>
             )}
+
+            {/* Critique button - when not private, critiques enabled, user logged in */}
+            {showCritique &&
+              (() => {
+                const critiqueHref =
+                  getCreatorId() && submission.id
+                    ? buildRoutePath("submissionCritiques", {
+                        creatorid: getCreatorId()!,
+                        submissionid: submission.id,
+                      })
+                    : "#";
+                return (
+                  <>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          asChild
+                          className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
+                          aria-label="Critique"
+                        >
+                          <Link
+                            href={critiqueHref}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                            <span>Critique</span>
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Critique</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          asChild
+                          className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                          aria-label="Critique"
+                        >
+                          <Link
+                            href={critiqueHref}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Critique</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </>
+                );
+              })()}
 
             {/* Close button */}
             <Tooltip open={closeTooltipOpen} onOpenChange={() => {}}>
@@ -1102,11 +1181,10 @@ export function SubmissionLightbox({
                   onClick={onClose}
                   onMouseEnter={() => setCloseTooltipHovered(true)}
                   onMouseLeave={() => setCloseTooltipHovered(false)}
-                  className={`xl:h-9 xl:w-auto xl:px-3 xl:gap-2 ${LIGHTBOX_BUTTON_CLASS}`}
+                  className={LIGHTBOX_BUTTON_CLASS}
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />
-                  <span className="hidden xl:inline">Close</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

@@ -23,6 +23,8 @@ interface ExhibitionSubmission {
   category: string | null;
   wordIndex: number | null;
   createdAt: string | Date;
+  shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled: boolean;
   user: {
     id: string;
     name: string | null;
@@ -327,7 +329,11 @@ function GridContent({
             currentIndex >= 0 && currentIndex < submissions.length - 1;
           return (
             <SubmissionLightbox
-              submission={selectedSubmission}
+              submission={{
+                ...selectedSubmission,
+                shareStatus: selectedSubmission.shareStatus ?? "PUBLIC",
+                critiquesEnabled: selectedSubmission.critiquesEnabled ?? false,
+              }}
               word={getWord(selectedSubmission)}
               onClose={() => setSelectedSubmission(null)}
               isOpen={!!selectedSubmission}

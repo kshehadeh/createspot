@@ -19,10 +19,13 @@ interface FeaturedSubmissionProps {
       word2: string;
       word3: string;
     } | null;
+    shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
+    critiquesEnabled: boolean;
     user: {
       id: string;
       name: string | null;
       image: string | null;
+      slug?: string | null;
     };
     _count: {
       favorites: number;
@@ -128,6 +131,8 @@ export function FeaturedSubmission({ submission }: FeaturedSubmissionProps) {
             title: submission.title,
             imageUrl: submission.imageUrl,
             text: submission.text,
+            shareStatus: submission.shareStatus,
+            critiquesEnabled: submission.critiquesEnabled,
             user: submission.user,
             _count: submission._count,
           }}

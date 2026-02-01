@@ -215,7 +215,8 @@
     "retry": "Retry",
     "reachedEnd": "You've reached the end.",
     "previousSubmission": "Previous",
-    "nextSubmission": "Next"
+    "nextSubmission": "Next",
+    "shareSubmission": "Share submission"
   },
   "submission": {
     "label": "Submission",

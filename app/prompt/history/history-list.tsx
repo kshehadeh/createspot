@@ -24,8 +24,24 @@ interface PromptWithSubmissions {
   submissions: Submission[];
 }
 
+interface LightboxSubmissionShape {
+  id: string;
+  title: string | null;
+  imageUrl: string | null;
+  text: string | null;
+  shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled: boolean;
+  user?: {
+    id: string;
+    name: string | null;
+    image: string | null;
+    slug?: string | null;
+  };
+  _count?: { favorites: number };
+}
+
 interface SelectedSubmission {
-  submission: Submission;
+  submission: LightboxSubmissionShape;
   word: string;
 }
 
@@ -44,6 +60,53 @@ export function HistoryList({
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<SelectedSubmission | null>(null);
+  const [lightboxLoading, setLightboxLoading] = useState(false);
+
+  async function openLightbox(submission: Submission, word: string) {
+    setLightboxLoading(true);
+    try {
+      const res = await fetch(`/api/submissions/${submission.id}`);
+      if (!res.ok) {
+        setLightboxLoading(false);
+        return;
+      }
+      const data = (await res.json()) as {
+        submission: {
+          id: string;
+          title: string | null;
+          imageUrl: string | null;
+          text: string | null;
+          shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
+          critiquesEnabled: boolean;
+          user: {
+            id: string;
+            name: string | null;
+            image: string | null;
+            slug?: string | null;
+          };
+          _count?: { favorites: number };
+        };
+      };
+      const s = data.submission;
+      setSelected({
+        submission: {
+          id: s.id,
+          title: s.title,
+          imageUrl: s.imageUrl,
+          text: s.text,
+          shareStatus: s.shareStatus,
+          critiquesEnabled: s.critiquesEnabled,
+          user: s.user,
+          _count: s._count,
+        },
+        word,
+      });
+    } catch {
+      // Silently fail
+    } finally {
+      setLightboxLoading(false);
+    }
+  }
 
   async function loadMore() {
     if (loading || !hasMore) return;
@@ -118,7 +181,8 @@ export function HistoryList({
                     <button
                       key={submission.id}
                       type="button"
-                      onClick={() => setSelected({ submission, word })}
+                      onClick={() => openLightbox(submission, word)}
+                      disabled={lightboxLoading}
                       className="flex flex-col items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent"
                     >
                       {submission.imageUrl ? (

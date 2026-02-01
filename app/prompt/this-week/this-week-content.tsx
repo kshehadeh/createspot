@@ -15,6 +15,8 @@ interface Submission {
   category: string | null;
   wordIndex: number | null;
   createdAt: string | Date;
+  shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled: boolean;
   user: {
     id: string;
     name: string | null;

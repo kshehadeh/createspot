@@ -68,6 +68,7 @@ export interface PortfolioItem {
     favorites: number;
   };
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
+  critiquesEnabled?: boolean;
   user?: {
     id: string;
     slug?: string | null;
@@ -1033,6 +1034,9 @@ function PortfolioGridContent({
                   title: selectedSubmission.title,
                   imageUrl: selectedSubmission.imageUrl,
                   text: selectedSubmission.text,
+                  shareStatus: selectedSubmission.shareStatus ?? "PUBLIC",
+                  critiquesEnabled:
+                    selectedSubmission.critiquesEnabled ?? false,
                   user:
                     mode === "exhibit" && selectedSubmission.user
                       ? selectedSubmission.user
