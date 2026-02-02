@@ -224,6 +224,7 @@
     "image": "Imagen",
     "text": "Texto",
     "submissionAlt": "Publicación",
+    "downloadImage": "Descargar imagen",
     "critiqueHintTitle": "Obtener Comentarios",
     "critiqueHintDescription": "Haz clic en el botón Crítica para ver o añadir comentarios sobre este trabajo. Los creadores pueden habilitar críticas al editar sus publicaciones."
   },

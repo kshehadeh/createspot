@@ -7,6 +7,7 @@ import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { ExpandableText } from "@/components/expandable-text";
 import { SubmissionImage } from "@/components/submission-image";
 import { ShareButton } from "@/components/share-button";
+import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { FavoriteButton } from "@/components/favorite-button";
 import { CritiqueButton } from "@/components/critique-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
@@ -155,7 +156,7 @@ export function SubmissionDetail({
 
               {/* Actions */}
               <div className="flex flex-wrap items-center gap-3">
-                {/* Edit and Critique buttons grouped together */}
+                {/* Edit, Download, and Critique buttons grouped together */}
                 <div className="flex items-center gap-2">
                   {isOwner && (
                     <Button
@@ -183,6 +184,14 @@ export function SubmissionDetail({
                         {tSubmission("edit")}
                       </Link>
                     </Button>
+                  )}
+                  {isOwner && hasImage && (
+                    <CollectionDownloadDropdown
+                      variant="submission"
+                      submissionId={submission.id}
+                      submissionTitle={submission.title || "submission"}
+                      hasImage={hasImage}
+                    />
                   )}
                   {isLoggedIn &&
                     submission.critiquesEnabled &&

@@ -9,6 +9,7 @@ import {
   Share2,
   ChevronDown,
   Loader2,
+  Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,26 +19,87 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface CollectionDownloadDropdownProps {
-  collectionId: string;
-  collectionName: string;
-}
+type CollectionDownloadDropdownProps =
+  | {
+      variant: "collection";
+      collectionId: string;
+      collectionName: string;
+    }
+  | {
+      variant: "submission";
+      submissionId: string;
+      submissionTitle: string;
+      hasImage?: boolean;
+    };
 
-export function CollectionDownloadDropdown({
-  collectionId,
-  collectionName,
-}: CollectionDownloadDropdownProps) {
+export function CollectionDownloadDropdown(
+  props: CollectionDownloadDropdownProps,
+) {
   const t = useTranslations("collections");
+  const tSubmission = useTranslations("submission");
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const safeName = collectionName.replace(/[^a-zA-Z0-9]/g, "_");
+  const isCollection = props.variant === "collection";
+  const safeName = isCollection
+    ? props.collectionName.replace(/[^a-zA-Z0-9]/g, "_")
+    : (props.submissionTitle || props.submissionId).replace(
+        /[^a-zA-Z0-9]/g,
+        "_",
+      );
+
+  const pdfUrl = isCollection
+    ? `/api/collections/${props.collectionId}/download/pdf`
+    : `/api/submissions/${props.submissionId}/download/pdf`;
+  const zipUrl = isCollection
+    ? `/api/collections/${props.collectionId}/download/zip`
+    : `/api/submissions/${props.submissionId}/download/zip`;
+  const socialPackUrl = isCollection
+    ? `/api/collections/${props.collectionId}/download/social-pack`
+    : `/api/submissions/${props.submissionId}/download/social-pack`;
+  const imageUrl = !isCollection
+    ? `/api/submissions/${props.submissionId}/download/image`
+    : null;
+
+  const handleDownloadImage = async () => {
+    if (!imageUrl) return;
+    setIsDownloading(true);
+    try {
+      const response = await fetch(imageUrl);
+      if (response.ok) {
+        const blob = await response.blob();
+        const contentDisposition = response.headers.get("Content-Disposition");
+        let filename = safeName;
+        const match = contentDisposition?.match(/filename="?([^";\n]+)"?/);
+        if (match?.[1]) {
+          filename = match[1];
+        } else {
+          const ext = blob.type.includes("webp")
+            ? "webp"
+            : blob.type.includes("png")
+              ? "png"
+              : "jpg";
+          filename = `${safeName}.${ext}`;
+        }
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      const response = await fetch(
-        `/api/collections/${collectionId}/download/pdf`,
-      );
+      const response = await fetch(pdfUrl);
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -59,9 +121,7 @@ export function CollectionDownloadDropdown({
   const handleDownloadZIP = async () => {
     setIsDownloading(true);
     try {
-      const response = await fetch(
-        `/api/collections/${collectionId}/download/zip`,
-      );
+      const response = await fetch(zipUrl);
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -83,9 +143,7 @@ export function CollectionDownloadDropdown({
   const handleDownloadSocialPack = async () => {
     setIsDownloading(true);
     try {
-      const response = await fetch(
-        `/api/collections/${collectionId}/download/social-pack`,
-      );
+      const response = await fetch(socialPackUrl);
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -104,6 +162,9 @@ export function CollectionDownloadDropdown({
     }
   };
 
+  const showDownloadImage =
+    !isCollection && props.variant === "submission" && props.hasImage;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -120,6 +181,15 @@ export function CollectionDownloadDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        {showDownloadImage && (
+          <DropdownMenuItem
+            onClick={handleDownloadImage}
+            disabled={isDownloading}
+          >
+            <ImageIcon className="mr-2 h-4 w-4" />
+            {tSubmission("downloadImage")}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={handleDownloadPDF} disabled={isDownloading}>
           <FileText className="mr-2 h-4 w-4" />
           {t("downloadPDF")}

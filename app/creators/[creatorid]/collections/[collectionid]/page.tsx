@@ -210,6 +210,7 @@ export default async function CollectionViewPage({
                   )}
                   {isOwner && portfolioItems.length > 0 && (
                     <CollectionDownloadDropdown
+                      variant="collection"
                       collectionId={collection.id}
                       collectionName={collection.name}
                     />
@@ -233,6 +234,7 @@ export default async function CollectionViewPage({
             <div className="md:hidden mt-4 flex flex-wrap items-center gap-2">
               {portfolioItems.length > 0 && (
                 <CollectionDownloadDropdown
+                  variant="collection"
                   collectionId={collection.id}
                   collectionName={collection.name}
                 />
