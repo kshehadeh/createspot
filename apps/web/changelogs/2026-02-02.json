@@ -1,5 +1,15 @@
 [
   {
+    "time": "2026-02-02T12:30:00-05:00",
+    "commit": "UNRELEASED",
+    "type": "improvement",
+    "area": "tools",
+    "description": "Convert the repo to a Turborepo monorepo (apps/web) and align Vercel builds with Turbo, including declaring required build-time environment variables in turbo.json.",
+    "audience": "development",
+    "impact": "major",
+    "version": "1.0.0"
+  },
+  {
     "time": "2026-02-02T05:41:02-05:00",
     "commit": "c378787d51f78028d775ba7f1cadb046d6a60bcb",
     "type": "improvement",
