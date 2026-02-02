@@ -1,0 +1,52 @@
+[
+  {
+    "time": "2026-02-01T09:54:15-05:00",
+    "commit": "726d081abf51a77799f38e4abad9a65a2473b2a0",
+    "type": "improvement",
+    "area": "global",
+    "description": "Refactor share button placement in SubmissionLightbox for improved layout consistency. Moved the share button to a new position directly left of the Close button while maintaining functionality and tooltip support.",
+    "audience": "development",
+    "impact": "patch",
+    "version": "0.2.0"
+  },
+  {
+    "time": "2026-02-01T09:00:26-05:00",
+    "commit": "c6a613477d1a581acb8adccbe26c43983f12c8b6",
+    "type": "improvement",
+    "area": "portfolio",
+    "description": "Make the buttons that appear on the lightbox more consistent and add support for critiques and sharing in the lightbox",
+    "audience": "public",
+    "impact": "patch",
+    "version": "0.2.0"
+  },
+  {
+    "time": "2026-02-01T06:46:47-05:00",
+    "commit": "61109e9175105fc27aa6cca6d46b977a670e4f80",
+    "type": "improvement",
+    "area": "global",
+    "description": "Implement slide transition for submission lightbox with iOS compatibility",
+    "audience": "public",
+    "impact": "patch",
+    "version": "0.2.0"
+  },
+  {
+    "time": "2026-02-01T06:19:29-05:00",
+    "commit": "62b4215ff630a4454dd1820ca2990402cc3849d4",
+    "type": "improvement",
+    "area": "global",
+    "description": "Symlink skills from .agents to other llms configs",
+    "audience": "public",
+    "impact": "patch",
+    "version": "0.2.0"
+  },
+  {
+    "time": "2026-02-01T06:16:19-05:00",
+    "commit": "33d32ad3265728a176db5d68a6c0250120fe76f1",
+    "type": "improvement",
+    "area": "portfolio",
+    "description": "Refactor share button components to unify functionality and improve code maintainability. Removed individual share button components for collections, portfolios, and profiles, replacing them with a single ShareButton component that handles different types of shares. Updated relevant pages to utilize the new ShareButton, ensuring consistent sharing behavior across the application.",
+    "audience": "development",
+    "impact": "patch",
+    "version": "0.2.0"
+  }
+]

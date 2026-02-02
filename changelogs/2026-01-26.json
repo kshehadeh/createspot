@@ -4,41 +4,53 @@
     "commit": "50c7dd9fdb7c9e41c2060ed6a6689e6ea3eeb83b",
     "type": "improvement",
     "area": "global",
-    "description": "Removed BugReportButton from Header and MobileNavigation components to streamline the interface."
+    "description": "Removed BugReportButton from Header and MobileNavigation components to streamline the interface.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-26T07:01:56-05:00",
     "commit": "50c7dd9fdb7c9e41c2060ed6a6689e6ea3eeb83b",
     "type": "improvement",
     "area": "global",
-    "description": "Introduced secondary sidebar for prompts in MobileNavigation, allowing users to access additional options without cluttering the main menu."
+    "description": "Introduced secondary sidebar for prompts in MobileNavigation, allowing users to access additional options without cluttering the main menu.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-26T07:01:56-05:00",
     "commit": "50c7dd9fdb7c9e41c2060ed6a6689e6ea3eeb83b",
     "type": "improvement",
     "area": "global",
-    "description": "Updated DashboardNavigation to include a dropdown menu for better organization of navigation links, including a support option."
+    "description": "Updated DashboardNavigation to include a dropdown menu for better organization of navigation links, including a support option.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-26T06:31:57-05:00",
     "commit": "da9555a9685ef572db27912f331ab93bb28cf64d",
     "type": "improvement",
     "area": "content",
-    "description": "Changed AboutMobileNav navigation list from flex layout to grid layout for better organization of nav items."
+    "description": "Changed AboutMobileNav navigation list from flex layout to grid layout for better organization of nav items.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-26T06:26:42-05:00",
     "commit": "a9a47e21a5e37d668e0c90feee7e3e2841a4e53a",
     "type": "improvement",
     "area": "content",
-    "description": "Removed AboutSidebar component from the About page to simplify the layout and eliminate redundant navigation links."
+    "description": "Removed AboutSidebar component from the About page to simplify the layout and eliminate redundant navigation links.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-26T06:26:42-05:00",
     "commit": "a9a47e21a5e37d668e0c90feee7e3e2841a4e53a",
     "type": "improvement",
     "area": "content",
-    "description": "Updated AboutSidebar component structure and navigation handling to improve organization."
+    "description": "Updated AboutSidebar component structure and navigation handling to improve organization.",
+    "impact": "patch",
+    "version": "0.2.0"
   }
 ]

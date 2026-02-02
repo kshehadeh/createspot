@@ -4,13 +4,17 @@
     "commit": "13911564b549d8b36ce9e62f2c4b80a5915ba174",
     "type": "feature",
     "area": "global",
-    "description": "Added Discord icon button to header with i18n labels for community access."
+    "description": "Added Discord icon button to header with i18n labels for community access.",
+    "impact": "minor",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-27T06:28:24-05:00",
     "commit": "13911564b549d8b36ce9e62f2c4b80a5915ba174",
     "type": "documentation",
     "area": "global",
-    "description": "Added skill for generating Conventional Commits messages from diffs."
+    "description": "Added skill for generating Conventional Commits messages from diffs.",
+    "impact": "patch",
+    "version": "0.2.0"
   }
 ]

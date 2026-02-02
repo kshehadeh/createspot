@@ -1,0 +1,42 @@
+[
+  {
+    "time": "2026-02-02T05:41:02-05:00",
+    "commit": "c378787d51f78028d775ba7f1cadb046d6a60bcb",
+    "type": "improvement",
+    "area": "content",
+    "description": "Enhance changelog structure and update About navigation",
+    "audience": "public",
+    "impact": "patch",
+    "version": "0.2.0"
+  },
+  {
+    "time": "2026-02-02T05:21:15-05:00",
+    "commit": "5630ef97bb39e78fdb13c2eee230ef79a9d08808",
+    "type": "improvement",
+    "area": "content",
+    "description": "Refactor About section and update navigation links",
+    "audience": "development",
+    "impact": "patch",
+    "version": "0.2.0"
+  },
+  {
+    "time": "2026-02-02T03:52:44-05:00",
+    "commit": "a806b10ad3b72064edd20b25f140e6d7b9c2877b",
+    "type": "improvement",
+    "area": "collection",
+    "description": "Add support for downloading images in CollectionDownloadDropdown",
+    "audience": "public",
+    "impact": "patch",
+    "version": "0.2.0"
+  },
+  {
+    "time": "2026-02-02T03:31:43-05:00",
+    "commit": "fef4e273ea072e6e81a83fa8c54e3ca597c8e646",
+    "type": "improvement",
+    "area": "tools",
+    "description": "Add large splash image",
+    "audience": "public",
+    "impact": "patch",
+    "version": "0.2.0"
+  }
+]

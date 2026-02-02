@@ -4,27 +4,35 @@
     "commit": "6c680f507f6aa4c041c7fe9cdfeae33836a4b026",
     "type": "improvement",
     "area": "content",
-    "description": "Refactor OpenGraph image generation to use shared helpers across creator, portfolio, and exhibition routes; improve visibility checks for submissions and collections."
+    "description": "Refactor OpenGraph image generation to use shared helpers across creator, portfolio, and exhibition routes; improve visibility checks for submissions and collections.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-30T04:33:31-05:00",
     "commit": "1df45d8de358bed9f5e2a998ec2c20cfa352c613",
     "type": "improvement",
     "area": "content",
-    "description": "Remove legacy og-image.ts after consolidating OpenGraph generation into shared helpers."
+    "description": "Remove legacy og-image.ts after consolidating OpenGraph generation into shared helpers.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-30T05:15:35-05:00",
     "commit": "58dedaaf971ccdd5d98c906ce74e7f5ae10dd814",
     "type": "improvement",
     "area": "global",
-    "description": "Short link GET no longer requires authentication; access control enhanced."
+    "description": "Short link GET no longer requires authentication; access control enhanced.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-30T14:28:33-05:00",
     "commit": "972cf112f98730e57010ecfdeb4340329aa494be",
     "type": "documentation",
     "area": "global",
-    "description": "Add AUTHENTICATION.md documenting auth flow and usage."
+    "description": "Add AUTHENTICATION.md documenting auth flow and usage.",
+    "impact": "patch",
+    "version": "0.2.0"
   }
 ]

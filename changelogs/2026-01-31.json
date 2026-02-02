@@ -4,69 +4,89 @@
     "commit": "ddf921e89f7af244cc13b603ab1286259d76b508",
     "type": "improvement",
     "area": "portfolio",
-    "description": "Refactor portfolio grid components: rename and separate exhibit, profile, and collection grids; improve critique button owner/viewer behavior and submission lightbox options."
+    "description": "Refactor portfolio grid components: rename and separate exhibit, profile, and collection grids; improve critique button owner/viewer behavior and submission lightbox options.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T13:40:50-05:00",
     "commit": "cc4c6521766182b4c6d269a00a6aa11462893ae5",
     "type": "improvement",
     "area": "content",
-    "description": "Add critiques section to routes and sidebar; add English and Spanish translations; extend RecentSubmissionsCarousel props and adjust knip breadcrumb paths."
+    "description": "Add critiques section to routes and sidebar; add English and Spanish translations; extend RecentSubmissionsCarousel props and adjust knip breadcrumb paths.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T13:52:36-05:00",
     "commit": "4cd04b416670437fc4cb20ce600977d986116ca3",
     "type": "improvement",
     "area": "content",
-    "description": "Refactor Home page and RecentSubmissionsCarousel: remove gallery link and simplify user display for anonymity."
+    "description": "Refactor Home page and RecentSubmissionsCarousel: remove gallery link and simplify user display for anonymity.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T14:28:28-05:00",
     "commit": "236325dd6142f622b9a80ee0ffa83b639ca7654d",
     "type": "feature",
     "area": "content",
-    "description": "Add site settings management and homepage hero functionality."
+    "description": "Add site settings management and homepage hero functionality.",
+    "impact": "minor",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T15:55:26-05:00",
     "commit": "b03e458df2074fa4e3770f4f9dc11b92f20d9fe1",
     "type": "improvement",
     "area": "global",
-    "description": "Organize skills folders to work across agents."
+    "description": "Organize skills folders to work across agents.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T16:50:12-05:00",
     "commit": "68288b02a8a0048051e790baad53492243f2177e",
     "type": "improvement",
     "area": "portfolio",
-    "description": "Refactor CritiqueManagerModal and PortfolioItemForm; add message when critiques are disabled for private submissions; update English and Spanish translations."
+    "description": "Refactor CritiqueManagerModal and PortfolioItemForm; add message when critiques are disabled for private submissions; update English and Spanish translations.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T16:54:46-05:00",
     "commit": "16910872815c7873a9621d16bc9570dc3f32dd01",
     "type": "improvement",
     "area": "portfolio",
-    "description": "Update dependencies for stability and performance; refactor CritiqueManagerModal for better editing and display states."
+    "description": "Update dependencies for stability and performance; refactor CritiqueManagerModal for better editing and display states.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T20:14:57-05:00",
     "commit": "3801733bb40e1a8f8ce533931d5906c4af87d93f",
     "type": "feature",
     "area": "portfolio",
-    "description": "Add dedicated critiques page and refactor CritiqueButton to link to it; visibility by user role and submission status."
+    "description": "Add dedicated critiques page and refactor CritiqueButton to link to it; visibility by user role and submission status.",
+    "impact": "minor",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T20:14:57-05:00",
     "commit": "3801733bb40e1a8f8ce533931d5906c4af87d93f",
     "type": "improvement",
     "area": "portfolio",
-    "description": "Remove CritiqueManagerModal in favor of critiques page; update CRITIQUE.md and English/Spanish translations."
+    "description": "Remove CritiqueManagerModal in favor of critiques page; update CRITIQUE.md and English/Spanish translations.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-31T20:45:05-05:00",
     "commit": "54c0c476809f36ee161144e8366e60cf3ae3d808",
     "type": "improvement",
     "area": "content",
-    "description": "Add critiques link to creator navigation and sidebar; dedicated critiques page, routes, and translations; improve active state for critique nav items."
+    "description": "Add critiques link to creator navigation and sidebar; dedicated critiques page, routes, and translations; improve active state for critique nav items.",
+    "impact": "patch",
+    "version": "0.2.0"
   }
 ]

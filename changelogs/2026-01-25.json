@@ -4,90 +4,116 @@
     "commit": "e6e28c0586331b8acdc2b56b580f8f18df1153d6",
     "type": "improvement",
     "area": "profile",
-    "description": "Reorganized creator sidebar navigation by moving Collections under Portfolio as 'Manage Collections' subnav item."
+    "description": "Reorganized creator sidebar navigation by moving Collections under Portfolio as 'Manage Collections' subnav item.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T15:16:25-05:00",
     "commit": "e6e28c0586331b8acdc2b56b580f8f18df1153d6",
     "type": "feature",
     "area": "collection",
-    "description": "Added share button to collection view page for public collections, using the same share functionality as profile pages."
+    "description": "Added share button to collection view page for public collections, using the same share functionality as profile pages.",
+    "impact": "minor",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T15:16:25-05:00",
     "commit": "e6e28c0586331b8acdc2b56b580f8f18df1153d6",
     "type": "improvement",
     "area": "profile",
-    "description": "Creator sidebar now shows all subnav items at all times instead of only when parent is selected."
+    "description": "Creator sidebar now shows all subnav items at all times instead of only when parent is selected.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T14:16:54-05:00",
     "commit": "361eaab52db1ca86cecbbd21ea57241527f6735e",
     "type": "improvement",
     "area": "profile",
-    "description": "Introduced getCreatorUrl utility function to standardize creator URL generation across components, improving consistency and maintainability."
+    "description": "Introduced getCreatorUrl utility function to standardize creator URL generation across components, improving consistency and maintainability.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T14:16:54-05:00",
     "commit": "361eaab52db1ca86cecbbd21ea57241527f6735e",
     "type": "improvement",
     "area": "profile",
-    "description": "Added slug property to user data structures to support dynamic URL generation for creator profiles."
+    "description": "Added slug property to user data structures to support dynamic URL generation for creator profiles.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T10:07:43-05:00",
     "commit": "03792458c83f6889388493184900619ce6fdea86",
     "type": "feature",
     "area": "global",
-    "description": "Added Discord integration script to automatically post changelog updates to Discord channels."
+    "description": "Added Discord integration script to automatically post changelog updates to Discord channels.",
+    "impact": "minor",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T08:23:24-05:00",
     "commit": "1aac3efaa9c9684bec79944578c8d7f69e393ee1",
     "type": "improvement",
     "area": "profile",
-    "description": "Enhanced breadcrumb navigation for creator-related pages with translation support, added Creators link to breadcrumb segments, and introduced new mobile navigation and sidebar components."
+    "description": "Enhanced breadcrumb navigation for creator-related pages with translation support, added Creators link to breadcrumb segments, and introduced new mobile navigation and sidebar components.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T07:32:06-05:00",
     "commit": "972367d28e61490e27f4325297521331669b476d",
     "type": "improvement",
     "area": "collection",
-    "description": "Simplified CollectionsPage interface by removing Pencil icon button for owners while retaining collection creation functionality."
+    "description": "Simplified CollectionsPage interface by removing Pencil icon button for owners while retaining collection creation functionality.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T06:56:07-05:00",
     "commit": "580c18a1855024782b59b328af1f21eaf7de9de3",
     "type": "improvement",
     "area": "profile",
-    "description": "Standardized creator-related URLs across the application, replacing profile and portfolio links with dynamic creator paths and implementing user slug support."
+    "description": "Standardized creator-related URLs across the application, replacing profile and portfolio links with dynamic creator paths and implementing user slug support.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T06:56:07-05:00",
     "commit": "580c18a1855024782b59b328af1f21eaf7de9de3",
     "type": "improvement",
     "area": "global",
-    "description": "Removed outdated portfolio and profile routes, streamlining the codebase and consolidating all creator-related functionality under the creators path."
+    "description": "Removed outdated portfolio and profile routes, streamlining the codebase and consolidating all creator-related functionality under the creators path.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T05:36:45-05:00",
     "commit": "be93956fb3a220f398890b93f066065aa2ee8785",
     "type": "improvement",
     "area": "profile",
-    "description": "Refactored routing to standardize creator paths, replacing profile and portfolio links with creator-specific routes and implementing new breadcrumb navigation."
+    "description": "Refactored routing to standardize creator paths, replacing profile and portfolio links with creator-specific routes and implementing new breadcrumb navigation.",
+    "impact": "patch",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T05:36:45-05:00",
     "commit": "be93956fb3a220f398890b93f066065aa2ee8785",
     "type": "feature",
     "area": "profile",
-    "description": "Created new creator pages for profiles, portfolios, collections, and submissions with comprehensive editing capabilities and OpenGraph image support."
+    "description": "Created new creator pages for profiles, portfolios, collections, and submissions with comprehensive editing capabilities and OpenGraph image support.",
+    "impact": "minor",
+    "version": "0.2.0"
   },
   {
     "time": "2026-01-25T04:58:35-05:00",
     "commit": "c102707907c636042fea55c0333edb3bd1bda46c",
     "type": "documentation",
     "area": "global",
-    "description": "Updated USERFLOW.md with enhanced sitemap diagram, improved page descriptions, and added legend for authentication requirements."
+    "description": "Updated USERFLOW.md with enhanced sitemap diagram, improved page descriptions, and added legend for authentication requirements.",
+    "impact": "patch",
+    "version": "0.2.0"
   }
 ]
