@@ -39,7 +39,12 @@ export const NewPromptNotificationEmail = ({
   const logoUrl = `${baseUrl}/images/create-spot-logo-white-rectangle.png`;
 
   return (
-    <BaseEmail previewText={previewText} userId={userId} baseUrl={baseUrl} t={t}>
+    <BaseEmail
+      previewText={previewText}
+      userId={userId}
+      baseUrl={baseUrl}
+      t={t}
+    >
       <Section style={{ marginBottom: "32px", textAlign: "center" }}>
         <Img
           src={logoUrl}
@@ -50,7 +55,9 @@ export const NewPromptNotificationEmail = ({
         />
       </Section>
       <Section>
-        <Text style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}>
+        <Text
+          style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}
+        >
           ✨ {t("newPromptNotification.title")}
         </Text>
         <EmailText>{greeting}</EmailText>
@@ -82,8 +89,13 @@ export const NewPromptNotificationEmail = ({
           </EmailButton>
         </Section>
         <Section style={{ marginTop: "20px", textAlign: "center" }}>
-          <Text style={{ fontSize: "14px", color: "#6b7280", textAlign: "center" }}>
-            <a href={promptUrl} style={{ color: "#3b82f6", textDecoration: "none" }}>
+          <Text
+            style={{ fontSize: "14px", color: "#6b7280", textAlign: "center" }}
+          >
+            <a
+              href={promptUrl}
+              style={{ color: "#3b82f6", textDecoration: "none" }}
+            >
               {t("newPromptNotification.learnMore")}
             </a>
           </Text>

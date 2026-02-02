@@ -1,4 +1,6 @@
 {
+  "rootDirectory": "apps/web",
+  "buildCommand": "turbo run build",
   "crons": [
     {
       "path": "/api/cron/notifications",

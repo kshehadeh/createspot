@@ -33,7 +33,9 @@ export const ExhibitRequestEmail = ({
   return (
     <BaseEmail previewText={previewText} baseUrl={baseUrl}>
       <Section>
-        <Text style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}>
+        <Text
+          style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}
+        >
           New Exhibit Request
         </Text>
 
@@ -45,7 +47,9 @@ export const ExhibitRequestEmail = ({
             margin: "24px 0",
           }}
         >
-          <Text style={{ fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
+          <Text
+            style={{ fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}
+          >
             REQUESTER INFORMATION
           </Text>
           <Text style={{ fontSize: "14px", margin: "8px 0" }}>
@@ -65,7 +69,9 @@ export const ExhibitRequestEmail = ({
             margin: "24px 0",
           }}
         >
-          <Text style={{ fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
+          <Text
+            style={{ fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}
+          >
             EXHIBIT DETAILS
           </Text>
           <Text style={{ fontSize: "14px", margin: "8px 0" }}>
@@ -74,7 +80,13 @@ export const ExhibitRequestEmail = ({
           <Text style={{ fontSize: "14px", margin: "8px 0" }}>
             <strong>Description:</strong>
           </Text>
-          <Text style={{ fontSize: "14px", margin: "8px 0", whiteSpace: "pre-wrap" }}>
+          <Text
+            style={{
+              fontSize: "14px",
+              margin: "8px 0",
+              whiteSpace: "pre-wrap",
+            }}
+          >
             {exhibitDescription}
           </Text>
         </Section>
@@ -87,11 +99,15 @@ export const ExhibitRequestEmail = ({
             margin: "24px 0",
           }}
         >
-          <Text style={{ fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}>
+          <Text
+            style={{ fontSize: "12px", fontWeight: 600, marginBottom: "12px" }}
+          >
             SUBMISSIONS ({submissions.length})
           </Text>
           {submissions.map((submission) => {
-            const submissionUrl = baseUrl ? `${baseUrl}/s/${submission.id}` : undefined;
+            const submissionUrl = baseUrl
+              ? `${baseUrl}/s/${submission.id}`
+              : undefined;
 
             return (
               <Section key={submission.id} style={{ marginBottom: "12px" }}>
@@ -106,7 +122,13 @@ export const ExhibitRequestEmail = ({
                     )}
                   </strong>
                 </Text>
-                <Text style={{ fontSize: "12px", margin: "4px 0", color: "#6b7280" }}>
+                <Text
+                  style={{
+                    fontSize: "12px",
+                    margin: "4px 0",
+                    color: "#6b7280",
+                  }}
+                >
                   By {submission.user.name || "Anonymous"} (
                   <Link href={`mailto:${submission.user.email}`}>
                     {submission.user.email}
@@ -119,8 +141,8 @@ export const ExhibitRequestEmail = ({
         </Section>
 
         <EmailText>
-          Please review this exhibit request and follow up with the requester
-          if you need any additional information.
+          Please review this exhibit request and follow up with the requester if
+          you need any additional information.
         </EmailText>
       </Section>
     </BaseEmail>

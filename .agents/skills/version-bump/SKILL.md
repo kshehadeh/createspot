@@ -6,7 +6,7 @@ description: Reads unreleased changelog entries, determines the next semantic ve
 # Version Bump From Changelog
 
 ## Purpose
-Use the JSON changelogs in `changelogs/` to decide when and how to bump the app version, then:
+Use the JSON changelogs in `apps/web/changelogs/` to decide when and how to bump the app version, then:
 1) update `package.json` version
 2) update all unreleased changelog entries with the new version
 
@@ -27,7 +27,7 @@ Changelog entries may include:
 
 ## Steps
 1. Read `package.json` and record the current version.
-2. Read all `changelogs/*.json` files.
+2. Read all `apps/web/changelogs/*.json` files.
 3. Collect unreleased entries and compute the highest required `impact`.
 4. Calculate the new version.
 5. Update `package.json` with the new version.

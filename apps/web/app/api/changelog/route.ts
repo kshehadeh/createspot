@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -22,12 +23,27 @@ function parseLimit(value: string | null, fallback: number): number {
   return Math.min(asNumber, 50);
 }
 
+function getChangelogsDir(): string {
+  const cwd = process.cwd();
+  const localPath = path.join(cwd, "changelogs");
+  if (existsSync(localPath)) {
+    return localPath;
+  }
+
+  const monorepoPath = path.join(cwd, "apps", "web", "changelogs");
+  if (existsSync(monorepoPath)) {
+    return monorepoPath;
+  }
+
+  return localPath;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const limit = parseLimit(searchParams.get("limit"), 10);
   const audience = searchParams.get("audience") ?? "public";
 
-  const changelogsDir = path.join(process.cwd(), "changelogs");
+  const changelogsDir = getChangelogsDir();
   const fileNames = (await readdir(changelogsDir)).filter((fileName) =>
     fileName.endsWith(".json"),
   );

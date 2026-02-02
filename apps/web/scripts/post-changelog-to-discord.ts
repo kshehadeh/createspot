@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { existsSync } from "fs";
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
 
@@ -35,6 +36,21 @@ const AREA_NAMES: Record<ChangelogEntry["area"], string> = {
   tools: "Tools",
 };
 
+function getChangelogsDir(): string {
+  const cwd = process.cwd();
+  const localPath = join(cwd, "changelogs");
+  if (existsSync(localPath)) {
+    return localPath;
+  }
+
+  const monorepoPath = join(cwd, "apps", "web", "changelogs");
+  if (existsSync(monorepoPath)) {
+    return monorepoPath;
+  }
+
+  return localPath;
+}
+
 function printUsage(): void {
   console.log(
     [
@@ -65,7 +81,7 @@ function printUsage(): void {
 }
 
 async function findMostRecentChangelog(): Promise<string | null> {
-  const changelogsDir = join(process.cwd(), "changelogs");
+  const changelogsDir = getChangelogsDir();
   try {
     const files = await readdir(changelogsDir);
     const jsonFiles = files
@@ -85,7 +101,7 @@ async function findMostRecentChangelog(): Promise<string | null> {
 }
 
 async function readChangelogForDate(date: string): Promise<string | null> {
-  const changelogsDir = join(process.cwd(), "changelogs");
+  const changelogsDir = getChangelogsDir();
   const filePath = join(changelogsDir, `${date}.json`);
 
   try {

@@ -34,7 +34,12 @@ export const CritiqueNotificationEmail = ({
   const logoUrl = `${baseUrl}/images/create-spot-logo-white-rectangle.png`;
 
   return (
-    <BaseEmail previewText={previewText} userId={userId} baseUrl={baseUrl} t={t}>
+    <BaseEmail
+      previewText={previewText}
+      userId={userId}
+      baseUrl={baseUrl}
+      t={t}
+    >
       <Section style={{ marginBottom: "32px", textAlign: "center" }}>
         <Img
           src={logoUrl}
@@ -45,7 +50,9 @@ export const CritiqueNotificationEmail = ({
         />
       </Section>
       <Section>
-        <Text style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}>
+        <Text
+          style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}
+        >
           💬 {t("critiqueNotification.title")}
         </Text>
         <EmailText>
@@ -54,19 +61,23 @@ export const CritiqueNotificationEmail = ({
             titleDisplay,
           })}
         </EmailText>
-        <EmailText>
-          {t("critiqueNotification.description")}
-        </EmailText>
+        <EmailText>{t("critiqueNotification.description")}</EmailText>
         <Section style={{ marginTop: "28px", textAlign: "center" }}>
           <EmailButton href={submissionUrl}>
             {t("critiqueNotification.viewWorkButton")}
           </EmailButton>
         </Section>
         <Section style={{ marginTop: "20px", textAlign: "center" }}>
-          <Text style={{ fontSize: "14px", color: "#6b7280", textAlign: "center" }}>
-            <a href={critiquerProfileUrl} style={{ color: "#3b82f6", textDecoration: "none" }}>
+          <Text
+            style={{ fontSize: "14px", color: "#6b7280", textAlign: "center" }}
+          >
+            <a
+              href={critiquerProfileUrl}
+              style={{ color: "#3b82f6", textDecoration: "none" }}
+            >
               {t("critiqueNotification.visitProfile", {
-                critiquerName: critiquerName || t("critiqueNotification.someone"),
+                critiquerName:
+                  critiquerName || t("critiqueNotification.someone"),
               })}
             </a>
           </Text>

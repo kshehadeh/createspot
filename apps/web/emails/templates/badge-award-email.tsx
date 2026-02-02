@@ -26,7 +26,12 @@ export const BadgeAwardEmail = ({
   const logoUrl = `${baseUrl}/images/create-spot-logo-white-rectangle.png`;
 
   return (
-    <BaseEmail previewText={previewText} userId={userId} baseUrl={baseUrl} t={t}>
+    <BaseEmail
+      previewText={previewText}
+      userId={userId}
+      baseUrl={baseUrl}
+      t={t}
+    >
       <Section style={{ marginBottom: "24px", textAlign: "center" }}>
         <Img
           src={logoUrl}
@@ -37,7 +42,9 @@ export const BadgeAwardEmail = ({
         />
       </Section>
       <Section style={{ textAlign: "center" }}>
-        <Text style={{ fontSize: "22px", fontWeight: 600, marginBottom: "12px" }}>
+        <Text
+          style={{ fontSize: "22px", fontWeight: 600, marginBottom: "12px" }}
+        >
           🏅 {t("badgeAward.title", { badgeName })}
         </Text>
         <Img
@@ -61,7 +68,9 @@ export const BadgeAwardEmail = ({
         </Text>
         <EmailText align="center">{badgeDescription}</EmailText>
         <Section style={{ marginTop: "20px" }}>
-          <EmailButton href={profileUrl}>{t("badgeAward.viewProfile")}</EmailButton>
+          <EmailButton href={profileUrl}>
+            {t("badgeAward.viewProfile")}
+          </EmailButton>
         </Section>
       </Section>
     </BaseEmail>

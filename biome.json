@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -15,17 +15,26 @@
     }
   },
   "files": {
+    "maxSize": 5000000,
     "includes": [
-      "app/**/*.ts",
-      "app/**/*.tsx",
-      "components/**/*.ts",
-      "components/**/*.tsx",
-      "lib/**/*.ts",
-      "scripts/**/*.ts",
-      "types/**/*.ts",
+      "apps/web/app/**/*.ts",
+      "apps/web/app/**/*.tsx",
+      "apps/web/components/**/*.ts",
+      "apps/web/components/**/*.tsx",
+      "apps/web/lib/**/*.ts",
+      "apps/web/scripts/**/*.ts",
+      "apps/web/types/**/*.ts",
+      "apps/web/emails/**/*.ts",
+      "apps/web/emails/**/*.tsx",
+      "apps/web/i18n/**/*.ts",
+      "apps/web/**/*.mjs",
+      "apps/web/**/*.json",
+      "apps/web/**/*.ts",
+      "apps/web/**/*.tsx",
       "*.ts",
       "*.mjs",
       "*.json"
-    ]
+    ],
+    "experimentalScannerIgnores": ["apps/web/data/**", "data/**"]
   }
 }

@@ -26,7 +26,9 @@ export const ContactSupportEmail = ({
   return (
     <BaseEmail previewText={previewText} baseUrl={baseUrl}>
       <Section>
-        <Text style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}>
+        <Text
+          style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}
+        >
           {isAdminCopy
             ? `Bug Report from ${userName}`
             : `Thank you for reporting a bug, ${userName}!`}
@@ -45,7 +47,9 @@ export const ContactSupportEmail = ({
             margin: "24px 0",
           }}
         >
-          <Text style={{ fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
+          <Text
+            style={{ fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}
+          >
             BUG REPORT DETAILS
           </Text>
           {isAdminCopy && userEmail && (
@@ -55,13 +59,18 @@ export const ContactSupportEmail = ({
             </Text>
           )}
           <Text style={{ fontSize: "14px", margin: "8px 0" }}>
-            <strong>Page URL:</strong>{" "}
-            <Link href={pageUrl}>{pageUrl}</Link>
+            <strong>Page URL:</strong> <Link href={pageUrl}>{pageUrl}</Link>
           </Text>
           <Text style={{ fontSize: "14px", margin: "8px 0" }}>
             <strong>Description:</strong>
           </Text>
-          <Text style={{ fontSize: "14px", margin: "8px 0", whiteSpace: "pre-wrap" }}>
+          <Text
+            style={{
+              fontSize: "14px",
+              margin: "8px 0",
+              whiteSpace: "pre-wrap",
+            }}
+          >
             {description}
           </Text>
         </Section>

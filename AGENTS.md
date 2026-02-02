@@ -27,7 +27,7 @@ cp .env.example .env
 # Edit .env with your credentials
 
 # Run database migrations
-bunx prisma migrate dev
+bunx prisma migrate dev --schema apps/web/prisma/schema.prisma
 
 # Start development server
 bun run dev
@@ -39,35 +39,35 @@ The app will be available at http://localhost:3000
 
 | Document | Description |
 |----------|-------------|
-| [docs/DATABASE.md](docs/DATABASE.md) | Database schema, Prisma usage, migrations, image storage |
-| [docs/IMAGE-HANDLING.md](docs/IMAGE-HANDLING.md) | Upload flow, presign, post-processing workflow, resize/WebP, metadata |
-| [docs/FRONTEND.md](docs/FRONTEND.md) | React components, theming, UI patterns |
-| [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md) | Translation system, i18n patterns, adding new languages |
-| [docs/CREATOR-PROTECTIONS.md](docs/CREATOR-PROTECTIONS.md) | Watermarking, download prevention, AI training opt-out |
-| [docs/HINTS.md](docs/HINTS.md) | Contextual help and hint system, tutorial management |
+| [apps/web/docs/DATABASE.md](apps/web/docs/DATABASE.md) | Database schema, Prisma usage, migrations, image storage |
+| [apps/web/docs/IMAGE-HANDLING.md](apps/web/docs/IMAGE-HANDLING.md) | Upload flow, presign, post-processing workflow, resize/WebP, metadata |
+| [apps/web/docs/FRONTEND.md](apps/web/docs/FRONTEND.md) | React components, theming, UI patterns |
+| [apps/web/docs/INTERNATIONALIZATION.md](apps/web/docs/INTERNATIONALIZATION.md) | Translation system, i18n patterns, adding new languages |
+| [apps/web/docs/CREATOR-PROTECTIONS.md](apps/web/docs/CREATOR-PROTECTIONS.md) | Watermarking, download prevention, AI training opt-out |
+| [apps/web/docs/HINTS.md](apps/web/docs/HINTS.md) | Contextual help and hint system, tutorial management |
 
 ## Project Structure
 
 ```
-app/                    # Next.js App Router pages and API routes
-├── api/               # API endpoints
-├── admin/             # Admin dashboard (prompts, users)
-├── play/              # User submission interface
-├── this-week/         # Gallery view
-└── history/           # User's past submissions
+apps/web/app/            # Next.js App Router pages and API routes
+├── api/                # API endpoints
+├── admin/              # Admin dashboard (prompts, users)
+├── play/               # User submission interface
+├── this-week/          # Gallery view
+└── history/            # User's past submissions
 
-components/            # Shared React components
-├── ui/               # shadcn/ui components (button, dialog, etc.)
-i18n/                  # Internationalization configuration
-├── config.ts         # Supported locales and utilities
-└── request.ts        # next-intl server configuration
-lib/                   # Utilities (auth, prisma, helpers)
-messages/              # Translation files
-├── en.json           # English translations
-└── es.json           # Spanish translations
-prisma/                # Database schema and migrations
-public/                # Static assets
-docs/                  # Developer documentation
+apps/web/components/     # Shared React components
+├── ui/                  # shadcn/ui components (button, dialog, etc.)
+apps/web/i18n/           # Internationalization configuration
+├── config.ts            # Supported locales and utilities
+└── request.ts           # next-intl server configuration
+apps/web/lib/            # Utilities (auth, prisma, helpers)
+apps/web/messages/       # Translation files
+├── en.json              # English translations
+└── es.json              # Spanish translations
+apps/web/prisma/         # Database schema and migrations
+apps/web/public/         # Static assets
+apps/web/docs/           # Developer documentation
 ```
 
 ## Available Scripts
@@ -120,17 +120,17 @@ bun run format:check # Check without modifying
 
 ### TypeScript
 
-Strict mode enabled. Key settings in `tsconfig.json`:
+Strict mode enabled. Key settings in `apps/web/tsconfig.json`:
 
 - `strict: true` - All strict checks enabled
-- `@/*` path alias maps to project root
+- `@/*` path alias maps to `apps/web`
 
 ### Database: Prisma
 
 ```bash
-bunx prisma generate     # Regenerate client
-bunx prisma migrate dev  # Create and apply migration
-bunx prisma studio       # Open database GUI
+bunx prisma generate --schema apps/web/prisma/schema.prisma     # Regenerate client
+bunx prisma migrate dev --schema apps/web/prisma/schema.prisma  # Create and apply migration
+bunx prisma studio --schema apps/web/prisma/schema.prisma       # Open database GUI
 ```
 
 ## Coding Standards
@@ -155,7 +155,7 @@ import { prisma } from "../../../lib/prisma";
 - **Server Components** by default (no directive needed)
 - **Client Components** only when required (`"use client"` at top)
 - Co-locate page-specific components in their route folder
-- Extract to `/components` when reused across pages
+- Extract to `apps/web/components` when reused across pages
 
 ```typescript
 // Server Component (default)
@@ -182,7 +182,7 @@ export function InteractiveComponent() {
 
 #### Using shadcn/ui Components
 
-Components are located in `components/ui/`. Import and use them directly:
+Components are located in `apps/web/components/ui/`. Import and use them directly:
 
 ```tsx
 import { Button } from "@/components/ui/button";
@@ -199,7 +199,7 @@ import { Label } from "@/components/ui/label";
 
 The app uses `next-themes` for theme management. Users can toggle between light/dark/system via the theme toggle in the header.
 
-- Theme is controlled via CSS variables in `app/globals.css`
+- Theme is controlled via CSS variables in `apps/web/app/globals.css`
 - Components automatically adapt to theme via shadcn's CSS variable system
 - Use `dark:` prefix for custom dark mode styles when needed
 
@@ -212,7 +212,7 @@ The app uses `next-themes` for theme management. Users can toggle between light/
 
 **Important: iOS Safari Dark Mode Issue**
 
-iOS Safari has a known issue where dark mode detection fails for cards with gradient backgrounds. When creating cards with custom gradients, you must add explicit CSS rules in `app/globals.css` with `!important` flags to ensure proper dark mode styling.
+iOS Safari has a known issue where dark mode detection fails for cards with gradient backgrounds. When creating cards with custom gradients, you must add explicit CSS rules in `apps/web/app/globals.css` with `!important` flags to ensure proper dark mode styling.
 
 **Pattern:**
 1. Create a specific CSS class (e.g., `contact-card-blue`)
@@ -220,7 +220,7 @@ iOS Safari has a known issue where dark mode detection fails for cards with grad
 3. Add `.dark` class rule with dark background `hsl(240 10% 3.9%)` and `!important`
 4. Add `@media (prefers-color-scheme: dark)` rule with same dark background and `!important`
 
-See `app/globals.css` for examples (`terms-card`, `contact-card-blue`, `contact-card-purple`) and [docs/FRONTEND.md](docs/FRONTEND.md) for complete documentation.
+See `apps/web/app/globals.css` for examples (`terms-card`, `contact-card-blue`, `contact-card-purple`) and [apps/web/docs/FRONTEND.md](apps/web/docs/FRONTEND.md) for complete documentation.
 
 #### Adding New shadcn Components
 
@@ -228,7 +228,7 @@ See `app/globals.css` for examples (`terms-card`, `contact-card-blue`, `contact-
 bunx shadcn@latest add <component-name>
 ```
 
-This will add the component to `components/ui/` and update necessary dependencies.
+This will add the component to `apps/web/components/ui/` and update necessary dependencies.
 
 ### Internationalization (i18n)
 
@@ -264,11 +264,11 @@ export function MyButton() {
 t("greeting", { name: "Sarah" }); // "Hello, Sarah!"
 ```
 
-> See [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md) for complete i18n documentation.
+> See [apps/web/docs/INTERNATIONALIZATION.md](apps/web/docs/INTERNATIONALIZATION.md) for complete i18n documentation.
 
 ### API Routes
 
-- Located in `app/api/` directory
+- Located in `apps/web/app/api/` directory
 - Use NextResponse for responses
 - Always validate authentication with `auth()`
 - Return appropriate HTTP status codes
@@ -366,27 +366,27 @@ const prompt = await getCurrentPrompt();
 
 ### Add a New Page
 
-1. Create route folder in `app/` (e.g., `app/new-page/`)
+1. Create route folder in `apps/web/app/` (e.g., `apps/web/app/new-page/`)
 2. Add `page.tsx` with default export
 3. Add to navigation in relevant layouts/headers
 
 ### Add a New API Endpoint
 
-1. Create route file in `app/api/` (e.g., `app/api/endpoint/route.ts`)
+1. Create route file in `apps/web/app/api/` (e.g., `apps/web/app/api/endpoint/route.ts`)
 2. Export HTTP method handlers (GET, POST, PUT, DELETE)
 3. Include authentication check if needed
 
 ### Modify Database Schema
 
-1. Edit `prisma/schema.prisma`
-2. Run `bunx prisma migrate dev --name <description>`
+1. Edit `apps/web/prisma/schema.prisma`
+2. Run `bunx prisma migrate dev --schema apps/web/prisma/schema.prisma --name <description>`
 3. Update TypeScript types if needed (auto-generated)
 4. **Run `bun run validate`** after schema changes to ensure builds pass
 
 ### Add a Shared Component
 
-1. Check if a shadcn/ui component exists first (`components/ui/`)
-2. If not, create in `components/` directory
+1. Check if a shadcn/ui component exists first (`apps/web/components/ui/`)
+2. If not, create in `apps/web/components/` directory
 3. Use TypeScript interfaces for props
 4. Use shadcn components as building blocks when possible
 5. Theme-aware components will automatically work with the theme system
@@ -405,7 +405,7 @@ Components are installed to `components/ui/` and can be imported directly.
 ### Prisma client out of sync
 
 ```bash
-bunx prisma generate
+bunx prisma generate --schema apps/web/prisma/schema.prisma
 ```
 
 ### Database connection issues
@@ -417,7 +417,7 @@ bunx prisma generate
 ### Type errors after schema change
 
 ```bash
-bunx prisma generate
+bunx prisma generate --schema apps/web/prisma/schema.prisma
 # Restart TypeScript server in your editor
 ```
 
@@ -432,7 +432,7 @@ bun run format
 If cards with gradient backgrounds show light backgrounds with light text in dark mode on iOS Safari, you need to add explicit CSS rules with `!important` flags.
 
 **Solution:**
-1. Create a specific CSS class for the card in `app/globals.css`
+1. Create a specific CSS class for the card in `apps/web/app/globals.css`
 2. Add light mode gradient background with `!important`
 3. Add `.dark` class rule with `background: hsl(240 10% 3.9%) !important`
 4. Add `@media (prefers-color-scheme: dark)` rule with same background and `!important`
@@ -459,4 +459,4 @@ Then use the class in your component:
 <Card className="contact-card-blue rounded-3xl border-none shadow-sm">
 ```
 
-See existing examples in `app/globals.css` (`terms-card`, `contact-card-blue`, `contact-card-purple`) and [docs/FRONTEND.md](docs/FRONTEND.md) for complete documentation.
+See existing examples in `apps/web/app/globals.css` (`terms-card`, `contact-card-blue`, `contact-card-purple`) and [apps/web/docs/FRONTEND.md](apps/web/docs/FRONTEND.md) for complete documentation.

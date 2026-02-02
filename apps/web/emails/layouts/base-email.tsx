@@ -1,4 +1,14 @@
-import { Body, Container, Head, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
+import {
+  Body,
+  Container,
+  Head,
+  Hr,
+  Html,
+  Link,
+  Preview,
+  Section,
+  Text,
+} from "@react-email/components";
 import type { ReactNode } from "react";
 import { getRoute } from "@/lib/routes";
 
@@ -13,7 +23,8 @@ export interface BaseEmailProps {
 const styles = {
   body: {
     backgroundColor: "#000000",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontFamily:
+      "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     margin: 0,
     padding: "40px 20px",
   },
@@ -41,35 +52,38 @@ const styles = {
   },
 };
 
-export const BaseEmail = ({ children, previewText, userId, baseUrl, t }: BaseEmailProps) => {
+export const BaseEmail = ({
+  children,
+  previewText,
+  userId,
+  baseUrl,
+  t,
+}: BaseEmailProps) => {
   const appName = "Create Spot";
-  
+
   // Use translations if available, otherwise fall back to English
   const receivingReason = t
     ? t("footer.receivingReason", { appName })
     : `You are receiving this email because you have a ${appName} account.`;
-  
+
   const manageNotificationsText = t
     ? t("footer.manageNotifications")
     : "Manage notifications in your profile";
-  
-  const visitSiteText = t
-    ? t("footer.visitSite")
-    : "Visit Create Spot";
-  
-  const termsText = t
-    ? t("footer.terms")
-    : "Terms of Service";
-  
-  const companyInfo = t
-    ? t("footer.companyInfo")
-    : "Create Spot";
-  
+
+  const visitSiteText = t ? t("footer.visitSite") : "Visit Create Spot";
+
+  const termsText = t ? t("footer.terms") : "Terms of Service";
+
+  const companyInfo = t ? t("footer.companyInfo") : "Create Spot";
+
   // Build URLs
   const siteUrl = baseUrl || "https://create.spot";
-  const profileUrl = userId && baseUrl ? `${baseUrl}${getRoute("profile").path}/${userId}` : undefined;
+  const profileUrl =
+    userId && baseUrl
+      ? `${baseUrl}${getRoute("profile").path}/${userId}`
+      : undefined;
   const termsUrl = baseUrl ? `${baseUrl}${getRoute("terms").path}` : undefined;
-  
+
   return (
     <Html>
       <Head />
@@ -102,9 +116,7 @@ export const BaseEmail = ({ children, previewText, userId, baseUrl, t }: BaseEma
               </>
             )}
           </Text>
-          <Text style={styles.footerText}>
-            {companyInfo}
-          </Text>
+          <Text style={styles.footerText}>{companyInfo}</Text>
         </Container>
       </Body>
     </Html>

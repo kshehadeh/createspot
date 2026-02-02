@@ -33,11 +33,11 @@ Create Spot consists of several interconnected systems:
 
 ### Core Features
 
-- **Prompt System**: Weekly three-word prompts with start/end dates. See [Database Documentation - Prompts System](docs/DATABASE.md#prompts-system)
+- **Prompt System**: Weekly three-word prompts with start/end dates. See [Database Documentation - Prompts System](apps/web/docs/DATABASE.md#prompts-system)
 - **Submission System**: Users submit images and/or text for each prompt word. Submissions can be linked to prompts or exist as standalone portfolio items
-- **Portfolio System**: Users can create portfolio items, link them to prompts, or convert prompt submissions to portfolio items. See [Database Documentation - Portfolio System](docs/DATABASE.md#portfolio-system)
+- **Portfolio System**: Users can create portfolio items, link them to prompts, or convert prompt submissions to portfolio items. See [Database Documentation - Portfolio System](apps/web/docs/DATABASE.md#portfolio-system)
 - **Favorites System**: Users can favorite submissions from other creators
-- **Analytics System**: Track profile views and submission views with privacy-conscious IP hashing. See [Database Documentation - Analytics System](docs/DATABASE.md#analytics-system)
+- **Analytics System**: Track profile views and submission views with privacy-conscious IP hashing. See [Database Documentation - Analytics System](apps/web/docs/DATABASE.md#analytics-system)
 
 ### User-Facing Pages
 
@@ -59,15 +59,15 @@ Create Spot consists of several interconnected systems:
 
 ### Technical Components
 
-- **API Routes**: RESTful endpoints for all data operations. See [Architecture Documentation](docs/ARCHITECTURE.md#api-routes)
-- **Image Storage**: Direct browser uploads to Cloudflare R2 via presigned URLs. See [Database Documentation - Image Storage](docs/DATABASE.md#image-storage-cloudflare-r2)
+- **API Routes**: RESTful endpoints for all data operations. See [Architecture Documentation](apps/web/docs/ARCHITECTURE.md#api-routes)
+- **Image Storage**: Direct browser uploads to Cloudflare R2 via presigned URLs. See [Database Documentation - Image Storage](apps/web/docs/DATABASE.md#image-storage-cloudflare-r2)
 - **Authentication**: Google OAuth integration with NextAuth.js
-- **Frontend Components**: Reusable React components with dark mode support. See [Frontend Documentation](docs/FRONTEND.md)
+- **Frontend Components**: Reusable React components with dark mode support. See [Frontend Documentation](apps/web/docs/FRONTEND.md)
 
 For detailed information about each part, see:
-- [Architecture Documentation](docs/ARCHITECTURE.md) - System architecture and design decisions
-- [Database Documentation](docs/DATABASE.md) - Schema, models, and data patterns
-- [Frontend Documentation](docs/FRONTEND.md) - React components, theming, and UI patterns
+- [Architecture Documentation](apps/web/docs/ARCHITECTURE.md) - System architecture and design decisions
+- [Database Documentation](apps/web/docs/DATABASE.md) - Schema, models, and data patterns
+- [Frontend Documentation](apps/web/docs/FRONTEND.md) - React components, theming, and UI patterns
 - [AGENTS.md](AGENTS.md) - Developer guide with coding standards and common tasks
 
 ## Developer Setup
@@ -91,6 +91,11 @@ For detailed information about each part, see:
    bun install
    ```
 
+   The Next.js app lives in `apps/web`. You can run app-specific scripts with:
+   ```bash
+   bun --cwd apps/web run <script>
+   ```
+
 3. **Set up environment variables**
    ```bash
    cp .env.example .env
@@ -105,7 +110,7 @@ For detailed information about each part, see:
 
 4. **Run database migrations**
    ```bash
-   bunx prisma migrate dev
+   bunx prisma migrate dev --schema apps/web/prisma/schema.prisma
    ```
 
 5. **Start the development server**
@@ -172,15 +177,15 @@ We welcome contributions! Here are some guidelines:
 ### Documentation
 
 When adding new features:
-- Update relevant documentation in `docs/`
+- Update relevant documentation in `apps/web/docs/`
 - Add code comments for complex logic
 - Update this README if adding new major features
 
 For detailed coding standards and patterns, see:
 - [AGENTS.md](AGENTS.md) - Complete developer guide
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - System architecture
-- [docs/DATABASE.md](docs/DATABASE.md) - Database patterns
-- [docs/FRONTEND.md](docs/FRONTEND.md) - Frontend patterns
+- [apps/web/docs/ARCHITECTURE.md](apps/web/docs/ARCHITECTURE.md) - System architecture
+- [apps/web/docs/DATABASE.md](apps/web/docs/DATABASE.md) - Database patterns
+- [apps/web/docs/FRONTEND.md](apps/web/docs/FRONTEND.md) - Frontend patterns
 
 ### Questions?
 

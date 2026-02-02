@@ -36,7 +36,7 @@ I want to look at the last commit that was made and summarize the changes in as 
 * "version" is an optional semantic version string indicating when the entry was released. This should be left blank for new entries until the versioning skill assigns a version.
 
 ### Output
-Now take that object and add it to a file in the `changelogs` folder.  The files are organized by day so if there is already a day (e.g. 2025-11-25.json) then add to that file.  Otherwise, create a new file with the current date.  
+Now take that object and add it to a file in the `apps/web/changelogs` folder.  The files are organized by day so if there is already a day (e.g. 2025-11-25.json) then add to that file.  Otherwise, create a new file with the current date.  
 
 
 ### Important

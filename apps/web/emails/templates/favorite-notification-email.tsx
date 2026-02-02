@@ -34,7 +34,12 @@ export const FavoriteNotificationEmail = ({
   const logoUrl = `${baseUrl}/images/create-spot-logo-white-rectangle.png`;
 
   return (
-    <BaseEmail previewText={previewText} userId={userId} baseUrl={baseUrl} t={t}>
+    <BaseEmail
+      previewText={previewText}
+      userId={userId}
+      baseUrl={baseUrl}
+      t={t}
+    >
       <Section style={{ marginBottom: "32px", textAlign: "center" }}>
         <Img
           src={logoUrl}
@@ -45,7 +50,9 @@ export const FavoriteNotificationEmail = ({
         />
       </Section>
       <Section>
-        <Text style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}>
+        <Text
+          style={{ fontSize: "22px", fontWeight: 600, marginBottom: "16px" }}
+        >
           ❤️ {t("favoriteNotification.title")}
         </Text>
         <EmailText>
@@ -54,17 +61,20 @@ export const FavoriteNotificationEmail = ({
             titleDisplay,
           })}
         </EmailText>
-        <EmailText>
-          {t("favoriteNotification.description")}
-        </EmailText>
+        <EmailText>{t("favoriteNotification.description")}</EmailText>
         <Section style={{ marginTop: "28px", textAlign: "center" }}>
           <EmailButton href={submissionUrl}>
             {t("favoriteNotification.viewWorkButton")}
           </EmailButton>
         </Section>
         <Section style={{ marginTop: "20px", textAlign: "center" }}>
-          <Text style={{ fontSize: "14px", color: "#6b7280", textAlign: "center" }}>
-            <a href={favorerProfileUrl} style={{ color: "#3b82f6", textDecoration: "none" }}>
+          <Text
+            style={{ fontSize: "14px", color: "#6b7280", textAlign: "center" }}
+          >
+            <a
+              href={favorerProfileUrl}
+              style={{ color: "#3b82f6", textDecoration: "none" }}
+            >
               {t("favoriteNotification.visitProfile", {
                 favorerName: favorerName || t("favoriteNotification.someone"),
               })}
