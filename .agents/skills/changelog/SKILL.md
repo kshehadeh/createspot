@@ -13,7 +13,7 @@ The goal of this is to document the changes that were recently made in a JSON fi
 I want to look at the last commit that was made and summarize the changes in as brief a way as possible.  When summarizing we are going to break the change down into a structured object.  
 
 ### Structure
-"time", "commit", "type", "area", "description"
+"time", "commit", "type", "area", "description", "impact", "version"
 
 * "time" is the date time of the commit
 * "commit" is the sha (multiple records could have the same commit)
@@ -21,6 +21,10 @@ I want to look at the last commit that was made and summarize the changes in as 
 * "audience" is whether this is a behind the scenes change and shouldn't be shared publically. The topions are:
   * "public": A user facing improvement that substantively improves the user experience either because it's a visible change or that it improves performance 
   * "development": A developer experience improvement which includes things like refactoring (not for performance) or linting improvements, etc.
+* "impact" is semantic version impact: "patch", "minor", or "major".
+  * patch: bug fixes, small improvements, documentation
+  * minor: new features or notable user-facing improvements
+  * major: breaking changes
 * "area" is the area the change was made in: "global" "content", "profile", "portfolio", "collection", "games", "tools"
   * Global: Navigation, Authentication
   * Content: About pages, home page, etc
@@ -29,6 +33,7 @@ I want to look at the last commit that was made and summarize the changes in as 
   * Games: Prompt and other inspiration games
   * Tools: Image editor  
 * "description" is a brief description (no more than one sentence) of the change that was made.  If it's long, it might need to be two different records.
+* "version" is an optional semantic version string indicating when the entry was released. This should be left blank for new entries until the versioning skill assigns a version.
 
 ### Output
 Now take that object and add it to a file in the `changelogs` folder.  The files are organized by day so if there is already a day (e.g. 2025-11-25.json) then add to that file.  Otherwise, create a new file with the current date.  

@@ -11,6 +11,7 @@ import {
   Award,
   Shield,
   FileText,
+  ScrollText,
   User,
   FolderOpen,
 } from "lucide-react";
@@ -40,6 +41,7 @@ export function AboutMobileNav() {
   const critiquesRoute = getRoute("aboutCritiques");
   const badgesRoute = getRoute("aboutBadges");
   const protectingRoute = getRoute("aboutProtectingYourWork");
+  const changelogRoute = getRoute("aboutChangelog");
   const termsRoute = getRoute("terms");
 
   const navConfig: NavItemConfig[] = [
@@ -105,6 +107,13 @@ export function AboutMobileNav() {
       translationNamespace: "about",
       icon: Lightbulb,
       isActive: pathname === promptSubmissionsRoute.path,
+    },
+    {
+      href: changelogRoute.path,
+      labelKey: "updates",
+      translationNamespace: "navigation",
+      icon: ScrollText,
+      isActive: pathname === changelogRoute.path,
     },
     {
       href: termsRoute.path,

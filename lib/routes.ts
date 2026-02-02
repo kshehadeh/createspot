@@ -12,6 +12,7 @@ import {
   Info,
   Mail,
   Settings,
+  ScrollText,
 } from "lucide-react";
 import { EXHIBITION_CONFIGS } from "./exhibition-constants";
 import { Home } from "lucide-react";
@@ -257,6 +258,12 @@ const ROUTES: Record<string, RouteConfig> = {
     path: "/about/critiques",
     label: "navigation.critiques",
     parentPath: "/about",
+  },
+  aboutChangelog: {
+    path: "/about/changelog",
+    label: "navigation.updates",
+    parentPath: "/about",
+    icon: ScrollText,
   },
   contact: {
     path: "/contact",

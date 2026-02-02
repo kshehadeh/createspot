@@ -13,6 +13,7 @@ import {
   Award,
   Shield,
   FileText,
+  ScrollText,
   ChevronDown,
   User,
   FolderOpen,
@@ -48,6 +49,7 @@ export function AboutSidebar() {
   const critiquesRoute = getRoute("aboutCritiques");
   const badgesRoute = getRoute("aboutBadges");
   const protectingRoute = getRoute("aboutProtectingYourWork");
+  const changelogRoute = getRoute("aboutChangelog");
   const termsRoute = getRoute("terms");
 
   const featurePaths = [
@@ -135,6 +137,13 @@ export function AboutSidebar() {
       translationNamespace: "about",
       icon: Lightbulb,
       isActive: pathname === promptSubmissionsRoute.path,
+    },
+    {
+      href: changelogRoute.path,
+      labelKey: "updates",
+      translationNamespace: "navigation",
+      icon: ScrollText,
+      isActive: pathname === changelogRoute.path,
     },
     {
       href: termsRoute.path,

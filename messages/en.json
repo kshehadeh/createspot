@@ -163,6 +163,7 @@
     "creators": "Creators",
     "about": "About",
     "features": "Features",
+    "updates": "Updates",
     "critiques": "Critiques",
     "contact": "Contact",
     "more": "More",
@@ -597,7 +598,21 @@
   },
   "footer": {
     "copyright": "© {year} Create Spot",
-    "terms": "Terms of Service"
+    "terms": "Terms of Service",
+    "version": "Version {version}"
+  },
+
+  "aboutChangelog": {
+    "title": "Updates | Create Spot",
+    "description": "Recent updates and improvements to Create Spot.",
+    "mainTitle": "Updates",
+    "mainDescription": "A running list of recent improvements, fixes, and new features.",
+    "loading": "Loading updates...",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "end": "You're up to date.",
+    "unreleased": "Unreleased",
+    "loadError": "Failed to load updates: {error}"
   },
   "upload": {
     "ownershipNotice": "You retain all rights to your content. Create Spot has no rights to your submissions.",

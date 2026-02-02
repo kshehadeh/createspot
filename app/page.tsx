@@ -16,6 +16,7 @@ import { FolderOpen, Lightbulb, MessageCircle, Share2 } from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { getCreatorUrl } from "@/lib/utils";
+import packageJson from "@/package.json";
 
 export const dynamic = "force-dynamic";
 
@@ -338,6 +339,8 @@ export default async function Home() {
           >
             {tFooter("terms")}
           </Link>
+          <span className="hidden sm:inline">|</span>
+          <span>{tFooter("version", { version: packageJson.version })}</span>
         </div>
       </footer>
     </main>
