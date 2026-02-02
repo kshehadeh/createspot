@@ -28,7 +28,8 @@ app/
 │   ├── page.tsx
 │   ├── purpose/
 │   ├── prompt-submissions/
-│   └── portfolios-and-sharing/
+│   ├── profile/
+│   └── portfolio/
 ├── admin/              # Admin pages
 │   ├── page.tsx
 │   ├── prompts/        # Prompt management

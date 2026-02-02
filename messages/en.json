@@ -736,6 +736,16 @@
       "sharedPublicly": "and can be shared publicly through the exhibitions and galleries.",
       "learnMore": "Learn more about portfolios and sharing →"
     },
+    "profileCard": {
+      "title": "Profile",
+      "description": "Your profile is your public presence. Control what appears there with sharing levels, share your profile link with a preview image, and feature a single piece at the top.",
+      "learnMore": "Learn more about profiles →"
+    },
+    "portfolioCard": {
+      "title": "Portfolio",
+      "description": "Your portfolio is your collection. Each piece has its own shareable link, and prompt submissions can live in your portfolio so inspiration and your body of work stay connected.",
+      "learnMore": "Learn more about portfolios →"
+    },
     "promptInspiration": {
       "title": "Prompt inspiration",
       "weeklyPrompts": "Weekly prompts are designed to",
@@ -755,7 +765,7 @@
       "learnMore": "Learn more about badges →"
     },
     "protectingYourWork": {
-      "title": "Protecting your work",
+      "title": "Protect",
       "description": "In the age of AI, creatives need ways to protect their work. We provide",
       "tools": "watermarking, download deterrents, and AI opt-out signals",
       "continuation": " — and we believe in",
@@ -876,6 +886,7 @@
   "aboutCritiques": {
     "title": "Critiques | Create Spot",
     "description": "How critiques work on Create Spot—requesting feedback, replying, and managing controls.",
+    "videoTitle": "Critiques demo",
     "mainTitle": "Critiques keep feedback focused.",
     "mainDescription": "Invite trusted peers to leave private notes while you’re still shaping a piece, then use that feedback to refine before you share it widely.",
     "requesting": {
@@ -904,6 +915,61 @@
         "members": "Only signed-in members can leave critiques, which keeps spam out.",
         "disable": "Turn critiques off anytime; existing feedback stays archived for later reference."
       }
+    },
+    "backToAbout": "← Back to About"
+  },
+  "aboutProfile": {
+    "title": "Profile | Create Spot",
+    "description": "Learn how your profile works—sharing levels, profile link and preview image, and featuring your work.",
+    "videoTitle": "Profile demo",
+    "mainTitle": "Your profile is your public presence.",
+    "mainDescription": "Control what appears on your profile with sharing levels, share your profile link with a preview image, and feature a single piece at the top.",
+    "profileLink": {
+      "title": "Profile link and preview image",
+      "description": "Your public profile lives at",
+      "profileLink": "/profile/your-id",
+      "previewDescription": ". When you share your profile link, we automatically generate a preview image that highlights your work. If you have a featured image that is shareable, it becomes the preview. Otherwise we build a grid from your most recent portfolio images."
+    },
+    "featuredWork": {
+      "title": "Featured work",
+      "description": "You can select a",
+      "featuredSubmission": "featured submission",
+      "fullDescription": "in your profile settings to spotlight a single piece at the top of your profile. Featured work also powers your profile preview image as long as it is set to",
+      "profileOrPublic": "Profile",
+      "or": "or",
+      "public": "Public"
+    },
+    "backToAbout": "← Back to About"
+  },
+  "aboutPortfolio": {
+    "title": "Portfolio | Create Spot",
+    "description": "Learn how your portfolio works—sharing levels, piece links, and connecting prompts with your body of work.",
+    "videoTitle": "Portfolio demo",
+    "mainTitle": "Your portfolio is your collection.",
+    "mainDescription": "Build it over time, give each piece its own shareable link, and connect prompt submissions so your inspiration and body of work stay in one place.",
+    "sharingLevels": {
+      "title": "Sharing levels",
+      "description": "Every portfolio item uses a share status so you can decide",
+      "whoGetsToSee": "who gets to see it",
+      "private": "Private",
+      "privateDescription": "Only you can see it in your profile editor.",
+      "profile": "Profile",
+      "profileDescription": "Visible on your public profile, but not in galleries.",
+      "public": "Public",
+      "publicDescription": "Visible on your profile and in public galleries.",
+      "note": "Note: if you link a portfolio item to a prompt, it becomes",
+      "publicNote": "public",
+      "noteSuffix": "so it can appear with other prompt submissions."
+    },
+    "pieceLinks": {
+      "title": "Portfolio piece links",
+      "description": "Each piece in your portfolio has its own shareable link at",
+      "pieceLink": "/s/id",
+      "previewDescription": ". When you share a piece link, we generate a preview image. Your profile link and piece links work together so you can share either your whole profile or a single piece."
+    },
+    "promptsAndPortfolios": {
+      "title": "Prompts and portfolios together",
+      "description": "Prompt submissions can be added to your portfolio, and portfolio pieces can be linked to prompts. This keeps your weekly inspiration connected to your long-term body of work while maintaining a single, consistent archive."
     },
     "backToAbout": "← Back to About"
   },
@@ -953,7 +1019,7 @@
   "aboutProtectingYourWork": {
     "title": "Protecting Your Work | Create Spot",
     "description": "Learn how to protect your creative work in the age of AI, and how Create Spot helps you maintain control over your art.",
-    "breadcrumb": "Protecting Your Work",
+    "breadcrumb": "Protect",
     "mainTitle": "Protecting your work in the age of AI.",
     "mainDescription": "As AI becomes more prevalent, creatives need tools to protect their work and maintain ownership. Here's how we help.",
     "theAgeOfAI": {

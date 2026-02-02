@@ -6,12 +6,13 @@ import {
   Info,
   Target,
   Sparkles,
-  Briefcase,
   Lightbulb,
   MessageSquare,
   Award,
   Shield,
   FileText,
+  User,
+  FolderOpen,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getRoute } from "@/lib/routes";
@@ -33,7 +34,8 @@ export function AboutMobileNav() {
   const aboutRoute = getRoute("about");
   const purposeRoute = getRoute("aboutPurpose");
   const featuresRoute = getRoute("aboutFeatures");
-  const portfoliosRoute = getRoute("aboutPortfoliosAndSharing");
+  const profileRoute = getRoute("aboutProfile");
+  const portfolioRoute = getRoute("aboutPortfolio");
   const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
   const critiquesRoute = getRoute("aboutCritiques");
   const badgesRoute = getRoute("aboutBadges");
@@ -63,20 +65,6 @@ export function AboutMobileNav() {
       isActive: pathname === featuresRoute.path,
     },
     {
-      href: portfoliosRoute.path,
-      labelKey: "organization.title",
-      translationNamespace: "about",
-      icon: Briefcase,
-      isActive: pathname === portfoliosRoute.path,
-    },
-    {
-      href: promptSubmissionsRoute.path,
-      labelKey: "promptInspiration.title",
-      translationNamespace: "about",
-      icon: Lightbulb,
-      isActive: pathname === promptSubmissionsRoute.path,
-    },
-    {
       href: critiquesRoute.path,
       labelKey: "critiques",
       translationNamespace: "navigation",
@@ -96,6 +84,27 @@ export function AboutMobileNav() {
       translationNamespace: "about",
       icon: Shield,
       isActive: pathname === protectingRoute.path,
+    },
+    {
+      href: profileRoute.path,
+      labelKey: "profile",
+      translationNamespace: "navigation",
+      icon: User,
+      isActive: pathname === profileRoute.path,
+    },
+    {
+      href: portfolioRoute.path,
+      labelKey: "portfolio",
+      translationNamespace: "navigation",
+      icon: FolderOpen,
+      isActive: pathname === portfolioRoute.path,
+    },
+    {
+      href: promptSubmissionsRoute.path,
+      labelKey: "promptInspiration.title",
+      translationNamespace: "about",
+      icon: Lightbulb,
+      isActive: pathname === promptSubmissionsRoute.path,
     },
     {
       href: termsRoute.path,

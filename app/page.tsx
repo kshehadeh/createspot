@@ -315,7 +315,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="px-6 pb-6 pt-0">
                 <Link
-                  href="/about/portfolios-and-sharing"
+                  href="/about/portfolio"
                   className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                 >
                   {t("features.management.ctaLearnMore")}

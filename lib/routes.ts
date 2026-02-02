@@ -228,9 +228,14 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.features",
     parentPath: "/about",
   },
-  aboutPortfoliosAndSharing: {
-    path: "/about/portfolios-and-sharing",
-    label: "about.organization.title",
+  aboutProfile: {
+    path: "/about/profile",
+    label: "navigation.profile",
+    parentPath: "/about",
+  },
+  aboutPortfolio: {
+    path: "/about/portfolio",
+    label: "navigation.portfolio",
     parentPath: "/about",
   },
   aboutPromptSubmissions: {

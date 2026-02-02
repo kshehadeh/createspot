@@ -23,7 +23,8 @@ export default async function AboutPage() {
   const t = await getTranslations("about");
   const purposeRoute = getRoute("aboutPurpose");
   const featuresRoute = getRoute("aboutFeatures");
-  const portfoliosRoute = getRoute("aboutPortfoliosAndSharing");
+  const profileRoute = getRoute("aboutProfile");
+  const portfolioRoute = getRoute("aboutPortfolio");
   const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
   const badgesRoute = getRoute("aboutBadges");
   const protectingRoute = getRoute("aboutProtectingYourWork");
@@ -94,31 +95,36 @@ export default async function AboutPage() {
           </div>
         </AboutCard>
 
-        <AboutCard id="organization" className="scroll-mt-24">
+        <AboutCard id="profile" className="scroll-mt-24">
           <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-            {t("organization.title")}
+            {t("profileCard.title")}
           </h2>
           <p className="text-base leading-relaxed text-muted-foreground">
-            {t("organization.yourPortfolioIs")}{" "}
-            <strong className="text-foreground">
-              {t("organization.personalSpace")}
-            </strong>
-            .{t("organization.youCanBuild")}{" "}
-            <strong className="text-foreground">
-              {t("organization.curate")}
-            </strong>
-            {t("organization.shareResults")}{" "}
-            <strong className="text-foreground">
-              {t("organization.partOfPortfolio")}
-            </strong>{" "}
-            {t("organization.sharedPublicly")}
+            {t("profileCard.description")}
           </p>
           <div className="mt-5">
             <Link
-              href={portfoliosRoute.path}
+              href={profileRoute.path}
               className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
             >
-              {t("organization.learnMore")}
+              {t("profileCard.learnMore")}
+            </Link>
+          </div>
+        </AboutCard>
+
+        <AboutCard id="portfolio" className="scroll-mt-24">
+          <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
+            {t("portfolioCard.title")}
+          </h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {t("portfolioCard.description")}
+          </p>
+          <div className="mt-5">
+            <Link
+              href={portfolioRoute.path}
+              className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
+            >
+              {t("portfolioCard.learnMore")}
             </Link>
           </div>
         </AboutCard>

@@ -3,9 +3,10 @@ import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { AboutCard } from "@/components/about-card";
+import { YouTubeEmbed } from "@/components/youtube-embed";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("aboutPortfolios");
+  const t = await getTranslations("aboutPortfolio");
   return {
     title: t("title"),
     description: t("description"),
@@ -17,11 +18,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PortfoliosAndSharingPage() {
-  const t = await getTranslations("aboutPortfolios");
+export default async function AboutPortfolioPage() {
+  const t = await getTranslations("aboutPortfolio");
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
+
+      <div className="mb-8">
+        <YouTubeEmbed videoId="WAyioJdhozU" title={t("videoTitle")} />
+      </div>
 
       <div className="grid gap-8">
         <AboutCard>
@@ -66,40 +71,14 @@ export default async function PortfoliosAndSharingPage() {
 
         <AboutCard>
           <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-            {t("portfolioLinks.title")}
+            {t("pieceLinks.title")}
           </h2>
           <p className="text-base leading-relaxed text-muted-foreground">
-            {t("portfolioLinks.description")}{" "}
+            {t("pieceLinks.description")}{" "}
             <strong className="text-foreground">
-              {t("portfolioLinks.profileLink")}
+              {t("pieceLinks.pieceLink")}
             </strong>
-            , and
-            {t("portfolioLinks.fullDescription")}{" "}
-            <strong className="text-foreground">
-              {t("portfolioLinks.pieceLink")}
-            </strong>
-            . {t("portfolioLinks.previewDescription")}
-          </p>
-        </AboutCard>
-
-        <AboutCard>
-          <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-            {t("featuredWork.title")}
-          </h2>
-          <p className="text-base leading-relaxed text-muted-foreground">
-            {t("featuredWork.description")}{" "}
-            <strong className="text-foreground">
-              {t("featuredWork.featuredSubmission")}
-            </strong>{" "}
-            {t("featuredWork.fullDescription")}{" "}
-            <strong className="text-foreground">
-              {t("featuredWork.profileOrPublic")}
-            </strong>{" "}
-            {t("featuredWork.or")}{" "}
-            <strong className="text-foreground">
-              {t("featuredWork.public")}
-            </strong>
-            .
+            . {t("pieceLinks.previewDescription")}
           </p>
         </AboutCard>
 

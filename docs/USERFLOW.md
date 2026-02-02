@@ -31,7 +31,8 @@ flowchart TB
         AboutHome["/about<br/>(Home)"]
         AboutPurpose["/about/purpose<br/>(Purpose)"]
         AboutFeatures["/about/features<br/>(Features)"]
-        AboutPortfolios["/about/portfolios-and-sharing<br/>(Portfolios & Sharing)"]
+        AboutProfile["/about/profile<br/>(Profile)"]
+        AboutPortfolio["/about/portfolio<br/>(Portfolio)"]
         AboutSubmissions["/about/prompt-submissions<br/>(Prompt Submissions)"]
         AboutBadges["/about/badges<br/>(Badges)"]
         AboutProtecting["/about/protecting-your-work<br/>(Protecting Your Work)"]
@@ -130,7 +131,8 @@ Informational pages about the platform:
 - **About Home** (`/about`) - Main about page
 - **Purpose** (`/about/purpose`) - Platform mission and values
 - **Features** (`/about/features`) - Platform features overview
-- **Portfolios & Sharing** (`/about/portfolios-and-sharing`) - Information about portfolio features
+- **Profile** (`/about/profile`) - Profile, sharing levels, and featured work
+- **Portfolio** (`/about/portfolio`) - Portfolio piece links and prompts integration
 - **Prompt Submissions** (`/about/prompt-submissions`) - How prompt submissions work
 - **Badges** (`/about/badges`) - Information about achievement badges
 - **Protecting Your Work** (`/about/protecting-your-work`) - Creator protections and rights

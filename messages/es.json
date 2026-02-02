@@ -736,6 +736,16 @@
       "sharedPublicly": "y puede ser compartido públicamente a través de las exposiciones y galerías.",
       "learnMore": "Aprende más sobre portafolios e intercambio →"
     },
+    "profileCard": {
+      "title": "Perfil",
+      "description": "Tu perfil es tu presencia pública. Controla qué aparece allí con los niveles de intercambio, comparte el enlace de tu perfil con una imagen de vista previa y destaca una pieza en la parte superior.",
+      "learnMore": "Aprende más sobre perfiles →"
+    },
+    "portfolioCard": {
+      "title": "Portafolio",
+      "description": "Tu portafolio es tu colección. Cada pieza tiene su propio enlace compartible y las publicaciones de indicaciones pueden vivir en tu portafolio para que tu inspiración y tu cuerpo de trabajo permanezcan conectados.",
+      "learnMore": "Aprende más sobre portafolios →"
+    },
     "promptInspiration": {
       "title": "Inspiración de indicaciones",
       "weeklyPrompts": "Las indicaciones semanales están diseñadas para",
@@ -876,6 +886,7 @@
   "aboutCritiques": {
     "title": "Críticas | Create Spot",
     "description": "Cómo funcionan las críticas en Create Spot: cómo solicitarlas, responder y administrar los controles.",
+    "videoTitle": "Demo de críticas",
     "mainTitle": "Las críticas mantienen el feedback enfocado.",
     "mainDescription": "Invita a personas de confianza a dejar notas privadas mientras todavía estás moldeando una pieza, y usa ese feedback para pulirla antes de compartirla más ampliamente.",
     "requesting": {
@@ -904,6 +915,61 @@
         "members": "Solo los miembros con sesión iniciada pueden dejar críticas, lo que mantiene el spam fuera.",
         "disable": "Puedes desactivar las críticas en cualquier momento; el feedback existente queda archivado."
       }
+    },
+    "backToAbout": "← Volver a Acerca de"
+  },
+  "aboutProfile": {
+    "title": "Perfil | Create Spot",
+    "description": "Aprende cómo funciona tu perfil: niveles de intercambio, enlace de perfil e imagen de vista previa, y cómo destacar tu trabajo.",
+    "videoTitle": "Demo de perfil",
+    "mainTitle": "Tu perfil es tu presencia pública.",
+    "mainDescription": "Controla qué aparece en tu perfil con los niveles de intercambio, comparte el enlace de tu perfil con una imagen de vista previa y destaca una pieza en la parte superior.",
+    "profileLink": {
+      "title": "Enlace de perfil e imagen de vista previa",
+      "description": "Tu perfil público vive en",
+      "profileLink": "/profile/your-id",
+      "previewDescription": ". Cuando compartes el enlace de tu perfil, generamos automáticamente una imagen de vista previa que destaca tu trabajo. Si tienes una imagen destacada que es compartible, se convierte en la vista previa. De lo contrario, construimos una cuadrícula a partir de tus imágenes de portafolio más recientes."
+    },
+    "featuredWork": {
+      "title": "Trabajo destacado",
+      "description": "Puedes seleccionar una",
+      "featuredSubmission": "publicación destacada",
+      "fullDescription": "en la configuración de tu perfil para destacar una sola pieza en la parte superior de tu perfil. El trabajo destacado también impulsa la imagen de vista previa de tu perfil siempre que esté configurado como",
+      "profileOrPublic": "Perfil",
+      "or": "o",
+      "public": "Público"
+    },
+    "backToAbout": "← Volver a Acerca de"
+  },
+  "aboutPortfolio": {
+    "title": "Portafolio | Create Spot",
+    "description": "Aprende cómo funciona tu portafolio: niveles de intercambio, enlaces por pieza y conexión de indicaciones con tu cuerpo de trabajo.",
+    "videoTitle": "Demo de portafolio",
+    "mainTitle": "Tu portafolio es tu colección.",
+    "mainDescription": "Construye tu portafolio con el tiempo, da a cada pieza su propio enlace compartible y conecta las publicaciones de indicaciones para que tu inspiración y cuerpo de trabajo permanezcan en un solo lugar.",
+    "sharingLevels": {
+      "title": "Niveles de intercambio",
+      "description": "Cada elemento del portafolio usa un estado de intercambio para que puedas decidir",
+      "whoGetsToSee": "quién puede verlo",
+      "private": "Privado",
+      "privateDescription": "Solo tú puedes verlo en tu editor de perfil.",
+      "profile": "Perfil",
+      "profileDescription": "Visible en tu perfil público, pero no en las galerías.",
+      "public": "Público",
+      "publicDescription": "Visible en tu perfil y en las galerías públicas.",
+      "note": "Nota: si vinculas un elemento del portafolio a una indicación, se vuelve",
+      "publicNote": "público",
+      "noteSuffix": "para que pueda aparecer con otras publicaciones de indicaciones."
+    },
+    "pieceLinks": {
+      "title": "Enlaces de piezas del portafolio",
+      "description": "Cada pieza en tu portafolio tiene su propio enlace compartible en",
+      "pieceLink": "/s/id",
+      "previewDescription": ". Cuando compartes un enlace de pieza, generamos una imagen de vista previa. El enlace de tu perfil y los enlaces de piezas funcionan juntos para que puedas compartir todo tu perfil o una sola pieza."
+    },
+    "promptsAndPortfolios": {
+      "title": "Indicaciones y portafolios juntos",
+      "description": "Las publicaciones de indicaciones pueden añadirse a tu portafolio, y las piezas del portafolio pueden vincularse a indicaciones. Esto mantiene tu inspiración semanal conectada a tu cuerpo de trabajo a largo plazo mientras mantiene un archivo único y consistente."
     },
     "backToAbout": "← Volver a Acerca de"
   },
