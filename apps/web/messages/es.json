@@ -902,6 +902,8 @@
     "title": "Críticas | Create Spot",
     "description": "Cómo funcionan las críticas en Create Spot: cómo solicitarlas, responder y administrar los controles.",
     "videoTitle": "Demo de críticas",
+    "video1Title": "Resumen de críticas",
+    "video2Title": "Críticas con contexto",
     "mainTitle": "Las críticas mantienen el feedback enfocado.",
     "mainDescription": "Invita a personas de confianza a dejar notas privadas mientras todavía estás moldeando una pieza, y usa ese feedback para pulirla antes de compartirla más ampliamente.",
     "requesting": {
@@ -921,6 +923,10 @@
         "edits": "Quien comenta puede editar su crítica hasta que la leas, así los borradores se pulen.",
         "thanks": "Cierra el ciclo con un agradecimiento o un breve resumen de lo que actualizaste."
       }
+    },
+    "contextBySelection": {
+      "title": "Añadir contexto seleccionando áreas",
+      "description": "Al dejar una crítica, puedes anclar tu feedback a una parte concreta del trabajo. En imágenes, arrastra para seleccionar una zona—un personaje, un rincón, un detalle—y tu nota se asocia a esa área para que el creador sepa exactamente a qué te refieres. En publicaciones de texto, subraya una frase o un párrafo y tu crítica se vincula a esa selección. Así el feedback sigue siendo preciso y fácil de aplicar."
     },
     "controls": {
       "title": "Controles y seguridad",

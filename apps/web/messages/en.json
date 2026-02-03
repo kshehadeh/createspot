@@ -902,6 +902,8 @@
     "title": "Critiques | Create Spot",
     "description": "How critiques work on Create Spot—requesting feedback, replying, and managing controls.",
     "videoTitle": "Critiques demo",
+    "video1Title": "Critique Overview",
+    "video2Title": "Critiques with Context",
     "mainTitle": "Critiques keep feedback focused.",
     "mainDescription": "Invite trusted peers to leave private notes while you’re still shaping a piece, then use that feedback to refine before you share it widely.",
     "requesting": {
@@ -921,6 +923,10 @@
         "edits": "Reviewers can edit their critique until you’ve seen it, so drafts stay polished.",
         "thanks": "Close the loop with a quick thank-you or a short summary of updates."
       }
+    },
+    "contextBySelection": {
+      "title": "Adding context by selecting areas",
+      "description": "When leaving a critique, you can pin your feedback to a specific part of the work. On images, drag to select a region—a character, a corner, a detail—and your note attaches to that area so the creator knows exactly what you're referring to. On text submissions, highlight a sentence or paragraph and your critique links to that selection. That way feedback stays precise and easy to act on."
     },
     "controls": {
       "title": "Controls & safety",

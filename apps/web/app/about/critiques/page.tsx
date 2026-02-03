@@ -25,8 +25,19 @@ export default async function AboutCritiquesPage() {
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
-      <div className="mb-8">
-        <YouTubeEmbed videoId="g4zZS0NF4dw" title={t("videoTitle")} />
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-2">
+          <YouTubeEmbed videoId="g4zZS0NF4dw" title={t("video1Title")} />
+          <p className="text-sm font-medium text-foreground text-center">
+            {t("video1Title")}
+          </p>
+        </div>
+        <div className="flex flex-col gap-2">
+          <YouTubeEmbed videoId="oFuct1lXSB4" title={t("video2Title")} />
+          <p className="text-sm font-medium text-foreground text-center">
+            {t("video2Title")}
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-8">
@@ -45,6 +56,15 @@ export default async function AboutCritiquesPage() {
           </h2>
           <p className="text-base leading-relaxed text-muted-foreground">
             {t("replying.description")}
+          </p>
+        </AboutCard>
+
+        <AboutCard>
+          <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
+            {t("contextBySelection.title")}
+          </h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {t("contextBySelection.description")}
           </p>
         </AboutCard>
 
