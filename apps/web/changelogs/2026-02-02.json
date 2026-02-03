@@ -10,6 +10,36 @@
     "version": "1.0.0"
   },
   {
+    "time": "2026-02-02T07:18:12-05:00",
+    "commit": "951456ab90189de3da1bbe326280fd95c6e05d9f",
+    "type": "improvement",
+    "area": "tools",
+    "description": "Remove rootDirectory from Vercel configuration to align with Turborepo structure",
+    "audience": "development",
+    "impact": "patch",
+    "version": "2.0.0"
+  },
+  {
+    "time": "2026-02-02T07:15:45-05:00",
+    "commit": "dba027c654754bcdeaed86bd1264035d8222e799",
+    "type": "improvement",
+    "area": "tools",
+    "description": "Continue monorepo conversion with updated email templates and build configurations",
+    "audience": "development",
+    "impact": "patch",
+    "version": "2.0.0"
+  },
+  {
+    "time": "2026-02-02T07:15:28-05:00",
+    "commit": "da223afc50a9f75c7bc69a99ac1302415182e7b4",
+    "type": "improvement",
+    "area": "tools",
+    "description": "Convert the project structure to a Turborepo monorepo, moving web application to apps/web directory",
+    "audience": "development",
+    "impact": "major",
+    "version": "2.0.0"
+  },
+  {
     "time": "2026-02-02T05:41:02-05:00",
     "commit": "c378787d51f78028d775ba7f1cadb046d6a60bcb",
     "type": "improvement",

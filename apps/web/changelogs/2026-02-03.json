@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-02-03T05:53:10-05:00",
+    "commit": "ceff0a1e0151e8020ede022a70c2bf0a6153f6bb",
+    "type": "feature",
+    "area": "games",
+    "description": "Enhance critique functionality to support targeted segments of work, including image selection and text fragment uploads",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.0.0"
+  }
+]
