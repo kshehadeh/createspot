@@ -7,11 +7,14 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "validate": "turbo run validate",
-    "format": "biome format --write ."
+    "validate": "turbo run validate && bun run knip",
+    "clean": "turbo daemon clean && rm -rf .turbo apps/*/.turbo packages/*/.turbo",
+    "format": "biome format --write .",
+    "knip": "knip"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
+    "knip": "^5.82.1",
     "turbo": "^2.0.0",
     "typescript": "^5.9.3"
   }

@@ -4,7 +4,7 @@ import { createCanvas, getImageData, putImageData } from "../canvas-utils";
  * Apply shadow recovery to lighten dark areas (0-100)
  * Higher values lighten shadows more
  */
-export function applyShadowRecovery(
+function applyShadowRecovery(
   canvas: HTMLCanvasElement,
   amount: number,
 ): HTMLCanvasElement {
@@ -43,7 +43,7 @@ export function applyShadowRecovery(
  * Apply highlight recovery to darken bright areas (0-100)
  * Higher values darken highlights more
  */
-export function applyHighlightRecovery(
+function applyHighlightRecovery(
   canvas: HTMLCanvasElement,
   amount: number,
 ): HTMLCanvasElement {

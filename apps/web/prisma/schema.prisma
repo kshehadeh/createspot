@@ -251,6 +251,7 @@ model Critique {
   critique     String    @db.Text // HTML text (from RichTextEditor)
   response     String?   @db.Text // Creator's reply (HTML, nullable, from RichTextEditor)
   seenAt       DateTime? // When creator viewed the critique (NULL = unseen)
+  selectionData Json?    // Optional selection metadata (image region or text selection)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

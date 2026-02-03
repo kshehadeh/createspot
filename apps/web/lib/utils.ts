@@ -62,23 +62,6 @@ export function getUrlHostname(url: string | null | undefined): string {
 }
 
 /**
- * Generates a URL-friendly slug from a name
- * @param name - The name to convert to a slug
- * @returns A slug string (e.g., "Karim Shehadeh" -> "karim-shehadeh")
- */
-export function generateSlug(name: string): string {
-  if (!name || typeof name !== "string") return "";
-
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "") // Remove special characters except spaces and hyphens
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
-    .replace(/^-+|-+$/g, ""); // Trim hyphens from start and end
-}
-
-/**
  * Validates if a slug matches the required format
  * @param slug - The slug to validate
  * @returns true if valid, false otherwise

@@ -23,7 +23,10 @@ export async function loadImageToCanvas(
     img.crossOrigin = "anonymous";
 
     img.onload = () => {
-      const canvas = createCanvas(img.width, img.height);
+      // Use naturalWidth/naturalHeight to ensure we get the actual image dimensions
+      const width = img.naturalWidth || img.width;
+      const height = img.naturalHeight || img.height;
+      const canvas = createCanvas(width, height);
       const ctx = canvas.getContext("2d");
       if (!ctx) {
         reject(new Error("Failed to get canvas context"));
@@ -64,17 +67,4 @@ export function putImageData(
     throw new Error("Failed to get canvas context");
   }
   ctx.putImageData(imageData, 0, 0);
-}
-
-/**
- * Create a new canvas from an existing canvas (copy)
- */
-export function copyCanvas(canvas: HTMLCanvasElement): HTMLCanvasElement {
-  const newCanvas = createCanvas(canvas.width, canvas.height);
-  const ctx = newCanvas.getContext("2d");
-  if (!ctx) {
-    throw new Error("Failed to get canvas context");
-  }
-  ctx.drawImage(canvas, 0, 0);
-  return newCanvas;
 }

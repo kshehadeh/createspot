@@ -4,7 +4,6 @@ import { autoEvenLighting } from "./auto-even-lighting";
 import {
   removeYellowing,
   evenColors,
-  removeColorCast,
   autoColorCorrection,
 } from "./color-correction";
 
@@ -74,13 +73,8 @@ export function applyLightingAdjustments(
 
   return processed;
 }
-
-export { applyBrightnessContrast } from "./brightness-contrast";
-export { applyShadowsHighlights } from "./shadows-highlights";
 export { autoEvenLighting } from "./auto-even-lighting";
 export {
   removeYellowing,
   evenColors,
-  removeColorCast,
-  autoColorCorrection,
 } from "./color-correction";

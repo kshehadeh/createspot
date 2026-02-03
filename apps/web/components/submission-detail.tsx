@@ -264,7 +264,6 @@ export function SubmissionDetail({
                 <SubmissionImage
                   imageUrl={submission.imageUrl!}
                   alt={submission.title || tSubmission("submissionAlt")}
-                  imageFocalPoint={submission.imageFocalPoint}
                   tags={submission.tags}
                   onExpand={() => setIsLightboxOpen(true)}
                 />

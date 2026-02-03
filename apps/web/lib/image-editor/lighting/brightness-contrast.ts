@@ -4,7 +4,7 @@ import { createCanvas } from "../canvas-utils";
  * Apply brightness adjustment to canvas (-100 to +100)
  * Negative values darken, positive values brighten
  */
-export function applyBrightness(
+function applyBrightness(
   canvas: HTMLCanvasElement,
   value: number,
 ): HTMLCanvasElement {
@@ -31,7 +31,7 @@ export function applyBrightness(
  * Apply contrast adjustment to canvas (-100 to +100)
  * Negative values reduce contrast, positive values increase contrast
  */
-export function applyContrast(
+function applyContrast(
   canvas: HTMLCanvasElement,
   value: number,
 ): HTMLCanvasElement {

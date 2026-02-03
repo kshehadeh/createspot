@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { deleteFragment } from "@/lib/r2-fragments";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -115,6 +116,23 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   }
 
   // Creator can always delete (no restrictions)
+
+  // Delete fragment if it exists
+  if (
+    existingCritique.selectionData &&
+    typeof existingCritique.selectionData === "object" &&
+    "type" in existingCritique.selectionData &&
+    existingCritique.selectionData.type === "image" &&
+    "fragmentUrl" in existingCritique.selectionData &&
+    typeof existingCritique.selectionData.fragmentUrl === "string"
+  ) {
+    try {
+      await deleteFragment(existingCritique.selectionData.fragmentUrl);
+    } catch (error) {
+      console.error("Failed to delete fragment:", error);
+      // Continue with critique deletion even if fragment deletion fails
+    }
+  }
 
   await prisma.critique.delete({
     where: { id },

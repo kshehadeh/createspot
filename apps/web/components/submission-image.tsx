@@ -2,7 +2,6 @@
 
 import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { getObjectPositionStyle } from "@/lib/image-utils";
 import { Maximize2 } from "lucide-react";
 
 interface SubmissionImageProps {
@@ -10,7 +9,6 @@ interface SubmissionImageProps {
   alt: string;
   tags?: string[];
   /** Focal point for image cropping */
-  imageFocalPoint?: { x: number; y: number } | null;
   /** Height classes for the container. Defaults to submission detail heights. */
   heightClasses?: string;
   /** Additional wrapper classes */
@@ -25,7 +23,6 @@ export function SubmissionImage({
   imageUrl,
   alt,
   tags = [],
-  imageFocalPoint,
   heightClasses = "h-[65vh] sm:h-[72vh] md:h-[80vh]",
   className = "",
   onExpand,
@@ -58,18 +55,28 @@ export function SubmissionImage({
       className={`protected-image-wrapper relative w-full overflow-hidden rounded-xl ${heightClasses} ${className} ${onExpand ? "cursor-pointer" : ""}`}
       onClick={onExpand}
       onContextMenu={handleContextMenu}
+      style={{
+        backgroundImage: `
+          repeating-linear-gradient(
+            45deg,
+            hsl(var(--muted)),
+            hsl(var(--muted)) 10px,
+            hsl(var(--background)) 10px,
+            hsl(var(--background)) 20px
+          )
+        `,
+      }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={imageUrl}
         alt={alt}
-        className={`h-full w-full object-cover ${protectionEnabled ? "select-none" : ""}`}
-        style={{
-          objectPosition: getObjectPositionStyle(imageFocalPoint),
-          ...(protectionEnabled
+        className={`h-full w-full object-contain ${protectionEnabled ? "select-none" : ""}`}
+        style={
+          protectionEnabled
             ? { WebkitUserSelect: "none", userSelect: "none" }
-            : {}),
-        }}
+            : {}
+        }
         draggable={!protectionEnabled}
         onDragStart={handleDragStart}
       />

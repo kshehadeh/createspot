@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 
-export interface BreadcrumbSegment {
+interface BreadcrumbSegment {
   label: string;
   href?: string;
   icon?: LucideIcon;

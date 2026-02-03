@@ -348,12 +348,6 @@ export function PortfolioGridExhibit({
   );
 }
 
-export const PortfolioGrid = {
-  Profile: PortfolioGridProfile,
-  Collection: PortfolioGridCollection,
-  Exhibit: PortfolioGridExhibit,
-};
-
 interface SortablePortfolioItemProps {
   item: PortfolioItem;
   isLoggedIn: boolean;

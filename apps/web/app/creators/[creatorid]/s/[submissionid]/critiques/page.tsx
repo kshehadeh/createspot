@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getCreatorUrl } from "@/lib/utils";
+import { getTutorialData } from "@/lib/get-tutorial-data";
 import { CritiquesPageContent } from "./critiques-page-content";
 
 export const dynamic = "force-dynamic";
@@ -74,12 +75,15 @@ export default async function CritiquesPage({ params }: CritiquesPageProps) {
     notFound();
   }
 
-  const creator = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: { id: true },
-  });
+  const [creator, tutorialData] = await Promise.all([
+    prisma.user.findFirst({
+      where: {
+        OR: [{ slug: creatorid }, { id: creatorid }],
+      },
+      select: { id: true },
+    }),
+    getTutorialData(session?.user?.id),
+  ]);
 
   if (!creator || submission.userId !== creator.id) {
     notFound();
@@ -110,6 +114,7 @@ export default async function CritiquesPage({ params }: CritiquesPageProps) {
       isOwner={isOwner}
       currentUserId={session.user.id}
       submissionPageHref={submissionPageHref}
+      tutorialData={tutorialData}
     />
   );
 }

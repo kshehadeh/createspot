@@ -1245,7 +1245,21 @@
     "viewCritiques": "View critiques",
     "allCritiquesFor": "All Critiques for <link>{title}</link>",
     "yourCritiquesFor": "Your Critiques for <link>{title}</link>",
-    "deleteCritiqueConfirm": "Are you sure you want to delete this critique? This action cannot be undone."
+    "deleteCritiqueConfirm": "Are you sure you want to delete this critique? This action cannot be undone.",
+    "attachSelection": "Attach selection",
+    "removeSelection": "Remove selection",
+    "selectImageArea": "Click and drag to select an area",
+    "selectText": "Select text to create a critique",
+    "viewSelection": "View selection",
+    "imageSelection": "Image selection",
+    "textSelection": "Text selection",
+    "createCritique": "Create Critique",
+    "createCritiqueFromSelection": "Create Critique from Selection",
+    "critiqueRequired": "Critique text is required",
+    "critiqueCreated": "Critique created successfully",
+    "addCritiqueHintTitle": "Add a critique or select content",
+    "addCritiqueHintDescription": "Use this button to add a critique, or select an area in the image or text to attach that selection to your critique.",
+    "selectionInstruction": "Select part of the image or text to add a critique"
   },
   "email": {
     "favoriteNotification": {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-export interface AboutCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AboutCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Extra class for the inner CardContent (e.g. p-6 for tighter padding). */
   contentClassName?: string;
 }

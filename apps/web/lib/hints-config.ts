@@ -38,7 +38,7 @@ export interface HintConfig {
  * - "profile-edit" - Editing profile
  * - "submission-view" - Viewing a submission
  */
-export const HINTS_CONFIG: Record<string, HintConfig[]> = {
+const HINTS_CONFIG: Record<string, HintConfig[]> = {
   global: [
     {
       key: "exhibits",
@@ -138,6 +138,20 @@ export const HINTS_CONFIG: Record<string, HintConfig[]> = {
         description: "critiqueHintDescription",
       },
       shouldInclude: (context) => context?.critiquesEnabled === true,
+    },
+  ],
+  "critiques-view": [
+    {
+      key: "addCritiqueSelection",
+      order: 1,
+      targetSelector: "button[data-hint-target='add-critique-button']",
+      side: "bottom",
+      showArrow: true,
+      translationKeys: {
+        title: "addCritiqueHintTitle",
+        description: "addCritiqueHintDescription",
+      },
+      shouldInclude: (context) => context?.canCritique === true,
     },
   ],
 };

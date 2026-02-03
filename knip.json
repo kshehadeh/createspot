@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    "apps/web": {
+      "entry": [
+        "app/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+        "lib/**/*.{ts,tsx}",
+        "emails/**/*.{ts,tsx}",
+        "scripts/**/*.{ts,tsx}"
+      ],
+      "ignore": [
+        "postcss.config.mjs",
+        "scripts/**/*.ts",
+        "app/@breadcrumb/**"
+      ]
+    }
+  },
+  "ignoreExportsUsedInFile": {
+    "interface": true,
+    "type": true
+  },
+  "ignoreBinaries": [],
+  "tags": ["-lintignore"]
+}

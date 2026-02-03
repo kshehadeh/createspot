@@ -1245,7 +1245,21 @@
     "viewCritiques": "Ver críticas",
     "allCritiquesFor": "Todas las Críticas de <link>{title}</link>",
     "yourCritiquesFor": "Tus Críticas de <link>{title}</link>",
-    "deleteCritiqueConfirm": "¿Estás seguro de que quieres eliminar esta crítica? Esta acción no se puede deshacer."
+    "deleteCritiqueConfirm": "¿Estás seguro de que quieres eliminar esta crítica? Esta acción no se puede deshacer.",
+    "attachSelection": "Adjuntar selección",
+    "removeSelection": "Quitar selección",
+    "selectImageArea": "Haz clic y arrastra para seleccionar un área",
+    "selectText": "Selecciona texto para crear una crítica",
+    "viewSelection": "Ver selección",
+    "imageSelection": "Selección de imagen",
+    "textSelection": "Selección de texto",
+    "createCritique": "Crear Crítica",
+    "createCritiqueFromSelection": "Crear Crítica desde Selección",
+    "critiqueRequired": "El texto de la crítica es obligatorio",
+    "critiqueCreated": "Crítica creada con éxito",
+    "addCritiqueHintTitle": "Añade una crítica o selecciona contenido",
+    "addCritiqueHintDescription": "Usa este botón para añadir una crítica, o selecciona un área en la imagen o el texto para adjuntar esa selección a tu crítica.",
+    "selectionInstruction": "Selecciona parte de la imagen o texto para añadir una crítica"
   },
   "email": {
     "favoriteNotification": {

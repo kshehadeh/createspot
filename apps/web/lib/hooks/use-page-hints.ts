@@ -19,6 +19,7 @@ function getTranslationNamespace(page: string): string {
   if (page.startsWith("portfolio")) return "profile";
   if (page.startsWith("profile")) return "profile";
   if (page.startsWith("submission")) return "submission";
+  if (page.startsWith("critiques")) return "critique";
   // Default to "profile" for unknown pages
   return "profile";
 }

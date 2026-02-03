@@ -64,24 +64,63 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   // Track view after response is sent
   after(async () => {
     try {
-      // Try to upsert based on user ID first (if logged in)
       if (viewerUserId) {
-        await prisma.submissionView.upsert({
+        // Logged-in user: first check if view already exists for this user
+        const existingUserView = await prisma.submissionView.findUnique({
           where: {
             submissionId_viewerUserId: {
               submissionId,
               viewerUserId,
             },
           },
-          update: {
-            viewedAt: new Date(),
-          },
-          create: {
-            submissionId,
-            viewerUserId,
-            viewerIpHash,
-          },
         });
+
+        if (existingUserView) {
+          // Update existing user view
+          await prisma.submissionView.update({
+            where: { id: existingUserView.id },
+            data: {
+              viewedAt: new Date(),
+            },
+          });
+        } else {
+          // Check if there's an anonymous view with same IP hash
+          const existingAnonymousView = await prisma.submissionView.findUnique({
+            where: {
+              submissionId_viewerIpHash: {
+                submissionId,
+                viewerIpHash,
+              },
+            },
+          });
+
+          if (existingAnonymousView && !existingAnonymousView.viewerUserId) {
+            // Delete anonymous view and create user view
+            await prisma.$transaction([
+              prisma.submissionView.delete({
+                where: { id: existingAnonymousView.id },
+              }),
+              prisma.submissionView.create({
+                data: {
+                  submissionId,
+                  viewerUserId,
+                  viewerIpHash,
+                  viewedAt: new Date(),
+                },
+              }),
+            ]);
+          } else {
+            // Create new user view
+            await prisma.submissionView.create({
+              data: {
+                submissionId,
+                viewerUserId,
+                viewerIpHash,
+                viewedAt: new Date(),
+              },
+            });
+          }
+        }
       } else {
         // Anonymous user - track by IP hash
         await prisma.submissionView.upsert({

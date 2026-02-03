@@ -27,6 +27,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { SelectionThumbnail } from "@/components/selection-thumbnail";
+import { SelectionLightbox } from "@/components/selection-lightbox";
+import type { SelectionData } from "@/lib/critique-fragments";
 
 const RichTextEditor = dynamic(
   () =>
@@ -46,6 +49,7 @@ export interface Critique {
   seenAt: string | null;
   createdAt: string;
   updatedAt: string;
+  selectionData?: SelectionData | null;
   critiquer: {
     id: string;
     slug: string | null;
@@ -95,6 +99,8 @@ export function CritiquesPanel({
   const [hasMarkedAsSeen, setHasMarkedAsSeen] = useState(false);
   const [openGroupIds, setOpenGroupIds] = useState<Set<string>>(new Set());
   const hasInitializedFirstOpen = useRef(false);
+  const [selectedLightbox, setSelectedLightbox] =
+    useState<SelectionData | null>(null);
 
   const groupsByCritiquer = useMemo(() => {
     if (!isOwner || critiques.length === 0) return [];
@@ -439,10 +445,18 @@ export function CritiquesPanel({
           </div>
         ) : (
           <>
-            <div
-              className="prose prose-sm dark:prose-invert max-w-none mb-1 font-mono text-sm"
-              dangerouslySetInnerHTML={{ __html: critique.critique }}
-            />
+            <div className="flex items-start gap-3 mb-2">
+              <div
+                className="prose prose-sm dark:prose-invert max-w-none flex-1 font-mono text-sm"
+                dangerouslySetInnerHTML={{ __html: critique.critique }}
+              />
+              {critique.selectionData && (
+                <SelectionThumbnail
+                  selectionData={critique.selectionData}
+                  onClick={() => setSelectedLightbox(critique.selectionData!)}
+                />
+              )}
+            </div>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
               <time dateTime={critique.createdAt}>
                 {formatCritiqueDate(critique.createdAt)}
@@ -742,6 +756,7 @@ export function CritiquesPanel({
                 onClick={startAddCritique}
                 variant="outline"
                 className="w-full"
+                data-hint-target="add-critique-button"
               >
                 {t("addCritique")}
               </Button>
@@ -790,6 +805,12 @@ export function CritiquesPanel({
         }}
         onCancel={() => setShowDeleteResponseConfirm(null)}
         isLoading={saving}
+      />
+
+      <SelectionLightbox
+        selectionData={selectedLightbox}
+        open={selectedLightbox !== null}
+        onClose={() => setSelectedLightbox(null)}
       />
     </>
   );

@@ -166,29 +166,6 @@ export async function applyWatermarkWithMargin(
 }
 
 /**
- * Adds copyright metadata to an image
- */
-export async function addImageMetadata(
-  imageBuffer: Buffer,
-  artistName: string,
-): Promise<Buffer> {
-  const year = new Date().getFullYear();
-  const copyright = `© ${year} ${artistName}. All rights reserved. AI training prohibited.`;
-
-  return sharp(imageBuffer)
-    .withMetadata({
-      exif: {
-        IFD0: {
-          Copyright: copyright,
-          Artist: artistName,
-          Software: "CreateSpot",
-        },
-      },
-    })
-    .toBuffer();
-}
-
-/**
  * Validates if a position string is a valid watermark position
  */
 export function isValidWatermarkPosition(

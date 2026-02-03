@@ -50,7 +50,7 @@ export function rotate90(
 /**
  * Calculate dimensions after rotation
  */
-export function getRotatedDimensions(
+function getRotatedDimensions(
   width: number,
   height: number,
   angle: number,

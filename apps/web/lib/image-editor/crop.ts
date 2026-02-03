@@ -19,19 +19,6 @@ export interface CropDimensions {
 }
 
 /**
- * Calculate crop dimensions from crop area
- */
-export function getCropDimensions(
-  cropArea: CropArea,
-  imageSize: { width: number; height: number },
-): CropDimensions {
-  return {
-    width: Math.min(cropArea.width, imageSize.width - cropArea.x),
-    height: Math.min(cropArea.height, imageSize.height - cropArea.y),
-  };
-}
-
-/**
  * Crop an image canvas to the specified area
  */
 export function cropImage(
