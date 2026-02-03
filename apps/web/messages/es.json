@@ -1266,7 +1266,8 @@
     "critiqueCreated": "Crítica creada con éxito",
     "addCritiqueHintTitle": "Añade una crítica o selecciona contenido",
     "addCritiqueHintDescription": "Usa este botón para añadir una crítica, o selecciona un área en la imagen o el texto para adjuntar esa selección a tu crítica.",
-    "selectionInstruction": "Selecciona parte de la imagen o texto para añadir una crítica"
+    "selectionInstruction": "Selecciona parte de la imagen o texto para añadir una crítica",
+    "previewLoadFailed": "Error al cargar la vista previa"
   },
   "email": {
     "favoriteNotification": {

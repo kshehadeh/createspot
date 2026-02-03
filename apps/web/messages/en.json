@@ -1266,7 +1266,8 @@
     "critiqueCreated": "Critique created successfully",
     "addCritiqueHintTitle": "Add a critique or select content",
     "addCritiqueHintDescription": "Use this button to add a critique, or select an area in the image or text to attach that selection to your critique.",
-    "selectionInstruction": "Select part of the image or text to add a critique"
+    "selectionInstruction": "Select part of the image or text to add a critique",
+    "previewLoadFailed": "Failed to load preview"
   },
   "email": {
     "favoriteNotification": {

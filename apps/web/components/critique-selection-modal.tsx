@@ -46,11 +46,13 @@ export function CritiqueSelectionModal({
   const [critiqueText, setCritiqueText] = useState("");
   const [saving, setSaving] = useState(false);
   const [fragmentPreview, setFragmentPreview] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
 
   // Generate fragment preview when modal opens with image selection
   useEffect(() => {
     if (open && selectionData?.type === "image" && imageUrl) {
       setFragmentPreview(null);
+      setPreviewError(null);
       import("@/lib/critique-fragments").then(
         async ({ extractImageFragment }) => {
           try {
@@ -63,11 +65,15 @@ export function CritiqueSelectionModal({
             setFragmentPreview(fragment);
           } catch (error) {
             console.error("Failed to generate fragment preview:", error);
+            setPreviewError(
+              error instanceof Error ? error.message : "Failed to load preview",
+            );
           }
         },
       );
     } else {
       setFragmentPreview(null);
+      setPreviewError(null);
     }
   }, [open, selectionData, imageUrl]);
 
@@ -180,6 +186,13 @@ export function CritiqueSelectionModal({
                     alt={t("imageSelection")}
                     className="max-w-full max-h-48 object-contain"
                   />
+                ) : previewError ? (
+                  <div className="h-32 w-full flex flex-col items-center justify-center text-muted-foreground gap-2 p-4 text-center">
+                    <span className="text-destructive text-sm">
+                      {t("previewLoadFailed")}
+                    </span>
+                    <span className="text-xs opacity-70">{previewError}</span>
+                  </div>
                 ) : (
                   <div className="h-32 w-full flex items-center justify-center text-muted-foreground">
                     Loading preview...
