@@ -1212,6 +1212,7 @@
     "enableCritiques": "Enable critiques",
     "enableCritiquesDescription": "Allow others to provide feedback on this work",
     "critiquesDisabledWhenPrivate": "Critiques are not visible to other users because the submission is marked as private.",
+    "critique": "Critique",
     "critiqueButton": "Critique",
     "manageCritiques": "Manage Critiques",
     "addCritique": "Add Critique",

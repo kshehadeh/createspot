@@ -1212,6 +1212,7 @@
     "enableCritiques": "Habilitar críticas",
     "enableCritiquesDescription": "Permitir que otros proporcionen comentarios sobre este trabajo",
     "critiquesDisabledWhenPrivate": "Las críticas no son visibles para otros usuarios porque la publicación está marcada como privada.",
+    "critique": "Crítica",
     "critiqueButton": "Crítica",
     "manageCritiques": "Gestionar Críticas",
     "addCritique": "Añadir Crítica",
