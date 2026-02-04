@@ -45,6 +45,7 @@ The app will be available at http://localhost:3000
 | [apps/web/docs/INTERNATIONALIZATION.md](apps/web/docs/INTERNATIONALIZATION.md) | Translation system, i18n patterns, adding new languages |
 | [apps/web/docs/CREATOR-PROTECTIONS.md](apps/web/docs/CREATOR-PROTECTIONS.md) | Watermarking, download prevention, AI training opt-out |
 | [apps/web/docs/HINTS.md](apps/web/docs/HINTS.md) | Contextual help and hint system, tutorial management |
+| [apps/web/docs/PROGRESSIONS.md](apps/web/docs/PROGRESSIONS.md) | Progressions (work-in-progress steps for submissions): data model, API, form, view, lightbox |
 
 ## Project Structure
 

@@ -109,6 +109,24 @@ User submissions for prompts or standalone portfolio items.
 - Portfolio items can be linked to prompts later (by setting `promptId` and `wordIndex`)
 - Prompt submissions can be added to portfolio (by setting `isPortfolio: true`)
 
+**Progressions:** Submissions can have one or more progressions (work-in-progress steps). See [PROGRESSIONS.md](PROGRESSIONS.md).
+
+#### Progression
+Work-in-progress steps for a submission (e.g. early sketch → final).
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | String | CUID primary key |
+| submissionId | String | Parent submission (cascade delete) |
+| imageUrl | String? | Optional image URL (R2) |
+| text | String? | Optional rich HTML (creative content at this step) |
+| comment | String? | Optional plain-text note about the step |
+| order | Int | Display order (0-indexed) |
+| createdAt | DateTime | Creation timestamp |
+| updatedAt | DateTime | Last update timestamp |
+
+At least one of `imageUrl` or `text` must be set. Indexes: `submissionId`, `(submissionId, order)`.
+
 #### Favorite
 User favorites/bookmarks for submissions.
 
