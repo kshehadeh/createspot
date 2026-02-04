@@ -25,7 +25,28 @@ export default async function AboutPortfolioPage() {
       <PageHeader title={t("mainTitle")} subtitle={t("mainDescription")} />
 
       <div className="mb-8">
-        <YouTubeEmbed videoId="WAyioJdhozU" title={t("videoTitle")} />
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="space-y-2">
+            <YouTubeEmbed
+              videoId="WAyioJdhozU"
+              title={t("videos.overviewTitle")}
+              className="w-full"
+            />
+            <p className="text-center text-sm font-medium text-muted-foreground">
+              {t("videos.overviewCaption")}
+            </p>
+          </div>
+          <div className="space-y-2">
+            <YouTubeEmbed
+              videoId="K9vup2cqEbA"
+              title={t("videos.progressionsTitle")}
+              className="w-full"
+            />
+            <p className="text-center text-sm font-medium text-muted-foreground">
+              {t("videos.progressionsCaption")}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-8">
@@ -88,6 +109,24 @@ export default async function AboutPortfolioPage() {
           </h2>
           <p className="text-base leading-relaxed text-muted-foreground">
             {t("promptsAndPortfolios.description")}
+          </p>
+        </AboutCard>
+
+        <AboutCard>
+          <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
+            {t("collections.title")}
+          </h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {t("collections.description")}
+          </p>
+        </AboutCard>
+
+        <AboutCard>
+          <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
+            {t("progressions.title")}
+          </h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {t("progressions.description")}
           </p>
         </AboutCard>
       </div>

@@ -968,9 +968,15 @@
   },
   "aboutPortfolio": {
     "title": "Portfolio | Create Spot",
-    "description": "Learn how your portfolio works—sharing levels, piece links, and connecting prompts with your body of work.",
+    "description": "Learn how your portfolio works—sharing levels, piece links, progressions, and connecting prompts with your body of work.",
     "videoTitle": "Portfolio demo",
-    "mainTitle": "Your portfolio is your collection.",
+    "videos": {
+      "overviewTitle": "Portfolio overview",
+      "overviewCaption": "Overview",
+      "progressionsTitle": "Progressions demo",
+      "progressionsCaption": "Progressions"
+    },
+    "mainTitle": "Portfolios are the home for your work.",
     "mainDescription": "Build it over time, give each piece its own shareable link, and connect prompt submissions so your inspiration and body of work stay in one place.",
     "sharingLevels": {
       "title": "Sharing levels",
@@ -986,6 +992,10 @@
       "publicNote": "public",
       "noteSuffix": "so it can appear with other prompt submissions."
     },
+    "progressions": {
+      "title": "Progressions",
+      "description": "Progressions are work-in-progress steps you can attach to any portfolio piece. Show how a piece evolved—for example, early sketch → draft → final. Each step can include an image, rich text, or a short comment. Use progressions to share your creative process, give context to viewers, or document the journey behind a finished piece."
+    },
     "pieceLinks": {
       "title": "Portfolio piece links",
       "description": "Each piece in your portfolio has its own shareable link at",
@@ -995,6 +1005,10 @@
     "promptsAndPortfolios": {
       "title": "Prompts and portfolios together",
       "description": "Prompt submissions can be added to your portfolio, and portfolio pieces can be linked to prompts. This keeps your weekly inspiration connected to your long-term body of work while maintaining a single, consistent archive."
+    },
+    "collections": {
+      "title": "Collections",
+      "description": "Collections are a way to organize your portfolio into different groups. Each collection can be shared independently—via its own link or by downloading as a PDF or ZIP—for easy submission to other places."
     },
     "backToAbout": "← Back to About"
   },

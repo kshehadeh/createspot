@@ -968,9 +968,15 @@
   },
   "aboutPortfolio": {
     "title": "Portafolio | Create Spot",
-    "description": "Aprende cómo funciona tu portafolio: niveles de intercambio, enlaces por pieza y conexión de indicaciones con tu cuerpo de trabajo.",
+    "description": "Aprende cómo funciona tu portafolio: niveles de intercambio, enlaces por pieza, progresiones y conexión de indicaciones con tu cuerpo de trabajo.",
     "videoTitle": "Demo de portafolio",
-    "mainTitle": "Tu portafolio es tu colección.",
+    "videos": {
+      "overviewTitle": "Resumen del portafolio",
+      "overviewCaption": "Resumen",
+      "progressionsTitle": "Demo de progresiones",
+      "progressionsCaption": "Progresiones"
+    },
+    "mainTitle": "Los portafolios son el hogar de tu trabajo.",
     "mainDescription": "Construye tu portafolio con el tiempo, da a cada pieza su propio enlace compartible y conecta las publicaciones de indicaciones para que tu inspiración y cuerpo de trabajo permanezcan en un solo lugar.",
     "sharingLevels": {
       "title": "Niveles de intercambio",
@@ -986,6 +992,10 @@
       "publicNote": "público",
       "noteSuffix": "para que pueda aparecer con otras publicaciones de indicaciones."
     },
+    "progressions": {
+      "title": "Progresiones",
+      "description": "Las progresiones son pasos de trabajo en curso que puedes adjuntar a cualquier pieza del portafolio. Muestra cómo evolucionó una pieza—por ejemplo, boceto inicial → borrador → versión final. Cada paso puede incluir una imagen, texto enriquecido o un comentario breve. Usa progresiones para compartir tu proceso creativo, dar contexto a los visitantes o documentar el recorrido detrás de una pieza terminada."
+    },
     "pieceLinks": {
       "title": "Enlaces de piezas del portafolio",
       "description": "Cada pieza en tu portafolio tiene su propio enlace compartible en",
@@ -995,6 +1005,10 @@
     "promptsAndPortfolios": {
       "title": "Indicaciones y portafolios juntos",
       "description": "Las publicaciones de indicaciones pueden añadirse a tu portafolio, y las piezas del portafolio pueden vincularse a indicaciones. Esto mantiene tu inspiración semanal conectada a tu cuerpo de trabajo a largo plazo mientras mantiene un archivo único y consistente."
+    },
+    "collections": {
+      "title": "Colecciones",
+      "description": "Las colecciones son una forma de organizar tu portafolio en distintos grupos. Cada colección puede compartirse de forma independiente—mediante su propio enlace o descargando como PDF o ZIP—para enviarla fácilmente a otros sitios."
     },
     "backToAbout": "← Volver a Acerca de"
   },
