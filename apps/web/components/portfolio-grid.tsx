@@ -1040,15 +1040,23 @@ function PortfolioGridContent({
                 word={getWord(selectedSubmission)}
                 onClose={() => setSelectedSubmission(null)}
                 isOpen={!!selectedSubmission}
-                onGoToPrevious={() => {
-                  if (hasPrevious)
-                    setSelectedSubmission(items[currentIndex - 1]);
+                navigation={{
+                  onGoToPrevious: () => {
+                    if (hasPrevious)
+                      setSelectedSubmission(items[currentIndex - 1]);
+                  },
+                  onGoToNext: () => {
+                    if (hasNext) setSelectedSubmission(items[currentIndex + 1]);
+                  },
+                  hasPrevious,
+                  hasNext,
+                  nextImageUrl: hasNext
+                    ? (items[currentIndex + 1]?.imageUrl ?? null)
+                    : null,
+                  prevImageUrl: hasPrevious
+                    ? (items[currentIndex - 1]?.imageUrl ?? null)
+                    : null,
                 }}
-                onGoToNext={() => {
-                  if (hasNext) setSelectedSubmission(items[currentIndex + 1]);
-                }}
-                hasPrevious={hasPrevious}
-                hasNext={hasNext}
               />
             );
           })()}

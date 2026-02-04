@@ -25,6 +25,7 @@ import { ShareButton } from "@/components/share-button";
 import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
+import { useImagePreloader } from "@/lib/hooks/use-image-preloader";
 import { usePinchZoom } from "@/lib/hooks/use-pinch-zoom";
 import { buildRoutePath } from "@/lib/routes";
 
@@ -58,6 +59,10 @@ export interface SubmissionLightboxNavigation {
   onGoToNext: () => void;
   hasPrevious: boolean;
   hasNext: boolean;
+  /** Optional image URL for the next submission; when provided, preloaded for instant display on navigate. */
+  nextImageUrl?: string | null;
+  /** Optional image URL for the previous submission; when provided, preloaded for instant display on navigate. */
+  prevImageUrl?: string | null;
 }
 
 interface SubmissionLightboxProps {
@@ -113,6 +118,11 @@ export function SubmissionLightbox({
     navigation?.hasPrevious ?? hasPreviousProp ?? onGoToPrevious !== undefined;
   const hasNext =
     navigation?.hasNext ?? hasNextProp ?? onGoToNext !== undefined;
+
+  const nextImageUrl = navigation?.nextImageUrl;
+  const prevImageUrl = navigation?.prevImageUrl;
+  useImagePreloader(isOpen ? [nextImageUrl, prevImageUrl] : []);
+
   const t = useTranslations("exhibition");
   const { data: session } = useSession();
   // Use session user ID if available, otherwise fall back to prop

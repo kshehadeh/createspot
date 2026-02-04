@@ -337,16 +337,24 @@ function GridContent({
               word={getWord(selectedSubmission)}
               onClose={() => setSelectedSubmission(null)}
               isOpen={!!selectedSubmission}
-              onGoToPrevious={() => {
-                if (hasPrevious)
-                  setSelectedSubmission(submissions[currentIndex - 1]);
+              navigation={{
+                onGoToPrevious: () => {
+                  if (hasPrevious)
+                    setSelectedSubmission(submissions[currentIndex - 1]);
+                },
+                onGoToNext: () => {
+                  if (hasNext)
+                    setSelectedSubmission(submissions[currentIndex + 1]);
+                },
+                hasPrevious,
+                hasNext,
+                nextImageUrl: hasNext
+                  ? (submissions[currentIndex + 1]?.imageUrl ?? null)
+                  : null,
+                prevImageUrl: hasPrevious
+                  ? (submissions[currentIndex - 1]?.imageUrl ?? null)
+                  : null,
               }}
-              onGoToNext={() => {
-                if (hasNext)
-                  setSelectedSubmission(submissions[currentIndex + 1]);
-              }}
-              hasPrevious={hasPrevious}
-              hasNext={hasNext}
             />
           );
         })()}
