@@ -1,0 +1,22 @@
+[
+  {
+    "time": "2026-02-04T05:14:14-05:00",
+    "commit": "e1d451e14aa414ec2acdca5a54a8153f8d233feb",
+    "type": "feature",
+    "area": "games",
+    "description": "Implement progression feature for submissions, allowing users to view and manage progression through the lightbox",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.1.0"
+  },
+  {
+    "time": "2026-02-04T04:32:02-05:00",
+    "commit": "896f90043749601c7eda3db6d5e1107062fbc0db",
+    "type": "improvement",
+    "area": "portfolio",
+    "description": "Refactor navigation handling in exhibition and portfolio grids for improved consistency",
+    "audience": "development",
+    "impact": "patch",
+    "version": "2.1.0"
+  }
+]

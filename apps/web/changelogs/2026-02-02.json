@@ -1,40 +1,10 @@
 [
   {
-    "time": "2026-02-02T12:30:00-05:00",
-    "commit": "UNRELEASED",
+    "time": "2026-02-02T07:33:34-05:00",
+    "commit": "997b5a80dceb9b698c5934b5eff6e98fa6bae0c2",
     "type": "improvement",
     "area": "tools",
-    "description": "Convert the repo to a Turborepo monorepo (apps/web) and align Vercel builds with Turbo, including declaring required build-time environment variables in turbo.json.",
-    "audience": "development",
-    "impact": "major",
-    "version": "1.0.0"
-  },
-  {
-    "time": "2026-02-02T07:18:12-05:00",
-    "commit": "951456ab90189de3da1bbe326280fd95c6e05d9f",
-    "type": "improvement",
-    "area": "tools",
-    "description": "Remove rootDirectory from Vercel configuration to align with Turborepo structure",
-    "audience": "development",
-    "impact": "patch",
-    "version": "2.0.0"
-  },
-  {
-    "time": "2026-02-02T07:15:45-05:00",
-    "commit": "dba027c654754bcdeaed86bd1264035d8222e799",
-    "type": "improvement",
-    "area": "tools",
-    "description": "Continue monorepo conversion with updated email templates and build configurations",
-    "audience": "development",
-    "impact": "patch",
-    "version": "2.0.0"
-  },
-  {
-    "time": "2026-02-02T07:15:28-05:00",
-    "commit": "da223afc50a9f75c7bc69a99ac1302415182e7b4",
-    "type": "improvement",
-    "area": "tools",
-    "description": "Convert the project structure to a Turborepo monorepo, moving web application to apps/web directory",
+    "description": "Convert the repo to a Turborepo monorepo (apps/web), update Vercel and turbo.json config, and bump version to 1.0.0.",
     "audience": "development",
     "impact": "major",
     "version": "2.0.0"
@@ -44,7 +14,7 @@
     "commit": "c378787d51f78028d775ba7f1cadb046d6a60bcb",
     "type": "improvement",
     "area": "content",
-    "description": "Enhance changelog structure and update About navigation",
+    "description": "Update About navigation and changelog structure",
     "audience": "public",
     "impact": "patch",
     "version": "0.2.0"
@@ -73,7 +43,7 @@
     "time": "2026-02-02T03:31:43-05:00",
     "commit": "fef4e273ea072e6e81a83fa8c54e3ca597c8e646",
     "type": "improvement",
-    "area": "tools",
+    "area": "content",
     "description": "Add large splash image",
     "audience": "public",
     "impact": "patch",

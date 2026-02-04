@@ -7,7 +7,7 @@ disable-model-invocation: true
 # Add to Changelog
 
 ## Overview
-The goal of this is to document the changes that were recently made in a JSON file that can be used elsewhere to notify people of changes. The number of days to look back is configuratble by the associated context in the prompt.  Also, we will not duplicate changes that have already been documented.  A single commit does not mean a single change record.  Some commits have multiple changes.  Use the commit message and the content of the change to determine what discrete changes were made.  But if we already have a record for that commit, do not add new ones because it could duplicate it.
+The goal of this is to document the changes that were recently made in a JSON file that can be used elsewhere to notify people of changes. The number of days to look back is configuratble by the associated context in the prompt.  Also, we will not duplicate changes that have already been documented.  A single commit does not mean a single change record.  Some commits have multiple changes.  Use the commit message and the content of the change to determine what discrete changes were made.  But if we already have a record for that commit, do not add new ones because it could duplicate it.  Also be mindful of the fact that multiple commits does not necessarily mean multiple changes - there are some situations where a follow on commit was made to fix a small issue in a previous commit for the same feature or change.  Identify those and ensure they don't get their own change in the changelog.
 
 ## How
 I want to look at the last commit that was made and summarize the changes in as brief a way as possible.  When summarizing we are going to break the change down into a structured object.  

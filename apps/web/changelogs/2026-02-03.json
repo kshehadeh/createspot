@@ -8,5 +8,35 @@
     "audience": "public",
     "impact": "minor",
     "version": "2.0.0"
+  },
+  {
+    "time": "2026-02-03T06:42:23-05:00",
+    "commit": "8ca4719e8228e36eca2fc91b3d79ef7f2ebb228f",
+    "type": "improvement",
+    "area": "content",
+    "description": "Add critique translation in English and Spanish",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.1.0"
+  },
+  {
+    "time": "2026-02-03T07:20:47-05:00",
+    "commit": "60c58ee7d81aa6c19366399e5b5ca9c486b37664",
+    "type": "improvement",
+    "area": "content",
+    "description": "Enhance About Critiques page layout and content",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.1.0"
+  },
+  {
+    "time": "2026-02-03T15:27:42-05:00",
+    "commit": "e152727de1d946dbaab3628db374f95a42f2ca01",
+    "type": "improvement",
+    "area": "games",
+    "description": "Enhance critique selection modal and image loading functionality",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.1.0"
   }
 ]

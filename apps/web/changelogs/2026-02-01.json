@@ -48,5 +48,15 @@
     "audience": "development",
     "impact": "patch",
     "version": "0.2.0"
+  },
+  {
+    "time": "2026-02-01T05:30:42-05:00",
+    "commit": "0d4855b18050aa2a25a0ed683ff8b1615c9549b0",
+    "type": "improvement",
+    "area": "content",
+    "description": "Refactor About pages to use AboutCard component for consistent styling and improved readability",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.1.0"
   }
 ]
