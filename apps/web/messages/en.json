@@ -227,7 +227,9 @@
     "submissionAlt": "Submission",
     "downloadImage": "Download image",
     "critiqueHintTitle": "Get Feedback",
-    "critiqueHintDescription": "Click the Critique button to view or add feedback on this work. Creators can enable critiques when editing their submissions."
+    "critiqueHintDescription": "Click the Critique button to view or add feedback on this work. Creators can enable critiques when editing their submissions.",
+    "addProgressionHintTitle": "Show Your Process",
+    "addProgressionHintDescription": "Add progressions to show how your work evolved—early sketches, drafts, or in-between steps. Viewers can click each step on your submission page."
   },
   "categories": {
     "Photography": "Photography",
@@ -715,7 +717,9 @@
     "critiqueDidYouKnowTitle": "Did You Know?",
     "critiqueDidYouKnowDescription": "Critiques let you give and receive detailed feedback on creative work. Creators can enable critiques on their submissions, and you can edit your critiques until the creator sees them.",
     "socialPackDidYouKnowTitle": "Did You Know?",
-    "socialPackDidYouKnowDescription": "You can build a social media pack from any collection. Open a collection, use the Download menu, and choose \"Download as social pack\" to get platform-sized images and captions ready for Instagram and Twitter."
+    "socialPackDidYouKnowDescription": "You can build a social media pack from any collection. Open a collection, use the Download menu, and choose \"Download as social pack\" to get platform-sized images and captions ready for Instagram and Twitter.",
+    "progressionsDidYouKnowTitle": "Did You Know?",
+    "progressionsDidYouKnowDescription": "Progressions let you show the journey behind a piece—early sketches, drafts, or in-between steps. When editing a submission, use \"Add Progression\" to add images or text for each step. Viewers see them as a clickable strip below your final work."
   },
   "about": {
     "title": "About | Create Spot",

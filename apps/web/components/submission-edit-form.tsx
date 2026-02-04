@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { PortfolioItemForm } from "@/components/portfolio-item-form";
+import { HintPopover } from "@/components/hint-popover";
+import { usePageHints } from "@/lib/hooks/use-page-hints";
 
 interface SubmissionData {
   id: string;
@@ -25,13 +27,19 @@ interface SubmissionData {
 interface SubmissionEditFormProps {
   submissionId: string;
   initialData: SubmissionData;
+  tutorialData?: any;
 }
 
 export function SubmissionEditForm({
   submissionId,
   initialData,
+  tutorialData,
 }: SubmissionEditFormProps) {
   const router = useRouter();
+  const nextHint = usePageHints({
+    tutorialData: tutorialData ?? null,
+    page: "submission-edit",
+  });
 
   const handleSuccess = async () => {
     // Get the submission to find the creator ID
@@ -59,11 +67,27 @@ export function SubmissionEditForm({
   };
 
   return (
-    <PortfolioItemForm
-      mode="edit"
-      initialData={initialData}
-      onSuccess={handleSuccess}
-      onCancel={handleCancel}
-    />
+    <>
+      <PortfolioItemForm
+        mode="edit"
+        initialData={initialData}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
+      {nextHint && (
+        <HintPopover
+          hintKey={nextHint.key}
+          page="submission-edit"
+          title={nextHint.title}
+          description={nextHint.description}
+          targetSelector={nextHint.targetSelector}
+          side={nextHint.side}
+          shouldShow={true}
+          order={nextHint.order}
+          showArrow={nextHint.showArrow ?? true}
+          fixedPosition={nextHint.fixedPosition}
+        />
+      )}
+    </>
   );
 }

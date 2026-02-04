@@ -82,6 +82,16 @@ const HINTS_CONFIG: Record<string, HintConfig[]> = {
         description: "socialPackDidYouKnowDescription",
       },
     },
+    {
+      key: "progressionsDidYouKnow",
+      order: 5,
+      fixedPosition: { bottom: 24, right: 24 },
+      showArrow: false,
+      translationKeys: {
+        title: "progressionsDidYouKnowTitle",
+        description: "progressionsDidYouKnowDescription",
+      },
+    },
   ],
   "portfolio-view": [
     {
@@ -138,6 +148,19 @@ const HINTS_CONFIG: Record<string, HintConfig[]> = {
         description: "critiqueHintDescription",
       },
       shouldInclude: (context) => context?.critiquesEnabled === true,
+    },
+  ],
+  "submission-edit": [
+    {
+      key: "addProgression",
+      order: 1,
+      targetSelector: "button[data-hint-target='add-progression-button']",
+      side: "bottom",
+      showArrow: true,
+      translationKeys: {
+        title: "addProgressionHintTitle",
+        description: "addProgressionHintDescription",
+      },
     },
   ],
   "critiques-view": [

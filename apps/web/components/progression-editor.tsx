@@ -279,6 +279,7 @@ export function ProgressionEditor({
           size="sm"
           onClick={handleAddNew}
           disabled={disabled}
+          data-hint-target="add-progression-button"
         >
           <Plus className="h-4 w-4 mr-1" />
           {t("addProgression")}

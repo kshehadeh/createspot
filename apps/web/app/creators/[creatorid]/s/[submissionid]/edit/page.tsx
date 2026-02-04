@@ -2,6 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getTutorialData } from "@/lib/get-tutorial-data";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { SubmissionEditForm } from "@/components/submission-edit-form";
@@ -54,7 +55,10 @@ export default async function SubmissionEditPage({
 
   const { creatorid, submissionid } = await params;
 
-  const submission = await getSubmission(submissionid);
+  const [submission, tutorialData] = await Promise.all([
+    getSubmission(submissionid),
+    getTutorialData(session?.user?.id),
+  ]);
 
   if (!submission) {
     notFound();
@@ -98,6 +102,7 @@ export default async function SubmissionEditPage({
           critiquesEnabled: submission.critiquesEnabled,
           progressions: submission.progressions,
         }}
+        tutorialData={tutorialData}
       />
     </PageLayout>
   );
