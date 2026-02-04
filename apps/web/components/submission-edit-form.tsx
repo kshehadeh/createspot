@@ -13,6 +13,13 @@ interface SubmissionData {
   category: string | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled?: boolean;
+  progressions?: Array<{
+    id: string;
+    imageUrl: string | null;
+    text: string | null;
+    comment: string | null;
+    order: number;
+  }>;
 }
 
 interface SubmissionEditFormProps {

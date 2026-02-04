@@ -1,33 +1,28 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { fetcher } from "@/lib/swr";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  VisuallyHidden,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Heart, X, FileText, Edit, Eye, MessageSquare } from "lucide-react";
-import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { ShareButton } from "@/components/share-button";
 import { useSession } from "next-auth/react";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
-import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
-import { useImagePreloader } from "@/lib/hooks/use-image-preloader";
-import { usePinchZoom } from "@/lib/hooks/use-pinch-zoom";
 import { buildRoutePath } from "@/lib/routes";
+import {
+  BaseLightbox,
+  BaseLightboxNavigation,
+  BaseLightboxRenderContext,
+  LIGHTBOX_BUTTON_CLASS,
+} from "@/components/base-lightbox";
 
 interface LightboxSubmission {
   id: string;
@@ -90,10 +85,6 @@ interface SubmissionLightboxProps {
   hasNext?: boolean;
 }
 
-/** Shared style for lightbox controls: semi-transparent on black, capsule shape. */
-const LIGHTBOX_BUTTON_CLASS =
-  "rounded-full !bg-white/10 border border-white/20 text-white hover:!bg-white/20 hover:!text-white focus-visible:ring-white/30 focus-visible:ring-offset-transparent";
-
 export function SubmissionLightbox({
   submission,
   onClose,
@@ -121,43 +112,13 @@ export function SubmissionLightbox({
 
   const nextImageUrl = navigation?.nextImageUrl;
   const prevImageUrl = navigation?.prevImageUrl;
-  useImagePreloader(isOpen ? [nextImageUrl, prevImageUrl] : []);
 
   const t = useTranslations("exhibition");
   const { data: session } = useSession();
-  // Use session user ID if available, otherwise fall back to prop
   const currentUserId = session?.user?.id || propCurrentUserId;
-  const [zoomState, setZoomState] = useState<{
-    isActive: boolean;
-    x: number;
-    y: number;
-    imageRect: DOMRect | null;
-  }>({ isActive: false, x: 0, y: 0, imageRect: null });
-  const [supportsHover, setSupportsHover] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [isTextOverlayOpen, setIsTextOverlayOpen] = useState(false);
+  const router = useRouter();
   const [closeTooltipOpen, setCloseTooltipOpen] = useState(false);
   const [closeTooltipHovered, setCloseTooltipHovered] = useState(false);
-  // Slide transition state for iOS-compatible animations
-  // Phase: "start" = element at off-screen position, "end" = element at final position
-  const [slideState, setSlideState] = useState<{
-    direction: "left" | "right" | null;
-    phase: "start" | "end";
-  }>({ direction: null, phase: "end" });
-  const prevSubmissionIdRef = useRef<string | null>(null);
-  const router = useRouter();
-  const imageRef = useRef<HTMLImageElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const viewportHeight = useViewportHeight();
-
-  // Swipe-to-navigate state (mobile only, when prev/next exist)
-  const SWIPE_THRESHOLD_PX = 50;
-  const swipeStartRef = useRef<{
-    x: number;
-    y: number;
-    wasZoomed: boolean;
-  } | null>(null);
 
   const { data: submissionData } = useSWR<{
     submission: { userId: string; user?: { slug: string | null } };
@@ -170,140 +131,6 @@ export function SubmissionLightbox({
   const submissionUserSlug =
     submissionData?.submission?.user?.slug ?? submission.user?.slug ?? null;
 
-  // Pinch-to-zoom hook for mobile
-  const {
-    touchZoom,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-    setBaseDimensions,
-    resetTouchZoom,
-  } = usePinchZoom({
-    supportsHover,
-    imageRef,
-    imageContainerRef,
-  });
-  // Wrapped nav handlers: set slide direction then call parent (so new content slides in)
-  const handleGoToPrevious = useCallback(() => {
-    if (!hasPrevious || !onGoToPrevious) return;
-    setSlideState({ direction: "left", phase: "start" });
-    onGoToPrevious();
-  }, [hasPrevious, onGoToPrevious]);
-
-  const handleGoToNext = useCallback(() => {
-    if (!hasNext || !onGoToNext) return;
-    setSlideState({ direction: "right", phase: "start" });
-    onGoToNext();
-  }, [hasNext, onGoToNext]);
-
-  const hasNavigation =
-    onGoToPrevious != null && onGoToNext != null && (hasPrevious || hasNext);
-  const canSwipeToNavigate =
-    !supportsHover && hasNavigation && !touchZoom.isZoomed;
-
-  const handleTouchStartWithSwipe = useCallback(
-    (e: React.TouchEvent<HTMLImageElement>) => {
-      if (canSwipeToNavigate && e.touches.length === 1) {
-        swipeStartRef.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-          wasZoomed: touchZoom.isZoomed,
-        };
-      }
-      handleTouchStart(e);
-    },
-    [canSwipeToNavigate, touchZoom.isZoomed, handleTouchStart],
-  );
-
-  const handleTouchEndWithSwipe = useCallback(
-    (e: React.TouchEvent<HTMLImageElement>) => {
-      if (
-        canSwipeToNavigate &&
-        swipeStartRef.current &&
-        e.touches.length === 0 &&
-        e.changedTouches.length > 0
-      ) {
-        const start = swipeStartRef.current;
-        const released = e.changedTouches[0];
-        const deltaX = released.clientX - start.x;
-        const deltaY = released.clientY - start.y;
-
-        if (
-          !start.wasZoomed &&
-          Math.abs(deltaX) >= SWIPE_THRESHOLD_PX &&
-          Math.abs(deltaX) > Math.abs(deltaY)
-        ) {
-          if (deltaX > 0 && hasPrevious) {
-            handleGoToPrevious();
-          } else if (deltaX < 0 && hasNext) {
-            handleGoToNext();
-          }
-        }
-        swipeStartRef.current = null;
-      }
-      handleTouchEnd(e);
-    },
-    [
-      canSwipeToNavigate,
-      hasPrevious,
-      hasNext,
-      handleGoToPrevious,
-      handleGoToNext,
-      handleTouchEnd,
-    ],
-  );
-
-  // Simpler swipe handlers for text-only content (no pinch-zoom)
-  const canSwipeTextOnly = !supportsHover && hasNavigation;
-
-  const handleTextTouchStart = useCallback(
-    (e: React.TouchEvent<HTMLDivElement>) => {
-      if (canSwipeTextOnly && e.touches.length === 1) {
-        swipeStartRef.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-          wasZoomed: false,
-        };
-      }
-    },
-    [canSwipeTextOnly],
-  );
-
-  const handleTextTouchEnd = useCallback(
-    (e: React.TouchEvent<HTMLDivElement>) => {
-      if (
-        canSwipeTextOnly &&
-        swipeStartRef.current &&
-        e.touches.length === 0 &&
-        e.changedTouches.length > 0
-      ) {
-        const start = swipeStartRef.current;
-        const released = e.changedTouches[0];
-        const deltaX = released.clientX - start.x;
-        const deltaY = released.clientY - start.y;
-
-        if (
-          Math.abs(deltaX) >= SWIPE_THRESHOLD_PX &&
-          Math.abs(deltaX) > Math.abs(deltaY)
-        ) {
-          if (deltaX > 0 && hasPrevious) {
-            handleGoToPrevious();
-          } else if (deltaX < 0 && hasNext) {
-            handleGoToNext();
-          }
-        }
-        swipeStartRef.current = null;
-      }
-    },
-    [
-      canSwipeTextOnly,
-      hasPrevious,
-      hasNext,
-      handleGoToPrevious,
-      handleGoToNext,
-    ],
-  );
-
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const isOwner =
@@ -315,109 +142,28 @@ export function SubmissionLightbox({
   const showCritique =
     !isPrivate && submission.critiquesEnabled && !!currentUserId;
 
-  // Get favorite count - handle both _count and direct favoriteCount
   const favoriteCount =
     submission._count?.favorites ?? (submission as any).favoriteCount ?? 0;
 
-  // Check if device supports hover (not touch) - use effect to handle SSR
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setSupportsHover(window.matchMedia("(hover: hover)").matches);
-    }
-  }, []);
-
-  // Get creator ID for route building (slug if available, otherwise ID)
-  const getCreatorId = (): string | null => {
+  // Get creator ID for route building
+  const getCreatorId = useCallback((): string | null => {
     if (submission.user?.id) {
-      // Use slug if available, otherwise use ID
       return submission.user.slug || submission.user.id;
     }
-    // Fallback to fetched slug or userId
     return submissionUserSlug || submissionUserId;
-  };
+  }, [submission.user, submissionUserSlug, submissionUserId]);
 
   // Build submission URL using routes
-  const getSubmissionUrl = (): string | null => {
+  const getSubmissionUrl = useCallback((): string | null => {
     const creatorId = getCreatorId();
     if (!creatorId || !submission.id) return null;
     return buildRoutePath("submission", {
       creatorid: creatorId,
       submissionid: submission.id,
     });
-  };
+  }, [getCreatorId, submission.id]);
 
-  // Handle Escape key to close text overlay
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isTextOverlayOpen) {
-        setIsTextOverlayOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [isTextOverlayOpen]);
-
-  // Reset pinch-zoom when switching to another submission
-  useEffect(() => {
-    if (isOpen) {
-      resetTouchZoom();
-    }
-  }, [isOpen, submission.id, resetTouchZoom]);
-
-  // iOS Safari fix: use CSS transitions with explicit start/end phases
-  // 1. Element mounts at off-screen position (phase: "start")
-  // 2. After paint, transition to final position (phase: "end")
-  useEffect(() => {
-    const prevId = prevSubmissionIdRef.current;
-    prevSubmissionIdRef.current = submission.id;
-
-    // When submission changes and we have a pending slide direction
-    if (
-      prevId !== null &&
-      prevId !== submission.id &&
-      slideState.direction &&
-      slideState.phase === "start"
-    ) {
-      // Force a reflow to ensure the start position is applied
-      // Then trigger the transition to end position
-      let cancelled = false;
-      // Use setTimeout instead of rAF for more reliable iOS behavior
-      const timer = setTimeout(() => {
-        if (cancelled) return;
-        setSlideState((s) => ({ ...s, phase: "end" }));
-      }, 20);
-      return () => {
-        cancelled = true;
-        clearTimeout(timer);
-      };
-    }
-  }, [submission.id, slideState.direction, slideState.phase]);
-
-  // Handle ArrowLeft/ArrowRight for previous/next when callbacks provided and text overlay closed
-  useEffect(() => {
-    if (!isOpen || isTextOverlayOpen) return;
-
-    const handleArrow = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" && hasPrevious) {
-        e.preventDefault();
-        handleGoToPrevious();
-      } else if (e.key === "ArrowRight" && hasNext) {
-        e.preventDefault();
-        handleGoToNext();
-      }
-    };
-    window.addEventListener("keydown", handleArrow);
-    return () => window.removeEventListener("keydown", handleArrow);
-  }, [
-    isOpen,
-    isTextOverlayOpen,
-    handleGoToPrevious,
-    handleGoToNext,
-    hasPrevious,
-    hasNext,
-  ]);
-
-  // Reset close button tooltip when lightbox opens so it doesn't show immediately
+  // Reset close button tooltip when lightbox opens
   useEffect(() => {
     if (isOpen) {
       setCloseTooltipOpen(false);
@@ -435,11 +181,11 @@ export function SubmissionLightbox({
     }
   }, [closeTooltipHovered]);
 
-  // Track view when lightbox opens (only if not the owner)
+  // Track view when lightbox opens
   useTrackSubmissionView(submission.id, isOwner, isOpen);
 
   // Navigate to edit page
-  const handleEditClick = () => {
+  const handleEditClick = useCallback(() => {
     const creatorId = getCreatorId();
     if (creatorId && submission.id) {
       router.push(
@@ -449,635 +195,263 @@ export function SubmissionLightbox({
         }),
       );
     }
-    // Note: If creator info is missing, we can't construct the route - this shouldn't happen
-  };
+  }, [getCreatorId, submission.id, router]);
 
-  const handleImageMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLImageElement>) => {
-      if (!supportsHover || !imageRef.current || !imageLoaded) return;
+  // Convert to base lightbox navigation format
+  const baseNavigation: BaseLightboxNavigation | undefined =
+    onGoToPrevious && onGoToNext
+      ? {
+          onGoToPrevious,
+          onGoToNext,
+          hasPrevious,
+          hasNext,
+          nextImageUrl,
+          prevImageUrl,
+          prevLabel: t("previousSubmission"),
+          nextLabel: t("nextSubmission"),
+        }
+      : undefined;
 
-      const imageRect = imageRef.current.getBoundingClientRect();
-
-      // Calculate mouse position relative to the image
-      const x = e.clientX - imageRect.left;
-      const y = e.clientY - imageRect.top;
-
-      setZoomState({
-        isActive: true,
-        x,
-        y,
-        imageRect,
-      });
-    },
-    [supportsHover, imageLoaded],
-  );
-
-  const handleImageMouseLeave = useCallback(() => {
-    setZoomState((prev) => ({ ...prev, isActive: false }));
-  }, []);
-
-  // Prevent right-click context menu
-  const handleContextMenu = useCallback(
-    (e: React.MouseEvent) => {
-      if (protectionEnabled) {
-        e.preventDefault();
-        return false;
-      }
-    },
-    [protectionEnabled],
-  );
-
-  // Prevent drag start
-  const handleDragStart = useCallback(
-    (e: React.DragEvent) => {
-      if (protectionEnabled) {
-        e.preventDefault();
-        return false;
-      }
-    },
-    [protectionEnabled],
-  );
-
-  // Calculate zoom preview position and background
-  const ZOOM_SQUARE_SIZE = 200;
-  const ZOOM_PREVIEW_SIZE = 400;
-  // Zoom level is the ratio of preview to square - this ensures
-  // the preview shows exactly what's inside the square, magnified to fill it
-  const ZOOM_LEVEL = ZOOM_PREVIEW_SIZE / ZOOM_SQUARE_SIZE; // = 2x
-
-  const getZoomPreviewStyle = (): React.CSSProperties => {
-    if (
-      !zoomState.isActive ||
-      !zoomState.imageRect ||
-      !imageRef.current ||
-      typeof window === "undefined"
-    ) {
-      return { display: "none" };
-    }
-
-    const imageWidth = zoomState.imageRect.width;
-    const imageHeight = zoomState.imageRect.height;
-
-    // Don't show zoom preview if image is too small
-    if (imageWidth < ZOOM_SQUARE_SIZE || imageHeight < ZOOM_SQUARE_SIZE) {
-      return { display: "none" };
-    }
-
-    // Get the clamped position to calculate correct zoom area
-    const halfSize = ZOOM_SQUARE_SIZE / 2;
-    const clampedX = Math.max(
-      halfSize,
-      Math.min(imageWidth - halfSize, zoomState.x),
-    );
-    const clampedY = Math.max(
-      halfSize,
-      Math.min(imageHeight - halfSize, zoomState.y),
-    );
-
-    // Calculate background size in pixels - scale the DISPLAYED image by zoom level
-    // This ensures the zoom matches exactly what's shown on screen
-    const bgWidth = imageWidth * ZOOM_LEVEL;
-    const bgHeight = imageHeight * ZOOM_LEVEL;
-
-    // Calculate background position to center the cursor position in the preview
-    // The zoomed cursor position is (clampedX * ZOOM_LEVEL, clampedY * ZOOM_LEVEL)
-    // We want that point to be at the center of the preview (PREVIEW_SIZE / 2)
-    const bgPosX = ZOOM_PREVIEW_SIZE / 2 - clampedX * ZOOM_LEVEL;
-    const bgPosY = ZOOM_PREVIEW_SIZE / 2 - clampedY * ZOOM_LEVEL;
-
-    // Check if sidebar is visible (xl+ breakpoint, 1280px+)
-    const isSidebarVisible = window.innerWidth >= 1280 && sidebarRef.current;
-
-    if (isSidebarVisible && sidebarRef.current) {
-      // Position in sidebar - relative to sidebar container
-      // Sidebar is 400px wide, add margins on both sides
-      const leftMargin = 16;
-      const rightMargin = 16;
-      const availableWidth = 400 - leftMargin - rightMargin; // 368px available
-      const zoomSize = Math.min(ZOOM_PREVIEW_SIZE, availableWidth);
-
-      return {
-        position: "absolute" as const,
-        backgroundImage: `url(${submission.imageUrl})`,
-        backgroundSize: `${bgWidth}px ${bgHeight}px`,
-        backgroundPosition: `${bgPosX}px ${bgPosY}px`,
-        backgroundRepeat: "no-repeat",
-        backgroundColor: "#000",
-        left: `${leftMargin}px`,
-        top: `${leftMargin}px`,
-        width: `${zoomSize}px`,
-        height: `${zoomSize}px`,
-      };
-    }
-
-    // Overlay mode - position fixed in top-left corner
-    const margin = 20;
-    return {
-      position: "fixed" as const,
-      backgroundImage: `url(${submission.imageUrl})`,
-      backgroundSize: `${bgWidth}px ${bgHeight}px`,
-      backgroundPosition: `${bgPosX}px ${bgPosY}px`,
-      backgroundRepeat: "no-repeat",
-      backgroundColor: "#000",
-      left: `${margin}px`,
-      top: `${margin}px`,
-    };
-  };
-
-  const getZoomSquareStyle = () => {
-    if (
-      !zoomState.isActive ||
-      !imageContainerRef.current ||
-      !zoomState.imageRect
-    )
-      return {};
-
-    const containerRect = imageContainerRef.current.getBoundingClientRect();
-    const imageRect = zoomState.imageRect;
-
-    // Calculate square position relative to container
-    const imageLeft = imageRect.left - containerRect.left;
-    const imageTop = imageRect.top - containerRect.top;
-
-    // Clamp square position to stay within image bounds
-    const halfSize = ZOOM_SQUARE_SIZE / 2;
-    const squareX = Math.max(
-      imageLeft,
-      Math.min(
-        imageLeft + imageRect.width - ZOOM_SQUARE_SIZE,
-        imageLeft + zoomState.x - halfSize,
-      ),
-    );
-    const squareY = Math.max(
-      imageTop,
-      Math.min(
-        imageTop + imageRect.height - ZOOM_SQUARE_SIZE,
-        imageTop + zoomState.y - halfSize,
-      ),
-    );
-
-    // Only show zoom if image is large enough
-    if (
-      imageRect.width < ZOOM_SQUARE_SIZE ||
-      imageRect.height < ZOOM_SQUARE_SIZE
-    ) {
-      return { display: "none" };
-    }
-
-    return {
-      left: `${squareX}px`,
-      top: `${squareY}px`,
-    };
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent
-        className="w-screen max-w-none max-h-none border-none bg-black/90 p-0 [&>button:last-child]:hidden overflow-hidden md:overflow-hidden"
-        style={{
-          height: viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
-          minHeight: viewportHeight > 0 ? `${viewportHeight}px` : "100vh",
-          maxHeight: viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
-        }}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-      >
-        <VisuallyHidden>
-          <DialogTitle>
-            {submission.title || "Submission"}{" "}
-            {submission.user?.name ? `by ${submission.user.name}` : ""}
-          </DialogTitle>
-        </VisuallyHidden>
-        <div className="relative h-full w-full min-w-0 flex-1 overflow-hidden">
-          <div
-            key={submission.id}
-            className={`flex h-full w-full p-0 overflow-y-auto md:overflow-hidden ${
-              hasImage ? "flex-col xl:flex-row" : "flex-col"
-            } ${slideState.direction ? "lightbox-slide-panel" : ""}`}
-            style={
-              slideState.direction
-                ? {
-                    transform:
-                      slideState.phase === "start"
-                        ? `translate3d(${slideState.direction === "right" ? "100%" : "-100%"}, 0, 0)`
-                        : "translate3d(0, 0, 0)",
-                    transition:
-                      slideState.phase === "end"
-                        ? "transform 0.28s ease-out"
-                        : "none",
-                  }
-                : undefined
-            }
-            onClick={(e) => e.stopPropagation()}
-            onTransitionEnd={() =>
-              setSlideState({ direction: null, phase: "end" })
-            }
-          >
-            {/* Image section */}
-            {hasImage && (
-              <div
-                ref={imageContainerRef}
-                className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden"
-                style={{
-                  // Allow panning but prevent page zoom
-                  touchAction: supportsHover ? "none" : "pan-x pan-y",
-                }}
-                onContextMenu={handleContextMenu}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  ref={imageRef}
-                  src={submission.imageUrl!}
-                  alt={submission.title || "Submission"}
-                  className="h-auto w-auto max-h-[100dvh] max-w-full object-contain select-none"
-                  style={{
-                    maxHeight:
-                      viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
-                    maxWidth: "100%",
-                    // Apply touch zoom transforms only on mobile
-                    ...(!supportsHover && touchZoom.isZoomed
-                      ? {
-                          transform: `translate(${touchZoom.translateX}px, ${touchZoom.translateY}px) scale(${touchZoom.scale})`,
-                          transformOrigin: "center center",
-                          transition: "none",
-                        }
-                      : {}),
-                    ...(protectionEnabled
-                      ? { WebkitUserSelect: "none", userSelect: "none" }
-                      : {}),
-                  }}
-                  onLoad={() => {
-                    setImageLoaded(true);
-                    // Store base image dimensions when image loads (before any transforms)
-                    setBaseDimensions();
-                  }}
-                  onMouseMove={handleImageMouseMove}
-                  onMouseLeave={handleImageMouseLeave}
-                  onTouchStart={handleTouchStartWithSwipe}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEndWithSwipe}
-                  draggable={!protectionEnabled}
-                  onDragStart={handleDragStart}
-                />
-
-                {/* Zoom square overlay - only shown when NOT in sidebar mode */}
-                {zoomState.isActive && supportsHover && (
-                  <div
-                    className="pointer-events-none absolute z-20 border-2 border-white bg-white/10 xl:hidden"
-                    style={{
-                      width: `${ZOOM_SQUARE_SIZE}px`,
-                      height: `${ZOOM_SQUARE_SIZE}px`,
-                      ...getZoomSquareStyle(),
-                    }}
-                  />
-                )}
-
-                {/* Zoom preview box - overlay mode (when sidebar not visible) */}
-                {zoomState.isActive && supportsHover && (
-                  <div
-                    className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl xl:hidden"
-                    style={{
-                      width: `${ZOOM_PREVIEW_SIZE}px`,
-                      height: `${ZOOM_PREVIEW_SIZE}px`,
-                      ...getZoomPreviewStyle(),
-                    }}
-                  />
-                )}
-
-                {/* Zoom percentage indicator - mobile only */}
-                {!supportsHover && touchZoom.isZoomed && (
-                  <div
-                    className="absolute left-4 top-4 z-20 rounded-lg bg-black/70 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm"
-                    style={{
-                      top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
-                      left: `max(1rem, env(safe-area-inset-left, 0px) + 1rem)`,
-                    }}
-                  >
-                    {Math.round(touchZoom.scale * 100)}%
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Sidebar - shown on xl+ screens when image exists */}
-            {hasImage && (
-              <div
-                ref={sidebarRef}
-                className="hidden xl:flex xl:w-[400px] xl:flex-shrink-0 xl:flex-col xl:overflow-hidden xl:border-l xl:border-border/50 xl:bg-black/40"
-              >
-                {/* Zoom preview window - near top when zooming */}
-                {zoomState.isActive && supportsHover && (
-                  <div className="relative flex-shrink-0 p-4">
-                    <div
-                      className="border-2 border-white/90 shadow-2xl"
-                      style={{
-                        width: `${ZOOM_PREVIEW_SIZE}px`,
-                        height: `${ZOOM_PREVIEW_SIZE}px`,
-                        ...getZoomPreviewStyle(),
-                      }}
-                    />
-                  </div>
-                )}
-
-                {/* Title and creator - always shown at top */}
-                <div className="flex-shrink-0 p-6 xl:p-8 pb-4">
-                  <h2 className="mb-2 text-2xl font-semibold text-muted-foreground">
-                    {submission.title || t("untitled")}
-                  </h2>
-                  {submission.user?.name && (
-                    <p className="text-sm text-muted-foreground/70 mb-2">
-                      {submission.user.name}
-                    </p>
-                  )}
-                  {favoriteCount > 0 && (
-                    <div className="flex items-center gap-1.5 text-muted-foreground/70">
-                      <Heart className="h-4 w-4 fill-red-400 text-red-400" />
-                      <span className="text-sm">{favoriteCount}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Text content - below title */}
-                {hasText && (
-                  <div className="flex-1 overflow-y-auto px-6 xl:px-8 pb-6 xl:pb-8">
-                    <div
-                      className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
-                      dangerouslySetInnerHTML={{ __html: submission.text! }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Text-only section */}
-            {hasText && !hasImage && (
-              <div
-                className="relative flex h-full w-full flex-1 items-center justify-center overflow-y-auto p-8 sm:p-12"
-                style={{
-                  // Allow vertical scrolling while capturing horizontal swipes
-                  touchAction: supportsHover ? "auto" : "pan-y",
-                }}
-                onTouchStart={handleTextTouchStart}
-                onTouchEnd={handleTextTouchEnd}
-              >
-                <div className="mx-auto w-full max-w-4xl">
-                  {submission.title && (
-                    <h2 className="mb-6 text-3xl font-semibold text-muted-foreground sm:text-4xl">
-                      {submission.title}
-                    </h2>
-                  )}
-                  <div
-                    className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
-                    dangerouslySetInnerHTML={{ __html: submission.text! }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Image metadata overlay - hidden when sidebar is visible (xl+) */}
-            {hasImage && (
-              <div
-                className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
-                style={{
-                  // Position at top, but add offset when zoom indicator is visible
-                  top:
-                    !supportsHover && touchZoom.isZoomed
-                      ? `max(4.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem))`
-                      : `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
-                }}
-              >
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <span className="text-white font-medium text-sm sm:text-base">
-                    {submission.title || "Untitled"}
-                  </span>
-                  {submission.user && (
-                    <span className="text-zinc-300 text-xs sm:text-sm">
-                      {submission.user.name || "Anonymous"}
-                    </span>
-                  )}
-                  {favoriteCount > 0 && (
-                    <div className="flex items-center gap-1.5 text-white">
-                      <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
-                      <span className="text-xs sm:text-sm">
-                        {favoriteCount}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Text-only metadata overlay - top on mobile only */}
-            {hasText && !hasImage && (
-              <div
-                className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
-                style={{
-                  top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
-                }}
-              >
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  {submission.user && (
-                    <span className="text-zinc-300 text-xs sm:text-sm">
-                      {submission.user.name || "Anonymous"}
-                    </span>
-                  )}
-                  {favoriteCount > 0 && (
-                    <div className="flex items-center gap-1.5 text-white">
-                      <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
-                      <span className="text-xs sm:text-sm">
-                        {favoriteCount}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+  // Render sidebar content
+  const renderSidebar = useCallback(
+    (_context: BaseLightboxRenderContext) => (
+      <>
+        {/* Title and creator */}
+        <div className="flex-shrink-0 p-6 xl:p-8 pb-4">
+          <h2 className="mb-2 text-2xl font-semibold text-muted-foreground">
+            {submission.title || t("untitled")}
+          </h2>
+          {submission.user?.name && (
+            <p className="text-sm text-muted-foreground/70 mb-2">
+              {submission.user.name}
+            </p>
+          )}
+          {favoriteCount > 0 && (
+            <div className="flex items-center gap-1.5 text-muted-foreground/70">
+              <Heart className="h-4 w-4 fill-red-400 text-red-400" />
+              <span className="text-sm">{favoriteCount}</span>
+            </div>
+          )}
         </div>
 
-        {/* Prev/Next - left and right edges, vertically centered */}
-        <TooltipProvider delayDuration={300}>
-          {onGoToPrevious != null && (
+        {/* Text content */}
+        {hasText && (
+          <div className="flex-1 overflow-y-auto px-6 xl:px-8 pb-6 xl:pb-8">
             <div
-              className="absolute left-4 top-1/2 z-10 -translate-y-1/2"
-              style={{
-                left: "max(1rem, env(safe-area-inset-left, 0px) + 1rem)",
-              }}
-            >
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <CarouselNavButton
-                    side="prev"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleGoToPrevious();
-                    }}
-                    disabled={!hasPrevious}
-                    aria-label={t("previousSubmission")}
-                    className={LIGHTBOX_BUTTON_CLASS}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t("previousSubmission")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          )}
-          {onGoToNext != null && (
-            <div
-              className="absolute right-4 top-1/2 z-10 -translate-y-1/2"
-              style={{
-                right: "max(1rem, env(safe-area-inset-right, 0px) + 1rem)",
-              }}
-            >
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <CarouselNavButton
-                    side="next"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleGoToNext();
-                    }}
-                    disabled={!hasNext}
-                    aria-label={t("nextSubmission")}
-                    className={LIGHTBOX_BUTTON_CLASS}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t("nextSubmission")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          )}
-        </TooltipProvider>
+              className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
+              dangerouslySetInnerHTML={{ __html: submission.text! }}
+            />
+          </div>
+        )}
+      </>
+    ),
+    [
+      submission.title,
+      submission.user?.name,
+      submission.text,
+      favoriteCount,
+      hasText,
+      t,
+    ],
+  );
 
-        {/* Buttons - lower right corner, absolute positioned */}
-        <TooltipProvider delayDuration={300}>
-          <div
-            className="absolute right-4 z-10 flex items-center gap-2"
-            style={{
-              // Calculate bottom position to ensure buttons are always visible
-              // Account for safe area insets and ensure buttons are above browser UI
-              // On mobile, add extra padding to account for browser UI that may overlay
-              bottom:
-                typeof window !== "undefined" && window.innerWidth < 768
-                  ? `max(2rem, calc(env(safe-area-inset-bottom, 0px) + 2rem))`
-                  : `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
-            }}
-          >
-            {/* Text overlay button - shown in overlay mode (< xl) when text exists */}
-            {hasText && hasImage && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsTextOverlayOpen(true);
-                    }}
-                    className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
-                    aria-label="View text"
-                  >
-                    <FileText className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View text</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
+  // Render metadata overlay (mobile)
+  const renderMetadataOverlay = useCallback(
+    () => (
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <span className="text-white font-medium text-sm sm:text-base">
+          {submission.title || "Untitled"}
+        </span>
+        {submission.user && (
+          <span className="text-zinc-300 text-xs sm:text-sm">
+            {submission.user.name || "Anonymous"}
+          </span>
+        )}
+        {favoriteCount > 0 && (
+          <div className="flex items-center gap-1.5 text-white">
+            <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
+            <span className="text-xs sm:text-sm">{favoriteCount}</span>
+          </div>
+        )}
+      </div>
+    ),
+    [submission.title, submission.user, favoriteCount],
+  );
 
-            {/* View button - always visible */}
-            <>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    asChild
-                    className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
-                  >
-                    <Link
-                      href={getSubmissionUrl() || "#"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const url = getSubmissionUrl();
-                        if (!url && submissionUserId && submission.id) {
-                          e.preventDefault();
-                          router.push(
-                            buildRoutePath("submission", {
-                              creatorid: submissionUserId,
-                              submissionid: submission.id,
-                            }),
-                          );
-                        }
-                      }}
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span>View</span>
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View full submission page</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    asChild
-                    className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
-                    aria-label="View submission"
-                  >
-                    <Link
-                      href={getSubmissionUrl() || "#"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const url = getSubmissionUrl();
-                        if (!url && submissionUserId && submission.id) {
-                          e.preventDefault();
-                          router.push(
-                            buildRoutePath("submission", {
-                              creatorid: submissionUserId,
-                              submissionid: submission.id,
-                            }),
-                          );
-                        }
-                      }}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View submission</p>
-                </TooltipContent>
-              </Tooltip>
-            </>
+  // Render control buttons
+  const renderControls = useCallback(
+    (context: BaseLightboxRenderContext) => (
+      <>
+        {/* Text overlay button - mobile only when text exists */}
+        {hasText && hasImage && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  context.setIsTextOverlayOpen(true);
+                }}
+                className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                aria-label="View text"
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>View text</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
-            {/* Edit button - shown if user owns the submission */}
-            {isOwner && (
+        {/* View button */}
+        <>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
+              >
+                <Link
+                  href={getSubmissionUrl() || "#"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const url = getSubmissionUrl();
+                    if (!url && submissionUserId && submission.id) {
+                      e.preventDefault();
+                      router.push(
+                        buildRoutePath("submission", {
+                          creatorid: submissionUserId,
+                          submissionid: submission.id,
+                        }),
+                      );
+                    }
+                  }}
+                >
+                  <Eye className="h-4 w-4" />
+                  <span>View</span>
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>View full submission page</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                asChild
+                className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                aria-label="View submission"
+              >
+                <Link
+                  href={getSubmissionUrl() || "#"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const url = getSubmissionUrl();
+                    if (!url && submissionUserId && submission.id) {
+                      e.preventDefault();
+                      router.push(
+                        buildRoutePath("submission", {
+                          creatorid: submissionUserId,
+                          submissionid: submission.id,
+                        }),
+                      );
+                    }
+                  }}
+                >
+                  <Eye className="h-4 w-4" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>View submission</p>
+            </TooltipContent>
+          </Tooltip>
+        </>
+
+        {/* Edit button - shown if user owns the submission */}
+        {isOwner && (
+          <>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditClick();
+                  }}
+                  className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
+                  aria-label="Edit submission"
+                >
+                  <Edit className="h-4 w-4" />
+                  <span>Edit</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Edit submission</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditClick();
+                  }}
+                  className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                  aria-label="Edit submission"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Edit submission</p>
+              </TooltipContent>
+            </Tooltip>
+          </>
+        )}
+
+        {/* Critique button */}
+        {showCritique &&
+          (() => {
+            const critiqueHref =
+              getCreatorId() && submission.id
+                ? buildRoutePath("submissionCritiques", {
+                    creatorid: getCreatorId()!,
+                    submissionid: submission.id,
+                  })
+                : "#";
+            return (
               <>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditClick();
-                      }}
+                      asChild
                       className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
-                      aria-label="Edit submission"
+                      aria-label="Critique"
                     >
-                      <Edit className="h-4 w-4" />
-                      <span>Edit</span>
+                      <Link
+                        href={critiqueHref}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        <span>Critique</span>
+                      </Link>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Edit submission</p>
+                    <p>Critique</p>
                   </TooltipContent>
                 </Tooltip>
                 <Tooltip>
@@ -1085,157 +459,131 @@ export function SubmissionLightbox({
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditClick();
-                      }}
+                      asChild
                       className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
-                      aria-label="Edit submission"
+                      aria-label="Critique"
                     >
-                      <Edit className="h-4 w-4" />
+                      <Link
+                        href={critiqueHref}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                      </Link>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Edit submission</p>
+                    <p>Critique</p>
                   </TooltipContent>
                 </Tooltip>
               </>
-            )}
+            );
+          })()}
 
-            {/* Critique button - when not private, critiques enabled, user logged in */}
-            {showCritique &&
-              (() => {
-                const critiqueHref =
-                  getCreatorId() && submission.id
-                    ? buildRoutePath("submissionCritiques", {
-                        creatorid: getCreatorId()!,
-                        submissionid: submission.id,
-                      })
-                    : "#";
-                return (
-                  <>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          asChild
-                          className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
-                          aria-label="Critique"
-                        >
-                          <Link
-                            href={critiqueHref}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <MessageSquare className="h-4 w-4" />
-                            <span>Critique</span>
-                          </Link>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Critique</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          asChild
-                          className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
-                          aria-label="Critique"
-                        >
-                          <Link
-                            href={critiqueHref}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <MessageSquare className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Critique</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </>
-                );
-              })()}
-
-            {/* Share button - when submission is not private; directly left of Close */}
-            {showShare && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="inline-flex">
-                    <ShareButton
-                      type="submission"
-                      submissionId={submission.id}
-                      userId={submissionUserId ?? undefined}
-                      userSlug={submissionUserSlug ?? undefined}
-                      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 [&_svg]:size-4 ${LIGHTBOX_BUTTON_CLASS} border`}
-                      ariaLabel={t("shareSubmission")}
-                    />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Share submission</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-
-            {/* Close button */}
-            <Tooltip open={closeTooltipOpen} onOpenChange={() => {}}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={onClose}
-                  onMouseEnter={() => setCloseTooltipHovered(true)}
-                  onMouseLeave={() => setCloseTooltipHovered(false)}
-                  className={LIGHTBOX_BUTTON_CLASS}
-                  aria-label="Close"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Close lightbox</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </TooltipProvider>
-
-        {/* Text Overlay */}
-        {isTextOverlayOpen && hasText && (
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
-            onClick={() => setIsTextOverlayOpen(false)}
-          >
-            <div
-              className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-zinc-900 border border-zinc-700 p-8"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {submission.title && (
-                <h2 className="mb-4 text-2xl font-semibold text-white">
-                  {submission.title}
-                </h2>
-              )}
-              <div
-                className="prose prose-lg prose-invert max-w-none text-white"
-                dangerouslySetInnerHTML={{ __html: submission.text! }}
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsTextOverlayOpen(false)}
-                className="absolute right-4 top-4"
-                aria-label="Close text overlay"
-              >
-                <X className="h-6 w-6" />
-              </Button>
-            </div>
-          </div>
+        {/* Share button */}
+        {showShare && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex">
+                <ShareButton
+                  type="submission"
+                  submissionId={submission.id}
+                  userId={submissionUserId ?? undefined}
+                  userSlug={submissionUserSlug ?? undefined}
+                  className={`inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 [&_svg]:size-4 ${LIGHTBOX_BUTTON_CLASS} border`}
+                  ariaLabel={t("shareSubmission")}
+                />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Share submission</p>
+            </TooltipContent>
+          </Tooltip>
         )}
-      </DialogContent>
-    </Dialog>
+
+        {/* Close button */}
+        <Tooltip open={closeTooltipOpen} onOpenChange={() => {}}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onClose}
+              onMouseEnter={() => setCloseTooltipHovered(true)}
+              onMouseLeave={() => setCloseTooltipHovered(false)}
+              className={LIGHTBOX_BUTTON_CLASS}
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Close lightbox</p>
+          </TooltipContent>
+        </Tooltip>
+      </>
+    ),
+    [
+      hasText,
+      hasImage,
+      isOwner,
+      showCritique,
+      showShare,
+      submission.id,
+      submissionUserId,
+      submissionUserSlug,
+      getSubmissionUrl,
+      getCreatorId,
+      handleEditClick,
+      onClose,
+      closeTooltipOpen,
+      router,
+      t,
+    ],
+  );
+
+  // Render text overlay content
+  const renderTextOverlay = useCallback(
+    () => (
+      <>
+        {submission.title && (
+          <h2 className="mb-4 text-2xl font-semibold text-white">
+            {submission.title}
+          </h2>
+        )}
+        <div
+          className="prose prose-lg prose-invert max-w-none text-white"
+          dangerouslySetInnerHTML={{ __html: submission.text! }}
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {}}
+          className="absolute right-4 top-4"
+          aria-label="Close text overlay"
+        >
+          <X className="h-6 w-6" />
+        </Button>
+      </>
+    ),
+    [submission.title, submission.text],
+  );
+
+  return (
+    <BaseLightbox
+      item={{
+        id: submission.id,
+        imageUrl: submission.imageUrl,
+        text: submission.text,
+        title: submission.title,
+      }}
+      isOpen={isOpen}
+      onClose={onClose}
+      dialogTitle={`${submission.title || "Submission"} ${submission.user?.name ? `by ${submission.user.name}` : ""}`}
+      protectionEnabled={protectionEnabled}
+      navigation={baseNavigation}
+      renderControls={renderControls}
+      renderSidebar={hasImage ? renderSidebar : undefined}
+      renderMetadataOverlay={renderMetadataOverlay}
+      renderTextOverlay={hasText ? renderTextOverlay : undefined}
+    />
   );
 }

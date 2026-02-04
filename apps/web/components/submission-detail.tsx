@@ -12,6 +12,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { CritiqueButton } from "@/components/critique-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
+import { ProgressionStrip } from "@/components/progression-strip";
 import { SocialLinks } from "@/components/social-links";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,14 @@ import { HintPopover } from "@/components/hint-popover";
 import { usePageHints } from "@/lib/hooks/use-page-hints";
 import { getCategoryIcon } from "@/lib/categories";
 import { getCreatorUrl } from "@/lib/utils";
+
+interface ProgressionData {
+  id: string;
+  imageUrl: string | null;
+  text: string | null;
+  comment: string | null;
+  order: number;
+}
 
 interface SubmissionDetailProps {
   submission: {
@@ -52,6 +61,7 @@ interface SubmissionDetailProps {
     _count: {
       favorites: number;
     };
+    progressions?: ProgressionData[];
   };
   isLoggedIn: boolean;
   isOwner?: boolean;
@@ -293,6 +303,14 @@ export function SubmissionDetail({
               </div>
             )}
           </div>
+
+          {/* Progressions strip - shown if submission has progressions */}
+          {submission.progressions && submission.progressions.length > 0 && (
+            <ProgressionStrip
+              progressions={submission.progressions}
+              submissionTitle={submission.title}
+            />
+          )}
         </main>
       </div>
 

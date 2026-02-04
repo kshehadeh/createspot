@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
 
 const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB
@@ -20,7 +21,8 @@ const s3Client = new S3Client({
 interface PresignRequest {
   fileType: string;
   fileSize: number;
-  type?: "submission" | "profile";
+  type?: "submission" | "profile" | "progression";
+  submissionId?: string; // Required when type is "progression"
 }
 
 export async function POST(request: NextRequest) {
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as PresignRequest;
-    const { fileType, fileSize, type = "submission" } = body;
+    const { fileType, fileSize, type = "submission", submissionId } = body;
 
     if (!fileType || typeof fileSize !== "number") {
       return NextResponse.json(
@@ -41,11 +43,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (type !== "submission" && type !== "profile") {
+    if (type !== "submission" && type !== "profile" && type !== "progression") {
       return NextResponse.json(
-        { error: "Invalid type. Must be 'submission' or 'profile'" },
+        {
+          error:
+            "Invalid type. Must be 'submission', 'profile', or 'progression'",
+        },
         { status: 400 },
       );
+    }
+
+    // Progression uploads require a submissionId and ownership validation
+    if (type === "progression") {
+      if (!submissionId) {
+        return NextResponse.json(
+          { error: "submissionId is required for progression uploads" },
+          { status: 400 },
+        );
+      }
+
+      // Validate that the user owns the submission
+      const submission = await prisma.submission.findUnique({
+        where: { id: submissionId },
+        select: { userId: true },
+      });
+
+      if (!submission) {
+        return NextResponse.json(
+          { error: "Submission not found" },
+          { status: 404 },
+        );
+      }
+
+      if (submission.userId !== session.user.id) {
+        return NextResponse.json(
+          { error: "You do not own this submission" },
+          { status: 403 },
+        );
+      }
     }
 
     if (!ALLOWED_TYPES.includes(fileType)) {
@@ -70,8 +105,18 @@ export async function POST(request: NextRequest) {
     }
 
     const fileExtension = fileType.split("/")[1];
-    const folder = type === "profile" ? "profiles" : "submissions";
-    const fileName = `${folder}/${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
+
+    // Determine folder structure based on type
+    let fileName: string;
+    if (type === "profile") {
+      fileName = `profiles/${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
+    } else if (type === "progression") {
+      // Progressions are organized by submissionId for easy cleanup
+      fileName = `progressions/${submissionId}/${crypto.randomUUID()}.${fileExtension}`;
+    } else {
+      // Default: submissions organized by userId
+      fileName = `submissions/${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
+    }
 
     // Ensure the Key is correctly set for the presigned URL
     const putCommand = new PutObjectCommand({
@@ -83,7 +128,7 @@ export async function POST(request: NextRequest) {
 
     // Log for debugging (remove in production if needed)
     console.log(
-      `[Presign] Generating presigned URL for Key: ${fileName}, type: ${type}`,
+      `[Presign] Generating presigned URL for Key: ${fileName}, type: ${type}${type === "progression" ? `, submissionId: ${submissionId}` : ""}`,
     );
 
     const presignedUrl = await getSignedUrl(s3Client, putCommand, {
@@ -92,9 +137,10 @@ export async function POST(request: NextRequest) {
 
     // Verify the presigned URL contains the correct Key path
     // The Key should be in the URL path, not just in query params
-    if (!presignedUrl.includes(fileName.split("/")[0])) {
+    const expectedFolder = fileName.split("/")[0];
+    if (!presignedUrl.includes(expectedFolder)) {
       console.warn(
-        `[Presign] Warning: Presigned URL may not contain correct Key path. Expected folder: ${folder}, Key: ${fileName}`,
+        `[Presign] Warning: Presigned URL may not contain correct Key path. Expected folder: ${expectedFolder}, Key: ${fileName}`,
       );
     }
 

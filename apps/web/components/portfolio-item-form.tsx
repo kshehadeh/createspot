@@ -30,6 +30,10 @@ const RichTextEditor = dynamic(
 );
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FocalPointModal } from "@/components/focal-point-modal";
+import {
+  ProgressionEditor,
+  ProgressionFormItem,
+} from "@/components/progression-editor";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,6 +68,13 @@ interface SubmissionData {
   category: string | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled?: boolean;
+  progressions?: Array<{
+    id: string;
+    imageUrl: string | null;
+    text: string | null;
+    comment: string | null;
+    order: number;
+  }>;
 }
 
 interface PortfolioItemFormProps {
@@ -117,6 +128,13 @@ export function PortfolioItemForm({
     null,
   );
   const [isImageInfoOpen, setIsImageInfoOpen] = useState(false);
+  const [progressions, setProgressions] = useState<ProgressionFormItem[]>(
+    (initialData?.progressions || []).map((p, i) => ({
+      ...p,
+      tempId: p.id,
+      order: p.order ?? i,
+    })),
+  );
 
   const { data: profileData } = useSWR<{ user: { enableWatermark?: boolean } }>(
     session ? "/api/profile" : null,
@@ -286,6 +304,74 @@ export function PortfolioItemForm({
 
         if (!response.ok) {
           throw new Error(t("errors.updateFailed"));
+        }
+
+        // Save progressions changes
+        if (initialData?.id && progressions.length > 0) {
+          // Handle deleted progressions
+          const deletedProgressions = progressions.filter(
+            (p) => p.isDeleted && p.id,
+          );
+          for (const p of deletedProgressions) {
+            await fetch(
+              `/api/submissions/${initialData.id}/progressions/${p.id}`,
+              { method: "DELETE" },
+            );
+          }
+
+          // Handle new progressions
+          const newProgressions = progressions.filter(
+            (p) => p.isNew && !p.isDeleted,
+          );
+          for (const p of newProgressions) {
+            await fetch(`/api/submissions/${initialData.id}/progressions`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                imageUrl: p.imageUrl,
+                text: p.text,
+                comment: p.comment,
+              }),
+            });
+          }
+
+          // Handle modified progressions (not new, not deleted)
+          const modifiedProgressions = progressions.filter(
+            (p) => p.isModified && !p.isNew && !p.isDeleted && p.id,
+          );
+          for (const p of modifiedProgressions) {
+            await fetch(
+              `/api/submissions/${initialData.id}/progressions/${p.id}`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  imageUrl: p.imageUrl,
+                  text: p.text,
+                  comment: p.comment,
+                  order: p.order,
+                }),
+              },
+            );
+          }
+
+          // Reorder if any orders changed
+          const visibleProgressions = progressions.filter((p) => !p.isDeleted);
+          const hasOrderChanges = visibleProgressions.some((p) => p.isModified);
+          if (hasOrderChanges && visibleProgressions.some((p) => p.id)) {
+            await fetch(
+              `/api/submissions/${initialData.id}/progressions/reorder`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  items: visibleProgressions
+                    .filter((p) => p.id)
+                    .map((p) => ({ id: p.id, order: p.order })),
+                }),
+              },
+            );
+          }
         }
       }
 
@@ -674,6 +760,16 @@ export function PortfolioItemForm({
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{t("tagHelper")}</p>
       </div>
+
+      {/* Progressions - only shown when editing an existing submission */}
+      {mode === "edit" && initialData?.id && (
+        <ProgressionEditor
+          submissionId={initialData.id}
+          initialProgressions={progressions}
+          onChange={setProgressions}
+          disabled={saving}
+        />
+      )}
 
       <div>
         <Label>{t("visibility")}</Label>

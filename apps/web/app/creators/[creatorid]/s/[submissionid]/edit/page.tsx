@@ -26,6 +26,16 @@ async function getSubmission(id: string) {
       shareStatus: true,
       critiquesEnabled: true,
       userId: true,
+      progressions: {
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          imageUrl: true,
+          text: true,
+          comment: true,
+          order: true,
+        },
+      },
     },
   });
 
@@ -86,6 +96,7 @@ export default async function SubmissionEditPage({
           category: submission.category,
           shareStatus: submission.shareStatus,
           critiquesEnabled: submission.critiquesEnabled,
+          progressions: submission.progressions,
         }}
       />
     </PageLayout>

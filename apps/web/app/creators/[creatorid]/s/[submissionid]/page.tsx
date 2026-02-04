@@ -55,6 +55,16 @@ async function getSubmission(id: string) {
           favorites: true,
         },
       },
+      progressions: {
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          imageUrl: true,
+          text: true,
+          comment: true,
+          order: true,
+        },
+      },
     },
   });
 
@@ -132,6 +142,7 @@ export default async function SubmissionPage({ params }: SubmissionPageProps) {
           | { x: number; y: number }
           | null
           | undefined,
+        progressions: submission.progressions,
       }}
       isLoggedIn={!!session?.user}
       isOwner={isOwner}
