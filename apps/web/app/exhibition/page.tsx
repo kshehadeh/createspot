@@ -105,12 +105,12 @@ export default async function ExhibitionHomePage() {
             <h2 className="mb-6 text-2xl font-semibold text-foreground">
               Current Exhibits
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex flex-wrap gap-4">
               {currentExhibits.map((exhibit) => (
                 <Link
                   key={exhibit.id}
                   href={`/exhibition/${exhibit.id}`}
-                  className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="block min-w-[280px] flex-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <Card className="group relative h-full overflow-hidden border-border/60 bg-card/70 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-border hover:bg-card hover:shadow-lg">
                     {exhibit.featuredSubmission && (
