@@ -30,6 +30,7 @@ type CollectionDownloadDropdownProps =
       submissionId: string;
       submissionTitle: string;
       hasImage?: boolean;
+      hasProgressionsGif?: boolean;
     };
 
 export function CollectionDownloadDropdown(
@@ -59,6 +60,10 @@ export function CollectionDownloadDropdown(
   const imageUrl = !isCollection
     ? `/api/submissions/${props.submissionId}/download/image`
     : null;
+  const gifUrl =
+    !isCollection && props.variant === "submission"
+      ? `/api/submissions/${props.submissionId}/download/gif`
+      : null;
 
   const handleDownloadImage = async () => {
     if (!imageUrl) return;
@@ -140,6 +145,35 @@ export function CollectionDownloadDropdown(
     }
   };
 
+  const handleDownloadGif = async () => {
+    if (!gifUrl) return;
+    setIsDownloading(true);
+    try {
+      const response = await fetch(gifUrl);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${safeName}_progressions.gif`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        const err = await response.json().catch(() => ({}));
+        console.error(
+          "Failed to download GIF:",
+          err?.error ?? response.statusText,
+        );
+      }
+    } catch (error) {
+      console.error("Failed to download GIF:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const handleDownloadSocialPack = async () => {
     setIsDownloading(true);
     try {
@@ -164,6 +198,10 @@ export function CollectionDownloadDropdown(
 
   const showDownloadImage =
     !isCollection && props.variant === "submission" && props.hasImage;
+  const showDownloadGif =
+    !isCollection &&
+    props.variant === "submission" &&
+    props.hasProgressionsGif === true;
 
   return (
     <DropdownMenu>
@@ -188,6 +226,15 @@ export function CollectionDownloadDropdown(
           >
             <ImageIcon className="mr-2 h-4 w-4" />
             {tSubmission("downloadImage")}
+          </DropdownMenuItem>
+        )}
+        {showDownloadGif && (
+          <DropdownMenuItem
+            onClick={handleDownloadGif}
+            disabled={isDownloading}
+          >
+            <ImageIcon className="mr-2 h-4 w-4" />
+            {tSubmission("downloadProgressionsGif")}
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={handleDownloadPDF} disabled={isDownloading}>

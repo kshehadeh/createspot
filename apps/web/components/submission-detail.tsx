@@ -100,6 +100,8 @@ export function SubmissionDetail({
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
   const hasBoth = hasImage && hasText;
+  const hasProgressionsGif =
+    (submission.progressions?.filter((p) => p.imageUrl).length ?? 0) >= 2;
 
   const getWord = (): string => {
     if (!submission.prompt || !submission.wordIndex) return "";
@@ -195,12 +197,13 @@ export function SubmissionDetail({
                       </Link>
                     </Button>
                   )}
-                  {isOwner && hasImage && (
+                  {isOwner && (hasImage || hasProgressionsGif) && (
                     <CollectionDownloadDropdown
                       variant="submission"
                       submissionId={submission.id}
                       submissionTitle={submission.title || "submission"}
                       hasImage={hasImage}
+                      hasProgressionsGif={hasProgressionsGif}
                     />
                   )}
                   {isLoggedIn &&

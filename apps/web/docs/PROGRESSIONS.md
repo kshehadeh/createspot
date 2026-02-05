@@ -84,6 +84,7 @@ On the submission view page, progressions are shown below the main content when 
 
 - **Strip:** [components/progression-strip.tsx](../components/progression-strip.tsx) – Horizontal row of thumbnails (image or text icon), step number, optional comment tooltip, arrows between items. Clicking a thumbnail opens the lightbox.
 - **Lightbox:** [components/progression-lightbox.tsx](../components/progression-lightbox.tsx) – Full-screen viewer with prev/next, zoom (desktop hover / mobile pinch), text sidebar, comment caption, and optional text overlay on mobile.
+- **Download as GIF:** When the submission has at least two progression images, the owner sees a "Download progressions as GIF" option in the submission page download dropdown ([components/collection-download-dropdown.tsx](../components/collection-download-dropdown.tsx)). The GIF is built server-side from the ordered progression images (frame delay 1s) via `GET /api/submissions/[id]/download/gif`. When the submission has a main image, it is appended as the final frame so the GIF ends with the actual final piece.
 
 Data is loaded with the submission: the submission page ([app/creators/[creatorid]/s/[submissionid]/page.tsx](../app/creators/[creatorid]/s/[submissionid]/page.tsx)) includes `progressions` (ordered by `order`) in the Prisma select and passes them to [components/submission-detail.tsx](../components/submission-detail.tsx), which renders `ProgressionStrip` when `submission.progressions` has items.
 
