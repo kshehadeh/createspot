@@ -1,0 +1,206 @@
+/**
+ * Captures screenshots from the deployed Create Spot site (www.create.spot)
+ * and saves them to apps/help/images/ for use in the help documentation.
+ *
+ * Run: bun run capture-screenshots
+ *
+ * Requires:
+ * - bun install (playwright); first run may need: bunx playwright install chromium
+ * - apps/help/.env with CREATE_SPOT_SCREENSHOT_USER and CREATE_SPOT_SCREENSHOT_PASSWORD
+ *   (Google account used to log in; see .env.example)
+ */
+
+import { chromium } from "playwright";
+import path from "path";
+import { fileURLToPath } from "url";
+import { readFileSync, existsSync } from "fs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const HELP_DIR = path.join(__dirname, "..");
+const BASE_URL = "https://www.create.spot";
+const IMAGES_DIR = path.join(HELP_DIR, "images");
+
+function loadEnv(): void {
+  const envPath = path.join(HELP_DIR, ".env");
+  if (!existsSync(envPath)) return;
+  const content = readFileSync(envPath, "utf8");
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("#") || !trimmed) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))
+      value = value.slice(1, -1).replace(/\\(.)/g, "$1");
+    if (!process.env[key]) process.env[key] = value;
+  }
+}
+loadEnv();
+
+const USER = process.env.CREATE_SPOT_SCREENSHOT_USER;
+const PASSWORD = process.env.CREATE_SPOT_SCREENSHOT_PASSWORD;
+
+interface Capture {
+  name: string;
+  url: string;
+  waitUntil?: "load" | "domcontentloaded" | "networkidle";
+}
+
+const captures: Capture[] = [
+  { name: "homepage", url: "/" },
+  { name: "sign-in", url: "/auth/signin" },
+  { name: "exhibition-list", url: "/exhibition" },
+  { name: "this-week-gallery", url: "/prompt/this-week" },
+  { name: "play-submit", url: "/prompt/play" },
+  { name: "prompt-history", url: "/prompt/history" },
+];
+
+async function login(page: import("playwright").Page): Promise<boolean> {
+  if (!USER || !PASSWORD) {
+    console.warn(
+      "CREATE_SPOT_SCREENSHOT_USER and CREATE_SPOT_SCREENSHOT_PASSWORD not set in .env; skipping login."
+    );
+    return false;
+  }
+  console.log("Logging in…");
+  await page.goto(`${BASE_URL}/auth/signin`, { waitUntil: "domcontentloaded", timeout: 15000 });
+  await page.waitForTimeout(500);
+  await page.getByRole("button", { name: /continue with google/i }).click();
+  await page.waitForURL(/accounts\.google\.com/, { timeout: 15000 });
+  await page.waitForTimeout(500);
+  await page.getByRole("textbox", { name: /email or phone/i }).fill(USER);
+  await page.getByRole("button", { name: /next/i }).click();
+  await page.waitForTimeout(1000);
+  await page.getByRole("textbox", { name: /enter your password/i }).fill(PASSWORD);
+  await page.getByRole("button", { name: /next/i }).click();
+  await page.waitForURL((url) => url.origin === new URL(BASE_URL).origin, { timeout: 20000 }).catch(() => null);
+  await page.waitForTimeout(1000);
+  const loggedIn = page.url().startsWith(BASE_URL) && !page.url().includes("/auth/signin");
+  if (loggedIn) console.log("Logged in.");
+  else console.warn("Login may have failed; continuing unauthenticated.");
+  return loggedIn;
+}
+
+async function main() {
+  const browser = await chromium.launch({ headless: false });
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 720 },
+    userAgent:
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  });
+
+  const page = await context.newPage();
+
+  await login(page);
+
+  for (const { name, url, waitUntil = "domcontentloaded" } of captures) {
+    const fullUrl = `${BASE_URL}${url}`;
+    console.log(`Capturing ${name}: ${fullUrl}`);
+    try {
+      await page.goto(fullUrl, { waitUntil, timeout: 15000 });
+      await page.waitForTimeout(800);
+      const filepath = path.join(IMAGES_DIR, `${name}.png`);
+      await page.screenshot({
+        path: filepath,
+      });
+      console.log(`  -> ${filepath}`);
+    } catch (err) {
+      console.warn(`  Failed: ${err}`);
+    }
+  }
+
+  // Try to capture exhibit grid, path, and map views
+  try {
+    await page.goto(`${BASE_URL}/exhibition`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.waitForTimeout(1000);
+    const exhibitLink = await page
+      .locator('a[href^="/exhibition/gallery/grid/"], a[href^="/exhibition/"]')
+      .first()
+      .getAttribute("href");
+    if (exhibitLink) {
+      const match = exhibitLink.match(/\/exhibition\/gallery\/(grid|path)\/([^/?#]+)/);
+      const exhibitId = match ? match[2] : exhibitLink.split("/").filter(Boolean).pop();
+      if (exhibitId) {
+        for (const view of ["grid", "path"] as const) {
+          const viewUrl = `/exhibition/gallery/${view}/${exhibitId}`;
+          console.log(`Capturing exhibit-${view}: ${BASE_URL}${viewUrl}`);
+          await page.goto(`${BASE_URL}${viewUrl}`, { waitUntil: "domcontentloaded", timeout: 15000 });
+          await page.waitForTimeout(800);
+          await page.screenshot({
+            path: path.join(IMAGES_DIR, `exhibit-${view}.png`),
+          });
+        }
+      }
+    }
+    // Map view (global exhibition with world map)
+    console.log(`Capturing exhibit-map: ${BASE_URL}/exhibition/global`);
+    await page.goto(`${BASE_URL}/exhibition/global`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.waitForTimeout(2000);
+    await page.screenshot({
+      path: path.join(IMAGES_DIR, "exhibit-map.png"),
+    });
+    // Map pin click: popup with artists at location
+    const marker = page.locator(".leaflet-marker-icon").first();
+    await marker.waitFor({ state: "visible", timeout: 10000 }).catch(() => null);
+    if (await marker.isVisible()) {
+      await marker.click();
+      await page.waitForTimeout(800);
+      const popup = page.locator(".leaflet-popup");
+      await popup.waitFor({ state: "visible", timeout: 5000 }).catch(() => null);
+      if (await popup.isVisible()) {
+        console.log("Capturing exhibit-map-pin-popup");
+        await page.screenshot({
+          path: path.join(IMAGES_DIR, "exhibit-map-pin-popup.png"),
+        });
+        // Click a user in the popup to open the user work modal
+        const userButton = page.locator(".leaflet-popup button").first();
+        await userButton.click();
+        await page.waitForTimeout(1000);
+        const dialog = page.getByRole("dialog");
+        await dialog.waitFor({ state: "visible", timeout: 5000 }).catch(() => null);
+        if (await dialog.isVisible()) {
+          console.log("Capturing exhibit-map-user-modal");
+          await page.screenshot({
+            path: path.join(IMAGES_DIR, "exhibit-map-user-modal.png"),
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Exhibit views capture skipped:", err);
+  }
+
+  // Profile editor (requires login: open dropdown -> Profile -> Edit profile)
+  try {
+    await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.waitForTimeout(500);
+    const userMenuTrigger = page.locator("header button").filter({ has: page.locator("img") }).first();
+    if (await userMenuTrigger.isVisible()) {
+      await userMenuTrigger.click();
+      await page.waitForTimeout(400);
+      const profileLink = page.getByRole("menuitem", { name: /profile/i }).first();
+      await profileLink.click();
+      await page.waitForURL(/\/creators\//, { timeout: 10000 });
+      await page.waitForTimeout(800);
+      const editLink = page.getByRole("link", { name: /edit profile|edit/i });
+      await editLink.first().click();
+      await page.waitForURL(/\/creators\/[^/]+\/edit/, { timeout: 10000 });
+      await page.waitForTimeout(800);
+      console.log("Capturing profile-edit");
+      await page.screenshot({
+        path: path.join(IMAGES_DIR, "profile-edit.png"),
+      });
+    }
+  } catch (err) {
+    console.warn("Profile editor capture skipped:", err);
+  }
+
+  await browser.close();
+  console.log("Done.");
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

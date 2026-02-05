@@ -2,9 +2,12 @@
   "name": "help",
   "private": true,
   "scripts": {
-    "dev": "mint dev --port 3001"
+    "dev": "mint dev --port 3001",
+    "capture-screenshots": "bun run scripts/capture-screenshots.ts"
   },
   "devDependencies": {
-    "mint": "latest"
+    "@types/node": "^25.2.0",
+    "mint": "latest",
+    "playwright": "^1.49.0"
   }
 }
