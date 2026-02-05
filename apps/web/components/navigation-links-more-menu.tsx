@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, Bug, Mail } from "lucide-react";
+import { Ellipsis, Bug, Mail, HelpCircle } from "lucide-react";
 
 interface MoreMenuProps {
   onSupportClick: () => void;
@@ -40,6 +40,17 @@ export function MoreMenu({
             {promptRoute.icon && <promptRoute.icon className="h-4 w-4" />}
             {t("prompts")}
           </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a
+            href="https://help.create.spot"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2"
+          >
+            <HelpCircle className="h-4 w-4" />
+            {t("help")}
+          </a>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

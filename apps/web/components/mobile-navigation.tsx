@@ -17,6 +17,7 @@ import {
   Plus,
   ChevronLeft,
   Bug,
+  HelpCircle,
 } from "lucide-react";
 import { SupportFormModal } from "./contact/support-form-modal";
 
@@ -415,6 +416,21 @@ function MobilePromptsLinks({
           {promptRoute.icon && <promptRoute.icon className="h-5 w-5" />}
           {t("prompts")}
         </Link>
+      </div>
+      <div className="mb-2">
+        <a
+          href="https://help.create.spot"
+          target="_blank"
+          rel="noreferrer"
+          className={cn(
+            "block px-4 py-3 text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+            "flex items-center gap-2",
+          )}
+          onClick={onLinkClick}
+        >
+          <HelpCircle className="h-5 w-5" />
+          {t("help")}
+        </a>
       </div>
       <div className="mt-auto border-t border-border pt-4">
         <div className="mb-2">
