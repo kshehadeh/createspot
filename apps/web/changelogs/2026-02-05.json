@@ -38,5 +38,15 @@
     "audience": "public",
     "impact": "patch",
     "version": "2.2.0"
+  },
+  {
+    "time": "2026-02-05T10:00:00-05:00",
+    "commit": "01a4c5ac411686dcd1f80407d65a8eac50d815e9",
+    "type": "improvement",
+    "area": "content",
+    "description": "Update exhibition page layout to flex grid and refresh Create Spot logo",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.2.1"
   }
 ]
