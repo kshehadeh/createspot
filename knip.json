@@ -9,7 +9,7 @@
         "emails/**/*.{ts,tsx}",
         "scripts/**/*.{ts,tsx}"
       ],
-      "ignore": ["postcss.config.mjs", "scripts/**/*.ts", "app/@breadcrumb/**"]
+      "ignore": ["postcss.config.mjs", "scripts/**/*.ts", "app/@breadcrumb/**", "changelogs/**"]
     }
   },
   "ignoreExportsUsedInFile": {

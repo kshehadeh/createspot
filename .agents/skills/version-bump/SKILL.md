@@ -45,3 +45,4 @@ Return:
 - Never invent changelog entries.
 - Never change `time`, `commit`, `type`, `area`, or `description` fields.
 - Do not bump the version if there are no unreleased entries.
+- Do not change a version if it has a non empty value.

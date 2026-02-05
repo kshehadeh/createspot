@@ -1,0 +1,42 @@
+[
+  {
+    "time": "2026-02-05T03:54:10-05:00",
+    "commit": "2d6a2e886f323d273e6673b2d43c0c131dec925f",
+    "type": "feature",
+    "area": "games",
+    "description": "Implement GIF download feature for submissions",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.2.0"
+  },
+  {
+    "time": "2026-02-05T05:16:30-05:00",
+    "commit": "2f1dc040d9aa9c0ca7b76f6204862390758d2c73",
+    "type": "feature",
+    "area": "documentation",
+    "description": "Add help documentation through Mintlify",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.2.0"
+  },
+  {
+    "time": "2026-02-05T06:40:03-05:00",
+    "commit": "fad9d4a3e7fc2c030f0ef4cf3d883115de5307ff",
+    "type": "improvement",
+    "area": "tools",
+    "description": "Update help documentation and dependencies for Create Spot",
+    "audience": "development",
+    "impact": "patch",
+    "version": "2.2.0"
+  },
+  {
+    "time": "2026-02-05T07:21:19-05:00",
+    "commit": "aa9298e3f38f7f8ade6c9a6578379e698b260663",
+    "type": "improvement",
+    "area": "content",
+    "description": "Add help link to mobile navigation and more menu",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.2.0"
+  }
+]
