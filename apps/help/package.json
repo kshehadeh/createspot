@@ -1,0 +1,10 @@
+{
+  "name": "help",
+  "private": true,
+  "scripts": {
+    "dev": "mint dev --port 3001"
+  },
+  "devDependencies": {
+    "mint": "latest"
+  }
+}

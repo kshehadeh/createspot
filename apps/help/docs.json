@@ -1,0 +1,108 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Create Spot Help",
+  "description": "Help and documentation for Create Spot — for creators and art lovers.",
+  "colors": {
+    "primary": "#3B82F6"
+  },
+  "navigation": {
+    "groups": [
+      { "group": "Overview", "pages": ["index"] },
+      {
+        "group": "Getting Started",
+        "pages": ["getting-started-creator", "getting-started-art-lover"]
+      },
+      {
+        "group": "Creators",
+        "pages": [
+          {
+            "group": "Building your profile",
+            "pages": [
+              "creators/profile",
+              "creators/profile/info-and-findability",
+              "creators/profile/setup-your-space",
+              "creators/profile/public-vs-private",
+              "creators/profile/badges"
+            ]
+          },
+          {
+            "group": "Building your portfolio",
+            "pages": [
+              "creators/portfolio",
+              "creators/portfolio/working-with-submissions",
+              "creators/portfolio/getting-feedback",
+              "creators/portfolio/organizing-portfolio",
+              "creators/portfolio/downloading-work"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Browsers",
+        "pages": [
+          {
+            "group": "Exhibits",
+            "pages": [
+              "browsers/exhibits",
+              "browsers/exhibits/permanent-vs-temporary",
+              "browsers/exhibits/exhibit-views-grid-path",
+              "browsers/exhibits/grid-view",
+              "browsers/exhibits/map-view"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Inspiration",
+        "pages": [
+          {
+            "group": "Prompts",
+            "pages": [
+              "inspiration/prompts",
+              "inspiration/prompts/submitting-prompt-work",
+              "inspiration/prompts/browsing-prompt-history",
+              "inspiration/prompts/viewing-others-submissions"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Administration",
+        "pages": [
+          {
+            "group": "Managing Users",
+            "pages": [
+              "administration/users",
+              "administration/users/admin-vs-user-roles",
+              "administration/users/viewing-user-stats",
+              "administration/users/deleting-users"
+            ]
+          },
+          {
+            "group": "Managing Exhibits",
+            "pages": [
+              "administration/exhibits",
+              "administration/exhibits/start-end-dates",
+              "administration/exhibits/exhibit-view-types",
+              "administration/exhibits/featured-submissions",
+              "administration/exhibits/curators-vs-featured-artists"
+            ]
+          },
+          "administration/notification-manager",
+          {
+            "group": "Prompts",
+            "pages": [
+              "administration/prompts",
+              "administration/prompts/creating-prompts",
+              "administration/prompts/updating-prompts",
+              "administration/prompts/word-selection-ideas"
+            ]
+          }
+        ]
+      },
+      { "group": "A Word About AI", "pages": ["a-word-about-ai"] },
+      { "group": "Frequently Asked Questions", "pages": ["faq"] }
+    ]
+  }
+}

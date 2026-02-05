@@ -5,6 +5,7 @@
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "turbo run dev",
+    "help:dev": "bun run --cwd apps/help dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "validate": "turbo run validate && bun run knip",
