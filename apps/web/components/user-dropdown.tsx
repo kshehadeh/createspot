@@ -6,14 +6,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown } from "lucide-react";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getRoute } from "@/lib/routes";
-import { ThemeToggle } from "./theme-toggle";
 
 interface UserDropdownProps {
   name?: string | null;
@@ -81,10 +79,6 @@ export function UserDropdown({
         <ChevronDown className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <div className="flex items-center justify-center px-2 py-2">
-          <ThemeToggle />
-        </div>
-        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           {logoutRoute.icon && <logoutRoute.icon className="h-4 w-4 mr-2" />}
           Logout

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { CreateSpotLogo } from "./create-spot-logo";
 import { DashboardNavigation } from "./navigation-links";
 import { MobileNavigation } from "./mobile-navigation";
 import { SubmissionEditModal } from "./submission-edit-modal";
+import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
 import { getRoute } from "@/lib/routes";
@@ -25,6 +25,15 @@ const UserDropdown = dynamic(
       </div>
     ),
   },
+);
+
+// Dynamically import JumpInDropdown to avoid SSR hydration issues with Radix UI
+const JumpInDropdown = dynamic(
+  () =>
+    import("./jump-in-dropdown").then((mod) => ({
+      default: mod.JumpInDropdown,
+    })),
+  { ssr: false },
 );
 
 interface HeaderUser {
@@ -86,20 +95,16 @@ export function Header({ user }: HeaderProps) {
                   <SiDiscord className="h-4 w-4" />
                 </a>
               </Button>
+              <ThemeToggle />
             </div>
-            <UserDropdown
-              name={user?.name}
-              image={user?.image}
-              profileImageUrl={user?.profileImageUrl}
-            />
-            {!user && (
-              <Button
-                onClick={() => signIn("google")}
-                variant="default"
-                size="default"
-              >
-                {t("signIn")}
-              </Button>
+            {user ? (
+              <UserDropdown
+                name={user?.name}
+                image={user?.image}
+                profileImageUrl={user?.profileImageUrl}
+              />
+            ) : (
+              <JumpInDropdown />
             )}
           </div>
           {/* Mobile Navigation */}
@@ -120,6 +125,7 @@ export function Header({ user }: HeaderProps) {
                 <SiDiscord className="h-4 w-4" />
               </a>
             </Button>
+            <ThemeToggle />
             <MobileNavigation
               user={user}
               onCreateModalOpen={() => setIsCreateModalOpen(true)}

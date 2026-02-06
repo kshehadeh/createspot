@@ -173,6 +173,8 @@
     "terms": "Terms of Service",
     "create": "Submit",
     "signIn": "Sign in",
+    "jumpIn": "Begin",
+    "signInWithGoogle": "Sign in with Google",
     "joinDiscord": "Join us on Discord",
     "logout": "Logout",
     "userAvatar": "User avatar",
@@ -1553,5 +1555,18 @@
     "orderUpdated": "Order updated",
     "mustHaveContent": "A progression must have at least an image or text",
     "viewProgression": "View progression"
+  },
+  "welcome": {
+    "submissionAlt": "Creative submission",
+    "noSubmissionsYet": "New prompts coming soon!",
+    "thisWeekPrompt": "This week's prompt",
+    "description": "Join our creative community. Share your interpretations of weekly prompts, build your portfolio, and discover inspiring work from fellow creators.",
+    "signInTitle": "Welcome Back",
+    "signInDescription": "Sign in to continue your creative journey and see what's new this week.",
+    "continueWithGoogle": "Continue with Google",
+    "signUpTitle": "New Here?",
+    "signUpDescription": "Create a free account to submit your work, build your portfolio, and join our community.",
+    "createAccount": "Create Account with Google",
+    "termsNotice": "By continuing, you agree to our Terms of Service and Privacy Policy."
   }
 }

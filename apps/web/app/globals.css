@@ -391,3 +391,56 @@ body {
   transform-style: preserve-3d;
   will-change: transform;
 }
+
+/* Multi-colored Begin button with shifting gradient */
+@keyframes begin-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes begin-click-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+  }
+  50% {
+    transform: scale(0.97);
+    box-shadow: 0 0 0 8px rgba(168, 85, 247, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+  }
+}
+
+.begin-button {
+  background: linear-gradient(
+    135deg,
+    #8b5cf6 0%,
+    #ec4899 25%,
+    #f97316 50%,
+    #8b5cf6 75%,
+    #ec4899 100%
+  );
+  background-size: 300% 300%;
+  animation: begin-gradient-shift 6s ease infinite;
+  color: white;
+  font-weight: 500;
+  transition: filter 0.2s ease, transform 0.15s ease;
+}
+
+.begin-button:hover {
+  filter: brightness(1.1);
+}
+
+.begin-button:active,
+.begin-button.clicked {
+  animation: begin-gradient-shift 6s ease infinite, begin-click-pulse 0.4s ease-out;
+}

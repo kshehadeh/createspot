@@ -173,6 +173,8 @@
     "terms": "Términos de Servicio",
     "create": "Enviar",
     "signIn": "Iniciar sesión",
+    "jumpIn": "Comenzar",
+    "signInWithGoogle": "Iniciar sesión con Google",
     "joinDiscord": "Únete a nuestro Discord",
     "logout": "Cerrar sesión",
     "userAvatar": "Avatar de usuario",
@@ -1553,5 +1555,18 @@
     "orderUpdated": "Orden actualizado",
     "mustHaveContent": "Una progresión debe tener al menos una imagen o texto",
     "viewProgression": "Ver progresión"
+  },
+  "welcome": {
+    "submissionAlt": "Publicación creativa",
+    "noSubmissionsYet": "¡Nuevas indicaciones próximamente!",
+    "thisWeekPrompt": "Indicación de esta semana",
+    "description": "Únete a nuestra comunidad creativa. Comparte tus interpretaciones de las indicaciones semanales, construye tu portafolio y descubre trabajos inspiradores de otros creadores.",
+    "signInTitle": "Bienvenido de Nuevo",
+    "signInDescription": "Inicia sesión para continuar tu viaje creativo y ver las novedades de esta semana.",
+    "continueWithGoogle": "Continuar con Google",
+    "signUpTitle": "¿Eres Nuevo?",
+    "signUpDescription": "Crea una cuenta gratuita para enviar tu trabajo, construir tu portafolio y unirte a nuestra comunidad.",
+    "createAccount": "Crear Cuenta con Google",
+    "termsNotice": "Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad."
   }
 }
