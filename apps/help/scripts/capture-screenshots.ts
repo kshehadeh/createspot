@@ -47,13 +47,18 @@ interface Capture {
   waitUntil?: "load" | "domcontentloaded" | "networkidle";
 }
 
-const captures: Capture[] = [
-  { name: "homepage", url: "/" },
-  { name: "sign-in", url: "/welcome" },
-  { name: "exhibition-list", url: "/exhibition" },
-  { name: "this-week-gallery", url: "/prompt/this-week" },
-  { name: "play-submit", url: "/prompt/play" },
-  { name: "prompt-history", url: "/prompt/history" },
+// Pages that don't require authentication (capture before login)
+const publicCaptures: Capture[] = [
+  { name: "homepage", url: "/", waitUntil: "networkidle" },
+  { name: "sign-in", url: "/welcome", waitUntil: "networkidle" },
+  { name: "exhibition-list", url: "/exhibition", waitUntil: "networkidle" },
+];
+
+// Pages that require authentication (capture after login)
+const authCaptures: Capture[] = [
+  { name: "this-week-gallery", url: "/prompt/this-week", waitUntil: "networkidle" },
+  { name: "play-submit", url: "/prompt/play", waitUntil: "networkidle" },
+  { name: "prompt-history", url: "/prompt/history", waitUntil: "networkidle" },
 ];
 
 async function login(page: import("playwright").Page): Promise<boolean> {
@@ -76,10 +81,31 @@ async function login(page: import("playwright").Page): Promise<boolean> {
   await page.getByRole("button", { name: /next/i }).click();
   await page.waitForURL((url) => url.origin === new URL(BASE_URL).origin, { timeout: 20000 }).catch(() => null);
   await page.waitForTimeout(1000);
-  const loggedIn = page.url().startsWith(BASE_URL) && !page.url().includes("/auth/signin");
+  const loggedIn = page.url().startsWith(BASE_URL) && !page.url().includes("/welcome");
   if (loggedIn) console.log("Logged in.");
   else console.warn("Login may have failed; continuing unauthenticated.");
   return loggedIn;
+}
+
+async function capturePage(
+  page: import("playwright").Page,
+  name: string,
+  url: string,
+  waitUntil: "load" | "domcontentloaded" | "networkidle" = "networkidle"
+): Promise<void> {
+  const fullUrl = `${BASE_URL}${url}`;
+  console.log(`Capturing ${name}: ${fullUrl}`);
+  try {
+    await page.goto(fullUrl, { waitUntil, timeout: 15000 });
+    await page.waitForTimeout(800);
+    const filepath = path.join(IMAGES_DIR, `${name}.png`);
+    await page.screenshot({
+      path: filepath,
+    });
+    console.log(`  -> ${filepath}`);
+  } catch (err) {
+    console.warn(`  Failed: ${err}`);
+  }
 }
 
 async function main() {
@@ -90,29 +116,28 @@ async function main() {
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   });
 
-  const page = await context.newPage();
+  // Create a fresh page for public captures (not logged in)
+  const publicPage = await context.newPage();
 
+  // Capture public pages first (before login)
+  for (const { name, url, waitUntil } of publicCaptures) {
+    await capturePage(publicPage, name, url, waitUntil);
+  }
+
+  await publicPage.close();
+
+  // Now create a new page and log in for authenticated captures
+  const page = await context.newPage();
   await login(page);
 
-  for (const { name, url, waitUntil = "domcontentloaded" } of captures) {
-    const fullUrl = `${BASE_URL}${url}`;
-    console.log(`Capturing ${name}: ${fullUrl}`);
-    try {
-      await page.goto(fullUrl, { waitUntil, timeout: 15000 });
-      await page.waitForTimeout(800);
-      const filepath = path.join(IMAGES_DIR, `${name}.png`);
-      await page.screenshot({
-        path: filepath,
-      });
-      console.log(`  -> ${filepath}`);
-    } catch (err) {
-      console.warn(`  Failed: ${err}`);
-    }
+  // Capture authenticated pages
+  for (const { name, url, waitUntil } of authCaptures) {
+    await capturePage(page, name, url, waitUntil);
   }
 
   // Capture dropdown menus for navigation documentation
   try {
-    await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.goto(`${BASE_URL}/`, { waitUntil: "networkidle", timeout: 15000 });
     await page.waitForTimeout(500);
 
     // Capture Explore dropdown
@@ -173,7 +198,7 @@ async function main() {
 
   // Try to capture exhibit grid, path, and map views
   try {
-    await page.goto(`${BASE_URL}/exhibition`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.goto(`${BASE_URL}/exhibition`, { waitUntil: "networkidle", timeout: 15000 });
     await page.waitForTimeout(1000);
     const exhibitLink = await page
       .locator('a[href^="/exhibition/gallery/grid/"], a[href^="/exhibition/"]')
@@ -186,7 +211,7 @@ async function main() {
         for (const view of ["grid", "path"] as const) {
           const viewUrl = `/exhibition/gallery/${view}/${exhibitId}`;
           console.log(`Capturing exhibit-${view}: ${BASE_URL}${viewUrl}`);
-          await page.goto(`${BASE_URL}${viewUrl}`, { waitUntil: "domcontentloaded", timeout: 15000 });
+          await page.goto(`${BASE_URL}${viewUrl}`, { waitUntil: "networkidle", timeout: 15000 });
           await page.waitForTimeout(800);
           await page.screenshot({
             path: path.join(IMAGES_DIR, `exhibit-${view}.png`),
@@ -196,7 +221,7 @@ async function main() {
     }
     // Map view (global exhibition with world map)
     console.log(`Capturing exhibit-map: ${BASE_URL}/exhibition/global`);
-    await page.goto(`${BASE_URL}/exhibition/global`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.goto(`${BASE_URL}/exhibition/global`, { waitUntil: "networkidle", timeout: 15000 });
     await page.waitForTimeout(2000);
     await page.screenshot({
       path: path.join(IMAGES_DIR, "exhibit-map.png"),
@@ -234,7 +259,7 @@ async function main() {
 
   // Profile editor (requires login: open My Hub dropdown -> Profile -> Edit profile)
   try {
-    await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.goto(`${BASE_URL}/`, { waitUntil: "networkidle", timeout: 15000 });
     await page.waitForTimeout(500);
 
     // Look for "My Hub" dropdown trigger in the navigation

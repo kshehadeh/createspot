@@ -8,5 +8,15 @@
     "audience": "public",
     "impact": "minor",
     "version": "2.3.0"
+  },
+  {
+    "time": "2026-02-06T12:00:00-0500",
+    "commit": "2d8506c93a31c4bd99b17a03f39011f1f1afd93b",
+    "type": "improvement",
+    "area": "authentication",
+    "description": "Redirect legacy sign-in page to new welcome landing page",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.3.1"
   }
 ]

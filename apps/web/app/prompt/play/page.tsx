@@ -14,7 +14,7 @@ export default async function PlayPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/welcome");
   }
 
   const prompt = await getCurrentPrompt();

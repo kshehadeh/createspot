@@ -10,7 +10,7 @@ export default async function AdminNotificationsPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/welcome");
   }
 
   if (!session.user.isAdmin) {

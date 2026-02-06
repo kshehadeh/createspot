@@ -32,7 +32,7 @@ export default async function FavoritesPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/welcome");
   }
 
   const t = await getTranslations("favorites");

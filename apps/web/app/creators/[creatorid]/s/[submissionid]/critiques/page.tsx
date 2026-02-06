@@ -68,7 +68,7 @@ export default async function CritiquesPage({ params }: CritiquesPageProps) {
   ]);
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/welcome");
   }
 
   if (!submission) {

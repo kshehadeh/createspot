@@ -39,7 +39,7 @@ export default async function CollectionEditPage({
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/api/auth/signin");
+    redirect("/welcome");
   }
 
   const collection = await prisma.collection.findUnique({

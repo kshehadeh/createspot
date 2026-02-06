@@ -12,7 +12,7 @@ export default async function HistoryPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/welcome");
   }
 
   const prompts = await prisma.prompt.findMany({

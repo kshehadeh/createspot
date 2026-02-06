@@ -58,7 +58,7 @@ export default async function CreatorCritiquesListPage({
   const [session, creator] = await Promise.all([auth(), getCreator(creatorid)]);
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/welcome");
   }
 
   if (!creator) {

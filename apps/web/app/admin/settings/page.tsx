@@ -13,7 +13,7 @@ export default async function AdminSettingsPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/welcome");
   }
 
   if (!session.user.isAdmin) {

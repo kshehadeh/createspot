@@ -10,7 +10,7 @@ export default async function AdminPromptsPage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/welcome");
   }
 
   if (!session.user.isAdmin) {
