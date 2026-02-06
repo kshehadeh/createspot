@@ -49,7 +49,7 @@ interface Capture {
 
 const captures: Capture[] = [
   { name: "homepage", url: "/" },
-  { name: "sign-in", url: "/auth/signin" },
+  { name: "sign-in", url: "/welcome" },
   { name: "exhibition-list", url: "/exhibition" },
   { name: "this-week-gallery", url: "/prompt/this-week" },
   { name: "play-submit", url: "/prompt/play" },
@@ -64,7 +64,7 @@ async function login(page: import("playwright").Page): Promise<boolean> {
     return false;
   }
   console.log("Logging in…");
-  await page.goto(`${BASE_URL}/auth/signin`, { waitUntil: "domcontentloaded", timeout: 15000 });
+  await page.goto(`${BASE_URL}/welcome`, { waitUntil: "domcontentloaded", timeout: 15000 });
   await page.waitForTimeout(500);
   await page.getByRole("button", { name: /continue with google/i }).click();
   await page.waitForURL(/accounts\.google\.com/, { timeout: 15000 });
