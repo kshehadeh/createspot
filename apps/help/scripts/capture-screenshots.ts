@@ -110,6 +110,67 @@ async function main() {
     }
   }
 
+  // Capture dropdown menus for navigation documentation
+  try {
+    await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded", timeout: 15000 });
+    await page.waitForTimeout(500);
+
+    // Capture Explore dropdown
+    const exploreTrigger = page.locator("button").filter({ hasText: /explore/i }).first();
+    if (await exploreTrigger.isVisible().catch(() => false)) {
+      await exploreTrigger.click();
+      await page.waitForTimeout(400);
+      console.log("Capturing nav-explore-dropdown");
+      await page.screenshot({
+        path: path.join(IMAGES_DIR, "nav-explore-dropdown.png"),
+      });
+      // Close dropdown by pressing Escape
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(200);
+    }
+
+    // Capture About dropdown
+    const aboutTrigger = page.locator("button").filter({ hasText: /^about$/i }).first();
+    if (await aboutTrigger.isVisible().catch(() => false)) {
+      await aboutTrigger.click();
+      await page.waitForTimeout(400);
+      console.log("Capturing nav-about-dropdown");
+      await page.screenshot({
+        path: path.join(IMAGES_DIR, "nav-about-dropdown.png"),
+      });
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(200);
+    }
+
+    // Capture My Hub dropdown (requires login)
+    const myHubTrigger = page.locator("button").filter({ hasText: /my hub/i }).first();
+    if (await myHubTrigger.isVisible().catch(() => false)) {
+      await myHubTrigger.click();
+      await page.waitForTimeout(400);
+      console.log("Capturing nav-myhub-dropdown");
+      await page.screenshot({
+        path: path.join(IMAGES_DIR, "nav-myhub-dropdown.png"),
+      });
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(200);
+    }
+
+    // Capture Admin dropdown (requires admin login)
+    const adminTrigger = page.locator("button").filter({ hasText: /^admin$/i }).first();
+    if (await adminTrigger.isVisible().catch(() => false)) {
+      await adminTrigger.click();
+      await page.waitForTimeout(400);
+      console.log("Capturing nav-admin-dropdown");
+      await page.screenshot({
+        path: path.join(IMAGES_DIR, "nav-admin-dropdown.png"),
+      });
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(200);
+    }
+  } catch (err) {
+    console.warn("Dropdown navigation capture skipped:", err);
+  }
+
   // Try to capture exhibit grid, path, and map views
   try {
     await page.goto(`${BASE_URL}/exhibition`, { waitUntil: "domcontentloaded", timeout: 15000 });
@@ -171,26 +232,38 @@ async function main() {
     console.warn("Exhibit views capture skipped:", err);
   }
 
-  // Profile editor (requires login: open dropdown -> Profile -> Edit profile)
+  // Profile editor (requires login: open My Hub dropdown -> Profile -> Edit profile)
   try {
     await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded", timeout: 15000 });
     await page.waitForTimeout(500);
-    const userMenuTrigger = page.locator("header button").filter({ has: page.locator("img") }).first();
-    if (await userMenuTrigger.isVisible()) {
-      await userMenuTrigger.click();
+
+    // Look for "My Hub" dropdown trigger in the navigation
+    const myHubTrigger = page.locator("button, a").filter({ hasText: /my hub|hub/i }).first();
+    if (await myHubTrigger.isVisible().catch(() => false)) {
+      await myHubTrigger.click();
       await page.waitForTimeout(400);
+
+      // Click on "Profile" in the dropdown
       const profileLink = page.getByRole("menuitem", { name: /profile/i }).first();
-      await profileLink.click();
-      await page.waitForURL(/\/creators\//, { timeout: 10000 });
-      await page.waitForTimeout(800);
-      const editLink = page.getByRole("link", { name: /edit profile|edit/i });
-      await editLink.first().click();
-      await page.waitForURL(/\/creators\/[^/]+\/edit/, { timeout: 10000 });
-      await page.waitForTimeout(800);
-      console.log("Capturing profile-edit");
-      await page.screenshot({
-        path: path.join(IMAGES_DIR, "profile-edit.png"),
-      });
+      if (await profileLink.isVisible().catch(() => false)) {
+        await profileLink.click();
+        await page.waitForURL(/\/creators\//, { timeout: 10000 });
+        await page.waitForTimeout(800);
+
+        // Look for edit link/button on profile page
+        const editLink = page.getByRole("link", { name: /edit profile|edit/i });
+        if (await editLink.first().isVisible().catch(() => false)) {
+          await editLink.first().click();
+          await page.waitForURL(/\/creators\/[^/]+\/edit/, { timeout: 10000 });
+          await page.waitForTimeout(800);
+          console.log("Capturing profile-edit");
+          await page.screenshot({
+            path: path.join(IMAGES_DIR, "profile-edit.png"),
+          });
+        }
+      }
+    } else {
+      console.warn("My Hub dropdown not found; skipping profile editor capture.");
     }
   } catch (err) {
     console.warn("Profile editor capture skipped:", err);
