@@ -167,6 +167,8 @@
     "critiques": "Críticas",
     "contact": "Contacto",
     "help": "Ayuda",
+    "requestExhibit": "Solicitar exposición",
+    "submitBug": "Enviar error o sugerencia",
     "more": "Más",
     "terms": "Términos de Servicio",
     "create": "Enviar",
@@ -192,7 +194,14 @@
     "details": "Detalles",
     "notifications": "Notificaciones",
     "siteSettings": "Configuración del Sitio",
-    "imageEditor": "Editor de Imágenes"
+    "imageEditor": "Editor de Imágenes",
+    "explore": "Explorar",
+    "myHub": "Mi Centro",
+    "overview": "Visión General",
+    "manageUsers": "Gestionar Usuarios",
+    "managePrompts": "Gestionar Indicaciones",
+    "manageExhibits": "Gestionar Exposiciones",
+    "manageNotifications": "Gestionar Notificaciones"
   },
   "creatorNav": {
     "profile": "Perfil",

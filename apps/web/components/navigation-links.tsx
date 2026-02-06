@@ -1,40 +1,62 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { getRoute } from "@/lib/routes";
-import { Ellipsis } from "lucide-react";
-import { useState } from "react";
+import { cn, getCreatorUrl } from "@/lib/utils";
 import { SupportFormModal } from "@/components/contact/support-form-modal";
+import { ExhibitRequestModal } from "@/components/contact/exhibit-request-form";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  ChevronDown,
+  LayoutGrid,
+  Sparkles,
+  Mail,
+  Plus,
+  FolderOpen,
+  Bug,
+  Signpost,
+  Palette,
+} from "lucide-react";
 
-const moreButtonClassName =
-  "rounded-md px-2 py-1 text-sm transition-colors whitespace-nowrap overflow-hidden text-ellipsis max-w-full text-muted-foreground hover:bg-accent hover:text-accent-foreground";
+interface DashboardNavigationProps {
+  user?: {
+    id?: string | undefined;
+    slug?: string | null;
+    isAdmin?: boolean | undefined;
+  } | null;
+  onCreateModalOpen?: () => void;
+}
 
-const MoreMenu = dynamic(
-  () =>
-    import("./navigation-links-more-menu").then((mod) => ({
-      default: mod.MoreMenu,
-    })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className={`flex items-center gap-1 ${moreButtonClassName}`}>
-        <span>More</span>
-        <Ellipsis className="h-4 w-4" />
-      </div>
-    ),
-  },
-);
-
-export function DashboardNavigation() {
+export function DashboardNavigation({
+  user,
+  onCreateModalOpen,
+}: DashboardNavigationProps) {
   const pathname = usePathname();
   const t = useTranslations("navigation");
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isExhibitRequestModalOpen, setIsExhibitRequestModalOpen] =
+    useState(false);
   const exhibitionRoute = getRoute("exhibition");
   const creatorsRoute = getRoute("creators");
+  const promptRoute = getRoute("prompt");
+  const profileRoute = getRoute("profile");
+  const portfolioRoute = getRoute("portfolio");
+  const favoritesRoute = getRoute("favorites");
   const aboutRoute = getRoute("about");
-  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const adminUsersRoute = getRoute("adminUsers");
+  const adminPromptsRoute = getRoute("adminPrompts");
+  const adminExhibitsRoute = getRoute("adminExhibits");
+  const adminNotificationsRoute = getRoute("adminNotifications");
+  const adminSettingsRoute = getRoute("adminSettings");
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -43,41 +65,318 @@ export function DashboardNavigation() {
     return pathname.startsWith(path);
   };
 
-  const linkClassName = (path: string) => {
-    return `rounded-md px-2 py-1 text-sm transition-colors whitespace-nowrap overflow-hidden text-ellipsis max-w-full ${
-      isActive(path)
-        ? "bg-accent text-accent-foreground font-medium"
-        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-    }`;
+  const buttonClassName = () => {
+    return cn(
+      "flex items-center gap-2 px-2 py-1.5 text-sm transition-colors whitespace-nowrap overflow-hidden text-ellipsis max-w-full",
+      "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+    );
+  };
+
+  const handleCreateClick = () => {
+    onCreateModalOpen?.();
   };
 
   return (
     <>
-      <nav className="flex items-center gap-4">
-        <Link
-          href={exhibitionRoute.path}
-          className={linkClassName(exhibitionRoute.path)}
-        >
-          {t("exhibits")}
-        </Link>
-        <Link
-          href={creatorsRoute.path}
-          className={linkClassName(creatorsRoute.path)}
-        >
-          {t("creators")}
-        </Link>
-        <Link href={aboutRoute.path} className={linkClassName(aboutRoute.path)}>
-          {t("about")}
-        </Link>
-        <MoreMenu
-          onSupportClick={() => setIsSupportModalOpen(true)}
-          moreButtonClassName={moreButtonClassName}
-        />
+      <nav className="flex items-center gap-1">
+        {/* Explore Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger className={buttonClassName()}>
+            <Signpost className="h-4 w-4" />
+            <span>{t("explore")}</span>
+            <ChevronDown className="h-3 w-3" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem asChild>
+              <Link
+                href={exhibitionRoute.path}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(exhibitionRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                {exhibitionRoute.icon && (
+                  <exhibitionRoute.icon className="h-4 w-4" />
+                )}
+                {t("exhibits")}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={creatorsRoute.path}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(creatorsRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                {creatorsRoute.icon && (
+                  <creatorsRoute.icon className="h-4 w-4" />
+                )}
+                {t("creators")}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={promptRoute.path}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(promptRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                {promptRoute.icon && <promptRoute.icon className="h-4 w-4" />}
+                {t("prompts")}
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* My Hub Dropdown (authenticated only) */}
+        {user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className={buttonClassName()}>
+              <Palette className="h-4 w-4" />
+              <span>{t("myHub")}</span>
+              <ChevronDown className="h-3 w-3" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem
+                onClick={handleCreateClick}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                {t("create")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {user.id && (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={getCreatorUrl({ id: user.id, slug: user.slug })}
+                      className={cn(
+                        "flex items-center gap-2",
+                        pathname.startsWith(
+                          getCreatorUrl({ id: user.id, slug: user.slug }),
+                        ) && "bg-accent text-accent-foreground",
+                      )}
+                    >
+                      {profileRoute.icon && (
+                        <profileRoute.icon className="h-4 w-4" />
+                      )}
+                      {t("profile")}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/portfolio`}
+                      className={cn(
+                        "flex items-center gap-2",
+                        pathname.startsWith(
+                          `${getCreatorUrl({ id: user.id, slug: user.slug })}/portfolio`,
+                        ) && "bg-accent text-accent-foreground",
+                      )}
+                    >
+                      {portfolioRoute.icon && (
+                        <portfolioRoute.icon className="h-4 w-4" />
+                      )}
+                      {t("portfolio")}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/collections`}
+                      className={cn(
+                        "flex items-center gap-2",
+                        pathname.startsWith(
+                          `${getCreatorUrl({ id: user.id, slug: user.slug })}/collections`,
+                        ) && "bg-accent text-accent-foreground",
+                      )}
+                    >
+                      <FolderOpen className="h-4 w-4" />
+                      {t("collections")}
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
+              <DropdownMenuItem asChild>
+                <Link
+                  href={favoritesRoute.path}
+                  className={cn(
+                    "flex items-center gap-2",
+                    isActive(favoritesRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  {favoritesRoute.icon && (
+                    <favoritesRoute.icon className="h-4 w-4" />
+                  )}
+                  {t("favorites")}
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Admin Dropdown (admin only) */}
+        {user?.isAdmin && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className={buttonClassName()}>
+              <span>{t("admin")}</span>
+              <ChevronDown className="h-3 w-3" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem asChild>
+                <Link
+                  href={adminUsersRoute.path}
+                  className={cn(
+                    "flex items-center gap-2",
+                    pathname.startsWith(adminUsersRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  {creatorsRoute.icon && (
+                    <creatorsRoute.icon className="h-4 w-4" />
+                  )}
+                  {t("manageUsers")}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={adminPromptsRoute.path}
+                  className={cn(
+                    "flex items-center gap-2",
+                    pathname.startsWith(adminPromptsRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  <Sparkles className="h-4 w-4" />
+                  {t("managePrompts")}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={adminExhibitsRoute.path}
+                  className={cn(
+                    "flex items-center gap-2",
+                    pathname.startsWith(adminExhibitsRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  {exhibitionRoute.icon && (
+                    <exhibitionRoute.icon className="h-4 w-4" />
+                  )}
+                  {t("manageExhibits")}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={adminNotificationsRoute.path}
+                  className={cn(
+                    "flex items-center gap-2",
+                    pathname.startsWith(adminNotificationsRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  <Mail className="h-4 w-4" />
+                  {t("manageNotifications")}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={adminSettingsRoute.path}
+                  className={cn(
+                    "flex items-center gap-2",
+                    pathname.startsWith(adminSettingsRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  {adminSettingsRoute.icon && (
+                    <adminSettingsRoute.icon className="h-4 w-4" />
+                  )}
+                  {t("siteSettings")}
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* About Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger className={buttonClassName()}>
+            <span>{t("about")}</span>
+            <ChevronDown className="h-3 w-3" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem asChild>
+              <Link
+                href={aboutRoute.path}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(aboutRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                {aboutRoute.icon && <aboutRoute.icon className="h-4 w-4" />}
+                {t("overview")}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a
+                href="https://help.create.spot"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2"
+              >
+                <HelpIcon className="h-4 w-4" />
+                {t("help")}
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setIsExhibitRequestModalOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              {t("requestExhibit")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setIsSupportModalOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <Bug className="h-4 w-4" />
+              {t("submitBug")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </nav>
       <SupportFormModal
         isOpen={isSupportModalOpen}
         onClose={() => setIsSupportModalOpen(false)}
       />
+      <ExhibitRequestModal
+        isOpen={isExhibitRequestModalOpen}
+        onClose={() => setIsExhibitRequestModalOpen(false)}
+      />
     </>
   );
 }
+
+// Icon for Help link
+const HelpIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+    <path d="M12 17h.01" />
+  </svg>
+);

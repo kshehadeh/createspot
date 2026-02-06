@@ -167,6 +167,8 @@
     "critiques": "Critiques",
     "contact": "Contact",
     "help": "Help",
+    "requestExhibit": "Request Exhibit",
+    "submitBug": "Submit Bug or Suggestion",
     "more": "More",
     "terms": "Terms of Service",
     "create": "Submit",
@@ -192,7 +194,14 @@
     "details": "Details",
     "notifications": "Notifications",
     "siteSettings": "Site Settings",
-    "imageEditor": "Image Editor"
+    "imageEditor": "Image Editor",
+    "explore": "Explore",
+    "myHub": "My Hub",
+    "overview": "Overview",
+    "manageUsers": "Manage Users",
+    "managePrompts": "Manage Prompts",
+    "manageExhibits": "Manage Exhibits",
+    "manageNotifications": "Manage Notifications"
   },
   "creatorNav": {
     "profile": "Profile",

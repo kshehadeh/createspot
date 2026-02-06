@@ -15,7 +15,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="flex h-9 items-center rounded-full border border-border bg-secondary px-1">
+      <div className="inline-flex h-9 items-center rounded-full border border-border bg-secondary px-1">
         <div className="flex h-7 w-7 items-center justify-center">
           <Sun className="h-4 w-4 text-muted-foreground" />
         </div>
@@ -26,7 +26,7 @@ export function ThemeToggle() {
   const currentTheme = theme || "system";
 
   return (
-    <div className="flex h-9 items-center rounded-full border border-border bg-secondary px-1">
+    <div className="inline-flex h-9 items-center rounded-full border border-border bg-secondary px-1">
       <button
         onClick={() => setTheme("dark")}
         className={cn(

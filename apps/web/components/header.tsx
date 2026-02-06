@@ -8,10 +8,8 @@ import { useTranslations } from "next-intl";
 import { CreateSpotLogo } from "./create-spot-logo";
 import { DashboardNavigation } from "./navigation-links";
 import { MobileNavigation } from "./mobile-navigation";
-import { ThemeToggle } from "./theme-toggle";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { Button } from "./ui/button";
-import { Plus } from "lucide-react";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
 import { getRoute } from "@/lib/routes";
 
@@ -67,7 +65,10 @@ export function Header({ user }: HeaderProps) {
         <div className="flex items-center gap-4">
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:gap-4">
-            <DashboardNavigation />
+            <DashboardNavigation
+              user={user}
+              onCreateModalOpen={() => setIsCreateModalOpen(true)}
+            />
             <div className="flex items-center gap-2">
               <Button
                 asChild
@@ -86,28 +87,12 @@ export function Header({ user }: HeaderProps) {
                 </a>
               </Button>
             </div>
-            {user && (
-              <Button
-                onClick={() => setIsCreateModalOpen(true)}
-                variant="default"
-                size="default"
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                {t("create")}
-              </Button>
-            )}
-            <ThemeToggle />
-            {user ? (
-              <UserDropdown
-                id={user.id}
-                slug={user.slug}
-                name={user.name}
-                image={user.image}
-                profileImageUrl={user.profileImageUrl}
-                isAdmin={user.isAdmin}
-              />
-            ) : (
+            <UserDropdown
+              name={user?.name}
+              image={user?.image}
+              profileImageUrl={user?.profileImageUrl}
+            />
+            {!user && (
               <Button
                 onClick={() => signIn("google")}
                 variant="default"
@@ -135,17 +120,10 @@ export function Header({ user }: HeaderProps) {
                 <SiDiscord className="h-4 w-4" />
               </a>
             </Button>
-            <ThemeToggle />
-            {!user && (
-              <Button
-                onClick={() => signIn("google")}
-                variant="default"
-                size="sm"
-              >
-                {t("signIn")}
-              </Button>
-            )}
-            <MobileNavigation user={user} />
+            <MobileNavigation
+              user={user}
+              onCreateModalOpen={() => setIsCreateModalOpen(true)}
+            />
           </div>
         </div>
       </header>

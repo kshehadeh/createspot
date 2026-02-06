@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useState, useEffect, useRef, startTransition } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { signOut, signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
@@ -10,16 +9,48 @@ import { Button } from "./ui/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { cn, getCreatorUrl } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
-import { getUserImageUrl } from "@/lib/user-image";
+import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
   ChevronRight,
+  LayoutGrid,
+  Users,
+  User,
+  Info,
+  Briefcase,
+  Heart,
+  Lock,
+  Sparkles,
+  Mail,
   Plus,
-  ChevronLeft,
+  FolderOpen,
   Bug,
-  HelpCircle,
+  Signpost,
+  Palette,
 } from "lucide-react";
 import { SupportFormModal } from "./contact/support-form-modal";
+import { ExhibitRequestModal } from "./contact/exhibit-request-form";
+import { ThemeToggle } from "./theme-toggle";
+
+// Icon for Help link
+function HelpIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <path d="M12 17h.01" />
+    </svg>
+  );
+}
 
 interface MobileNavigationUser {
   id?: string;
@@ -32,17 +63,28 @@ interface MobileNavigationUser {
 
 interface MobileNavigationProps {
   user?: MobileNavigationUser | null;
+  onCreateModalOpen?: () => void;
 }
 
-export function MobileNavigation({ user }: MobileNavigationProps) {
+export function MobileNavigation({
+  user,
+  onCreateModalOpen,
+}: MobileNavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isPromptsSidebarOpen, setIsPromptsSidebarOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isExhibitRequestModalOpen, setIsExhibitRequestModalOpen] =
+    useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const promptsSidebarRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const t = useTranslations("navigation");
+
+  // State for expandable sections
+  const [exploreExpanded, setExploreExpanded] = useState(false);
+  const [myHubExpanded, setMyHubExpanded] = useState(false);
+  const [adminExpanded, setAdminExpanded] = useState(false);
+  const [aboutExpanded, setAboutExpanded] = useState(false);
+  const [userExpanded, setUserExpanded] = useState(false);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -50,21 +92,14 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
       const target = event.target as Node;
       const isOutsideMenu =
         menuRef.current && !menuRef.current.contains(target);
-      const isOutsidePromptsSidebar =
-        promptsSidebarRef.current &&
-        !promptsSidebarRef.current.contains(target);
 
-      if (isMenuOpen && isOutsideMenu && isOutsidePromptsSidebar) {
+      if (isMenuOpen && isOutsideMenu) {
         setIsMenuOpen(false);
-      }
-      if (isPromptsSidebarOpen && isOutsidePromptsSidebar && isOutsideMenu) {
-        setIsPromptsSidebarOpen(false);
       }
     }
 
-    if (isMenuOpen || isPromptsSidebarOpen) {
+    if (isMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      // Prevent body scroll when menu is open
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -74,22 +109,82 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
       document.removeEventListener("mousedown", handleClickOutside);
       document.body.style.overflow = "";
     };
-  }, [isMenuOpen, isPromptsSidebarOpen]);
+  }, [isMenuOpen]);
 
   // Close menu on route change
   useEffect(() => {
-    startTransition(() => {
-      setIsMenuOpen(false);
-      setIsPromptsSidebarOpen(false);
-    });
+    setIsMenuOpen(false);
   }, [pathname]);
+
+  // Auto-expand sections based on current path
+  useEffect(() => {
+    const exhibitionRoute = getRoute("exhibition");
+    const creatorsRoute = getRoute("creators");
+    const promptRoute = getRoute("prompt");
+    const profileRoute = getRoute("profile");
+    const portfolioRoute = getRoute("portfolio");
+    const favoritesRoute = getRoute("favorites");
+    const adminRoute = getRoute("admin");
+    const adminUsersRoute = getRoute("adminUsers");
+    const adminPromptsRoute = getRoute("adminPrompts");
+    const adminExhibitsRoute = getRoute("adminExhibits");
+    const adminNotificationsRoute = getRoute("adminNotifications");
+    const adminSettingsRoute = getRoute("adminSettings");
+    const aboutRoute = getRoute("about");
+
+    setExploreExpanded(
+      pathname === exhibitionRoute.path ||
+        pathname === creatorsRoute.path ||
+        pathname === promptRoute.path,
+    );
+
+    setMyHubExpanded(
+      pathname.startsWith(profileRoute.path) ||
+        pathname.startsWith(portfolioRoute.path) ||
+        pathname.startsWith(favoritesRoute.path),
+    );
+
+    setAdminExpanded(
+      pathname.startsWith(adminRoute.path) ||
+        pathname.startsWith(adminUsersRoute.path) ||
+        pathname.startsWith(adminPromptsRoute.path) ||
+        pathname.startsWith(adminExhibitsRoute.path) ||
+        pathname.startsWith(adminNotificationsRoute.path) ||
+        pathname.startsWith(adminSettingsRoute.path),
+    );
+
+    setAboutExpanded(pathname.startsWith(aboutRoute.path));
+
+    setUserExpanded(
+      pathname.startsWith(profileRoute.path) ||
+        pathname.startsWith(portfolioRoute.path) ||
+        pathname.startsWith(favoritesRoute.path),
+    );
+  }, [pathname]);
+
+  const handleCreateClick = () => {
+    if (onCreateModalOpen) {
+      onCreateModalOpen();
+    }
+    setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    signOut();
+    setIsMenuOpen(false);
+  };
+
+  const handleSignIn = () => {
+    signIn("google");
+    setIsMenuOpen(false);
+  };
 
   return (
     <>
       {/* Mobile Create Button */}
       {user && (
         <button
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={handleCreateClick}
           className="flex items-center justify-center w-9 h-9 rounded-md text-foreground hover:bg-accent transition-colors md:hidden"
           aria-label={t("create")}
         >
@@ -121,20 +216,17 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
       </button>
 
       {/* Mobile Menu Overlay */}
-      {(isMenuOpen || isPromptsSidebarOpen) && (
+      {isMenuOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          onClick={() => {
-            setIsMenuOpen(false);
-            setIsPromptsSidebarOpen(false);
-          }}
+          onClick={() => setIsMenuOpen(false)}
         />
       )}
 
       {/* Mobile Slide-in Menu */}
       <div
         ref={menuRef}
-        className={`fixed right-0 top-0 z-50 h-full w-64 transform border-l border-border bg-background transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed right-0 top-0 z-50 h-full w-72 transform border-l border-border bg-background transition-transform duration-300 ease-in-out md:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -167,38 +259,181 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
 
           {/* Menu Content */}
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-6">
-            <MobileNavigationLinks
-              onLinkClick={() => setIsMenuOpen(false)}
-              onMoreClick={() => setIsPromptsSidebarOpen(true)}
-            />
+            {/* Explore Section */}
+            <MobileSection
+              title={t("explore")}
+              expanded={exploreExpanded}
+              onToggle={() => setExploreExpanded(!exploreExpanded)}
+              icon={Signpost}
+            >
+              <MobileNavItem
+                href={getRoute("exhibition").path}
+                icon={LayoutGrid}
+                label={t("exhibits")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+              <MobileNavItem
+                href={getRoute("creators").path}
+                icon={Users}
+                label={t("creators")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+              <MobileNavItem
+                href={getRoute("prompt").path}
+                icon={Sparkles}
+                label={t("prompts")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+            </MobileSection>
+
+            {/* My Hub Section (authenticated only) */}
+            {user && (
+              <MobileSection
+                title={t("myHub")}
+                expanded={myHubExpanded}
+                onToggle={() => setMyHubExpanded(!myHubExpanded)}
+                icon={Palette}
+              >
+                <MobileNavActionItem
+                  icon={Plus}
+                  label={t("create")}
+                  onClick={handleCreateClick}
+                />
+                <div className="mt-0.5 border-t border-border" />
+                {user.id && (
+                  <MobileNavItem
+                    href={getCreatorUrl({ id: user.id, slug: user.slug })}
+                    icon={User}
+                    label={t("profile")}
+                    onClose={() => setIsMenuOpen(false)}
+                  />
+                )}
+                {user.id && (
+                  <MobileNavItem
+                    href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/portfolio`}
+                    icon={Briefcase}
+                    label={t("portfolio")}
+                    onClose={() => setIsMenuOpen(false)}
+                  />
+                )}
+                {user.id && (
+                  <MobileNavItem
+                    href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/collections`}
+                    icon={FolderOpen}
+                    label={t("collections")}
+                    onClose={() => setIsMenuOpen(false)}
+                  />
+                )}
+                <MobileNavItem
+                  href={getRoute("favorites").path}
+                  icon={Heart}
+                  label={t("favorites")}
+                  onClose={() => setIsMenuOpen(false)}
+                />
+              </MobileSection>
+            )}
+
+            {/* Admin Section (admin only) */}
+            {user?.isAdmin && (
+              <MobileSection
+                title={t("admin")}
+                expanded={adminExpanded}
+                onToggle={() => setAdminExpanded(!adminExpanded)}
+              >
+                <MobileNavItem
+                  href={getRoute("adminUsers").path}
+                  icon={Users}
+                  label={t("manageUsers")}
+                  onClose={() => setIsMenuOpen(false)}
+                />
+                <MobileNavItem
+                  href={getRoute("adminPrompts").path}
+                  icon={Sparkles}
+                  label={t("managePrompts")}
+                  onClose={() => setIsMenuOpen(false)}
+                />
+                <MobileNavItem
+                  href={getRoute("adminExhibits").path}
+                  icon={LayoutGrid}
+                  label={t("manageExhibits")}
+                  onClose={() => setIsMenuOpen(false)}
+                />
+                <MobileNavItem
+                  href={getRoute("adminNotifications").path}
+                  icon={Mail}
+                  label={t("manageNotifications")}
+                  onClose={() => setIsMenuOpen(false)}
+                />
+                <MobileNavItem
+                  href={getRoute("adminSettings").path}
+                  icon={Lock}
+                  label={t("siteSettings")}
+                  onClose={() => setIsMenuOpen(false)}
+                />
+              </MobileSection>
+            )}
+
+            {/* About Section */}
+            <MobileSection
+              title={t("about")}
+              expanded={aboutExpanded}
+              onToggle={() => setAboutExpanded(!aboutExpanded)}
+            >
+              <MobileNavItem
+                href={getRoute("about").path}
+                icon={Info}
+                label={t("overview")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+              <MobileNavItem
+                href="https://help.create.spot"
+                icon={HelpIcon}
+                label={t("help")}
+                isExternal
+                onClose={() => setIsMenuOpen(false)}
+              />
+              <MobileNavActionItem
+                icon={LayoutGrid}
+                label={t("requestExhibit")}
+                onClick={() => {
+                  setIsExhibitRequestModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+              />
+              <MobileNavActionItem
+                icon={Bug}
+                label={t("submitBug")}
+                onClick={() => {
+                  setIsSupportModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+              />
+            </MobileSection>
+
+            {/* User Section */}
             {user ? (
               <>
-                <div className="mb-2 mt-auto border-t border-border pt-4 px-4">
-                  <Button
-                    onClick={() => {
-                      setIsCreateModalOpen(true);
-                      setIsMenuOpen(false);
-                    }}
-                    variant="outline"
-                    size="default"
-                    className="w-full flex items-center gap-2"
+                <div className="mb-2 mt-auto border-t border-border pt-4">
+                  <MobileSection
+                    title={user.name || t("userAvatar")}
+                    expanded={userExpanded}
+                    onToggle={() => setUserExpanded(!userExpanded)}
                   >
-                    <Plus className="h-4 w-4" />
-                    {t("create")}
-                  </Button>
+                    <div className="flex items-center justify-center px-4 py-2">
+                      <ThemeToggle />
+                    </div>
+                    <MobileNavActionItem
+                      icon={Lock}
+                      label={t("logout")}
+                      onClick={handleLogout}
+                    />
+                  </MobileSection>
                 </div>
-                <MobileUserSection
-                  user={user}
-                  onActionClick={() => setIsMenuOpen(false)}
-                />
               </>
             ) : (
               <div className="mt-auto border-t border-border pt-4 px-4">
                 <Button
-                  onClick={() => {
-                    signIn("google");
-                    setIsMenuOpen(false);
-                  }}
+                  onClick={handleSignIn}
                   variant="default"
                   size="default"
                   className="w-full"
@@ -207,65 +442,6 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
                 </Button>
               </div>
             )}
-          </nav>
-        </div>
-      </div>
-
-      {/* Secondary Sidebar for Prompts */}
-      <div
-        ref={promptsSidebarRef}
-        className={`fixed right-0 top-0 z-[60] h-full w-64 transform border-l border-border bg-background transition-transform duration-300 ease-in-out md:hidden ${
-          isPromptsSidebarOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex h-full flex-col">
-          {/* Sidebar Header */}
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
-            <button
-              onClick={() => setIsPromptsSidebarOpen(false)}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-              aria-label={t("closeMenu")}
-            >
-              <ChevronLeft className="h-5 w-5" />
-              <span className="text-base font-medium">{t("more")}</span>
-            </button>
-            <button
-              onClick={() => {
-                setIsPromptsSidebarOpen(false);
-                setIsMenuOpen(false);
-              }}
-              className="p-2 text-muted-foreground hover:text-foreground"
-              aria-label={t("closeMenu")}
-            >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* Sidebar Content */}
-          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-6">
-            <MobilePromptsLinks
-              onLinkClick={() => {
-                setIsPromptsSidebarOpen(false);
-                setIsMenuOpen(false);
-              }}
-              onSupportClick={() => {
-                setIsSupportModalOpen(true);
-                setIsPromptsSidebarOpen(false);
-                setIsMenuOpen(false);
-              }}
-            />
           </nav>
         </div>
       </div>
@@ -280,342 +456,121 @@ export function MobileNavigation({ user }: MobileNavigationProps) {
         isOpen={isSupportModalOpen}
         onClose={() => setIsSupportModalOpen(false)}
       />
+      <ExhibitRequestModal
+        isOpen={isExhibitRequestModalOpen}
+        onClose={() => setIsExhibitRequestModalOpen(false)}
+      />
     </>
   );
 }
 
-// Mobile Navigation Links Component
-function MobileNavigationLinks({
-  onLinkClick,
-  onMoreClick,
+// Mobile Section Component (expandable)
+function MobileSection({
+  title,
+  expanded,
+  onToggle,
+  icon: Icon,
+  children,
 }: {
-  isAuthenticated?: boolean;
-  isAdmin?: boolean;
-  onLinkClick: () => void;
-  onMoreClick: () => void;
+  title: string;
+  expanded: boolean;
+  onToggle: () => void;
+  icon?: LucideIcon;
+  children: ReactNode;
 }) {
-  const pathname = usePathname();
-  const t = useTranslations("navigation");
-  const exhibitionRoute = getRoute("exhibition");
-  const creatorsRoute = getRoute("creators");
-  const aboutRoute = getRoute("about");
-
-  const isActive = (path: string) => {
-    if (path === "/") {
-      return pathname === "/";
-    }
-    return pathname.startsWith(path);
-  };
-
-  const linkClassName = (path: string) => {
-    const baseClasses =
-      "block px-4 py-3 text-base font-medium transition-colors rounded-lg";
-    const activeClasses = isActive(path)
-      ? "bg-accent text-accent-foreground"
-      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
-    return `${baseClasses} ${activeClasses}`;
-  };
   return (
-    <>
-      <div className="mb-2">
-        <Link
-          href={exhibitionRoute.path}
-          className={cn(
-            linkClassName(exhibitionRoute.path),
-            "flex items-center gap-2",
-          )}
-          onClick={onLinkClick}
-        >
-          {exhibitionRoute.icon && <exhibitionRoute.icon className="h-5 w-5" />}
-          {t("exhibits")}
-        </Link>
-      </div>
-      <div className="mb-2">
-        <Link
-          href={creatorsRoute.path}
-          className={cn(
-            linkClassName(creatorsRoute.path),
-            "flex items-center gap-2",
-          )}
-          onClick={onLinkClick}
-        >
-          {creatorsRoute.icon && <creatorsRoute.icon className="h-5 w-5" />}
-          {t("creators")}
-        </Link>
-      </div>
-      <div className="mb-2">
-        <Link
-          href={aboutRoute.path}
-          className={cn(
-            linkClassName(aboutRoute.path),
-            "flex items-center gap-2",
-          )}
-          onClick={onLinkClick}
-        >
-          {aboutRoute.icon && <aboutRoute.icon className="h-5 w-5" />}
-          {t("about")}
-        </Link>
-      </div>
-      <div className="mb-2">
-        <button
-          onClick={onMoreClick}
-          className={cn(
-            "block w-full px-4 py-3 text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-            "flex items-center gap-2",
-          )}
-        >
-          {t("more")}
-          <ChevronRight className="h-5 w-5" />
-        </button>
-      </div>
-    </>
-  );
-}
-
-// Mobile Prompts Links Component (for secondary sidebar)
-function MobilePromptsLinks({
-  onLinkClick,
-  onSupportClick,
-}: {
-  onLinkClick: () => void;
-  onSupportClick: () => void;
-}) {
-  const pathname = usePathname();
-  const t = useTranslations("navigation");
-  const tSupport = useTranslations("contact.support");
-  const promptRoute = getRoute("prompt");
-  const contactRoute = getRoute("contact");
-
-  const isActive = (path: string) => {
-    if (path === "/") {
-      return pathname === "/";
-    }
-    return pathname.startsWith(path);
-  };
-
-  const linkClassName = (path: string) => {
-    const baseClasses =
-      "block px-4 py-3 text-base font-medium transition-colors rounded-lg";
-    const activeClasses = isActive(path)
-      ? "bg-accent text-accent-foreground"
-      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
-    return `${baseClasses} ${activeClasses}`;
-  };
-
-  return (
-    <>
-      <div className="mb-2">
-        <Link
-          href={promptRoute.path}
-          className={cn(
-            linkClassName(promptRoute.path),
-            "flex items-center gap-2",
-          )}
-          onClick={onLinkClick}
-        >
-          {promptRoute.icon && <promptRoute.icon className="h-5 w-5" />}
-          {t("prompts")}
-        </Link>
-      </div>
-      <div className="mb-2">
-        <a
-          href="https://help.create.spot"
-          target="_blank"
-          rel="noreferrer"
-          className={cn(
-            "block px-4 py-3 text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-            "flex items-center gap-2",
-          )}
-          onClick={onLinkClick}
-        >
-          <HelpCircle className="h-5 w-5" />
-          {t("help")}
-        </a>
-      </div>
-      <div className="mt-auto border-t border-border pt-4">
-        <div className="mb-2">
-          <button
-            onClick={() => {
-              onSupportClick();
-              onLinkClick();
-            }}
-            className={cn(
-              "block w-full px-4 py-3 text-base font-medium transition-colors rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-              "flex items-center gap-2",
-            )}
-          >
-            <Bug className="h-5 w-5" />
-            {tSupport("cta")}
-          </button>
-        </div>
-        <div className="mb-2">
-          <Link
-            href={contactRoute.path}
-            className={cn(
-              linkClassName(contactRoute.path),
-              "flex items-center gap-2",
-            )}
-            onClick={onLinkClick}
-          >
-            {contactRoute.icon && <contactRoute.icon className="h-5 w-5" />}
-            {t("contact")}
-          </Link>
-        </div>
-      </div>
-    </>
-  );
-}
-
-// Mobile User Section Component
-function MobileUserSection({
-  user,
-  onActionClick,
-}: {
-  user: MobileNavigationUser;
-  onActionClick: () => void;
-}) {
-  const pathname = usePathname();
-  const [isUserOpen, setIsUserOpen] = useState(false);
-  const t = useTranslations("navigation");
-  const profileRoute = getRoute("profile");
-  const portfolioRoute = getRoute("portfolio");
-  const favoritesRoute = getRoute("favorites");
-  const adminRoute = getRoute("admin");
-
-  // Auto-expand if user is on a profile/favorites/admin page
-  useEffect(() => {
-    const isUserPage =
-      pathname.startsWith(profileRoute.path) ||
-      pathname.startsWith(portfolioRoute.path) ||
-      pathname.startsWith(favoritesRoute.path) ||
-      pathname.startsWith(adminRoute.path);
-    setIsUserOpen(isUserPage);
-  }, [
-    pathname,
-    profileRoute.path,
-    portfolioRoute.path,
-    favoritesRoute.path,
-    adminRoute.path,
-  ]);
-
-  const handleLogout = () => {
-    signOut();
-    onActionClick();
-  };
-
-  const linkClassName = (path: string) => {
-    const baseClasses =
-      "block w-full px-4 py-3 text-left text-base transition-colors rounded-lg";
-    const activeClasses = pathname.startsWith(path)
-      ? "bg-accent text-accent-foreground"
-      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
-    return `${baseClasses} ${activeClasses}`;
-  };
-
-  const sectionHeaderClassName =
-    "flex items-center justify-between w-full px-4 py-3 text-left transition-colors rounded-lg hover:bg-accent";
-
-  return (
-    <div className="mt-auto border-t border-border pt-4">
+    <div className="mb-2">
       <button
-        onClick={() => setIsUserOpen(!isUserOpen)}
-        className={sectionHeaderClassName}
-        aria-expanded={isUserOpen}
+        onClick={onToggle}
+        className="flex items-center justify-between w-full px-4 py-3 text-left text-sm font-medium transition-colors rounded-lg hover:bg-accent text-foreground"
       >
-        <div className="flex items-center gap-3">
-          {(() => {
-            const displayImage = getUserImageUrl(
-              user.profileImageUrl,
-              user.image,
-            );
-            return displayImage ? (
-              <Image
-                src={displayImage}
-                alt={user.name || t("userAvatar")}
-                width={40}
-                height={40}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
-                {user.name?.charAt(0).toUpperCase() || "?"}
-              </div>
-            );
-          })()}
-          {user.name && (
-            <span className="text-sm font-medium text-foreground">
-              {user.name}
-            </span>
-          )}
+        <div className="flex items-center gap-2">
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          <span>{title}</span>
         </div>
-        {isUserOpen ? (
+        {expanded ? (
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         ) : (
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         )}
       </button>
-      {isUserOpen && (
-        <div className="mt-1">
-          {user.id && (
-            <Link
-              href={getCreatorUrl({ id: user.id, slug: user.slug })}
-              className={cn(
-                linkClassName(profileRoute.path),
-                "flex items-center gap-2",
-              )}
-              onClick={onActionClick}
-            >
-              {profileRoute.icon && <profileRoute.icon className="h-5 w-5" />}
-              {t("profile")}
-            </Link>
-          )}
-          {user.id && (
-            <Link
-              href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/portfolio`}
-              className={cn(
-                linkClassName(portfolioRoute.path),
-                "flex items-center gap-2",
-              )}
-              onClick={onActionClick}
-            >
-              {portfolioRoute.icon && (
-                <portfolioRoute.icon className="h-5 w-5" />
-              )}
-              {t("portfolio")}
-            </Link>
-          )}
-          <Link
-            href={favoritesRoute.path}
-            className={cn(
-              linkClassName(favoritesRoute.path),
-              "flex items-center gap-2",
-            )}
-            onClick={onActionClick}
-          >
-            {favoritesRoute.icon && <favoritesRoute.icon className="h-5 w-5" />}
-            {t("favorites")}
-          </Link>
-          {user.isAdmin && (
-            <Link
-              href={adminRoute.path}
-              className={cn(
-                linkClassName(adminRoute.path),
-                "flex items-center gap-2",
-              )}
-              onClick={onActionClick}
-            >
-              {adminRoute.icon && <adminRoute.icon className="h-5 w-5" />}
-              {t("adminDashboard")}
-            </Link>
-          )}
-          <button
-            onClick={handleLogout}
-            className="w-full px-4 py-3 text-left text-base text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground rounded-lg"
-          >
-            {t("logout")}
-          </button>
-        </div>
-      )}
+      {expanded && <div className="mt-1 space-y-0.5">{children}</div>}
     </div>
+  );
+}
+
+// Mobile Navigation Item (link)
+function MobileNavItem({
+  href,
+  icon: Icon,
+  label,
+  onClose,
+  isExternal = false,
+}: {
+  href: string;
+  icon: any;
+  label: string;
+  onClose: () => void;
+  isExternal?: boolean;
+}) {
+  const pathname = usePathname();
+
+  const isActive = isExternal
+    ? false
+    : pathname === href || pathname.startsWith(href);
+
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        onClick={onClose}
+        className={cn(
+          "flex items-center gap-3 px-4 py-3 text-sm transition-colors rounded-lg",
+          "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+        )}
+      >
+        <Icon className="h-5 w-5" />
+        {label}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      onClick={onClose}
+      className={cn(
+        "flex items-center gap-3 px-4 py-3 text-sm transition-colors rounded-lg",
+        isActive
+          ? "bg-accent text-accent-foreground font-medium"
+          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+      )}
+    >
+      <Icon className="h-5 w-5" />
+      {label}
+    </Link>
+  );
+}
+
+// Mobile Navigation Action Item (button)
+function MobileNavActionItem({
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  icon: any;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-3 px-4 py-3 text-sm text-left text-muted-foreground transition-colors rounded-lg hover:bg-accent hover:text-accent-foreground w-full"
+    >
+      <Icon className="h-5 w-5" />
+      {label}
+    </button>
   );
 }

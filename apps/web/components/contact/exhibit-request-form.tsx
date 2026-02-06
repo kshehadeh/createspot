@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import {
@@ -29,11 +29,30 @@ interface FormData {
   selectedSubmissionIds: string[];
 }
 
+interface ExhibitRequestModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
 export function ExhibitRequestForm() {
+  const t = useTranslations("contact.exhibit");
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <Button onClick={() => setIsOpen(true)}>{t("cta")}</Button>
+      <ExhibitRequestModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </>
+  );
+}
+
+export function ExhibitRequestModal({
+  isOpen,
+  onClose,
+}: ExhibitRequestModalProps) {
   const t = useTranslations("contact.exhibit");
   const tCommon = useTranslations("common");
   const { data: session } = useSession();
-  const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showBrowser, setShowBrowser] = useState(false);
   const [_selectedSubmissions, setSelectedSubmissions] = useState<
@@ -47,14 +66,31 @@ export function ExhibitRequestForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Reset form when modal is closed externally
+  useEffect(() => {
+    if (!isOpen && !success) {
+      setFormData({
+        exhibitName: "",
+        exhibitDescription: "",
+        selectedSubmissionIds: [],
+      });
+      setSelectedSubmissions([]);
+      setError(null);
+    }
+  }, [isOpen, success]);
+
   const handleSelectSubmissions = (submissionIds: string[]) => {
-    // In a real app, you'd fetch these submissions. For now, we'll just store the IDs
-    // The API will handle enriching this data
     setFormData({
       ...formData,
       selectedSubmissionIds: submissionIds,
     });
     setShowBrowser(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      onClose();
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,16 +127,16 @@ export function ExhibitRequestForm() {
       }
 
       setSuccess(true);
-      setFormData({
-        exhibitName: "",
-        exhibitDescription: "",
-        selectedSubmissionIds: [],
-      });
-      setSelectedSubmissions([]);
       setTimeout(() => {
-        setIsOpen(false);
+        onClose();
         setSuccess(false);
-      }, 2000);
+        setFormData({
+          exhibitName: "",
+          exhibitDescription: "",
+          selectedSubmissionIds: [],
+        });
+        setSelectedSubmissions([]);
+      }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("errorSubmit"));
     } finally {
@@ -110,8 +146,7 @@ export function ExhibitRequestForm() {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>{t("cta")}</Button>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>{t("title")}</DialogTitle>
@@ -191,7 +226,7 @@ export function ExhibitRequestForm() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsOpen(false)}
+                  onClick={onClose}
                   disabled={isSubmitting}
                 >
                   {tCommon("cancel")}
