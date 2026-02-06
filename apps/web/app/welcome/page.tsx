@@ -136,7 +136,7 @@ export default async function WelcomePage() {
 
         {/* Create Spot branding overlay - lower left */}
         <div className="pointer-events-none absolute bottom-[25%] left-8 z-10 hidden lg:block">
-          <div className="flex items-center gap-4 pr-8">
+          <div className="flex items-center gap-4 rounded-xl bg-black/40 px-6 py-4 pr-8 backdrop-blur-sm">
             <CreateSpotLogo
               className="h-16 w-auto flex-shrink-0"
               base="white"
