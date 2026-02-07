@@ -400,6 +400,13 @@ export function MobileNavigation({
                   setIsMenuOpen(false);
                 }}
               />
+              <MobileNavItem
+                href="https://buymeacoffee.com/karimshehadeh"
+                icon={Heart}
+                label={t("buyMeACoffee")}
+                isExternal
+                onClose={() => setIsMenuOpen(false)}
+              />
               <MobileNavActionItem
                 icon={Bug}
                 label={t("submitBug")}

@@ -60,7 +60,13 @@ export function CreateSpotLogo({
                     <path key={`highlight-clip-${i}`} d={d} />
                   ))}
                 </clipPath>
-                <linearGradient id={sheenId} x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient
+                  id={sheenId}
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
                   <stop offset="0%" stopColor="transparent" />
                   <stop offset="40%" stopColor="transparent" />
                   <stop offset="50%" stopColor="rgba(255,255,255,0.4)" />

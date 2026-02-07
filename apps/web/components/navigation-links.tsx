@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   ChevronDown,
+  Heart,
   LayoutGrid,
   Sparkles,
   Mail,
@@ -339,6 +340,17 @@ export function DashboardNavigation({
             >
               <LayoutGrid className="h-4 w-4" />
               {t("requestExhibit")}
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a
+                href="https://buymeacoffee.com/karimshehadeh"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2"
+              >
+                <Heart className="h-4 w-4" />
+                {t("buyMeACoffee")}
+              </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
