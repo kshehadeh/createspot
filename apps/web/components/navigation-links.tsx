@@ -302,10 +302,10 @@ export function DashboardNavigation({
           </DropdownMenu>
         )}
 
-        {/* About Dropdown */}
+        {/* Support Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className={buttonClassName()}>
-            <span>{t("about")}</span>
+            <span>{t("support")}</span>
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
@@ -319,7 +319,7 @@ export function DashboardNavigation({
                 )}
               >
                 {aboutRoute.icon && <aboutRoute.icon className="h-4 w-4" />}
-                {t("overview")}
+                {t("about")}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>

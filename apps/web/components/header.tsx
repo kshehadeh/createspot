@@ -5,8 +5,37 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { CreateSpotLogo } from "./create-spot-logo";
-import { DashboardNavigation } from "./navigation-links";
 import { MobileNavigation } from "./mobile-navigation";
+import { ChevronDown, Plus, Signpost } from "lucide-react";
+
+// Dynamically import DashboardNavigation to avoid SSR hydration issues with Radix UI dropdown IDs
+const DashboardNavigation = dynamic(
+  () =>
+    import("./navigation-links").then((mod) => ({
+      default: mod.DashboardNavigation,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <nav className="flex items-center gap-1" aria-hidden="true">
+        <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground whitespace-nowrap">
+          <Signpost className="h-4 w-4" />
+          <span>…</span>
+          <ChevronDown className="h-3 w-3" />
+        </div>
+        <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground whitespace-nowrap">
+          <Plus className="h-4 w-4" />
+          <span>…</span>
+          <ChevronDown className="h-3 w-3" />
+        </div>
+        <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground whitespace-nowrap">
+          <span>…</span>
+          <ChevronDown className="h-3 w-3" />
+        </div>
+      </nav>
+    ),
+  },
+);
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";

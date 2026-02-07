@@ -7,13 +7,8 @@ import {
   Target,
   Sparkles,
   Lightbulb,
-  MessageSquare,
-  Award,
-  Shield,
   FileText,
   ScrollText,
-  User,
-  FolderOpen,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getRoute } from "@/lib/routes";
@@ -35,12 +30,7 @@ export function AboutMobileNav() {
   const aboutRoute = getRoute("about");
   const purposeRoute = getRoute("aboutPurpose");
   const featuresRoute = getRoute("aboutFeatures");
-  const profileRoute = getRoute("aboutProfile");
-  const portfolioRoute = getRoute("aboutPortfolio");
   const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
-  const critiquesRoute = getRoute("aboutCritiques");
-  const badgesRoute = getRoute("aboutBadges");
-  const protectingRoute = getRoute("aboutProtectingYourWork");
   const changelogRoute = getRoute("aboutChangelog");
   const termsRoute = getRoute("terms");
 
@@ -65,41 +55,6 @@ export function AboutMobileNav() {
       translationNamespace: "about",
       icon: Sparkles,
       isActive: pathname === featuresRoute.path,
-    },
-    {
-      href: critiquesRoute.path,
-      labelKey: "critiques",
-      translationNamespace: "navigation",
-      icon: MessageSquare,
-      isActive: pathname === critiquesRoute.path,
-    },
-    {
-      href: badgesRoute.path,
-      labelKey: "badges.title",
-      translationNamespace: "about",
-      icon: Award,
-      isActive: pathname === badgesRoute.path,
-    },
-    {
-      href: protectingRoute.path,
-      labelKey: "protectingYourWork.title",
-      translationNamespace: "about",
-      icon: Shield,
-      isActive: pathname === protectingRoute.path,
-    },
-    {
-      href: profileRoute.path,
-      labelKey: "profile",
-      translationNamespace: "navigation",
-      icon: User,
-      isActive: pathname === profileRoute.path,
-    },
-    {
-      href: portfolioRoute.path,
-      labelKey: "portfolio",
-      translationNamespace: "navigation",
-      icon: FolderOpen,
-      isActive: pathname === portfolioRoute.path,
     },
     {
       href: promptSubmissionsRoute.path,

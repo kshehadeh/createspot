@@ -23,11 +23,7 @@ export default async function AboutPage() {
   const t = await getTranslations("about");
   const purposeRoute = getRoute("aboutPurpose");
   const featuresRoute = getRoute("aboutFeatures");
-  const profileRoute = getRoute("aboutProfile");
-  const portfolioRoute = getRoute("aboutPortfolio");
   const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
-  const badgesRoute = getRoute("aboutBadges");
-  const protectingRoute = getRoute("aboutProtectingYourWork");
 
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
@@ -103,12 +99,14 @@ export default async function AboutPage() {
             {t("profileCard.description")}
           </p>
           <div className="mt-5">
-            <Link
-              href={profileRoute.path}
+            <a
+              href="https://help.create.spot/creators/profile"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
             >
               {t("profileCard.learnMore")}
-            </Link>
+            </a>
           </div>
         </AboutCard>
 
@@ -120,12 +118,14 @@ export default async function AboutPage() {
             {t("portfolioCard.description")}
           </p>
           <div className="mt-5">
-            <Link
-              href={portfolioRoute.path}
+            <a
+              href="https://help.create.spot/creators/portfolio"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
             >
               {t("portfolioCard.learnMore")}
-            </Link>
+            </a>
           </div>
         </AboutCard>
 
@@ -174,12 +174,14 @@ export default async function AboutPage() {
             .
           </p>
           <div className="mt-5">
-            <Link
-              href={badgesRoute.path}
+            <a
+              href="https://help.create.spot/creators/profile/badges"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
             >
               {t("badges.learnMore")}
-            </Link>
+            </a>
           </div>
         </AboutCard>
 
@@ -199,12 +201,14 @@ export default async function AboutPage() {
             .
           </p>
           <div className="mt-5">
-            <Link
-              href={protectingRoute.path}
+            <a
+              href="https://help.create.spot/creators/profile/setup-your-space"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
             >
               {t("protectingYourWork.learnMore")}
-            </Link>
+            </a>
           </div>
         </AboutCard>
       </div>

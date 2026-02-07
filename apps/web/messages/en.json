@@ -162,6 +162,7 @@
     "admin": "Admin",
     "creators": "Creators",
     "about": "About",
+    "support": "Support",
     "features": "Features",
     "updates": "Updates",
     "critiques": "Critiques",
@@ -199,7 +200,7 @@
     "imageEditor": "Image Editor",
     "explore": "Explore",
     "myHub": "My Hub",
-    "overview": "Overview",
+    "overview": "About",
     "manageUsers": "Manage Users",
     "managePrompts": "Manage Prompts",
     "manageExhibits": "Manage Exhibits",
@@ -848,6 +849,7 @@
     "mainTitle": "Everything you need to showcase your creativity.",
     "mainDescription": "Create Spot provides a comprehensive set of tools designed to help you build, organize, and share your creative portfolio.",
     "backToAbout": "← Back to About",
+    "learnMore": "Learn more",
     "features": {
       "portfolio": {
         "title": "Portfolio Organization",

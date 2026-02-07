@@ -373,16 +373,16 @@ export function MobileNavigation({
               </MobileSection>
             )}
 
-            {/* About Section */}
+            {/* Support Section */}
             <MobileSection
-              title={t("about")}
+              title={t("support")}
               expanded={aboutExpanded}
               onToggle={() => setAboutExpanded(!aboutExpanded)}
             >
               <MobileNavItem
                 href={getRoute("about").path}
                 icon={Info}
-                label={t("overview")}
+                label={t("about")}
                 onClose={() => setIsMenuOpen(false)}
               />
               <MobileNavItem

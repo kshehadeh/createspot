@@ -134,17 +134,18 @@ export default async function WelcomePage() {
         {/* Bottom fade overlay - desktop only */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-64 bg-gradient-to-t from-black/60 via-black/20 to-transparent lg:block" />
 
-        {/* Create Spot branding overlay - lower left */}
-        <div className="pointer-events-none absolute bottom-[25%] left-8 z-10 hidden lg:block">
-          <div className="flex items-center gap-4 rounded-xl bg-black/40 px-6 py-4 pr-8 backdrop-blur-sm">
+        {/* Create Spot branding overlay - lower right */}
+        <div className="pointer-events-none absolute bottom-[25%] right-8 z-10 hidden lg:block">
+          <div className="flex items-center gap-4 rounded-xl bg-black/40 pl-8 pr-6 py-4 backdrop-blur-sm">
+            <h1 className="rainbow-sheen whitespace-nowrap text-6xl font-normal font-permanent-marker">
+              Create Spot
+            </h1>
             <CreateSpotLogo
               className="h-16 w-auto flex-shrink-0"
               base="white"
               highlight="white"
+              rainbow
             />
-            <h1 className="rainbow-sheen whitespace-nowrap text-6xl font-normal font-permanent-marker pr-6">
-              Create Spot
-            </h1>
           </div>
         </div>
 

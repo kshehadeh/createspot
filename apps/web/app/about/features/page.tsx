@@ -17,19 +17,51 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+interface Feature {
+  key: string;
+  helpUrl: string;
+}
+
 export default async function FeaturesPage() {
   const t = await getTranslations("aboutFeatures");
 
-  const features = [
-    { key: "portfolio" },
-    { key: "collections" },
-    { key: "socialSharing" },
-    { key: "protection" },
-    { key: "downloads" },
-    { key: "critiques" },
-    { key: "prompts" },
-    { key: "exhibits" },
-    { key: "mapView" },
+  const features: Feature[] = [
+    {
+      key: "portfolio",
+      helpUrl: "https://help.create.spot/creators/portfolio",
+    },
+    {
+      key: "collections",
+      helpUrl: "https://help.create.spot/creators/portfolio/collections",
+    },
+    {
+      key: "socialSharing",
+      helpUrl: "https://help.create.spot/creators/portfolio/social-sharing",
+    },
+    {
+      key: "protection",
+      helpUrl: "https://help.create.spot/creators/profile/setup-your-space",
+    },
+    {
+      key: "downloads",
+      helpUrl: "https://help.create.spot/creators/portfolio/downloading-work",
+    },
+    {
+      key: "critiques",
+      helpUrl: "https://help.create.spot/creators/portfolio/critiques",
+    },
+    {
+      key: "prompts",
+      helpUrl: "https://help.create.spot/inspiration/prompts",
+    },
+    {
+      key: "exhibits",
+      helpUrl: "https://help.create.spot/browsers/exhibits",
+    },
+    {
+      key: "mapView",
+      helpUrl: "https://help.create.spot/browsers/exhibits/map-view",
+    },
   ];
 
   return (
@@ -46,9 +78,17 @@ export default async function FeaturesPage() {
             <h3 className="mb-2 text-lg font-semibold text-foreground">
               {t(`features.${feature.key}.title`)}
             </h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground mb-4">
               {t(`features.${feature.key}.description`)}
             </p>
+            <a
+              href={feature.helpUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              {t("learnMore")}
+            </a>
           </AboutCard>
         ))}
       </div>

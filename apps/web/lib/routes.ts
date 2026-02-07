@@ -215,7 +215,7 @@ const ROUTES: Record<string, RouteConfig> = {
   },
   about: {
     path: "/about",
-    label: "navigation.about",
+    label: "navigation.support",
     isLink: false,
     icon: Info,
   },
@@ -229,34 +229,9 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.features",
     parentPath: "/about",
   },
-  aboutProfile: {
-    path: "/about/profile",
-    label: "navigation.profile",
-    parentPath: "/about",
-  },
-  aboutPortfolio: {
-    path: "/about/portfolio",
-    label: "navigation.portfolio",
-    parentPath: "/about",
-  },
   aboutPromptSubmissions: {
     path: "/about/prompt-submissions",
     label: "about.promptInspiration.title",
-    parentPath: "/about",
-  },
-  aboutBadges: {
-    path: "/about/badges",
-    label: "about.badges.title",
-    parentPath: "/about",
-  },
-  aboutProtectingYourWork: {
-    path: "/about/protecting-your-work",
-    label: "about.protectingYourWork.title",
-    parentPath: "/about",
-  },
-  aboutCritiques: {
-    path: "/about/critiques",
-    label: "navigation.critiques",
     parentPath: "/about",
   },
   aboutChangelog: {
@@ -546,7 +521,7 @@ export function getBreadcrumbSegments(
   if (pathname.startsWith("/about/")) {
     return [
       {
-        label: t ? translateLabel("navigation.about", t) : "About",
+        label: t ? translateLabel("navigation.support", t) : "Support",
         href: "/about",
       },
       {
