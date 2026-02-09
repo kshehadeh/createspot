@@ -8,6 +8,7 @@ import {
   Target,
   Sparkles,
   Lightbulb,
+  Landmark,
   FileText,
   ScrollText,
 } from "lucide-react";
@@ -32,6 +33,7 @@ export function AboutSidebar() {
   const purposeRoute = getRoute("aboutPurpose");
   const featuresRoute = getRoute("aboutFeatures");
   const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
+  const museumsRoute = getRoute("aboutMuseums");
   const changelogRoute = getRoute("aboutChangelog");
   const termsRoute = getRoute("terms");
 
@@ -63,6 +65,13 @@ export function AboutSidebar() {
       translationNamespace: "about",
       icon: Lightbulb,
       isActive: pathname === promptSubmissionsRoute.path,
+    },
+    {
+      href: museumsRoute.path,
+      labelKey: "museums.title",
+      translationNamespace: "about",
+      icon: Landmark,
+      isActive: pathname === museumsRoute.path,
     },
     {
       href: changelogRoute.path,

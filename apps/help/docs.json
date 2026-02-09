@@ -77,6 +77,12 @@
               "inspiration/prompts/browsing-prompt-history",
               "inspiration/prompts/viewing-others-submissions"
             ]
+          },
+          {
+            "group": "Museums",
+            "pages": [
+              "inspiration/museums"
+            ]
           }
         ]
       },

@@ -822,6 +822,16 @@
       "stayConnected": "stay connected",
       "learnMore": "Learn more about prompt submissions →"
     },
+    "museums": {
+      "title": "Museum collections",
+      "description": "Browse thousands of artworks from world-class museums to fuel your creativity. Search by keyword, filter by medium, style, or time period, and explore works from the",
+      "artInstitute": "Art Institute of Chicago",
+      "theMuseum": ", the",
+      "clevelandMuseum": "Cleveland Museum of Art",
+      "andThe": ", and the",
+      "nationalGallery": "National Gallery of Art",
+      "learnMore": "Learn more about museum collections →"
+    },
     "badges": {
       "title": "Badges",
       "description": "Celebrate your creative journey with badges that recognize your achievements.",
@@ -912,6 +922,10 @@
         "title": "Art Prompts",
         "description": "Get inspired to make more through art prompts and browsing the collection."
       },
+      "museums": {
+        "title": "Museum Collections",
+        "description": "Search and browse thousands of artworks from the Art Institute of Chicago, the Cleveland Museum of Art, and the National Gallery of Art."
+      },
       "exhibits": {
         "title": "Exhibits",
         "description": "Get featured in special exhibits and view these exhibits using different views."
@@ -947,6 +961,44 @@
       "forCurrentPrompt": "for the current prompt or",
       "removeIndividual": "remove individual submissions",
       "fullDescription": "whenever you want to refine what you share. This makes it easy to refresh your prompt entries without losing momentum."
+    },
+    "backToAbout": "← Back to About"
+  },
+  "aboutMuseums": {
+    "title": "Museum Collections | Create Spot",
+    "description": "Browse and search thousands of artworks from world-class museums to inspire your creative work.",
+    "mainTitle": "Explore art from world-class museums.",
+    "mainDescription": "Search and browse thousands of open-access artworks from three renowned museum collections, right inside Create Spot.",
+    "dataSources": {
+      "title": "Where the art comes from",
+      "description": "The museum collections feature draws from three world-class institutions, each of which makes their collection data publicly available through open-access programs:",
+      "artic": "Art Institute of Chicago — one of the oldest and largest art museums in the United States, with a collection spanning 5,000 years of art.",
+      "cleveland": "Cleveland Museum of Art — renowned for its encyclopedic collection, with a strong commitment to open access for all artworks.",
+      "nga": "National Gallery of Art — the nation's art museum in Washington, D.C., housing one of the finest collections of Western art."
+    },
+    "searching": {
+      "title": "How to search and browse",
+      "description": "The museums page offers powerful tools for discovering art:",
+      "keywordSearch": "Keyword search",
+      "keywordSearchDescription": "searches across artwork titles and descriptions to help you find pieces by subject, theme, or artist.",
+      "museumFilter": "Museum filter",
+      "museumFilterDescription": "lets you narrow results to one or more of the three collections.",
+      "mediumFilter": "Medium filter",
+      "mediumFilterDescription": "focuses on specific materials like oil on canvas, watercolor, photography, or sculpture.",
+      "styleFilter": "Style and genre filter",
+      "styleFilterDescription": "helps you explore by artistic movement or category, such as landscapes, portraits, or abstract art.",
+      "dateRange": "Date range",
+      "dateRangeDescription": "lets you browse art from specific time periods by setting a start and end year."
+    },
+    "browsing": {
+      "title": "Viewing artworks",
+      "description": "Artworks appear in a responsive grid that loads more as you scroll. Hover over any artwork to see its title, artist, and museum at a glance. Click to open a full-screen lightbox with the high-resolution image and detailed metadata including the artist, date, medium, dimensions, culture, and credit line. Each artwork also links back to its original museum page for further exploration."
+    },
+    "openAccess": {
+      "title": "About open access",
+      "description": "All artworks shown in the museum collections are sourced from",
+      "openAccessPrograms": "open-access programs",
+      "continuation": " offered by each museum. These institutions make images and data about their collections freely available for creative, educational, and personal use. We credit each museum and link back to the original source for every artwork."
     },
     "backToAbout": "← Back to About"
   },

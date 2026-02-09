@@ -55,6 +55,10 @@ export default async function FeaturesPage() {
       helpUrl: "https://help.create.spot/inspiration/prompts",
     },
     {
+      key: "museums",
+      helpUrl: "https://help.create.spot/inspiration/museums",
+    },
+    {
       key: "exhibits",
       helpUrl: "https://help.create.spot/browsers/exhibits",
     },

@@ -1,9 +1,25 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { MUSEUM_PAGE_SIZE } from "@/lib/museums/constants";
 import { getMuseumArtworks, getMuseumFacets } from "@/lib/museums/queries";
 import { MuseumFilters } from "./museum-filters";
 import { MuseumGrid } from "./museum-grid";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("museums.page");
+  const title = `${t("title")} | Create Spot`;
+  const description = t("description");
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+    },
+  };
+}
 
 interface MuseumsPageProps {
   searchParams: Promise<{

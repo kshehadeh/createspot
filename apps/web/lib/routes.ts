@@ -241,6 +241,11 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "about.promptInspiration.title",
     parentPath: "/about",
   },
+  aboutMuseums: {
+    path: "/about/museums",
+    label: "about.museums.title",
+    parentPath: "/about",
+  },
   aboutChangelog: {
     path: "/about/changelog",
     label: "navigation.updates",

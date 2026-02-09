@@ -24,6 +24,7 @@ export default async function AboutPage() {
   const purposeRoute = getRoute("aboutPurpose");
   const featuresRoute = getRoute("aboutFeatures");
   const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
+  const museumsRoute = getRoute("aboutMuseums");
 
   return (
     <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
@@ -154,6 +155,35 @@ export default async function AboutPage() {
               className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
             >
               {t("promptInspiration.learnMore")}
+            </Link>
+          </div>
+        </AboutCard>
+
+        <AboutCard id="museums" className="scroll-mt-24">
+          <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
+            {t("museums.title")}
+          </h2>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {t("museums.description")}{" "}
+            <strong className="text-foreground">
+              {t("museums.artInstitute")}
+            </strong>
+            {t("museums.theMuseum")}{" "}
+            <strong className="text-foreground">
+              {t("museums.clevelandMuseum")}
+            </strong>
+            {t("museums.andThe")}{" "}
+            <strong className="text-foreground">
+              {t("museums.nationalGallery")}
+            </strong>
+            .
+          </p>
+          <div className="mt-5">
+            <Link
+              href={museumsRoute.path}
+              className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
+            >
+              {t("museums.learnMore")}
             </Link>
           </div>
         </AboutCard>

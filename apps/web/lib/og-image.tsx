@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
+import { LOGO_BASE_PATHS, LOGO_HIGHLIGHT_PATHS } from "@/lib/logo-paths";
 
 /** Standard OG image dimensions for next/og. */
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
@@ -198,6 +199,147 @@ export function createOgFullBleedImageResponse(
           objectFit: "cover",
         }}
       />
+    </div>,
+    { ...OG_IMAGE_SIZE },
+  );
+}
+
+/** Half width for split OG layout (left = image, right = logo). */
+const SPLIT_LEFT_WIDTH = OG_IMAGE_SIZE.width / 2;
+
+/**
+ * Returns an ImageResponse for a split layout: left half = image, right half = Create Spot logo.
+ * Used for /museums OG image.
+ */
+export function createOgSplitImageResponse(
+  imageDataUrl: string,
+): ImageResponse {
+  return new ImageResponse(
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "row",
+      }}
+    >
+      {/* Left half: artwork image */}
+      <div
+        style={{
+          width: SPLIT_LEFT_WIDTH,
+          height: OG_IMAGE_SIZE.height,
+          display: "flex",
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={imageDataUrl}
+          alt=""
+          width={SPLIT_LEFT_WIDTH}
+          height={OG_IMAGE_SIZE.height}
+          style={{
+            width: SPLIT_LEFT_WIDTH,
+            height: OG_IMAGE_SIZE.height,
+            objectFit: "cover",
+          }}
+        />
+      </div>
+      {/* Right half: Create Spot logo on black */}
+      <div
+        style={{
+          width: SPLIT_LEFT_WIDTH,
+          height: OG_IMAGE_SIZE.height,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#000000",
+        }}
+      >
+        <svg
+          width="200"
+          height="218"
+          viewBox="0 0 729 796"
+          style={{ display: "block" }}
+        >
+          <g>
+            {LOGO_BASE_PATHS.map((d, i) => (
+              <path key={`base-${i}`} fill="#ffffff" stroke="none" d={d} />
+            ))}
+          </g>
+          <g>
+            {LOGO_HIGHLIGHT_PATHS.map((d, i) => (
+              <path key={`highlight-${i}`} fill="#000000" stroke="none" d={d} />
+            ))}
+          </g>
+        </svg>
+        <div
+          style={{
+            display: "flex",
+            fontSize: "72px",
+            fontWeight: "bold",
+            color: "#ffffff",
+            textAlign: "center",
+            letterSpacing: "-0.02em",
+            marginTop: "24px",
+          }}
+        >
+          Create Spot
+        </div>
+      </div>
+    </div>,
+    { ...OG_IMAGE_SIZE },
+  );
+}
+
+/**
+ * Returns an ImageResponse for logo-only OG (black background + Create Spot logo + title).
+ * Used as fallback when no image is available (e.g. /museums with empty DB).
+ */
+export function createOgLogoOnlyResponse(): ImageResponse {
+  return new ImageResponse(
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#000000",
+        gap: "40px",
+        padding: "80px",
+      }}
+    >
+      <svg
+        width="240"
+        height="262"
+        viewBox="0 0 729 796"
+        style={{ display: "block" }}
+      >
+        <g>
+          {LOGO_BASE_PATHS.map((d, i) => (
+            <path key={`base-${i}`} fill="#ffffff" stroke="none" d={d} />
+          ))}
+        </g>
+        <g>
+          {LOGO_HIGHLIGHT_PATHS.map((d, i) => (
+            <path key={`highlight-${i}`} fill="#000000" stroke="none" d={d} />
+          ))}
+        </g>
+      </svg>
+      <div
+        style={{
+          display: "flex",
+          fontSize: "96px",
+          fontWeight: "bold",
+          color: "#ffffff",
+          textAlign: "center",
+          letterSpacing: "-0.02em",
+        }}
+      >
+        Create Spot
+      </div>
     </div>,
     { ...OG_IMAGE_SIZE },
   );

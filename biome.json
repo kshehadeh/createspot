@@ -38,9 +38,6 @@
     "experimentalScannerIgnores": [
       "apps/web/data/**",
       "data/**"
-    ],
-    "ignore": [
-      "apps/web/data/**"
     ]
   }
 }
