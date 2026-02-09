@@ -227,6 +227,9 @@
       "description": "Browse artwork from open collections at museums around the world."
     },
     "filters": {
+      "title": "Filters",
+      "expandLabel": "Show filters",
+      "closeLabel": "Close filters",
       "searchPlaceholder": "Search titles or keywords...",
       "search": "Search",
       "museumPlaceholder": "Filter by museum...",

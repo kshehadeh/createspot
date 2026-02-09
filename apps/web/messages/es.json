@@ -227,6 +227,9 @@
       "description": "Explora obras de arte de colecciones abiertas en museos de todo el mundo."
     },
     "filters": {
+      "title": "Filtros",
+      "expandLabel": "Mostrar filtros",
+      "closeLabel": "Cerrar filtros",
       "searchPlaceholder": "Buscar por título o palabras clave...",
       "search": "Buscar",
       "museumPlaceholder": "Filtrar por museo...",

@@ -30,6 +30,8 @@ interface MuseumFiltersProps {
   initialGenres?: string[];
   initialDateStart?: number;
   initialDateEnd?: number;
+  /** When true, renders without Card wrapper (e.g. inside a bottom sheet). */
+  embedded?: boolean;
 }
 
 export function MuseumFilters({
@@ -41,6 +43,7 @@ export function MuseumFilters({
   initialGenres = [],
   initialDateStart,
   initialDateEnd,
+  embedded = false,
 }: MuseumFiltersProps) {
   const t = useTranslations("museums.filters");
   const router = useRouter();
@@ -213,180 +216,186 @@ export function MuseumFilters({
     .sort((a, b) => a.localeCompare(b))
     .map((s) => ({ value: s, label: s }));
 
+  const formContent = (
+    <form onSubmit={handleSearch} className="flex flex-col gap-4">
+      {/* Keyword search */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-muted-foreground">
+          {t("searchPlaceholder")}
+        </Label>
+        <div className="relative">
+          <svg
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+            />
+          </svg>
+          <Input
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="h-9 w-full rounded-lg pl-9 pr-9"
+            placeholder={t("searchPlaceholder")}
+          />
+          {isPending && (
+            <div className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
+            </div>
+          )}
+        </div>
+        <Button type="submit" size="sm" className="w-full rounded-lg">
+          {t("search")}
+        </Button>
+      </div>
+
+      {/* Museum */}
+      {museumOptions.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-muted-foreground">
+            {t("museumPlaceholder")}
+          </Label>
+          <MultiSelect
+            options={museumOptions}
+            selected={selectedMuseums}
+            onSelectionChange={(selected) => {
+              setSelectedMuseums(selected);
+              updateParams({ museums: selected });
+            }}
+            placeholder={t("museumPlaceholder")}
+            className="w-full"
+          />
+        </div>
+      )}
+
+      {/* Artist */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-muted-foreground">
+          {t("artistPlaceholder")}
+        </Label>
+        <MultiSelect
+          options={selectedArtists.map((name) => ({
+            value: name,
+            label: name,
+          }))}
+          selected={selectedArtists}
+          onSelectionChange={(selected) => {
+            setSelectedArtists(selected);
+            updateParams({ artists: selected });
+          }}
+          placeholder={t("artistPlaceholder")}
+          searchable
+          onSearch={searchArtists}
+          className="w-full"
+        />
+      </div>
+
+      {/* Medium */}
+      {mediumOptions.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-muted-foreground">
+            {t("mediumPlaceholder")}
+          </Label>
+          <MultiSelect
+            options={mediumOptions}
+            selected={selectedMediums}
+            onSelectionChange={(selected) => {
+              setSelectedMediums(selected);
+              updateParams({ mediums: selected });
+            }}
+            placeholder={t("mediumPlaceholder")}
+            searchable
+            className="w-full"
+          />
+        </div>
+      )}
+
+      {/* Style / genre */}
+      {styleOptions.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-muted-foreground">
+            {t("stylePlaceholder")}
+          </Label>
+          <MultiSelect
+            options={styleOptions}
+            selected={selectedGenres}
+            onSelectionChange={(selected) => {
+              setSelectedGenres(selected);
+              updateParams({ genres: selected });
+            }}
+            placeholder={t("stylePlaceholder")}
+            searchable
+            className="w-full"
+          />
+        </div>
+      )}
+
+      {/* Date range */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-muted-foreground">
+          {t("dateStartPlaceholder")} – {t("dateEndPlaceholder")}
+        </Label>
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            placeholder={t("dateStartPlaceholder")}
+            value={dateStartValue}
+            onChange={(e) => {
+              setDateStartValue(e.target.value);
+              const n = parseInt(e.target.value, 10);
+              updateParams({
+                dateStart: Number.isFinite(n) ? n : null,
+              });
+            }}
+            className="h-9 flex-1 rounded-lg"
+            min={0}
+            max={2100}
+          />
+          <span className="text-muted-foreground">–</span>
+          <Input
+            type="number"
+            placeholder={t("dateEndPlaceholder")}
+            value={dateEndValue}
+            onChange={(e) => {
+              setDateEndValue(e.target.value);
+              const n = parseInt(e.target.value, 10);
+              updateParams({
+                dateEnd: Number.isFinite(n) ? n : null,
+              });
+            }}
+            className="h-9 flex-1 rounded-lg"
+            min={0}
+            max={2100}
+          />
+        </div>
+      </div>
+
+      {hasFilters && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleClear}
+          className="w-full rounded-lg"
+        >
+          {t("clear")}
+        </Button>
+      )}
+    </form>
+  );
+
+  if (embedded) {
+    return <div className="p-0">{formContent}</div>;
+  }
+
   return (
     <Card className="rounded-2xl border shadow-sm">
-      <CardContent className="p-4">
-        <form onSubmit={handleSearch} className="flex flex-col gap-4">
-          {/* Keyword search */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-muted-foreground">
-              {t("searchPlaceholder")}
-            </Label>
-            <div className="relative">
-              <svg
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
-                />
-              </svg>
-              <Input
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                className="h-9 w-full rounded-lg pl-9 pr-9"
-                placeholder={t("searchPlaceholder")}
-              />
-              {isPending && (
-                <div className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
-                </div>
-              )}
-            </div>
-            <Button type="submit" size="sm" className="w-full rounded-lg">
-              {t("search")}
-            </Button>
-          </div>
-
-          {/* Museum */}
-          {museumOptions.length > 0 && (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">
-                {t("museumPlaceholder")}
-              </Label>
-              <MultiSelect
-                options={museumOptions}
-                selected={selectedMuseums}
-                onSelectionChange={(selected) => {
-                  setSelectedMuseums(selected);
-                  updateParams({ museums: selected });
-                }}
-                placeholder={t("museumPlaceholder")}
-                className="w-full"
-              />
-            </div>
-          )}
-
-          {/* Artist */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-muted-foreground">
-              {t("artistPlaceholder")}
-            </Label>
-            <MultiSelect
-              options={selectedArtists.map((name) => ({
-                value: name,
-                label: name,
-              }))}
-              selected={selectedArtists}
-              onSelectionChange={(selected) => {
-                setSelectedArtists(selected);
-                updateParams({ artists: selected });
-              }}
-              placeholder={t("artistPlaceholder")}
-              searchable
-              onSearch={searchArtists}
-              className="w-full"
-            />
-          </div>
-
-          {/* Medium */}
-          {mediumOptions.length > 0 && (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">
-                {t("mediumPlaceholder")}
-              </Label>
-              <MultiSelect
-                options={mediumOptions}
-                selected={selectedMediums}
-                onSelectionChange={(selected) => {
-                  setSelectedMediums(selected);
-                  updateParams({ mediums: selected });
-                }}
-                placeholder={t("mediumPlaceholder")}
-                searchable
-                className="w-full"
-              />
-            </div>
-          )}
-
-          {/* Style / genre */}
-          {styleOptions.length > 0 && (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">
-                {t("stylePlaceholder")}
-              </Label>
-              <MultiSelect
-                options={styleOptions}
-                selected={selectedGenres}
-                onSelectionChange={(selected) => {
-                  setSelectedGenres(selected);
-                  updateParams({ genres: selected });
-                }}
-                placeholder={t("stylePlaceholder")}
-                searchable
-                className="w-full"
-              />
-            </div>
-          )}
-
-          {/* Date range */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-muted-foreground">
-              {t("dateStartPlaceholder")} – {t("dateEndPlaceholder")}
-            </Label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                placeholder={t("dateStartPlaceholder")}
-                value={dateStartValue}
-                onChange={(e) => {
-                  setDateStartValue(e.target.value);
-                  const n = parseInt(e.target.value, 10);
-                  updateParams({
-                    dateStart: Number.isFinite(n) ? n : null,
-                  });
-                }}
-                className="h-9 flex-1 rounded-lg"
-                min={0}
-                max={2100}
-              />
-              <span className="text-muted-foreground">–</span>
-              <Input
-                type="number"
-                placeholder={t("dateEndPlaceholder")}
-                value={dateEndValue}
-                onChange={(e) => {
-                  setDateEndValue(e.target.value);
-                  const n = parseInt(e.target.value, 10);
-                  updateParams({
-                    dateEnd: Number.isFinite(n) ? n : null,
-                  });
-                }}
-                className="h-9 flex-1 rounded-lg"
-                min={0}
-                max={2100}
-              />
-            </div>
-          </div>
-
-          {hasFilters && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleClear}
-              className="w-full rounded-lg"
-            >
-              {t("clear")}
-            </Button>
-          )}
-        </form>
-      </CardContent>
+      <CardContent className="p-4">{formContent}</CardContent>
     </Card>
   );
 }

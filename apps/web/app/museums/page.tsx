@@ -3,8 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { MUSEUM_PAGE_SIZE } from "@/lib/museums/constants";
 import { getMuseumArtworks, getMuseumFacets } from "@/lib/museums/queries";
-import { MuseumFilters } from "./museum-filters";
-import { MuseumGrid } from "./museum-grid";
+import { MuseumsPageLayout } from "./museums-page-layout";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("museums.page");
@@ -79,26 +78,18 @@ export default async function MuseumsPage({ searchParams }: MuseumsPageProps) {
         <p className="mt-2 text-muted-foreground">{t("description")}</p>
       </div>
 
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-        <aside className="w-full shrink-0 lg:w-72 lg:sticky lg:top-6">
-          <MuseumFilters
-            facets={facets}
-            initialQuery={q ?? ""}
-            initialMuseums={museums}
-            initialArtists={artists}
-            initialMediums={mediums}
-            initialGenres={genres}
-            initialDateStart={dateStart}
-            initialDateEnd={dateEnd}
-          />
-        </aside>
-        <div className="min-w-0 flex-1">
-          <MuseumGrid
-            initialArtworks={result.artworks}
-            initialHasMore={result.hasMore}
-          />
-        </div>
-      </div>
+      <MuseumsPageLayout
+        facets={facets}
+        initialQuery={q ?? ""}
+        initialMuseums={museums}
+        initialArtists={artists}
+        initialMediums={mediums}
+        initialGenres={genres}
+        initialDateStart={dateStart}
+        initialDateEnd={dateEnd}
+        initialArtworks={result.artworks}
+        initialHasMore={result.hasMore}
+      />
     </PageLayout>
   );
 }
