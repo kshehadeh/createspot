@@ -353,6 +353,56 @@ model CollectionSubmission {
   @@index([collectionId, order])
 }
 
+model MuseumArtwork {
+  id                String   @id @default(cuid())
+  globalId          String   @unique
+  localId           String
+  museumId          String
+  title             String
+  description       String?  @db.Text
+  artists           Json
+  imageUrl          String
+  thumbnailUrl      String?
+  additionalImages  String[] @default([])
+  mediums           String[] @default([])
+  mediumDisplay     String?
+  genres            String[] @default([])
+  classifications   String[] @default([])
+  tags              String[] @default([])
+  dateCreated       String?
+  dateStart         Int?
+  dateEnd           Int?
+  dimensions        String?
+  department        String?
+  culture           String?
+  creditLine        String?
+  provenance        String?
+  isPublicDomain    Boolean
+  sourceUrl         String
+  rawMetadata       Json?
+  curatedAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  lastSyncedAt      DateTime?
+
+  @@index([museumId])
+  @@index([globalId])
+  @@index([genres])
+  @@index([mediums])
+  @@index([classifications])
+  @@index([tags])
+}
+
+model MuseumSource {
+  id         String   @id @default(cuid())
+  museumId   String   @unique
+  name       String
+  baseUrl    String
+  apiKeyEnv  String?
+  isActive   Boolean  @default(true)
+  lastSyncAt DateTime?
+  config     Json?
+}
+
 model SiteSetting {
   id        String   @id @default(cuid())
   key       String   @unique

@@ -140,6 +140,11 @@ export function MultiSelect({
       // No search results yet, show static options
       displayOptions = options;
     }
+  } else if (searchable && searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    displayOptions = options.filter((opt) =>
+      opt.label.toLowerCase().includes(query),
+    );
   } else {
     displayOptions = options;
   }
@@ -172,10 +177,13 @@ export function MultiSelect({
                   }}
                 >
                   {option.label}
-                  <button
-                    className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className="ml-1 inline-flex rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
                         handleToggle(option.value);
                       }
                     }}
@@ -190,23 +198,32 @@ export function MultiSelect({
                     }}
                   >
                     <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                  </button>
+                  </span>
                 </Badge>
               ))
             )}
           </div>
           <div className="flex items-center gap-1">
             {selected.length > 0 && (
-              <button
+              <span
+                role="button"
+                tabIndex={0}
                 onClick={handleClear}
                 onMouseDown={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
-                className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onSelectionChange([]);
+                  }
+                }}
+                className="inline-flex cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
                 <X className="h-4 w-4" />
-              </button>
+              </span>
             )}
             <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
           </div>

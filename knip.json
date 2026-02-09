@@ -13,7 +13,7 @@
         "postcss.config.mjs",
         "scripts/**/*.ts",
         "app/@breadcrumb/**",
-        "changelogs/**"
+        "changelogs/**","data/**"
       ]
     }
   },

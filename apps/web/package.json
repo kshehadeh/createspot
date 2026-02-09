@@ -11,6 +11,7 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "download-words": "bun scripts/download-words.ts",
+    "museum": "bun scripts/museum.ts",
     "postinstall": "prisma generate && bun scripts/download-words.ts",
     "db:migrate:deploy": "bun scripts/migrate-deploy.ts",
     "changelog:discord": "bun scripts/post-changelog-to-discord.ts"
@@ -45,6 +46,7 @@
     "@tiptap/react": "^3.18.0",
     "@tiptap/starter-kit": "^3.18.0",
     "@types/archiver": "^7.0.0",
+    "@types/bun": "^1.3.8",
     "@types/leaflet": "^1.9.21",
     "@types/pdfkit": "^0.17.4",
     "@vercel/analytics": "^1.6.1",
@@ -85,6 +87,7 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19",
+    "commander": "^14.0.3",
     "oxlint": "^1.42.0",
     "tailwindcss": "^4",
     "typescript": "^5.9.3"

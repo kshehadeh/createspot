@@ -153,6 +153,7 @@
   "navigation": {
     "home": "Home",
     "exhibits": "Exhibits",
+    "museums": "Museums",
     "prompts": "Prompts",
     "portfolio": "Portfolio",
     "collections": "Collections",
@@ -219,6 +220,37 @@
     "subtitle": "Submissions you've saved for later",
     "empty": "You haven't favorited any submissions yet.",
     "exploreExhibits": "Explore Exhibits"
+  },
+  "museums": {
+    "page": {
+      "title": "Museums",
+      "description": "Browse artwork from open collections at museums around the world."
+    },
+    "filters": {
+      "searchPlaceholder": "Search titles or keywords...",
+      "search": "Search",
+      "museumPlaceholder": "Filter by museum...",
+      "artistPlaceholder": "Filter by artist...",
+      "mediumPlaceholder": "Filter by medium...",
+      "stylePlaceholder": "Filter by style...",
+      "dateStartPlaceholder": "From year",
+      "dateEndPlaceholder": "To year",
+      "clear": "Clear"
+    },
+    "grid": {
+      "noMatches": "No artwork matches these filters.",
+      "tryDifferentFilters": "Try different filters or search terms.",
+      "loadingMore": "Loading more...",
+      "loadMoreError": "Failed to load more",
+      "retry": "Retry",
+      "reachedEnd": "You've reached the end."
+    },
+    "lightbox": {
+      "close": "Close",
+      "previous": "Previous",
+      "next": "Next",
+      "viewAtMuseum": "View on museum website"
+    }
   },
   "exhibition": {
     "loadMoreError": "Failed to load more work",

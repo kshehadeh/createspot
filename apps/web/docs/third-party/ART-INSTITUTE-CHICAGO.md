@@ -22,10 +22,14 @@ GET https://api.artic.edu/api/v1/artworks/search
 ```
 
 - `q` — full-text search query
-- `query[term][field]=value` — Elasticsearch term filters (e.g. `is_public_domain`, `artist_id`)
+- `query` — for complex queries, pass **Elasticsearch Query DSL** as JSON (e.g. via POST body or GET `params`). Use this to search on specific fields (see Searchable fields below).
+- `query[term][field]=value` — simple Elasticsearch term filters (e.g. `is_public_domain`, `artist_id`)
 - `limit` — page size (default 12, max 100)
 - `page` — 1-based page number
 - `fields` — comma-separated list; always include `image_id` if you need images
+
+**Searchable fields (query parameter)**  
+The `query` input accepts JSON (Elasticsearch). You can target specific fields, including: `id`, `title`, `artist_display`, `artist_title`, `date_start`, `date_end`, `date_display`, `description`, `medium_display`, `style_titles`, `style_title`, `classification_titles`, `subject_titles`, `term_titles`, `artwork_type_title`, `department_title`, `is_public_domain`, `image_id`, and many more. For the full list and types, see the [API documentation](https://api.artic.edu/docs/). Example: use `match` on `artist_title` to filter by artist name, or `match` on `style_titles` to filter by style/genre.
 
 ### 2) Listing
 Get a paginated list of artworks (sorted by last updated, descending).

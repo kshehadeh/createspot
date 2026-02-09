@@ -30,7 +30,15 @@ GET https://openaccess-api.clevelandart.org/api/artworks/
 - `limit` — Page size (default returns up to **1000** per request)
 - `fields` — Comma-delimited list of fields to return (optional; omit for all fields)
 
-Other useful filters: `department`, `type`, `artists`, `title`, `created_after`, `created_before`, `currently_on_view`. See the [official API docs](https://openaccess-api.clevelandart.org/) for the full list.
+Other useful filters (see [official API docs](https://openaccess-api.clevelandart.org/)):
+
+- **artists** (string) — Filter by name of artist. Example: `artists=picasso`.
+- **type** (string) — Filter by artwork type (e.g. Painting, Sculpture, Print). Valid types in API Appendix C.
+- **culture** (string) — Filter by culture description of creator(s).
+- **technique** / **medium** (string) — Filter by technique or materials.
+- **department**, **title**, **created_after**, **created_before**, **currently_on_view**, etc.
+
+The API does not expose a "style" or "genre" parameter; object **type** is classification (Painting, Print), not style (e.g. Impressionism). Style/genre filtering is done client-side from response metadata when needed.
 
 ### 2) Single artwork
 Fetch one artwork by **Athena id** (numeric) or **accession number** (e.g. `1953.424`).

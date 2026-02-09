@@ -153,6 +153,7 @@
   "navigation": {
     "home": "Inicio",
     "exhibits": "Exposiciones",
+    "museums": "Museos",
     "prompts": "Indicaciones",
     "portfolio": "Portafolio",
     "collections": "Colecciones",
@@ -219,6 +220,37 @@
     "subtitle": "Publicaciones que has guardado para después",
     "empty": "Aún no has guardado ninguna publicación como favorita.",
     "exploreExhibits": "Explorar Exposiciones"
+  },
+  "museums": {
+    "page": {
+      "title": "Museos",
+      "description": "Explora obras de arte de colecciones abiertas en museos de todo el mundo."
+    },
+    "filters": {
+      "searchPlaceholder": "Buscar por título o palabras clave...",
+      "search": "Buscar",
+      "museumPlaceholder": "Filtrar por museo...",
+      "artistPlaceholder": "Filtrar por artista...",
+      "mediumPlaceholder": "Filtrar por medio...",
+      "stylePlaceholder": "Filtrar por estilo...",
+      "dateStartPlaceholder": "Desde año",
+      "dateEndPlaceholder": "Hasta año",
+      "clear": "Limpiar"
+    },
+    "grid": {
+      "noMatches": "Ninguna obra coincide con estos filtros.",
+      "tryDifferentFilters": "Prueba otros filtros o términos de búsqueda.",
+      "loadingMore": "Cargando más...",
+      "loadMoreError": "Error al cargar más",
+      "retry": "Reintentar",
+      "reachedEnd": "Has llegado al final."
+    },
+    "lightbox": {
+      "close": "Cerrar",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "viewAtMuseum": "Ver en el sitio del museo"
+    }
   },
   "exhibition": {
     "loadMoreError": "Error al cargar más trabajos",

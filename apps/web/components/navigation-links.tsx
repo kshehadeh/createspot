@@ -47,6 +47,7 @@ export function DashboardNavigation({
   const [isExhibitRequestModalOpen, setIsExhibitRequestModalOpen] =
     useState(false);
   const exhibitionRoute = getRoute("exhibition");
+  const museumsRoute = getRoute("museums");
   const creatorsRoute = getRoute("creators");
   const promptRoute = getRoute("prompt");
   const profileRoute = getRoute("profile");
@@ -101,6 +102,19 @@ export function DashboardNavigation({
                   <exhibitionRoute.icon className="h-4 w-4" />
                 )}
                 {t("exhibits")}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={museumsRoute.path}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(museumsRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                {museumsRoute.icon && <museumsRoute.icon className="h-4 w-4" />}
+                {t("museums")}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>

@@ -41,5 +41,6 @@ next-env.d.ts
 **/app/generated/prisma
 
 # generated word list
-/data
-/apps/web/data
+/apps/web/data/words.json
+/apps/web/data/**/raw/**/*
+/apps/web/data/**/processed/**/*

@@ -46,7 +46,7 @@ The app will be available at http://localhost:3000
 | [apps/web/docs/CREATOR-PROTECTIONS.md](apps/web/docs/CREATOR-PROTECTIONS.md) | Watermarking, download prevention, AI training opt-out |
 | [apps/web/docs/HINTS.md](apps/web/docs/HINTS.md) | Contextual help and hint system, tutorial management |
 | [apps/web/docs/PROGRESSIONS.md](apps/web/docs/PROGRESSIONS.md) | Progressions (work-in-progress steps for submissions): data model, API, form, view, lightbox |
-| [apps/web/docs/third-party/](apps/web/docs/third-party/) | Third-party API guides: [Smithsonian](apps/web/docs/third-party/SMITHSONIAN.md), [Art Institute of Chicago](apps/web/docs/third-party/ART-INSTITUTE-CHICAGO.md), [Cleveland Museum of Art](apps/web/docs/third-party/CLEVELAND-MUSEUM-OF-ART.md), [Rijksmuseum](apps/web/docs/third-party/RIJKSMUSEUM.md), [Metropolitan Museum of Art](apps/web/docs/third-party/METROPOLITAN-MUSEUM-OF-ART.md) |
+| [apps/web/docs/third-party/](apps/web/docs/third-party/) | Third-party API guides: [Art Institute of Chicago](apps/web/docs/third-party/ART-INSTITUTE-CHICAGO.md), [Cleveland Museum of Art](apps/web/docs/third-party/CLEVELAND-MUSEUM-OF-ART.md), [National Gallery of Art](apps/web/docs/third-party/NATIONAL-GALLERY-OF-ART.md) |
 
 ## Project Structure
 

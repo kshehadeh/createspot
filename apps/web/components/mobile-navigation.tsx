@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ChevronRight,
   LayoutGrid,
+  Landmark,
   Users,
   User,
   Info,
@@ -135,7 +136,8 @@ export function MobileNavigation({
     setExploreExpanded(
       pathname === exhibitionRoute.path ||
         pathname === creatorsRoute.path ||
-        pathname === promptRoute.path,
+        pathname === promptRoute.path ||
+        pathname === getRoute("museums").path,
     );
 
     setMyHubExpanded(
@@ -270,6 +272,12 @@ export function MobileNavigation({
                 href={getRoute("exhibition").path}
                 icon={LayoutGrid}
                 label={t("exhibits")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+              <MobileNavItem
+                href={getRoute("museums").path}
+                icon={Landmark}
+                label={t("museums")}
                 onClose={() => setIsMenuOpen(false)}
               />
               <MobileNavItem

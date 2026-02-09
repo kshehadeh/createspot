@@ -8,6 +8,7 @@ import {
   LogOut,
   Users,
   LayoutGrid,
+  Landmark,
   Sparkles,
   Info,
   Mail,
@@ -73,6 +74,12 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.map",
     parentPath: "/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.global.icon,
+  },
+
+  museums: {
+    path: "/museums",
+    label: "navigation.museums",
+    icon: Landmark,
   },
 
   // Prompt routes
