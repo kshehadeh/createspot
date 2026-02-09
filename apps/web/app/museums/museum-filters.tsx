@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,6 +24,7 @@ interface MuseumFiltersProps {
   facets: MuseumFacetsData;
   initialQuery?: string;
   initialMuseums?: string[];
+  initialArtists?: string[];
   initialMediums?: string[];
   initialGenres?: string[];
   initialDateStart?: number;
@@ -34,6 +35,7 @@ export function MuseumFilters({
   facets,
   initialQuery = "",
   initialMuseums = [],
+  initialArtists = [],
   initialMediums = [],
   initialGenres = [],
   initialDateStart,
@@ -46,6 +48,8 @@ export function MuseumFilters({
   const [searchValue, setSearchValue] = useState(initialQuery);
   const [selectedMuseums, setSelectedMuseums] =
     useState<string[]>(initialMuseums);
+  const [selectedArtists, setSelectedArtists] =
+    useState<string[]>(initialArtists);
   const [selectedMediums, setSelectedMediums] =
     useState<string[]>(initialMediums);
   const [selectedGenres, setSelectedGenres] = useState<string[]>(initialGenres);
@@ -66,6 +70,10 @@ export function MuseumFilters({
   }, [initialMuseums.join(",")]);
 
   useEffect(() => {
+    setSelectedArtists(initialArtists);
+  }, [initialArtists.join(",")]);
+
+  useEffect(() => {
     setSelectedMediums(initialMediums);
   }, [initialMediums.join(",")]);
 
@@ -84,6 +92,7 @@ export function MuseumFilters({
   const hasFilters = Boolean(
     searchValue.trim() ||
       selectedMuseums.length > 0 ||
+      selectedArtists.length > 0 ||
       selectedMediums.length > 0 ||
       selectedGenres.length > 0 ||
       dateStartValue.trim() ||
@@ -93,6 +102,7 @@ export function MuseumFilters({
   const updateParams = (updates: {
     q?: string | null;
     museums?: string[];
+    artists?: string[];
     mediums?: string[];
     genres?: string[];
     dateStart?: number | null;
@@ -107,6 +117,10 @@ export function MuseumFilters({
     if (updates.museums !== undefined) {
       params.delete("museum");
       updates.museums.forEach((m) => params.append("museum", m));
+    }
+    if (updates.artists !== undefined) {
+      params.delete("artist");
+      updates.artists.forEach((a) => params.append("artist", a));
     }
     if (updates.mediums !== undefined) {
       params.delete("medium");
@@ -149,6 +163,7 @@ export function MuseumFilters({
   const handleClear = () => {
     setSearchValue("");
     setSelectedMuseums([]);
+    setSelectedArtists([]);
     setSelectedMediums([]);
     setSelectedGenres([]);
     setDateStartValue("");
@@ -156,12 +171,30 @@ export function MuseumFilters({
     updateParams({
       q: null,
       museums: [],
+      artists: [],
       mediums: [],
       genres: [],
       dateStart: null,
       dateEnd: null,
     });
   };
+
+  const searchArtists = useCallback(
+    async (query: string): Promise<MultiSelectOption[]> => {
+      const res = await fetch(
+        `/api/museums/artists?q=${encodeURIComponent(query)}`,
+      );
+      if (!res.ok) return [];
+      const data = await res.json();
+      return (data.artists || []).map(
+        (a: { value: string; label: string }) => ({
+          value: a.value,
+          label: a.label,
+        }),
+      );
+    },
+    [],
+  );
 
   const museumOptions: MultiSelectOption[] = facets.museumIds.map((id) => ({
     value: id,
@@ -229,6 +262,22 @@ export function MuseumFilters({
                   />
                 </div>
               )}
+              <div className="min-w-[180px] flex-1">
+                <MultiSelect
+                  options={selectedArtists.map((name) => ({
+                    value: name,
+                    label: name,
+                  }))}
+                  selected={selectedArtists}
+                  onSelectionChange={(selected) => {
+                    setSelectedArtists(selected);
+                    updateParams({ artists: selected });
+                  }}
+                  placeholder={t("artistPlaceholder")}
+                  searchable
+                  onSearch={searchArtists}
+                />
+              </div>
               {mediumOptions.length > 0 && (
                 <div className="min-w-[180px] flex-1">
                   <MultiSelect

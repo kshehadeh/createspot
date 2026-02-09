@@ -83,7 +83,27 @@ Museum data is read from local SQLite databases; no API keys are used. Optional 
 
 ## Database Models
 
-`MuseumArtwork` stores normalized records for curated pieces. Key searchable columns include `mediums`, `genres`, `classifications`, `tags`, and `description`. `MuseumSource` tracks per-museum configuration and sync status.
+`MuseumArtwork` stores normalized records for curated pieces. Key searchable columns include `mediums`, `genres`, `classifications`, `tags`, and `description`. The `artists` column is JSON (array of `{ name, role? }`); filtering by artist in the app uses raw SQL against this column because Prisma does not support filtering on object properties inside JSON arrays in PostgreSQL. `MuseumSource` tracks per-museum configuration and sync status.
+
+## App runtime: museums page and API
+
+The public museums experience is served from the **`/museums`** page and uses the PostgreSQL `MuseumArtwork` table (curated records synced via `scripts/museum.ts --save`).
+
+**Filters (URL and API):**
+
+- **Keyword** (`q`) — full-text over title and description
+- **Museum** (`museum`, repeatable) — one or more museum IDs
+- **Artist** (`artist`, repeatable) — one or more artist names (exact match on stored name). The UI uses a searchable dropdown that calls the artist search API.
+- **Medium** (`medium`, repeatable) — one or more medium values
+- **Style / genre** (`genre`, repeatable) — one or more genre or classification values
+- **Date range** (`dateStart`, `dateEnd`) — year range
+
+**APIs:**
+
+- **`GET /api/museums`** — Returns paginated artworks. Query params: `q`, `museum`, `artist`, `medium`, `genre`, `dateStart`, `dateEnd`, `skip`, `take`. Implemented in `app/api/museums/route.ts`; uses `getMuseumArtworks()` in `lib/museums/queries.ts`.
+- **`GET /api/museums/artists?q=<query>`** — Returns artist names for the artist filter dropdown. Empty `q` returns top artists by artwork count; non-empty `q` returns names matching the search (case-insensitive). Response: `{ artists: { value, label }[] }`. Implemented in `app/api/museums/artists/route.ts` via raw SQL on the `artists` JSON column.
+
+**Components:** `app/museums/museum-filters.tsx` (filter bar including searchable artist MultiSelect), `app/museums/museum-grid.tsx` (grid and infinite scroll), `app/museums/museum-lightbox.tsx` (full-screen view). Filter state is reflected in the URL so results are shareable and load-more uses the same params.
 
 ## Medium Normalization
 

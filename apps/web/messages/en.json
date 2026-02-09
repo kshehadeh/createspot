@@ -983,6 +983,8 @@
       "keywordSearchDescription": "searches across artwork titles and descriptions to help you find pieces by subject, theme, or artist.",
       "museumFilter": "Museum filter",
       "museumFilterDescription": "lets you narrow results to one or more of the three collections.",
+      "artistFilter": "Artist filter",
+      "artistFilterDescription": "lets you search by artist name and filter to artworks by one or more artists.",
       "mediumFilter": "Medium filter",
       "mediumFilterDescription": "focuses on specific materials like oil on canvas, watercolor, photography, or sculpture.",
       "styleFilter": "Style and genre filter",

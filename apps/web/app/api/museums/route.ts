@@ -31,6 +31,11 @@ export async function GET(request: Request) {
     .map((g) => normalizeParam(g))
     .filter((g): g is string => Boolean(g));
 
+  const artistParams = searchParams.getAll("artist");
+  const artists = artistParams
+    .map((a) => normalizeParam(a))
+    .filter((a): a is string => Boolean(a));
+
   const skip = Math.max(parseInt(searchParams.get("skip") || "0", 10), 0);
   const takeRaw = parseInt(
     searchParams.get("take") || `${MUSEUM_PAGE_SIZE}`,
@@ -41,6 +46,7 @@ export async function GET(request: Request) {
   const filters = {
     q: normalizeParam(searchParams.get("q")),
     museums: museums.length > 0 ? museums : undefined,
+    artists: artists.length > 0 ? artists : undefined,
     mediums: mediums.length > 0 ? mediums : undefined,
     genres: genres.length > 0 ? genres : undefined,
     dateStart: parseIntParam(searchParams.get("dateStart")),

@@ -25,6 +25,7 @@ interface MuseumsPageProps {
   searchParams: Promise<{
     q?: string;
     museum?: string | string[];
+    artist?: string | string[];
     medium?: string | string[];
     genre?: string | string[];
     dateStart?: string;
@@ -50,6 +51,7 @@ export default async function MuseumsPage({ searchParams }: MuseumsPageProps) {
 
   const q = params.q?.trim() || undefined;
   const museums = normalizeArrayParam(params.museum);
+  const artists = normalizeArrayParam(params.artist);
   const mediums = normalizeArrayParam(params.medium);
   const genres = normalizeArrayParam(params.genre);
   const dateStart = parseIntParam(params.dateStart);
@@ -59,6 +61,7 @@ export default async function MuseumsPage({ searchParams }: MuseumsPageProps) {
     getMuseumArtworks({
       q,
       museums: museums.length > 0 ? museums : undefined,
+      artists: artists.length > 0 ? artists : undefined,
       mediums: mediums.length > 0 ? mediums : undefined,
       genres: genres.length > 0 ? genres : undefined,
       dateStart,
@@ -80,6 +83,7 @@ export default async function MuseumsPage({ searchParams }: MuseumsPageProps) {
         facets={facets}
         initialQuery={q ?? ""}
         initialMuseums={museums}
+        initialArtists={artists}
         initialMediums={mediums}
         initialGenres={genres}
         initialDateStart={dateStart}

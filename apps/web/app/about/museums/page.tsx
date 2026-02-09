@@ -89,6 +89,15 @@ export default async function MuseumsAboutPage() {
               <span className="shrink-0 mt-1 text-primary">•</span>
               <span>
                 <strong className="text-foreground">
+                  {t("searching.artistFilter")}
+                </strong>{" "}
+                {t("searching.artistFilterDescription")}
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="shrink-0 mt-1 text-primary">•</span>
+              <span>
+                <strong className="text-foreground">
                   {t("searching.mediumFilter")}
                 </strong>{" "}
                 {t("searching.mediumFilterDescription")}

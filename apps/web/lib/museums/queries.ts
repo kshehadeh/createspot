@@ -8,6 +8,7 @@ const FACETS_TOP_N = 50;
 export interface MuseumArtworkFilters {
   q?: string;
   museums?: string[];
+  artists?: string[];
   mediums?: string[];
   genres?: string[];
   dateStart?: number;
@@ -44,6 +45,23 @@ export async function getMuseumArtworks(
 
   if (filters.museums?.length) {
     and.push({ museumId: { in: filters.museums } });
+  }
+
+  if (filters.artists?.length) {
+    const artistIds = await prisma.$queryRaw<Array<{ id: string }>>`
+      SELECT id FROM "MuseumArtwork"
+      WHERE EXISTS (
+        SELECT 1 FROM jsonb_array_elements(artists) AS elem
+        WHERE elem->>'name' = ANY(${filters.artists}::text[])
+      )
+    `;
+    const ids = artistIds.map((r) => r.id);
+    if (ids.length > 0) {
+      and.push({ id: { in: ids } });
+    } else {
+      // No artworks match the selected artists; return empty result
+      and.push({ id: { in: [] } });
+    }
   }
 
   if (filters.mediums?.length) {

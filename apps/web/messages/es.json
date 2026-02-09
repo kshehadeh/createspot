@@ -983,6 +983,8 @@
       "keywordSearchDescription": "busca en títulos y descripciones de obras para ayudarte a encontrar piezas por tema, temática o artista.",
       "museumFilter": "Filtro de museo",
       "museumFilterDescription": "te permite reducir los resultados a una o más de las tres colecciones.",
+      "artistFilter": "Filtro de artista",
+      "artistFilterDescription": "te permite buscar por nombre de artista y filtrar obras por uno o más artistas.",
       "mediumFilter": "Filtro de medio",
       "mediumFilterDescription": "se enfoca en materiales específicos como óleo sobre lienzo, acuarela, fotografía o escultura.",
       "styleFilter": "Filtro de estilo y género",
