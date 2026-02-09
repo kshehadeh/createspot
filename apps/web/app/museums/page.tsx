@@ -79,21 +79,26 @@ export default async function MuseumsPage({ searchParams }: MuseumsPageProps) {
         <p className="mt-2 text-muted-foreground">{t("description")}</p>
       </div>
 
-      <MuseumFilters
-        facets={facets}
-        initialQuery={q ?? ""}
-        initialMuseums={museums}
-        initialArtists={artists}
-        initialMediums={mediums}
-        initialGenres={genres}
-        initialDateStart={dateStart}
-        initialDateEnd={dateEnd}
-      />
-
-      <MuseumGrid
-        initialArtworks={result.artworks}
-        initialHasMore={result.hasMore}
-      />
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+        <aside className="w-full shrink-0 lg:w-72 lg:sticky lg:top-6">
+          <MuseumFilters
+            facets={facets}
+            initialQuery={q ?? ""}
+            initialMuseums={museums}
+            initialArtists={artists}
+            initialMediums={mediums}
+            initialGenres={genres}
+            initialDateStart={dateStart}
+            initialDateEnd={dateEnd}
+          />
+        </aside>
+        <div className="min-w-0 flex-1">
+          <MuseumGrid
+            initialArtworks={result.artworks}
+            initialHasMore={result.hasMore}
+          />
+        </div>
+      </div>
     </PageLayout>
   );
 }
