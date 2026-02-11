@@ -3,8 +3,9 @@
  * Search and load museum collection data.
  *
  * Actions:
- *   search  Search across registered museum collections (local SQLite). Default.
- *   load    Load raw museum data into SQLite. Use --museum to load only specific museums.
+ *   search        Search across registered museum collections (local SQLite). Default.
+ *   load          Load raw museum data into SQLite. Use --museum to load only specific museums.
+ *   check-images  Validate image URLs in MuseumArtwork (HEAD). Use --fix to remove invalid records.
  *
  * Search usage:
  *   bun scripts/museum.ts search --query KEYWORD [options]
@@ -29,7 +30,12 @@ import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { existsSync } from "node:fs";
 import { Prisma } from "@/app/generated/prisma/client";
-import { MuseumCollections, normalizeArtistName } from "@/scripts/museums";
+import {
+  fix403ImageUrl,
+  MuseumCollections,
+  normalizeArtistName,
+  validateImageUrls,
+} from "@/scripts/museums";
 import type { ArtworkResult } from "@/scripts/museums";
 import type { Museum } from "@/scripts/museums/museum";
 
@@ -41,6 +47,7 @@ config(); // fallback: cwd .env
 
 // Use production DB if --prod is passed (must set DATABASE_URL before Prisma is loaded)
 const prodIndex = process.argv.indexOf("--prod");
+const isProd = prodIndex !== -1;
 if (prodIndex !== -1) {
   const prodUrl = process.env.PRODUCTION_DATABASE_URL;
   if (!prodUrl) {
@@ -222,14 +229,40 @@ async function runSearch(opts: {
   });
 
   if (saveToDb && results.length > 0) {
+    const resultsWithFixedUrls = results.map((a) => ({
+      ...a,
+      imageUrl: fix403ImageUrl(a.imageUrl),
+      thumbnailUrl: a.thumbnailUrl
+        ? fix403ImageUrl(a.thumbnailUrl)
+        : undefined,
+      additionalImages: (a.additionalImages ?? []).map(fix403ImageUrl),
+    }));
+    const batchUrls = new Set<string>();
+    for (const a of resultsWithFixedUrls) {
+      batchUrls.add(a.imageUrl);
+      if (a.thumbnailUrl) batchUrls.add(a.thumbnailUrl);
+      for (const u of a.additionalImages ?? []) batchUrls.add(u);
+    }
+    const invalidMap = await validateImageUrls([...batchUrls]);
+    const validResults = resultsWithFixedUrls.filter((a) => {
+      const urls = [a.imageUrl];
+      if (a.thumbnailUrl) urls.push(a.thumbnailUrl);
+      urls.push(...(a.additionalImages ?? []));
+      return !urls.some((u) => invalidMap.has(u));
+    });
+    const skipped = results.length - validResults.length;
+    if (skipped > 0) {
+      console.log(`Skipped ${skipped} artwork(s) with invalid image URL(s).`);
+    }
+
     const { prisma } = await import("@/lib/prisma");
-    const globalIds = results.map((r) => r.globalId);
+    const globalIds = validResults.map((r) => r.globalId);
     const existing = await prisma.museumArtwork.findMany({
       where: { globalId: { in: globalIds } },
       select: { globalId: true },
     });
     const existingSet = new Set(existing.map((e) => e.globalId));
-    for (const a of results) {
+    for (const a of validResults) {
       const data = artworkToMuseumArtworkData(a);
       await prisma.museumArtwork.upsert({
         where: { globalId: a.globalId },
@@ -237,10 +270,10 @@ async function runSearch(opts: {
         update: { ...data, lastSyncedAt: new Date() },
       });
     }
-    const newCount = results.length - existingSet.size;
+    const newCount = validResults.length - existingSet.size;
     const updatedCount = existingSet.size;
     console.log(
-      `Saved ${results.length} artwork(s) to database (${newCount} new, ${updatedCount} updated).`,
+      `Saved ${validResults.length} artwork(s) to database (${newCount} new, ${updatedCount} updated).`,
     );
     await prisma.$disconnect();
   }
@@ -290,6 +323,113 @@ async function runLoad(opts: { museum: string[] }): Promise<void> {
   }
 
   console.log(`Loaded ${museums.length} museum(s).`);
+}
+
+async function runCheckImages(opts: { fix: boolean }): Promise<void> {
+  const { prisma } = await import("@/lib/prisma");
+  const records = await prisma.museumArtwork.findMany({
+    select: {
+      id: true,
+      globalId: true,
+      imageUrl: true,
+      thumbnailUrl: true,
+      additionalImages: true,
+    },
+  });
+
+  const allUrls = new Set<string>();
+  for (const r of records) {
+    allUrls.add(r.imageUrl);
+    if (r.thumbnailUrl) allUrls.add(r.thumbnailUrl);
+    for (const u of r.additionalImages) allUrls.add(u);
+  }
+
+  const uniqueUrls = [...allUrls];
+  const total = uniqueUrls.length;
+  const envLabel = isProd ? " (prod)" : "";
+  console.log(
+    `Checking ${total} image URL(s) from MuseumArtwork${envLabel}…`,
+  );
+
+  const invalidMap = await validateImageUrls(uniqueUrls, {
+    onProgress(checked, t) {
+      process.stdout.write(`\r  Checked ${checked}/${t} URL(s)…`);
+    },
+  });
+  if (total > 0) {
+    process.stdout.write("\n");
+  }
+
+  if (invalidMap.size === 0) {
+    console.log("All image URLs returned 200.");
+    await prisma.$disconnect();
+    return;
+  }
+
+  console.log(`Invalid URLs (non-200): ${invalidMap.size}\n`);
+  for (const [url, info] of invalidMap) {
+    const detail =
+      info.status != null ? String(info.status) : (info.error ?? "error");
+    console.log(`  ${url} → ${detail}`);
+  }
+
+  function isFixable403(url: string): boolean {
+    const info = invalidMap.get(url);
+    return info?.status === 403 && fix403ImageUrl(url) !== url;
+  }
+
+  if (opts.fix) {
+    let updatedCount = 0;
+    const idsToRemove: string[] = [];
+
+    for (const r of records) {
+      const urls = [r.imageUrl];
+      if (r.thumbnailUrl) urls.push(r.thumbnailUrl);
+      urls.push(...r.additionalImages);
+      const invalidForRecord = urls.filter((u) => invalidMap.has(u));
+      if (invalidForRecord.length === 0) continue;
+
+      const allFixable =
+        invalidForRecord.every((u) => isFixable403(u));
+      if (allFixable) {
+        const imageUrl = invalidMap.has(r.imageUrl)
+          ? fix403ImageUrl(r.imageUrl)
+          : r.imageUrl;
+        const thumbnailUrl = r.thumbnailUrl
+          ? invalidMap.has(r.thumbnailUrl)
+            ? fix403ImageUrl(r.thumbnailUrl)
+            : r.thumbnailUrl
+          : null;
+        const additionalImages = r.additionalImages.map((u) =>
+          invalidMap.has(u) ? fix403ImageUrl(u) : u,
+        );
+        await prisma.museumArtwork.update({
+          where: { id: r.id },
+          data: { imageUrl, thumbnailUrl, additionalImages },
+        });
+        updatedCount += 1;
+      } else {
+        idsToRemove.push(r.id);
+      }
+    }
+
+    if (updatedCount > 0) {
+      console.log(
+        `\nUpdated ${updatedCount} record(s) with /full/<n>/ → /full/full/ for 403 URLs.`,
+      );
+    }
+    if (idsToRemove.length > 0) {
+      await prisma.museumArtwork.deleteMany({
+        where: { id: { in: idsToRemove } },
+      });
+      console.log(
+        `Removed ${idsToRemove.length} record(s) from the database.`,
+      );
+    }
+  }
+
+  await prisma.$disconnect();
+  process.exit(1);
 }
 
 // ---------------------------------------------------------------------------
@@ -367,6 +507,25 @@ program
   )
   .action(async (opts) => {
     await runLoad(opts);
+  });
+
+program
+  .command("check-images")
+  .description(
+    "Validate image URLs in MuseumArtwork (HEAD requests). Report non-200 URLs.",
+  )
+  .option(
+    "--fix",
+    "Remove from the database any record that has at least one invalid image URL",
+    false,
+  )
+  .option(
+    "--prod",
+    "Use production database (requires PRODUCTION_DATABASE_URL in environment)",
+    false,
+  )
+  .action(async (opts) => {
+    await runCheckImages(opts);
   });
 
 // Default to "search" when first arg is an option (e.g. -q landscape)
