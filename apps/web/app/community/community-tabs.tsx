@@ -378,9 +378,7 @@ export function CommunityTabs() {
           variant={activeTab === "blocked" ? "secondary" : "ghost"}
           size="sm"
           className={`rounded-b-none rounded-t-md border-b-2 -mb-px ${
-            activeTab === "blocked"
-              ? "border-secondary"
-              : "border-transparent"
+            activeTab === "blocked" ? "border-secondary" : "border-transparent"
           }`}
           onClick={() => setActiveTab("blocked")}
         >

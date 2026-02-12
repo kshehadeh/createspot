@@ -318,10 +318,12 @@ export function MobileNavigation({
                       pathname.startsWith(creatorBase) &&
                       !pathname.startsWith(`${creatorBase}/portfolio`) &&
                       !pathname.startsWith(`${creatorBase}/collections`);
-                    const isPortfolioActive =
-                      pathname.startsWith(`${creatorBase}/portfolio`);
-                    const isCollectionsActive =
-                      pathname.startsWith(`${creatorBase}/collections`);
+                    const isPortfolioActive = pathname.startsWith(
+                      `${creatorBase}/portfolio`,
+                    );
+                    const isCollectionsActive = pathname.startsWith(
+                      `${creatorBase}/collections`,
+                    );
                     return (
                       <>
                         <MobileNavItem
