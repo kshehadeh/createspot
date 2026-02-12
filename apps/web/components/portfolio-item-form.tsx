@@ -418,7 +418,6 @@ export function PortfolioItemForm({
     } catch (err) {
       const message =
         err instanceof Error ? err.message : t("errors.saveFailed");
-      setError(message);
       toast.error(message);
     } finally {
       setSaving(false);
@@ -427,12 +426,6 @@ export function PortfolioItemForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-          {error}
-        </div>
-      )}
-
       <div>
         <Label htmlFor="title">{t("title")}</Label>
         <Input
@@ -888,6 +881,12 @@ export function PortfolioItemForm({
         </svg>
         <span>{tUpload("ownershipNotice")}</span>
       </div>
+
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       <div className="flex gap-3">
         <Button type="submit" disabled={saving || uploading}>
