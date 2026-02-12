@@ -10,7 +10,7 @@ import {
   Text,
 } from "@react-email/components";
 import type { ReactNode } from "react";
-import { getRoute } from "@/lib/routes";
+import { buildRoutePath, getRoute } from "@/lib/routes";
 
 export interface BaseEmailProps {
   children: ReactNode;
@@ -80,7 +80,7 @@ export const BaseEmail = ({
   const siteUrl = baseUrl || "https://create.spot";
   const profileUrl =
     userId && baseUrl
-      ? `${baseUrl}${getRoute("profile").path}/${userId}`
+      ? `${baseUrl}${buildRoutePath("profile", { creatorid: userId })}`
       : undefined;
   const termsUrl = baseUrl ? `${baseUrl}${getRoute("terms").path}` : undefined;
 
