@@ -215,6 +215,11 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.creators",
     icon: Users,
   },
+  community: {
+    path: "/community",
+    label: "navigation.community",
+    icon: Users,
+  },
   favorites: {
     path: "/favorites",
     label: "navigation.favorites",

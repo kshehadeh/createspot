@@ -70,6 +70,8 @@ export async function GET() {
       emailOnFavorite: true,
       emailFeatureUpdates: true,
       emailOnBadgeAward: true,
+      emailOnNewFollowerPost: true,
+      emailOnNewFollower: true,
     },
   });
 
@@ -107,6 +109,8 @@ export async function PUT(request: NextRequest) {
     emailOnFavorite,
     emailFeatureUpdates,
     emailOnBadgeAward,
+    emailOnNewFollowerPost,
+    emailOnNewFollower,
   } = body;
 
   // Normalize and validate website URL
@@ -297,6 +301,10 @@ export async function PUT(request: NextRequest) {
     updateData.emailFeatureUpdates = emailFeatureUpdates ?? true;
   if (emailOnBadgeAward !== undefined)
     updateData.emailOnBadgeAward = emailOnBadgeAward ?? true;
+  if (emailOnNewFollowerPost !== undefined)
+    updateData.emailOnNewFollowerPost = emailOnNewFollowerPost ?? true;
+  if (emailOnNewFollower !== undefined)
+    updateData.emailOnNewFollower = emailOnNewFollower ?? true;
 
   // Handle coordinates: only update if location changed
   if (locationChanged) {
@@ -341,6 +349,8 @@ export async function PUT(request: NextRequest) {
       emailOnFavorite: true,
       emailFeatureUpdates: true,
       emailOnBadgeAward: true,
+      emailOnNewFollowerPost: true,
+      emailOnNewFollower: true,
       slug: true,
     },
   });

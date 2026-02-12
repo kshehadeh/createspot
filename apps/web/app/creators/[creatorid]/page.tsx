@@ -18,6 +18,7 @@ import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { ShareButton } from "@/components/share-button";
+import { FollowButton } from "@/components/follow-button";
 import { ProfileBadges } from "@/components/profile-badges";
 import { HintPopover } from "@/components/hint-popover";
 import { getNextPageHint } from "@/lib/hints-helper";
@@ -144,6 +145,19 @@ export default async function ProfilePage({
 
   const isOwnProfile = session?.user?.id === user.id;
   const isLoggedIn = !!session?.user;
+
+  let isFollowingCreator = false;
+  if (session?.user && !isOwnProfile) {
+    const follow = await prisma.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: session.user.id,
+          followingId: user.id,
+        },
+      },
+    });
+    isFollowingCreator = !!follow;
+  }
 
   // Get tutorial data for hints
   const tutorialData = await getTutorialData(session?.user?.id);
@@ -366,6 +380,12 @@ export default async function ProfilePage({
                         userId={user.id}
                         slug={user.slug}
                       />
+                      {isLoggedIn && !effectiveIsOwnProfile && (
+                        <FollowButton
+                          targetUserId={user.id}
+                          initialIsFollowing={isFollowingCreator}
+                        />
+                      )}
                     </div>
                     <div className="flex items-center gap-3">
                       <p className="text-sm text-foreground/90">
@@ -437,6 +457,12 @@ export default async function ProfilePage({
                     userId={user.id}
                     slug={user.slug}
                   />
+                  {isLoggedIn && !effectiveIsOwnProfile && (
+                    <FollowButton
+                      targetUserId={user.id}
+                      initialIsFollowing={isFollowingCreator}
+                    />
+                  )}
                 </div>
                 <div className="flex items-center gap-3">
                   <p className="text-sm text-muted-foreground">

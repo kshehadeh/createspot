@@ -25,6 +25,8 @@ export async function GET(request: NextRequest) {
     submissionCount,
     portfolioCount,
     totalWorkCount,
+    followersCount,
+    followingCount,
   ] = await Promise.all([
     // Get unique visitors count
     prisma.profileView.count({
@@ -64,6 +66,12 @@ export async function GET(request: NextRequest) {
     prisma.submission.count({
       where: { userId: userId },
     }),
+    prisma.follow.count({
+      where: { followingId: userId },
+    }),
+    prisma.follow.count({
+      where: { followerId: userId },
+    }),
   ]);
 
   return NextResponse.json({
@@ -74,6 +82,8 @@ export async function GET(request: NextRequest) {
       submissionCount,
       portfolioCount,
       totalWorkCount,
+      followersCount,
+      followingCount,
     },
   });
 }

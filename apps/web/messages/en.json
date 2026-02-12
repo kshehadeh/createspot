@@ -105,6 +105,12 @@
     "totalFavorites": "Total Favorites",
     "workViews": "Work Views",
     "totalWorks": "Total Works",
+    "followers": "Followers",
+    "following": "Following",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "block": "Block",
+    "unblock": "Unblock",
     "imageProtection": "Image Protection",
     "imageProtectionDescription": "Control how your images are protected from unauthorized use",
     "enableWatermark": "Add watermark to submissions",
@@ -132,6 +138,10 @@
     "emailFeatureUpdatesDescription": "Occasional updates about new features, exhibits, and community news.",
     "emailOnBadgeAward": "Badge awards",
     "emailOnBadgeAwardDescription": "Get notified when you earn a new badge for your achievements.",
+    "emailOnNewFollower": "Someone follows you",
+    "emailOnNewFollowerDescription": "Get an email when someone new follows you.",
+    "emailOnNewFollowerPost": "New work from people you follow",
+    "emailOnNewFollowerPostDescription": "Get an email when someone you follow adds new work to their portfolio.",
     "emailPreferencesSaved": "Email preferences saved",
     "emailPreferencesFailed": "Failed to save email preferences. Please try again.",
     "tutorialSettings": "Tutorial Settings",
@@ -202,6 +212,7 @@
     "imageEditor": "Image Editor",
     "explore": "Explore",
     "myHub": "My Hub",
+    "community": "Community",
     "overview": "About",
     "manageUsers": "Manage Users",
     "managePrompts": "Manage Prompts",
@@ -220,6 +231,18 @@
     "subtitle": "Submissions you've saved for later",
     "empty": "You haven't favorited any submissions yet.",
     "exploreExhibits": "Explore Exhibits"
+  },
+  "community": {
+    "title": "Community",
+    "subtitle": "People you follow and people who follow you",
+    "tabFollowers": "Followers",
+    "tabFollowing": "Following",
+    "tabBlocked": "Blocked",
+    "emptyFollowers": "No one is following you yet.",
+    "emptyFollowing": "You're not following anyone yet.",
+    "emptyBlocked": "You haven't blocked anyone.",
+    "loadMore": "Load more",
+    "anonymous": "Anonymous"
   },
   "museums": {
     "page": {
@@ -1407,6 +1430,26 @@
       "someone": "Someone",
       "previewText": "{favorerName} favorited {titleDisplay}",
       "subject": "{favorerName} favorited {titleDisplay}"
+    },
+    "newFollower": {
+      "title": "Someone followed you",
+      "message": "{followerName} is now following you.",
+      "description": "Check out their profile to see their work.",
+      "viewProfileButton": "View profile",
+      "someone": "Someone",
+      "previewText": "{followerName} started following you",
+      "subject": "{followerName} started following you"
+    },
+    "newFollowerPost": {
+      "title": "New work from someone you follow",
+      "message": "{creatorName} shared new work: {titleDisplay}.",
+      "description": "Check out what they added to their portfolio.",
+      "viewWorkButton": "View work",
+      "visitProfile": "Visit {creatorName}'s profile",
+      "newWork": "new work",
+      "someone": "A creator you follow",
+      "previewText": "{creatorName} shared {titleDisplay}",
+      "subject": "{creatorName} shared {titleDisplay}"
     },
     "critiqueNotification": {
       "subject": "{critiquerName} left a critique on {titleDisplay}",

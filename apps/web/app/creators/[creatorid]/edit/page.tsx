@@ -49,6 +49,8 @@ export default async function ProfileEditPage({
         emailOnFavorite: true,
         emailFeatureUpdates: true,
         emailOnBadgeAward: true,
+        emailOnNewFollowerPost: true,
+        emailOnNewFollower: true,
         tutorial: true,
       },
     }),
@@ -144,6 +146,8 @@ export default async function ProfileEditPage({
         initialEmailOnFavorite={user.emailOnFavorite}
         initialEmailFeatureUpdates={user.emailFeatureUpdates}
         initialEmailOnBadgeAward={user.emailOnBadgeAward}
+        initialEmailOnNewFollowerPost={user.emailOnNewFollowerPost}
+        initialEmailOnNewFollower={user.emailOnNewFollower}
         tutorial={user.tutorial}
         submissions={submissions.map((s) => ({
           id: s.id,

@@ -4,6 +4,7 @@ import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
+import { sendNewFollowerPostNotification } from "@/app/workflows/send-new-follower-post-notification";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -194,6 +195,19 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    if (finalShareStatus === "PROFILE" || finalShareStatus === "PUBLIC") {
+      after(async () => {
+        try {
+          await sendNewFollowerPostNotification({
+            submissionId: submission.id,
+            creatorId: session.user.id,
+          });
+        } catch (err) {
+          console.error("[send-new-follower-post-notification]", err);
+        }
+      });
+    }
+
     return NextResponse.json({ submission });
   }
 
@@ -295,6 +309,19 @@ export async function POST(request: NextRequest) {
         });
       } catch (err) {
         console.error("[process-uploaded-image]", err);
+      }
+    });
+  }
+
+  if (!existingSubmission) {
+    after(async () => {
+      try {
+        await sendNewFollowerPostNotification({
+          submissionId: submission.id,
+          creatorId: session.user.id,
+        });
+      } catch (err) {
+        console.error("[send-new-follower-post-notification]", err);
       }
     });
   }

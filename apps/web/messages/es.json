@@ -105,6 +105,12 @@
     "totalFavorites": "Favoritos Totales",
     "workViews": "Vistas de Trabajos",
     "totalWorks": "Trabajos Totales",
+    "followers": "Seguidores",
+    "following": "Siguiendo",
+    "follow": "Seguir",
+    "unfollow": "Dejar de seguir",
+    "block": "Bloquear",
+    "unblock": "Desbloquear",
     "imageProtection": "Protección de Imágenes",
     "imageProtectionDescription": "Controla cómo se protegen tus imágenes del uso no autorizado",
     "enableWatermark": "Añadir marca de agua a las publicaciones",
@@ -132,6 +138,10 @@
     "emailFeatureUpdatesDescription": "Actualizaciones ocasionales sobre nuevas funciones, exhibiciones y noticias de la comunidad.",
     "emailOnBadgeAward": "Insignias otorgadas",
     "emailOnBadgeAwardDescription": "Recibe una notificación cuando ganes una nueva insignia por tus logros.",
+    "emailOnNewFollower": "Alguien te sigue",
+    "emailOnNewFollowerDescription": "Recibe un correo cuando alguien nuevo te sigue.",
+    "emailOnNewFollowerPost": "Nuevo trabajo de quien sigues",
+    "emailOnNewFollowerPostDescription": "Recibe un correo cuando alguien a quien sigues añade un trabajo nuevo a su portafolio.",
     "emailPreferencesSaved": "Preferencias de correo guardadas",
     "emailPreferencesFailed": "No se pudieron guardar las preferencias de correo. Inténtalo de nuevo.",
     "tutorialSettings": "Configuración de Tutoriales",
@@ -202,6 +212,7 @@
     "imageEditor": "Editor de Imágenes",
     "explore": "Explorar",
     "myHub": "Mi Centro",
+    "community": "Comunidad",
     "overview": "Acerca de",
     "manageUsers": "Gestionar Usuarios",
     "managePrompts": "Gestionar Indicaciones",
@@ -220,6 +231,18 @@
     "subtitle": "Publicaciones que has guardado para después",
     "empty": "Aún no has guardado ninguna publicación como favorita.",
     "exploreExhibits": "Explorar Exposiciones"
+  },
+  "community": {
+    "title": "Comunidad",
+    "subtitle": "Personas que sigues y personas que te siguen",
+    "tabFollowers": "Seguidores",
+    "tabFollowing": "Siguiendo",
+    "tabBlocked": "Bloqueados",
+    "emptyFollowers": "Nadie te sigue aún.",
+    "emptyFollowing": "Aún no sigues a nadie.",
+    "emptyBlocked": "No has bloqueado a nadie.",
+    "loadMore": "Cargar más",
+    "anonymous": "Anónimo"
   },
   "museums": {
     "page": {
@@ -1407,6 +1430,26 @@
       "someone": "Alguien",
       "previewText": "{favorerName} marcó como favorito {titleDisplay}",
       "subject": "{favorerName} marcó como favorito {titleDisplay}"
+    },
+    "newFollower": {
+      "title": "Alguien te siguió",
+      "message": "{followerName} ahora te sigue.",
+      "description": "Visita su perfil para ver su trabajo.",
+      "viewProfileButton": "Ver perfil",
+      "someone": "Alguien",
+      "previewText": "{followerName} empezó a seguirte",
+      "subject": "{followerName} empezó a seguirte"
+    },
+    "newFollowerPost": {
+      "title": "Nuevo trabajo de alguien que sigues",
+      "message": "{creatorName} compartió un trabajo nuevo: {titleDisplay}.",
+      "description": "Mira lo que añadió a su portafolio.",
+      "viewWorkButton": "Ver trabajo",
+      "visitProfile": "Visitar el perfil de {creatorName}",
+      "newWork": "trabajo nuevo",
+      "someone": "Un creador que sigues",
+      "previewText": "{creatorName} compartió {titleDisplay}",
+      "subject": "{creatorName} compartió {titleDisplay}"
     },
     "critiqueNotification": {
       "subject": "{critiquerName} dejó una crítica en {titleDisplay}",

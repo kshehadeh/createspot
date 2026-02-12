@@ -92,6 +92,8 @@ interface ProfileEditFormProps {
   initialEmailOnFavorite: boolean;
   initialEmailFeatureUpdates: boolean;
   initialEmailOnBadgeAward: boolean;
+  initialEmailOnNewFollowerPost: boolean;
+  initialEmailOnNewFollower: boolean;
   submissions: SubmissionOption[];
   portfolioItemCount: number;
   tutorial?: any;
@@ -118,6 +120,8 @@ export function ProfileEditForm({
   initialEmailOnFavorite,
   initialEmailFeatureUpdates,
   initialEmailOnBadgeAward,
+  initialEmailOnNewFollowerPost,
+  initialEmailOnNewFollower,
   submissions,
   portfolioItemCount,
   tutorial,
@@ -165,6 +169,12 @@ export function ProfileEditForm({
   );
   const [emailOnBadgeAward, setEmailOnBadgeAward] = useState(
     initialEmailOnBadgeAward,
+  );
+  const [emailOnNewFollowerPost, setEmailOnNewFollowerPost] = useState(
+    initialEmailOnNewFollowerPost,
+  );
+  const [emailOnNewFollower, setEmailOnNewFollower] = useState(
+    initialEmailOnNewFollower,
   );
 
   // Tutorial state
@@ -925,6 +935,8 @@ export function ProfileEditForm({
       emailOnFavorite?: boolean;
       emailFeatureUpdates?: boolean;
       emailOnBadgeAward?: boolean;
+      emailOnNewFollowerPost?: boolean;
+      emailOnNewFollower?: boolean;
     }) => {
       const toastId = toast.loading(tCommon("saving"));
       try {
@@ -999,6 +1011,22 @@ export function ProfileEditForm({
     (checked: boolean) => {
       setEmailOnBadgeAward(checked);
       saveEmailPreferences({ emailOnBadgeAward: checked });
+    },
+    [saveEmailPreferences],
+  );
+
+  const handleEmailOnNewFollowerPostChange = useCallback(
+    (checked: boolean) => {
+      setEmailOnNewFollowerPost(checked);
+      saveEmailPreferences({ emailOnNewFollowerPost: checked });
+    },
+    [saveEmailPreferences],
+  );
+
+  const handleEmailOnNewFollowerChange = useCallback(
+    (checked: boolean) => {
+      setEmailOnNewFollower(checked);
+      saveEmailPreferences({ emailOnNewFollower: checked });
     },
     [saveEmailPreferences],
   );
@@ -1642,6 +1670,36 @@ export function ProfileEditForm({
                 <Switch
                   checked={emailOnBadgeAward}
                   onCheckedChange={handleEmailOnBadgeAwardChange}
+                />
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-4">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground">
+                    {t("emailOnNewFollower")}
+                  </label>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("emailOnNewFollowerDescription")}
+                  </p>
+                </div>
+                <Switch
+                  checked={emailOnNewFollower}
+                  onCheckedChange={handleEmailOnNewFollowerChange}
+                />
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-4">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground">
+                    {t("emailOnNewFollowerPost")}
+                  </label>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("emailOnNewFollowerPostDescription")}
+                  </p>
+                </div>
+                <Switch
+                  checked={emailOnNewFollowerPost}
+                  onCheckedChange={handleEmailOnNewFollowerPostChange}
                 />
               </div>
             </div>

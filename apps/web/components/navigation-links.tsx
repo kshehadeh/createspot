@@ -52,6 +52,7 @@ export function DashboardNavigation({
   const promptRoute = getRoute("prompt");
   const profileRoute = getRoute("profile");
   const portfolioRoute = getRoute("portfolio");
+  const communityRoute = getRoute("community");
   const favoritesRoute = getRoute("favorites");
   const aboutRoute = getRoute("about");
   const adminUsersRoute = getRoute("adminUsers");
@@ -165,56 +166,81 @@ export function DashboardNavigation({
                 {t("create")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {user.id && (
-                <>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href={getCreatorUrl({ id: user.id, slug: user.slug })}
-                      className={cn(
-                        "flex items-center gap-2",
-                        pathname.startsWith(
-                          getCreatorUrl({ id: user.id, slug: user.slug }),
-                        ) && "bg-accent text-accent-foreground",
-                      )}
-                    >
-                      {profileRoute.icon && (
-                        <profileRoute.icon className="h-4 w-4" />
-                      )}
-                      {t("profile")}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/portfolio`}
-                      className={cn(
-                        "flex items-center gap-2",
-                        pathname.startsWith(
-                          `${getCreatorUrl({ id: user.id, slug: user.slug })}/portfolio`,
-                        ) && "bg-accent text-accent-foreground",
-                      )}
-                    >
-                      {portfolioRoute.icon && (
-                        <portfolioRoute.icon className="h-4 w-4" />
-                      )}
-                      {t("portfolio")}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/collections`}
-                      className={cn(
-                        "flex items-center gap-2",
-                        pathname.startsWith(
-                          `${getCreatorUrl({ id: user.id, slug: user.slug })}/collections`,
-                        ) && "bg-accent text-accent-foreground",
-                      )}
-                    >
-                      <FolderOpen className="h-4 w-4" />
-                      {t("collections")}
-                    </Link>
-                  </DropdownMenuItem>
-                </>
-              )}
+              {user.id && (() => {
+                const creatorBase = getCreatorUrl({
+                  id: user.id,
+                  slug: user.slug,
+                });
+                const isProfileActive =
+                  pathname.startsWith(creatorBase) &&
+                  !pathname.startsWith(`${creatorBase}/portfolio`) &&
+                  !pathname.startsWith(`${creatorBase}/collections`);
+                const isPortfolioActive =
+                  pathname.startsWith(`${creatorBase}/portfolio`);
+                const isCollectionsActive =
+                  pathname.startsWith(`${creatorBase}/collections`);
+                return (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={creatorBase}
+                        className={cn(
+                          "flex items-center gap-2",
+                          isProfileActive && "bg-accent text-accent-foreground",
+                        )}
+                      >
+                        {profileRoute.icon && (
+                          <profileRoute.icon className="h-4 w-4" />
+                        )}
+                        {t("profile")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`${creatorBase}/portfolio`}
+                        className={cn(
+                          "flex items-center gap-2",
+                          isPortfolioActive &&
+                            "bg-accent text-accent-foreground",
+                        )}
+                      >
+                        {portfolioRoute.icon && (
+                          <portfolioRoute.icon className="h-4 w-4" />
+                        )}
+                        {t("portfolio")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`${creatorBase}/collections`}
+                        className={cn(
+                          "flex items-center gap-2",
+                          isCollectionsActive &&
+                            "bg-accent text-accent-foreground",
+                        )}
+                      >
+                        <FolderOpen className="h-4 w-4" />
+                        {t("collections")}
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                );
+              })()}
+              <DropdownMenuItem asChild>
+                <Link
+                  href={communityRoute.path}
+                  className={cn(
+                    "flex items-center gap-2",
+                    isActive(communityRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  {communityRoute.icon && (
+                    <communityRoute.icon className="h-4 w-4" />
+                  )}
+                  {t("community")}
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link
                   href={favoritesRoute.path}

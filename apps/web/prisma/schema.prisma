@@ -85,6 +85,8 @@ model User {
   emailOnFavorite      Boolean      @default(true)
   emailFeatureUpdates  Boolean      @default(true)
   emailOnBadgeAward    Boolean      @default(true)
+  emailOnNewFollowerPost Boolean    @default(true)
+  emailOnNewFollower    Boolean     @default(true)
   welcomeEmailSent     Boolean      @default(false)
   tutorial             Json         @default("{\"status\": \"enabled\", \"global\": {}}")
   createdAt            DateTime     @default(now())
@@ -105,6 +107,38 @@ model User {
   notificationLogs   NotificationLog[] @relation("NotificationLogs")
   badgeAwards        BadgeAward[]
   collections        Collection[]
+  following          Follow[]       @relation("Following")
+  followers          Follow[]       @relation("Followers")
+  blocking           Block[]        @relation("Blocking")
+  blockedBy          Block[]        @relation("BlockedBy")
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String   // The user who is following
+  followingId String   // The user being followed
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model Block {
+  id         String   @id @default(cuid())
+  blockerId  String   // The user who is blocking
+  blockedId  String   // The user being blocked
+  createdAt  DateTime @default(now())
+
+  blocker User @relation("Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("BlockedBy", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
 }
 
 model Prompt {

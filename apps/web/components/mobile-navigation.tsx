@@ -308,30 +308,52 @@ export function MobileNavigation({
                   onClick={handleCreateClick}
                 />
                 <div className="mt-0.5 border-t border-border" />
-                {user.id && (
-                  <MobileNavItem
-                    href={getCreatorUrl({ id: user.id, slug: user.slug })}
-                    icon={User}
-                    label={t("profile")}
-                    onClose={() => setIsMenuOpen(false)}
-                  />
-                )}
-                {user.id && (
-                  <MobileNavItem
-                    href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/portfolio`}
-                    icon={Briefcase}
-                    label={t("portfolio")}
-                    onClose={() => setIsMenuOpen(false)}
-                  />
-                )}
-                {user.id && (
-                  <MobileNavItem
-                    href={`${getCreatorUrl({ id: user.id, slug: user.slug })}/collections`}
-                    icon={FolderOpen}
-                    label={t("collections")}
-                    onClose={() => setIsMenuOpen(false)}
-                  />
-                )}
+                {user.id &&
+                  (() => {
+                    const creatorBase = getCreatorUrl({
+                      id: user.id,
+                      slug: user.slug,
+                    });
+                    const isProfileActive =
+                      pathname.startsWith(creatorBase) &&
+                      !pathname.startsWith(`${creatorBase}/portfolio`) &&
+                      !pathname.startsWith(`${creatorBase}/collections`);
+                    const isPortfolioActive =
+                      pathname.startsWith(`${creatorBase}/portfolio`);
+                    const isCollectionsActive =
+                      pathname.startsWith(`${creatorBase}/collections`);
+                    return (
+                      <>
+                        <MobileNavItem
+                          href={creatorBase}
+                          icon={User}
+                          label={t("profile")}
+                          onClose={() => setIsMenuOpen(false)}
+                          isActive={isProfileActive}
+                        />
+                        <MobileNavItem
+                          href={`${creatorBase}/portfolio`}
+                          icon={Briefcase}
+                          label={t("portfolio")}
+                          onClose={() => setIsMenuOpen(false)}
+                          isActive={isPortfolioActive}
+                        />
+                        <MobileNavItem
+                          href={`${creatorBase}/collections`}
+                          icon={FolderOpen}
+                          label={t("collections")}
+                          onClose={() => setIsMenuOpen(false)}
+                          isActive={isCollectionsActive}
+                        />
+                      </>
+                    );
+                  })()}
+                <MobileNavItem
+                  href={getRoute("community").path}
+                  icon={Users}
+                  label={t("community")}
+                  onClose={() => setIsMenuOpen(false)}
+                />
                 <MobileNavItem
                   href={getRoute("favorites").path}
                   icon={Heart}
@@ -521,18 +543,23 @@ function MobileNavItem({
   label,
   onClose,
   isExternal = false,
+  isActive: isActiveProp,
 }: {
   href: string;
   icon: any;
   label: string;
   onClose: () => void;
   isExternal?: boolean;
+  isActive?: boolean;
 }) {
   const pathname = usePathname();
 
-  const isActive = isExternal
-    ? false
-    : pathname === href || pathname.startsWith(href);
+  const isActive =
+    isActiveProp !== undefined
+      ? isActiveProp
+      : isExternal
+        ? false
+        : pathname === href || pathname.startsWith(href);
 
   if (isExternal) {
     return (
