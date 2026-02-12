@@ -232,9 +232,7 @@ async function runSearch(opts: {
     const resultsWithFixedUrls = results.map((a) => ({
       ...a,
       imageUrl: fix403ImageUrl(a.imageUrl),
-      thumbnailUrl: a.thumbnailUrl
-        ? fix403ImageUrl(a.thumbnailUrl)
-        : undefined,
+      thumbnailUrl: a.thumbnailUrl ? fix403ImageUrl(a.thumbnailUrl) : undefined,
       additionalImages: (a.additionalImages ?? []).map(fix403ImageUrl),
     }));
     const batchUrls = new Set<string>();
@@ -347,9 +345,7 @@ async function runCheckImages(opts: { fix: boolean }): Promise<void> {
   const uniqueUrls = [...allUrls];
   const total = uniqueUrls.length;
   const envLabel = isProd ? " (prod)" : "";
-  console.log(
-    `Checking ${total} image URL(s) from MuseumArtwork${envLabel}…`,
-  );
+  console.log(`Checking ${total} image URL(s) from MuseumArtwork${envLabel}…`);
 
   const invalidMap = await validateImageUrls(uniqueUrls, {
     onProgress(checked, t) {
@@ -389,8 +385,7 @@ async function runCheckImages(opts: { fix: boolean }): Promise<void> {
       const invalidForRecord = urls.filter((u) => invalidMap.has(u));
       if (invalidForRecord.length === 0) continue;
 
-      const allFixable =
-        invalidForRecord.every((u) => isFixable403(u));
+      const allFixable = invalidForRecord.every((u) => isFixable403(u));
       if (allFixable) {
         const imageUrl = invalidMap.has(r.imageUrl)
           ? fix403ImageUrl(r.imageUrl)
@@ -422,9 +417,7 @@ async function runCheckImages(opts: { fix: boolean }): Promise<void> {
       await prisma.museumArtwork.deleteMany({
         where: { id: { in: idsToRemove } },
       });
-      console.log(
-        `Removed ${idsToRemove.length} record(s) from the database.`,
-      );
+      console.log(`Removed ${idsToRemove.length} record(s) from the database.`);
     }
   }
 
