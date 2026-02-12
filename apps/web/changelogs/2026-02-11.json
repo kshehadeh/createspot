@@ -1,0 +1,1 @@
+[{"time":"2026-02-11T07:50:04-0500","commit":"3e1d183d062fad8c254c16f8a843bdbf75efc834","type":"improvement","area":"content","description":"Add image URL validation and check-images command for museum artworks; filter invalid URLs in runSearch","audience":"development","impact":"patch","version":"2.4.0"}]
