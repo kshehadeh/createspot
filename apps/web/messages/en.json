@@ -18,6 +18,7 @@
     "success": "Success",
     "warning": "Warning",
     "learnMore": "Learn more",
+    "view": "View",
     "viewAll": "View all",
     "none": "None",
     "unsavedChanges": "Unsaved changes"
@@ -696,7 +697,9 @@
   "upload": {
     "ownershipNotice": "You retain all rights to your content. Create Spot has no rights to your submissions.",
     "watermarkEnabled": "Watermark will be applied to uploads.",
-    "changeSettings": "Change settings"
+    "changeSettings": "Change settings",
+    "submissionSaved": "Submission saved",
+    "submissionFailed": "Submission failed. Please try again."
   },
   "terms": {
     "title": "Terms of Service | Create Spot",

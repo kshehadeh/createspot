@@ -8,6 +8,7 @@ import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import { fetcher } from "@/lib/swr";
 import {
   Crosshair,
@@ -260,6 +261,8 @@ export function PortfolioItemForm({
     setSaving(true);
     setError(null);
 
+    let submissionIdToView: string | null = null;
+
     try {
       const trimmedTags = tags
         .map((tag) => tag.trim())
@@ -285,6 +288,8 @@ export function PortfolioItemForm({
         if (!response.ok) {
           throw new Error(t("errors.createFailed"));
         }
+        const data = await response.json();
+        submissionIdToView = data.submission?.id ?? null;
       } else if (initialData) {
         const response = await fetch(`/api/submissions/${initialData.id}`, {
           method: "PUT",
@@ -305,6 +310,7 @@ export function PortfolioItemForm({
         if (!response.ok) {
           throw new Error(t("errors.updateFailed"));
         }
+        submissionIdToView = initialData.id;
 
         // Save progressions changes
         if (initialData?.id && progressions.length > 0) {
@@ -375,6 +381,21 @@ export function PortfolioItemForm({
         }
       }
 
+      if (submissionIdToView && session?.user?.id) {
+        const viewHref = `${getCreatorUrl({
+          id: session.user.id,
+          slug: session.user.slug ?? null,
+        })}/s/${submissionIdToView}`;
+        toast.success(tUpload("submissionSaved"), {
+          action: {
+            label: tCommon("view"),
+            onClick: () => router.push(viewHref),
+          },
+        });
+      } else {
+        toast.success(tUpload("submissionSaved"));
+      }
+
       if (onSuccess) {
         // Pass the updated data back for edit mode
         const updatedData: SubmissionData | undefined = initialData
@@ -394,8 +415,11 @@ export function PortfolioItemForm({
       } else {
         router.refresh();
       }
-    } catch {
-      setError(t("errors.saveFailed"));
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : t("errors.saveFailed");
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

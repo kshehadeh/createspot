@@ -18,6 +18,7 @@
     "success": "Éxito",
     "warning": "Advertencia",
     "learnMore": "Más información",
+    "view": "Ver",
     "viewAll": "Ver todo",
     "none": "Ninguno",
     "unsavedChanges": "Cambios sin guardar"
@@ -696,7 +697,9 @@
   "upload": {
     "ownershipNotice": "Conservas todos los derechos sobre tu contenido. Create Spot no tiene derechos sobre tus publicaciones.",
     "watermarkEnabled": "Se aplicará marca de agua a las subidas.",
-    "changeSettings": "Cambiar ajustes"
+    "changeSettings": "Cambiar ajustes",
+    "submissionSaved": "Publicación guardada",
+    "submissionFailed": "Error al guardar. Inténtalo de nuevo."
   },
   "terms": {
     "title": "Términos de Servicio | Create Spot",

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import type { Submission } from "@/app/generated/prisma/client";
 import { TextThumbnail } from "@/components/text-thumbnail";
 
@@ -52,6 +53,7 @@ export function SubmissionSlots({
   const router = useRouter();
   const { data: session } = useSession();
   const t = useTranslations("upload");
+  const tCommon = useTranslations("common");
   const [activeSlot, setActiveSlot] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -232,6 +234,8 @@ export function SubmissionSlots({
     setIsSaving(true);
     setError(null);
 
+    let submissionId: string | null = null;
+
     try {
       // If using a portfolio item, link it to the prompt
       if (selectedPortfolioId) {
@@ -251,6 +255,7 @@ export function SubmissionSlots({
           const data = await response.json();
           throw new Error(data.error || "Failed to link portfolio item");
         }
+        submissionId = selectedPortfolioId;
       } else {
         // Regular submission flow
         const response = await fetch("/api/submissions", {
@@ -268,6 +273,9 @@ export function SubmissionSlots({
           throw new Error(data.error || "Failed to save");
         }
 
+        const data = await response.json();
+        submissionId = data.submission?.id ?? null;
+
         // Clean up any replaced images (keep only the saved one)
         await cleanupUploadedImages(formData.imageUrl);
 
@@ -283,8 +291,26 @@ export function SubmissionSlots({
       setError(null);
       setSelectedPortfolioId(null);
       router.refresh();
+
+      if (submissionId && session?.user?.id) {
+        const viewHref = `${getCreatorUrl({
+          id: session.user.id,
+          slug: session.user.slug ?? null,
+        })}/s/${submissionId}`;
+        toast.success(t("submissionSaved"), {
+          action: {
+            label: tCommon("view"),
+            onClick: () => router.push(viewHref),
+          },
+        });
+      } else {
+        toast.success(t("submissionSaved"));
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
+      const message =
+        err instanceof Error ? err.message : t("submissionFailed");
+      setError(message);
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }
