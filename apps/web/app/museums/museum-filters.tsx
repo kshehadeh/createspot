@@ -268,6 +268,7 @@ export function MuseumFilters({
               updateParams({ museums: selected });
             }}
             placeholder={t("museumPlaceholder")}
+            dropdownTitle={t("museumFilterTitle")}
             className="w-full"
           />
         </div>
@@ -289,6 +290,7 @@ export function MuseumFilters({
             updateParams({ artists: selected });
           }}
           placeholder={t("artistPlaceholder")}
+          dropdownTitle={t("artistFilterTitle")}
           searchable
           onSearch={searchArtists}
           className="w-full"
@@ -309,6 +311,7 @@ export function MuseumFilters({
               updateParams({ mediums: selected });
             }}
             placeholder={t("mediumPlaceholder")}
+            dropdownTitle={t("mediumFilterTitle")}
             searchable
             className="w-full"
           />
@@ -329,6 +332,7 @@ export function MuseumFilters({
               updateParams({ genres: selected });
             }}
             placeholder={t("stylePlaceholder")}
+            dropdownTitle={t("styleFilterTitle")}
             searchable
             className="w-full"
           />
@@ -394,7 +398,7 @@ export function MuseumFilters({
   }
 
   return (
-    <Card className="rounded-2xl border shadow-sm">
+    <Card className="rounded-2xl border-0 shadow-none">
       <CardContent className="p-4">{formContent}</CardContent>
     </Card>
   );

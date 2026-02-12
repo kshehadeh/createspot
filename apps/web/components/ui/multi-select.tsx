@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Check, ChevronDown, X, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Popover,
   PopoverContent,
@@ -22,6 +23,8 @@ export interface MultiSelectProps {
   selected: string[];
   onSelectionChange: (selected: string[]) => void;
   placeholder?: string;
+  /** Shown in the dropdown header on mobile (e.g. "Artist filter"). */
+  dropdownTitle?: string;
   className?: string;
   searchable?: boolean;
   onSearch?: (query: string) => Promise<MultiSelectOption[]>;
@@ -33,10 +36,12 @@ export function MultiSelect({
   selected,
   onSelectionChange,
   placeholder = "Select options...",
+  dropdownTitle,
   className,
   searchable = false,
   onSearch,
 }: MultiSelectProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [searchResults, setSearchResults] = React.useState<MultiSelectOption[]>(
@@ -233,6 +238,23 @@ export function MultiSelect({
         className="w-[var(--radix-popover-trigger-width)] p-0"
         align="start"
       >
+        <div className="flex items-center justify-between border-b border-border p-2 md:hidden">
+          {dropdownTitle ? (
+            <span className="text-sm font-medium text-foreground">
+              {dropdownTitle}
+            </span>
+          ) : (
+            <span />
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setOpen(false)}
+          >
+            {t("done")}
+          </Button>
+        </div>
         {searchable && (
           <div className="border-b border-border p-2">
             <div className="relative">

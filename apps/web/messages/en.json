@@ -233,9 +233,13 @@
       "searchPlaceholder": "Search titles or keywords...",
       "search": "Search",
       "museumPlaceholder": "Filter by museum...",
+      "museumFilterTitle": "Museum filter",
       "artistPlaceholder": "Filter by artist...",
+      "artistFilterTitle": "Artist filter",
       "mediumPlaceholder": "Filter by medium...",
+      "mediumFilterTitle": "Medium filter",
       "stylePlaceholder": "Filter by style...",
+      "styleFilterTitle": "Style filter",
       "dateStartPlaceholder": "From year",
       "dateEndPlaceholder": "To year",
       "clear": "Clear"
