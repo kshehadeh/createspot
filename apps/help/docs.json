@@ -48,6 +48,14 @@
               "creators/portfolio/social-sharing",
               "creators/portfolio/downloading-work"
             ]
+          },
+          {
+            "group": "Community",
+            "pages": [
+              "creators/community",
+              "creators/community/followers-and-following",
+              "creators/community/blocking"
+            ]
           }
         ]
       },

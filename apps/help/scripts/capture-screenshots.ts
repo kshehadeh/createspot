@@ -59,6 +59,7 @@ const authCaptures: Capture[] = [
   { name: "this-week-gallery", url: "/prompt/this-week", waitUntil: "networkidle" },
   { name: "play-submit", url: "/prompt/play", waitUntil: "networkidle" },
   { name: "prompt-history", url: "/prompt/history", waitUntil: "networkidle" },
+  { name: "community", url: "/community", waitUntil: "networkidle" },
 ];
 
 async function login(page: import("playwright").Page): Promise<boolean> {
