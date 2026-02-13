@@ -92,6 +92,16 @@ const HINTS_CONFIG: Record<string, HintConfig[]> = {
         description: "progressionsDidYouKnowDescription",
       },
     },
+    {
+      key: "communityDidYouKnow",
+      order: 6,
+      fixedPosition: { bottom: 24, right: 24 },
+      showArrow: false,
+      translationKeys: {
+        title: "communityDidYouKnowTitle",
+        description: "communityDidYouKnowDescription",
+      },
+    },
   ],
   "portfolio-view": [
     {
