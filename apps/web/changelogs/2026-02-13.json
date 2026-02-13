@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-02-13T03:50:02-0500",
+    "commit": "9358f436fd4d35d955b78d5299340f702e586f04",
+    "type": "improvement",
+    "area": "content",
+    "description": "Improve museum filters UX with icons instead of labels, compact search with icon button inside input, Landmark icon for museum filter, and museum filter moved to bottom",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.4.1"
+  }
+]
