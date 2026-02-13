@@ -13,7 +13,7 @@ import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { Card, CardContent } from "@/components/ui/card";
 
-interface ExhibitionSubmission {
+export interface ExhibitionSubmission {
   id: string;
   title: string | null;
   imageUrl: string | null;
@@ -42,6 +42,8 @@ interface ExhibitionGridProps {
   isLoggedIn: boolean;
   initialHasMore: boolean;
   showWordInsteadOfTitle?: boolean;
+  loadMoreEndpoint?: string;
+  loadMoreParams?: Record<string, string>;
 }
 
 export function ExhibitionGrid({
@@ -49,6 +51,8 @@ export function ExhibitionGrid({
   isLoggedIn,
   initialHasMore,
   showWordInsteadOfTitle = false,
+  loadMoreEndpoint,
+  loadMoreParams,
 }: ExhibitionGridProps) {
   const [items, setItems] = useState(submissions);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -72,11 +76,14 @@ export function ExhibitionGrid({
     setLoadError(null);
 
     try {
-      const params = new URLSearchParams(queryString);
+      const params = loadMoreEndpoint
+        ? new URLSearchParams(loadMoreParams)
+        : new URLSearchParams(queryString);
       params.set("skip", nextSkip.toString());
       params.set("take", `${EXHIBITION_PAGE_SIZE}`);
 
-      const response = await fetch(`/api/exhibition?${params.toString()}`);
+      const endpoint = loadMoreEndpoint ?? "/api/exhibition";
+      const response = await fetch(`${endpoint}?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error("loadMoreError");
@@ -96,7 +103,14 @@ export function ExhibitionGrid({
     } finally {
       setIsLoading(false);
     }
-  }, [queryString, nextSkip, isLoading, hasMore]);
+  }, [
+    queryString,
+    nextSkip,
+    isLoading,
+    hasMore,
+    loadMoreEndpoint,
+    loadMoreParams,
+  ]);
 
   const submissionIds = items.map((submission) => submission.id);
 

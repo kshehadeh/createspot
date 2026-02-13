@@ -8,8 +8,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getCreatorUrl } from "@/lib/utils";
 import { UserMinus, UserX, UserCheck } from "lucide-react";
+import {
+  ExhibitionGrid,
+  type ExhibitionSubmission,
+} from "@/app/exhibition/exhibition-grid";
 
-type TabType = "followers" | "following" | "blocked";
+type TabType = "recents" | "followers" | "following" | "blocked";
 
 interface CommunityUser {
   id: string;
@@ -20,7 +24,12 @@ interface CommunityUser {
   isBlocked?: boolean;
 }
 
-function useCommunityList(type: TabType) {
+interface CommunityTabsProps {
+  recentSubmissions: ExhibitionSubmission[];
+  recentHasMore: boolean;
+}
+
+function useCommunityList(type: Exclude<TabType, "recents">) {
   const [items, setItems] = useState<CommunityUser[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -75,6 +84,33 @@ function useCommunityList(type: TabType) {
     removeUser,
     setUserBlocked,
   };
+}
+
+function RecentsTab({
+  submissions,
+  hasMore,
+}: {
+  submissions: ExhibitionSubmission[];
+  hasMore: boolean;
+}) {
+  const t = useTranslations("community");
+
+  if (submissions.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed border-border py-12 text-center">
+        <p className="text-muted-foreground">{t("followingFeedEmpty")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <ExhibitionGrid
+      submissions={submissions}
+      isLoggedIn={true}
+      initialHasMore={hasMore}
+      loadMoreEndpoint="/api/community/following"
+    />
+  );
 }
 
 function FollowingTab() {
@@ -340,13 +376,29 @@ function FollowersTab() {
   );
 }
 
-export function CommunityTabs() {
+export function CommunityTabs({
+  recentSubmissions,
+  recentHasMore,
+}: CommunityTabsProps) {
   const t = useTranslations("community");
-  const [activeTab, setActiveTab] = useState<TabType>("followers");
+  const [activeTab, setActiveTab] = useState<TabType>("recents");
 
   return (
     <div>
       <div className="mb-6 flex border-b border-border">
+        <Button
+          type="button"
+          variant={activeTab === "recents" ? "secondary" : "ghost"}
+          size="sm"
+          className={`rounded-b-none rounded-t-md border-b-2 -mb-px ${
+            activeTab === "recents"
+              ? "border-secondary"
+              : "border-transparent"
+          }`}
+          onClick={() => setActiveTab("recents")}
+        >
+          {t("tabRecents")}
+        </Button>
         <Button
           type="button"
           variant={activeTab === "followers" ? "secondary" : "ghost"}
@@ -385,6 +437,12 @@ export function CommunityTabs() {
           {t("tabBlocked")}
         </Button>
       </div>
+      {activeTab === "recents" && (
+        <RecentsTab
+          submissions={recentSubmissions}
+          hasMore={recentHasMore}
+        />
+      )}
       {activeTab === "followers" && <FollowersTab />}
       {activeTab === "following" && <FollowingTab />}
       {activeTab === "blocked" && <BlockedTab />}
