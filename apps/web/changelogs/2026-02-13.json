@@ -8,5 +8,25 @@
     "audience": "public",
     "impact": "patch",
     "version": "2.4.1"
+  },
+  {
+    "time": "2026-02-13T04:22:33-0500",
+    "commit": "ff135a18f329a59920755317d1099a00effab8c6",
+    "type": "feature",
+    "area": "profile",
+    "description": "Add Community following feed with Recents tab showing submissions from people you follow and load more API",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.5.0"
+  },
+  {
+    "time": "2026-02-13T04:22:41-0500",
+    "commit": "6a960b9477e63b859eb34996482c690820cd5bf3",
+    "type": "improvement",
+    "area": "global",
+    "description": "Add Did You Know hint for Community explaining the feed and tabs",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.5.0"
   }
 ]
