@@ -4,15 +4,24 @@ import type { FormEvent } from "react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import {
+  Calendar,
+  Landmark,
+  Paintbrush,
+  Palette,
+  Search,
+  UserCircle,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   MultiSelect,
   type MultiSelectOption,
 } from "@/components/ui/multi-select";
 import { getMuseumDisplayName } from "@/lib/museums/museum-display-names";
+
+const filterIconClass = "h-4 w-4 shrink-0 text-muted-foreground";
 
 export interface MuseumFacetsData {
   museumIds: string[];
@@ -219,66 +228,33 @@ export function MuseumFilters({
   const formContent = (
     <form onSubmit={handleSearch} className="flex flex-col gap-4">
       {/* Keyword search */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">
-          {t("searchPlaceholder")}
-        </Label>
-        <div className="relative">
-          <svg
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="relative">
+        <Input
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          className="h-9 w-full rounded-lg pr-10"
+          placeholder={t("searchPlaceholder")}
+        />
+        {isPending ? (
+          <div className="pointer-events-none absolute right-10 top-1/2 h-4 w-4 -translate-y-1/2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
+          </div>
+        ) : (
+          <Button
+            type="submit"
+            size="icon"
+            variant="ghost"
+            className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 rounded-md"
+            aria-label={t("search")}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
-            />
-          </svg>
-          <Input
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="h-9 w-full rounded-lg pl-9 pr-9"
-            placeholder={t("searchPlaceholder")}
-          />
-          {isPending && (
-            <div className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
-            </div>
-          )}
-        </div>
-        <Button type="submit" size="sm" className="w-full rounded-lg">
-          {t("search")}
-        </Button>
+            <Search className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
-      {/* Museum */}
-      {museumOptions.length > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">
-            {t("museumPlaceholder")}
-          </Label>
-          <MultiSelect
-            options={museumOptions}
-            selected={selectedMuseums}
-            onSelectionChange={(selected) => {
-              setSelectedMuseums(selected);
-              updateParams({ museums: selected });
-            }}
-            placeholder={t("museumPlaceholder")}
-            dropdownTitle={t("museumFilterTitle")}
-            className="w-full"
-          />
-        </div>
-      )}
-
       {/* Artist */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">
-          {t("artistPlaceholder")}
-        </Label>
+      <div className="flex items-center gap-2">
+        <UserCircle className={filterIconClass} aria-hidden />
         <MultiSelect
           options={selectedArtists.map((name) => ({
             value: name,
@@ -293,16 +269,14 @@ export function MuseumFilters({
           dropdownTitle={t("artistFilterTitle")}
           searchable
           onSearch={searchArtists}
-          className="w-full"
+          className="min-w-0 flex-1"
         />
       </div>
 
       {/* Medium */}
       {mediumOptions.length > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">
-            {t("mediumPlaceholder")}
-          </Label>
+        <div className="flex items-center gap-2">
+          <Paintbrush className={filterIconClass} aria-hidden />
           <MultiSelect
             options={mediumOptions}
             selected={selectedMediums}
@@ -313,17 +287,15 @@ export function MuseumFilters({
             placeholder={t("mediumPlaceholder")}
             dropdownTitle={t("mediumFilterTitle")}
             searchable
-            className="w-full"
+            className="min-w-0 flex-1"
           />
         </div>
       )}
 
       {/* Style / genre */}
       {styleOptions.length > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">
-            {t("stylePlaceholder")}
-          </Label>
+        <div className="flex items-center gap-2">
+          <Palette className={filterIconClass} aria-hidden />
           <MultiSelect
             options={styleOptions}
             selected={selectedGenres}
@@ -334,17 +306,15 @@ export function MuseumFilters({
             placeholder={t("stylePlaceholder")}
             dropdownTitle={t("styleFilterTitle")}
             searchable
-            className="w-full"
+            className="min-w-0 flex-1"
           />
         </div>
       )}
 
       {/* Date range */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">
-          {t("dateStartPlaceholder")} – {t("dateEndPlaceholder")}
-        </Label>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
+        <Calendar className={filterIconClass} aria-hidden />
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <Input
             type="number"
             placeholder={t("dateStartPlaceholder")}
@@ -360,7 +330,7 @@ export function MuseumFilters({
             min={0}
             max={2100}
           />
-          <span className="text-muted-foreground">–</span>
+          <span className="shrink-0 text-muted-foreground">–</span>
           <Input
             type="number"
             placeholder={t("dateEndPlaceholder")}
@@ -378,6 +348,24 @@ export function MuseumFilters({
           />
         </div>
       </div>
+
+      {/* Museum */}
+      {museumOptions.length > 0 && (
+        <div className="flex items-center gap-2">
+          <Landmark className={filterIconClass} aria-hidden />
+          <MultiSelect
+            options={museumOptions}
+            selected={selectedMuseums}
+            onSelectionChange={(selected) => {
+              setSelectedMuseums(selected);
+              updateParams({ museums: selected });
+            }}
+            placeholder={t("museumPlaceholder")}
+            dropdownTitle={t("museumFilterTitle")}
+            className="min-w-0 flex-1"
+          />
+        </div>
+      )}
 
       {hasFilters && (
         <Button
