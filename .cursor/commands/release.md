@@ -1,0 +1,1 @@
+Start by using the git-commit skill to commit the current changes.  Then use the changelog, version-bump to prepare the changelog, bump the version and then commit the changelog and version bump.  Then push the code to the remote.
