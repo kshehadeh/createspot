@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-02-14T05:43:20-0500",
+    "commit": "1469d580f087807137ea29b7a28388309c9f37ae",
+    "type": "improvement",
+    "area": "content",
+    "description": "Museum and other filter dropdowns show \"N selected\" when multiple options are chosen instead of listing all badges",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.5.1"
+  }
+]
