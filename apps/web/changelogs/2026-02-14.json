@@ -8,5 +8,15 @@
     "audience": "public",
     "impact": "minor",
     "version": "2.6.0"
+  },
+  {
+    "time": "2026-02-14T12:00:00Z",
+    "commit": "67e80b876ff61f40711d975cabd545d6b40520dd",
+    "type": "feature",
+    "area": "portfolio",
+    "description": "Add optional reference or inspiration image to submissions; editable in portfolio item form and visible on submission detail.",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.7.0"
   }
 ]
