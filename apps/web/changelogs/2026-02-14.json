@@ -18,5 +18,15 @@
     "audience": "public",
     "impact": "minor",
     "version": "2.7.0"
+  },
+  {
+    "time": "2026-02-14T18:00:00Z",
+    "commit": "604c2c726ecf442f617c5c540388a1c9ca9eb0a5",
+    "type": "improvement",
+    "area": "home",
+    "description": "Refine homepage feature highlight cards: inline descriptions beside titles, use full-width outline buttons for CTAs, and shorten all copy for a cleaner layout.",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.7.1"
   }
 ]

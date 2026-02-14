@@ -753,7 +753,7 @@
     "description": "Una comunidad creativa para artistas y escritores para compartir su trabajo, construir portafolios y participar en indicaciones creativas semanales.",
     "heroTitle": "Un hogar para tu",
     "heroTitleHighlight": "creatividad",
-    "heroDescription": "Un hogar para fotógrafos, pintores, ilustradores, escritores, escultores y cualquier otra persona que quiera crear. Construye tu portafolio, comparte tu viaje creativo e inspírate con indicaciones semanales.",
+    "heroDescription": "Construye tu portafolio, comparte tu trabajo e inspírate.",
     "heroExploreCta": "Explora Exposiciones",
     "learnMore": "Más información →",
     "exhibits": "Exposiciones",
@@ -770,23 +770,23 @@
     "highlights": {
       "portfolios": {
         "title": "Portafolios",
-        "description": "Construye y comparte tu trabajo creativo en un portafolio que controlas.",
+        "description": "Tu trabajo, tu portafolio.",
         "ctaSignIn": "Iniciar sesión",
         "ctaView": "Ver Portafolio"
       },
       "community": {
         "title": "Comunidad",
-        "description": "Ve el trabajo de personas que sigues y conéctate con otros creativos.",
+        "description": "Publicaciones de quienes sigues.",
         "cta": "Explorar"
       },
       "museums": {
         "title": "Museos",
-        "description": "Explora arte de colecciones de museos y encuentra inspiración.",
+        "description": "Arte de colecciones de primer nivel.",
         "cta": "Explorar"
       },
       "exhibits": {
         "title": "Exposiciones",
-        "description": "Explora exposiciones curadas y la colección permanente.",
+        "description": "Exposiciones curadas y galería.",
         "cta": "Ver Exposiciones"
       }
     },

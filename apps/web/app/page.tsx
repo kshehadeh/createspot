@@ -205,42 +205,30 @@ export default async function Home() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
               <CardHeader className="p-5 pb-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 ring-1 ring-emerald-500/30 dark:from-emerald-400/15 dark:to-teal-400/15 dark:ring-emerald-400/25">
                     <Briefcase className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                    {t("highlights.portfolios.title")}
-                  </CardTitle>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
+                      {t("highlights.portfolios.title")}
+                    </CardTitle>
+                    <CardDescription className="text-sm leading-relaxed text-muted-foreground">
+                      {t("highlights.portfolios.description")}
+                    </CardDescription>
+                  </div>
                 </div>
-                <CardDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {t("highlights.portfolios.description")}
-                </CardDescription>
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
                 {session?.user ? (
-                  <Button
-                    asChild
-                    variant="link"
-                    className="h-auto p-0 text-sm font-medium"
-                  >
-                    <Link
-                      href={`${getCreatorUrl(session.user)}/portfolio`}
-                      className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link href={`${getCreatorUrl(session.user)}/portfolio`}>
                       {t("highlights.portfolios.ctaView")}
                     </Link>
                   </Button>
                 ) : (
-                  <Button
-                    asChild
-                    variant="link"
-                    className="h-auto p-0 text-sm font-medium"
-                  >
-                    <Link
-                      href="/api/auth/signin"
-                      className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link href="/api/auth/signin">
                       {t("highlights.portfolios.ctaSignIn")}
                     </Link>
                   </Button>
@@ -250,28 +238,23 @@ export default async function Home() {
 
             <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
               <CardHeader className="p-5 pb-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 ring-1 ring-sky-500/30 dark:from-sky-400/15 dark:to-indigo-400/15 dark:ring-sky-400/25">
                     <Users className="h-5 w-5 text-sky-600 dark:text-sky-400" />
                   </div>
-                  <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                    {t("highlights.community.title")}
-                  </CardTitle>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
+                      {t("highlights.community.title")}
+                    </CardTitle>
+                    <CardDescription className="text-sm leading-relaxed text-muted-foreground">
+                      {t("highlights.community.description")}
+                    </CardDescription>
+                  </div>
                 </div>
-                <CardDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {t("highlights.community.description")}
-                </CardDescription>
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
-                <Button
-                  asChild
-                  variant="link"
-                  className="h-auto p-0 text-sm font-medium"
-                >
-                  <Link
-                    href="/community"
-                    className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
+                <Button asChild variant="outline" size="sm" className="w-full">
+                  <Link href="/community">
                     {t("highlights.community.cta")}
                   </Link>
                 </Button>
@@ -280,28 +263,23 @@ export default async function Home() {
 
             <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
               <CardHeader className="p-5 pb-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 ring-1 ring-amber-500/30 dark:from-amber-400/15 dark:to-rose-400/15 dark:ring-amber-400/25">
                     <Landmark className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                   </div>
-                  <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                    {t("highlights.museums.title")}
-                  </CardTitle>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
+                      {t("highlights.museums.title")}
+                    </CardTitle>
+                    <CardDescription className="text-sm leading-relaxed text-muted-foreground">
+                      {t("highlights.museums.description")}
+                    </CardDescription>
+                  </div>
                 </div>
-                <CardDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {t("highlights.museums.description")}
-                </CardDescription>
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
-                <Button
-                  asChild
-                  variant="link"
-                  className="h-auto p-0 text-sm font-medium"
-                >
-                  <Link
-                    href="/museums"
-                    className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
+                <Button asChild variant="outline" size="sm" className="w-full">
+                  <Link href="/museums">
                     {t("highlights.museums.cta")}
                   </Link>
                 </Button>
@@ -310,28 +288,23 @@ export default async function Home() {
 
             <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
               <CardHeader className="p-5 pb-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 ring-1 ring-violet-500/30 dark:from-violet-400/15 dark:to-fuchsia-400/15 dark:ring-violet-400/25">
                     <LayoutGrid className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                   </div>
-                  <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                    {t("highlights.exhibits.title")}
-                  </CardTitle>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
+                      {t("highlights.exhibits.title")}
+                    </CardTitle>
+                    <CardDescription className="text-sm leading-relaxed text-muted-foreground">
+                      {t("highlights.exhibits.description")}
+                    </CardDescription>
+                  </div>
                 </div>
-                <CardDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {t("highlights.exhibits.description")}
-                </CardDescription>
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
-                <Button
-                  asChild
-                  variant="link"
-                  className="h-auto p-0 text-sm font-medium"
-                >
-                  <Link
-                    href="/exhibition"
-                    className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
+                <Button asChild variant="outline" size="sm" className="w-full">
+                  <Link href="/exhibition">
                     {t("highlights.exhibits.cta")}
                   </Link>
                 </Button>

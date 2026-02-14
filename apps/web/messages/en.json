@@ -753,7 +753,7 @@
     "description": "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts.",
     "heroTitle": "A home for your",
     "heroTitleHighlight": "creativity",
-    "heroDescription": "A home for photographers, painters, illustrators, writers, sculptors, and anyone else who wants to create. Build your portfolio, share your creative journey, and get inspired by weekly prompts.",
+    "heroDescription": "Build your portfolio, share your work, and get inspired.",
     "heroExploreCta": "Explore Exhibits",
     "learnMore": "Learn more →",
     "exhibits": "Exhibits",
@@ -770,23 +770,23 @@
     "highlights": {
       "portfolios": {
         "title": "Portfolios",
-        "description": "Build and share your creative work in a portfolio you control.",
+        "description": "Your work, your portfolio.",
         "ctaSignIn": "Sign In",
         "ctaView": "View Portfolio"
       },
       "community": {
         "title": "Community",
-        "description": "See work from people you follow and connect with fellow creatives.",
+        "description": "Feed from people you follow.",
         "cta": "Explore"
       },
       "museums": {
         "title": "Museums",
-        "description": "Browse art from museum collections and find inspiration.",
+        "description": "Art from world-class collections.",
         "cta": "Browse"
       },
       "exhibits": {
         "title": "Exhibits",
-        "description": "Explore curated exhibits and the permanent collection.",
+        "description": "Curated exhibits and the gallery.",
         "cta": "View Exhibits"
       }
     },
