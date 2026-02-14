@@ -48,5 +48,15 @@
     "audience": "public",
     "impact": "patch",
     "version": "2.7.3"
+  },
+  {
+    "time": "2026-02-14T23:30:00Z",
+    "commit": "669c165",
+    "type": "improvement",
+    "area": "content",
+    "description": "On mobile, overlay exhibit title, description, and curator on the bottom 30% of the featured image on exhibit view and gallery/path pages with a semi-opaque background for a cleaner hero layout.",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.7.2"
   }
 ]
