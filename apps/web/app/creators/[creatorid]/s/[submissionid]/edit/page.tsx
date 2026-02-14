@@ -26,6 +26,7 @@ async function getSubmission(id: string) {
       tags: true,
       shareStatus: true,
       critiquesEnabled: true,
+      referenceImageUrl: true,
       userId: true,
       progressions: {
         orderBy: { order: "asc" },
@@ -100,6 +101,7 @@ export default async function SubmissionEditPage({
           category: submission.category,
           shareStatus: submission.shareStatus,
           critiquesEnabled: submission.critiquesEnabled,
+          referenceImageUrl: submission.referenceImageUrl,
           progressions: submission.progressions,
         }}
         tutorialData={tutorialData}

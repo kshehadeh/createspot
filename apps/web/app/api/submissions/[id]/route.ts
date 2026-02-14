@@ -134,6 +134,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     wordIndex,
     shareStatus,
     critiquesEnabled,
+    referenceImageUrl,
   } = body;
 
   // Validate focal point if provided
@@ -198,6 +199,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     await deleteImageFromR2(existingSubmission.imageUrl);
   }
 
+  // Delete old reference image from R2 if it's being replaced or removed
+  if (
+    referenceImageUrl !== undefined &&
+    existingSubmission.referenceImageUrl &&
+    existingSubmission.referenceImageUrl !== referenceImageUrl
+  ) {
+    await deleteImageFromR2(existingSubmission.referenceImageUrl);
+  }
+
   // Build update data - only include fields that were provided
   const updateData: Record<string, unknown> = {};
 
@@ -218,6 +228,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   if (wordIndex !== undefined) updateData.wordIndex = wordIndex;
   if (critiquesEnabled !== undefined)
     updateData.critiquesEnabled = critiquesEnabled;
+  if (referenceImageUrl !== undefined)
+    updateData.referenceImageUrl = referenceImageUrl;
 
   // Handle shareStatus - if linking to a prompt, force PUBLIC
   if (promptId !== undefined && promptId !== null) {

@@ -10,6 +10,7 @@ interface SubmissionData {
   title: string | null;
   imageUrl: string | null;
   imageFocalPoint?: { x: number; y: number } | null;
+  referenceImageUrl?: string | null;
   text: string | null;
   tags: string[];
   category: string | null;

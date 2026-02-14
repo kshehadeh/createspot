@@ -26,6 +26,7 @@ async function getSubmission(id: string) {
       tags: true,
       shareStatus: true,
       critiquesEnabled: true,
+      referenceImageUrl: true,
       userId: true,
       user: {
         select: {

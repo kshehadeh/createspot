@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { ExpandableText } from "@/components/expandable-text";
@@ -14,6 +15,12 @@ import { FavoritesProvider } from "@/components/favorites-provider";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { ProgressionStrip } from "@/components/progression-strip";
 import { SocialLinks } from "@/components/social-links";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  VisuallyHidden,
+} from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HintPopover } from "@/components/hint-popover";
@@ -41,6 +48,7 @@ interface SubmissionDetailProps {
     tags: string[];
     shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
     critiquesEnabled?: boolean;
+    referenceImageUrl?: string | null;
     user: {
       id: string;
       name: string | null;
@@ -79,8 +87,10 @@ export function SubmissionDetail({
   const tExhibition = useTranslations("exhibition");
   const tSubmission = useTranslations("submission");
   const tProfile = useTranslations("profile");
+  const tReference = useTranslations("reference");
   const [mobileView, setMobileView] = useState<"image" | "text">("image");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isReferenceLightboxOpen, setIsReferenceLightboxOpen] = useState(false);
 
   // Local state for submission data that can be updated after editing
   const [submission] = useState(initialSubmission);
@@ -307,6 +317,28 @@ export function SubmissionDetail({
             )}
           </div>
 
+          {/* Reference image - shown if submission has a reference */}
+          {submission.referenceImageUrl && (
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
+                {tReference("title")}
+              </h3>
+              <button
+                onClick={() => setIsReferenceLightboxOpen(true)}
+                className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary/50 focus:border-primary focus:outline-none transition-all group bg-muted"
+                aria-label={tReference("viewReference")}
+              >
+                <Image
+                  src={submission.referenceImageUrl}
+                  alt={tReference("title")}
+                  fill
+                  className="object-cover transition-transform group-hover:scale-105"
+                  sizes="(max-width: 640px) 128px, 160px"
+                />
+              </button>
+            </div>
+          )}
+
           {/* Progressions strip - shown if submission has progressions */}
           {submission.progressions && submission.progressions.length > 0 && (
             <ProgressionStrip
@@ -335,6 +367,29 @@ export function SubmissionDetail({
           hideGoToSubmission={true}
           currentUserId={currentUserId}
         />
+      )}
+
+      {submission.referenceImageUrl && (
+        <Dialog
+          open={isReferenceLightboxOpen}
+          onOpenChange={setIsReferenceLightboxOpen}
+        >
+          <DialogContent className="max-w-4xl border-none bg-black/95 p-0">
+            <VisuallyHidden>
+              <DialogTitle>{tReference("viewReference")}</DialogTitle>
+            </VisuallyHidden>
+            <div className="relative flex items-center justify-center p-4">
+              <Image
+                src={submission.referenceImageUrl}
+                alt={tReference("title")}
+                width={1200}
+                height={900}
+                className="max-h-[80vh] w-auto rounded object-contain"
+                sizes="(max-width: 1024px) 100vw, 1024px"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {nextHint && (

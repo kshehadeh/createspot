@@ -21,8 +21,8 @@ const s3Client = new S3Client({
 interface PresignRequest {
   fileType: string;
   fileSize: number;
-  type?: "submission" | "profile" | "progression";
-  submissionId?: string; // Required when type is "progression"
+  type?: "submission" | "profile" | "progression" | "reference";
+  submissionId?: string; // Required when type is "progression" or "reference"
 }
 
 export async function POST(request: NextRequest) {
@@ -43,21 +43,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (type !== "submission" && type !== "profile" && type !== "progression") {
+    if (
+      type !== "submission" &&
+      type !== "profile" &&
+      type !== "progression" &&
+      type !== "reference"
+    ) {
       return NextResponse.json(
         {
           error:
-            "Invalid type. Must be 'submission', 'profile', or 'progression'",
+            "Invalid type. Must be 'submission', 'profile', 'progression', or 'reference'",
         },
         { status: 400 },
       );
     }
 
-    // Progression uploads require a submissionId and ownership validation
-    if (type === "progression") {
+    // Progression and reference uploads require a submissionId and ownership validation
+    if (type === "progression" || type === "reference") {
       if (!submissionId) {
         return NextResponse.json(
-          { error: "submissionId is required for progression uploads" },
+          {
+            error: `submissionId is required for ${type} uploads`,
+          },
           { status: 400 },
         );
       }
@@ -113,6 +120,8 @@ export async function POST(request: NextRequest) {
     } else if (type === "progression") {
       // Progressions are organized by submissionId for easy cleanup
       fileName = `progressions/${submissionId}/${crypto.randomUUID()}.${fileExtension}`;
+    } else if (type === "reference") {
+      fileName = `references/${submissionId}/${crypto.randomUUID()}.${fileExtension}`;
     } else {
       // Default: submissions organized by userId
       fileName = `submissions/${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;

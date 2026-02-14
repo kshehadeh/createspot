@@ -64,6 +64,7 @@ interface SubmissionData {
   title: string | null;
   imageUrl: string | null;
   imageFocalPoint?: { x: number; y: number } | null;
+  referenceImageUrl?: string | null;
   text: string | null;
   tags: string[];
   category: string | null;
@@ -101,7 +102,9 @@ export function PortfolioItemForm({
   const tCategories = useTranslations("categories");
   const tUpload = useTranslations("upload");
   const tImageEditor = useTranslations("imageEditor");
+  const tReference = useTranslations("reference");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const referenceFileInputRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState(initialData?.title || "");
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || "");
@@ -125,6 +128,12 @@ export function PortfolioItemForm({
   const [critiquesEnabled, setCritiquesEnabled] = useState(
     initialData?.critiquesEnabled ?? false,
   );
+  const [referenceImageUrl, setReferenceImageUrl] = useState(
+    initialData?.referenceImageUrl || "",
+  );
+  const [uploadingReference, setUploadingReference] = useState(false);
+  const [showRemoveReferenceConfirm, setShowRemoveReferenceConfirm] =
+    useState(false);
   const [imageMetadata, setImageMetadata] = useState<ImageMetadata | null>(
     null,
   );
@@ -245,6 +254,81 @@ export function PortfolioItemForm({
     }
   };
 
+  const handleReferenceImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file || !initialData?.id) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError(t("errors.selectImageFile"));
+      return;
+    }
+
+    if (file.size > 6 * 1024 * 1024) {
+      setError(t("errors.imageTooLarge"));
+      return;
+    }
+
+    setUploadingReference(true);
+    setError(null);
+
+    try {
+      const presignResponse = await fetch("/api/upload/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileType: file.type,
+          fileSize: file.size,
+          type: "reference",
+          submissionId: initialData.id,
+        }),
+      });
+
+      if (!presignResponse.ok) {
+        const data = await presignResponse.json().catch(() => null);
+        throw new Error(data?.error || "Failed to get upload URL");
+      }
+
+      const presignData = await presignResponse.json();
+      const { presignedUrl, publicUrl } = presignData;
+
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      setReferenceImageUrl(publicUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("errors.uploadFailed"));
+    } finally {
+      setUploadingReference(false);
+    }
+  };
+
+  const handleRemoveReferenceImage = async () => {
+    if (referenceImageUrl) {
+      try {
+        await fetch("/api/upload/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl: referenceImageUrl }),
+        });
+      } catch {
+        // Ignore deletion errors
+      }
+    }
+    setReferenceImageUrl("");
+    if (referenceFileInputRef.current) {
+      referenceFileInputRef.current.value = "";
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -303,6 +387,7 @@ export function PortfolioItemForm({
             category: category || null,
             shareStatus,
             critiquesEnabled,
+            referenceImageUrl: referenceImageUrl || null,
             ...(setIsPortfolio ? { isPortfolio: true } : {}),
           }),
         });
@@ -409,6 +494,7 @@ export function PortfolioItemForm({
               category: category || null,
               shareStatus,
               critiquesEnabled,
+              referenceImageUrl: referenceImageUrl || null,
             }
           : undefined;
         onSuccess(updatedData);
@@ -788,6 +874,110 @@ export function PortfolioItemForm({
         />
       )}
 
+      {/* Reference image - only shown when editing an existing submission */}
+      {mode === "edit" && initialData?.id && (
+        <div>
+          <Label>{tReference("title")}</Label>
+          <p className="mb-2 text-xs text-muted-foreground">
+            {tReference("description")}
+          </p>
+          {referenceImageUrl ? (
+            <div className="relative">
+              <div className="relative aspect-video w-full max-w-sm overflow-hidden rounded-lg bg-muted">
+                <Image
+                  src={referenceImageUrl}
+                  alt={tReference("title")}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 100vw, 384px"
+                />
+              </div>
+              <div className="absolute top-2 right-2">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => setShowRemoveReferenceConfirm(true)}
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div
+              onClick={() => referenceFileInputRef.current?.click()}
+              className="cursor-pointer rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/50 max-w-sm"
+            >
+              <input
+                ref={referenceFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleReferenceImageUpload}
+                className="hidden"
+              />
+              {uploadingReference ? (
+                <div className="flex items-center justify-center gap-2">
+                  <svg
+                    className="h-5 w-5 animate-spin text-muted-foreground"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span className="text-sm text-muted-foreground">
+                    {tReference("uploading")}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <ImageIcon className="mx-auto h-6 w-6 text-muted-foreground" />
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {tReference("addReference")}
+                  </p>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Remove Reference Image Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showRemoveReferenceConfirm}
+        title={tReference("removeReference")}
+        message={tReference("removeReferenceConfirm")}
+        confirmLabel={tReference("removeReference")}
+        onConfirm={() => {
+          handleRemoveReferenceImage();
+          setShowRemoveReferenceConfirm(false);
+        }}
+        onCancel={() => setShowRemoveReferenceConfirm(false)}
+      />
+
       <div>
         <Label>{t("visibility")}</Label>
         <div className="space-y-2">
@@ -889,7 +1079,10 @@ export function PortfolioItemForm({
       )}
 
       <div className="flex gap-3">
-        <Button type="submit" disabled={saving || uploading}>
+        <Button
+          type="submit"
+          disabled={saving || uploading || uploadingReference}
+        >
           {saving
             ? t("saving")
             : mode === "create"

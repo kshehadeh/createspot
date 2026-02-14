@@ -1726,6 +1726,15 @@
     "mustHaveContent": "Una progresión debe tener al menos una imagen o texto",
     "viewProgression": "Ver progresión"
   },
+  "reference": {
+    "title": "Referencia",
+    "addReference": "Agregar imagen de referencia",
+    "description": "Una imagen de inspiración o fuente para este trabajo",
+    "viewReference": "Ver imagen de referencia",
+    "removeReference": "Eliminar referencia",
+    "removeReferenceConfirm": "¿Estás seguro de que deseas eliminar la imagen de referencia?",
+    "uploading": "Subiendo referencia..."
+  },
   "welcome": {
     "submissionAlt": "Publicación creativa",
     "noSubmissionsYet": "¡Nuevas indicaciones próximamente!",

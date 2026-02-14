@@ -1726,6 +1726,15 @@
     "mustHaveContent": "A progression must have at least an image or text",
     "viewProgression": "View progression"
   },
+  "reference": {
+    "title": "Reference",
+    "addReference": "Add reference image",
+    "description": "An inspiration or source image for this work",
+    "viewReference": "View reference image",
+    "removeReference": "Remove reference",
+    "removeReferenceConfirm": "Are you sure you want to remove the reference image?",
+    "uploading": "Uploading reference..."
+  },
   "welcome": {
     "submissionAlt": "Creative submission",
     "noSubmissionsYet": "New prompts coming soon!",
