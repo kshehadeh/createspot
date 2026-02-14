@@ -107,7 +107,7 @@ export function MuseumsPageLayout({
             <button
               type="button"
               onClick={() => setIsMobileFiltersOpen(true)}
-              className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-foreground"
+              className="flex w-full min-h-[4.5rem] items-center justify-center gap-2 px-4 py-5 text-sm font-medium text-foreground"
               aria-expanded={isMobileFiltersOpen}
               aria-label={t("expandLabel")}
             >

@@ -221,13 +221,23 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
                 {session?.user ? (
-                  <Button asChild variant="outline" size="sm" className="w-full">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
                     <Link href={`${getCreatorUrl(session.user)}/portfolio`}>
                       {t("highlights.portfolios.ctaView")}
                     </Link>
                   </Button>
                 ) : (
-                  <Button asChild variant="outline" size="sm" className="w-full">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
                     <Link href="/api/auth/signin">
                       {t("highlights.portfolios.ctaSignIn")}
                     </Link>
@@ -254,9 +264,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
                 <Button asChild variant="outline" size="sm" className="w-full">
-                  <Link href="/community">
-                    {t("highlights.community.cta")}
-                  </Link>
+                  <Link href="/community">{t("highlights.community.cta")}</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -279,9 +287,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
                 <Button asChild variant="outline" size="sm" className="w-full">
-                  <Link href="/museums">
-                    {t("highlights.museums.cta")}
-                  </Link>
+                  <Link href="/museums">{t("highlights.museums.cta")}</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -304,9 +310,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
                 <Button asChild variant="outline" size="sm" className="w-full">
-                  <Link href="/exhibition">
-                    {t("highlights.exhibits.cta")}
-                  </Link>
+                  <Link href="/exhibition">{t("highlights.exhibits.cta")}</Link>
                 </Button>
               </CardContent>
             </Card>

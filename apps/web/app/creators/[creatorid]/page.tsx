@@ -457,6 +457,16 @@ export default async function ProfilePage({
                     userId={user.id}
                     slug={user.slug}
                   />
+                  {isOwnProfile && !isPublicView && (
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`${getCreatorUrl(user)}/edit`}>
+                        <Pencil className="h-4 w-4" />
+                        <span className="hidden md:inline">
+                          {t("editProfile")}
+                        </span>
+                      </Link>
+                    </Button>
+                  )}
                   {isLoggedIn && !effectiveIsOwnProfile && (
                     <FollowButton
                       targetUserId={user.id}
@@ -481,16 +491,6 @@ export default async function ProfilePage({
                 </div>
               </div>
             </div>
-            {isOwnProfile && !isPublicView && (
-              <div className="flex flex-row flex-wrap items-end justify-end gap-2 md:shrink-0">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`${getCreatorUrl(user)}/edit`}>
-                    <Pencil className="h-4 w-4" />
-                    <span className="hidden md:inline">{t("editProfile")}</span>
-                  </Link>
-                </Button>
-              </div>
-            )}
           </div>
 
           {user.bio && <ExpandableBio html={user.bio} className="mt-4" />}

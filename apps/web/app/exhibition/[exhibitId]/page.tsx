@@ -122,58 +122,32 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
     // Map/global view is not available for temporary exhibits
   ].filter((vt) => vt.enabled);
 
-  return (
-    <PageLayout maxWidth="max-w-6xl">
-      <div className="mb-8">
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            {exhibit.title}
-          </h1>
-          {session?.user?.isAdmin && (
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/admin/exhibits/${exhibitId}/edit`}>
-                Edit Exhibit
-              </Link>
-            </Button>
-          )}
-        </div>
-        {exhibit.description && (
-          <ExpandableBio html={exhibit.description} className="mt-3" />
+  const titleBlock = (
+    <>
+      <div className="flex items-start justify-between gap-4 mb-3">
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          {exhibit.title}
+        </h1>
+        {session?.user?.isAdmin && (
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/admin/exhibits/${exhibitId}/edit`}>Edit Exhibit</Link>
+          </Button>
         )}
-        <div className="mt-4 flex flex-wrap items-center gap-4">
-          {exhibit.featuredArtist && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                Featured Artist
-              </span>
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={exhibit.featuredArtist.image || undefined} />
-                <AvatarFallback className="bg-muted text-muted-foreground text-xs">
-                  {exhibit.featuredArtist.name
-                    ? exhibit.featuredArtist.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()
-                        .slice(0, 2)
-                    : "?"}
-                </AvatarFallback>
-              </Avatar>
-              <Link
-                href={getCreatorUrl(exhibit.featuredArtist)}
-                className="text-sm font-medium hover:underline"
-              >
-                {exhibit.featuredArtist.name || "Anonymous"}
-              </Link>
-            </div>
-          )}
+      </div>
+      {exhibit.description && (
+        <ExpandableBio html={exhibit.description} className="mt-3" />
+      )}
+      <div className="mt-4 flex flex-wrap items-center gap-4">
+        {exhibit.featuredArtist && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Curated by</span>
+            <span className="text-sm text-muted-foreground">
+              Featured Artist
+            </span>
             <Avatar className="h-6 w-6">
-              <AvatarImage src={exhibit.curator.image || undefined} />
+              <AvatarImage src={exhibit.featuredArtist.image || undefined} />
               <AvatarFallback className="bg-muted text-muted-foreground text-xs">
-                {exhibit.curator.name
-                  ? exhibit.curator.name
+                {exhibit.featuredArtist.name
+                  ? exhibit.featuredArtist.name
                       .split(" ")
                       .map((n) => n[0])
                       .join("")
@@ -182,23 +156,133 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
                   : "?"}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm font-medium">
-              {exhibit.curator.name || "Anonymous"}
-            </span>
+            <Link
+              href={getCreatorUrl(exhibit.featuredArtist)}
+              className="text-sm font-medium hover:underline"
+            >
+              {exhibit.featuredArtist.name || "Anonymous"}
+            </Link>
           </div>
+        )}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Curated by</span>
+          <Avatar className="h-6 w-6">
+            <AvatarImage src={exhibit.curator.image || undefined} />
+            <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+              {exhibit.curator.name
+                ? exhibit.curator.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2)
+                : "?"}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-sm font-medium">
+            {exhibit.curator.name || "Anonymous"}
+          </span>
         </div>
+      </div>
+    </>
+  );
+
+  return (
+    <PageLayout maxWidth="max-w-6xl">
+      {/* Title block: on mobile with featured image it's in the hero overlay; otherwise always visible */}
+      <div className={`mb-8 ${featuredSubmission ? "hidden md:block" : ""}`}>
+        {titleBlock}
       </div>
 
       {featuredSubmission ? (
         <div className="mb-8">
-          <h2 className="mb-4 text-xl font-semibold">Featured</h2>
+          {/* Mobile: hero with featured image and overlay on bottom 30% */}
+          <div className="relative aspect-square w-full md:hidden mb-6">
+            <FeaturedSubmission submission={featuredSubmission} />
+            <div
+              className="absolute inset-x-0 bottom-0 min-h-[30%] flex flex-col justify-end p-4 text-foreground bg-gradient-to-t from-background/95 via-background/85 to-transparent"
+              aria-label="Exhibit details"
+            >
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h1 className="text-2xl font-bold tracking-tight shrink-0">
+                  {exhibit.title}
+                </h1>
+                {session?.user?.isAdmin && (
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0"
+                  >
+                    <Link href={`/admin/exhibits/${exhibitId}/edit`}>
+                      Edit Exhibit
+                    </Link>
+                  </Button>
+                )}
+              </div>
+              {exhibit.description && (
+                <div className="text-sm text-muted-foreground [&_a]:text-primary [&_.prose]:text-sm">
+                  <ExpandableBio html={exhibit.description} maxHeight={52} />
+                </div>
+              )}
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+                {exhibit.featuredArtist && (
+                  <div className="flex items-center gap-1.5">
+                    <Avatar className="h-5 w-5">
+                      <AvatarImage
+                        src={exhibit.featuredArtist.image || undefined}
+                      />
+                      <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">
+                        {exhibit.featuredArtist.name
+                          ? exhibit.featuredArtist.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .toUpperCase()
+                              .slice(0, 2)
+                          : "?"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <Link
+                      href={getCreatorUrl(exhibit.featuredArtist)}
+                      className="font-medium hover:underline"
+                    >
+                      {exhibit.featuredArtist.name || "Anonymous"}
+                    </Link>
+                  </div>
+                )}
+                <div className="flex items-center gap-1.5">
+                  <Avatar className="h-5 w-5">
+                    <AvatarImage src={exhibit.curator.image || undefined} />
+                    <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">
+                      {exhibit.curator.name
+                        ? exhibit.curator.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                            .slice(0, 2)
+                        : "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium">
+                    {exhibit.curator.name || "Anonymous"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2 className="mb-4 text-xl font-semibold hidden md:block">
+            Featured
+          </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Featured Submission - Left Side */}
-            <div>
+            {/* Featured Submission - hidden on mobile (shown in hero above) */}
+            <div className="hidden md:block">
               <FeaturedSubmission submission={featuredSubmission} />
             </div>
 
-            {/* View Exhibit Cards - Right Side */}
+            {/* View Exhibit Cards */}
             <div className="flex flex-col gap-3">
               {viewTypes.map((viewType) => {
                 const Icon = EXHIBITION_CONFIGS[viewType.value].icon;
