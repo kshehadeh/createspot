@@ -32,7 +32,7 @@ export function PageLayout({
     <main
       className={cn(
         "mx-auto flex-1 w-full max-w-full",
-        withPadding && "py-12",
+        withPadding && "py-4 md:py-12",
         maxWidth,
         withPadding && "px-6",
         className,

@@ -3,6 +3,8 @@
 import { useEffect, useState, useTransition, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Lock, Folder, Tag } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   MultiSelect,
@@ -19,6 +21,8 @@ interface PortfolioFiltersProps {
   initialCategories?: string[];
   categories?: string[];
   userId?: string;
+  onFilterChange?: () => void;
+  className?: string;
 }
 
 export function PortfolioFilters({
@@ -27,6 +31,8 @@ export function PortfolioFilters({
   initialCategories = [],
   categories = [],
   userId,
+  onFilterChange,
+  className,
 }: PortfolioFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -123,6 +129,7 @@ export function PortfolioFilters({
   const handleShareStatusChange = (selected: string[]) => {
     setSelectedShareStatus(selected);
     updateParams(selected, selectedTags, selectedCategories);
+    onFilterChange?.();
   };
 
   const handleTagsChange = (selected: string[]) => {
@@ -136,11 +143,13 @@ export function PortfolioFilters({
 
     setSelectedTags(selected);
     updateParams(selectedShareStatus, selected, selectedCategories);
+    onFilterChange?.();
   };
 
   const handleCategoriesChange = (selected: string[]) => {
     setSelectedCategories(selected);
     updateParams(selectedShareStatus, selectedTags, selected);
+    onFilterChange?.();
   };
 
   const handleClear = () => {
@@ -148,6 +157,7 @@ export function PortfolioFilters({
     setSelectedTags([]);
     setSelectedCategories([]);
     updateParams([], [], []);
+    onFilterChange?.();
   };
 
   const shareStatusOptions: MultiSelectOption[] = [
@@ -176,7 +186,7 @@ export function PortfolioFilters({
   }
 
   return (
-    <Card className="mb-6 rounded-2xl border-0 shadow-none">
+    <Card className={cn("mb-6 rounded-2xl border-0 shadow-none", className)}>
       <CardContent className="px-0 py-4">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
@@ -186,6 +196,7 @@ export function PortfolioFilters({
                 selected={selectedShareStatus}
                 onSelectionChange={handleShareStatusChange}
                 placeholder={t("filterByAccessLevel")}
+                startIcon={<Lock className="h-4 w-4" />}
               />
             </div>
             {categories.length > 0 && (
@@ -195,6 +206,7 @@ export function PortfolioFilters({
                   selected={selectedCategories}
                   onSelectionChange={handleCategoriesChange}
                   placeholder="Filter by category..."
+                  startIcon={<Folder className="h-4 w-4" />}
                 />
               </div>
             )}
@@ -208,6 +220,7 @@ export function PortfolioFilters({
                   searchable={true}
                   onSearch={searchTags}
                   loading={tagSearchLoading}
+                  startIcon={<Tag className="h-4 w-4" />}
                 />
               </div>
             )}

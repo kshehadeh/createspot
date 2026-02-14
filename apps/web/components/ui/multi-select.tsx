@@ -29,6 +29,7 @@ export interface MultiSelectProps {
   searchable?: boolean;
   onSearch?: (query: string) => Promise<MultiSelectOption[]>;
   loading?: boolean;
+  startIcon?: React.ReactNode;
 }
 
 export function MultiSelect({
@@ -40,6 +41,7 @@ export function MultiSelect({
   className,
   searchable = false,
   onSearch,
+  startIcon,
 }: MultiSelectProps) {
   const t = useTranslations("common");
   const [open, setOpen] = React.useState(false);
@@ -167,7 +169,12 @@ export function MultiSelect({
             className,
           )}
         >
-          <div className="min-w-0 flex-1 truncate">
+          <div className="min-w-0 flex-1 truncate flex items-center gap-2">
+            {startIcon && (
+              <span className="shrink-0 text-muted-foreground h-4 w-4 flex items-center justify-center">
+                {startIcon}
+              </span>
+            )}
             {selected.length === 0 ? (
               <span>{placeholder}</span>
             ) : selected.length === 1 ? (

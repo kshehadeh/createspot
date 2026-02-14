@@ -9,12 +9,11 @@ import { PageHeader } from "@/components/page-header";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ShareButton } from "@/components/share-button";
 import { PortfolioFilters } from "@/components/portfolio-filters";
+import { PortfolioMobileMenu } from "@/components/portfolio-mobile-menu";
 import { HintPopover } from "@/components/hint-popover";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getNextPageHint } from "@/lib/hints-helper";
 import { getCreatorUrl } from "@/lib/utils";
-import { Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -210,10 +209,31 @@ export default async function PortfolioPage({
     .filter((cat): cat is string => Boolean(cat))
     .sort((a, b) => a.localeCompare(b));
 
+  const portfolioTitle = user.name
+    ? t("portfolioTitle", { name: user.name })
+    : t("portfolio");
+
   return (
     <PageLayout maxWidth="max-w-6xl">
-      {/* Header */}
-      <div className="mb-8 w-full">
+      {/* Mobile Header - dropdown with share/edit/filters */}
+      <div className="md:hidden mb-4 w-full">
+        <PortfolioMobileMenu
+          title={portfolioTitle}
+          userId={user.id}
+          isOwnPortfolio={isOwnPortfolio}
+          user={user}
+          filterProps={{
+            initialShareStatus: filteredShareStatuses,
+            initialTags: selectedTags,
+            initialCategories: selectedCategories,
+            categories: availableCategories,
+            userId: user.id,
+          }}
+        />
+      </div>
+
+      {/* Desktop Header */}
+      <div className="hidden md:block mb-8 w-full">
         <div className="flex items-start gap-4">
           {user.image ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -233,13 +253,8 @@ export default async function PortfolioPage({
             <PageHeader
               title={
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="break-words min-w-0">
-                    {user.name
-                      ? t("portfolioTitle", { name: user.name })
-                      : t("portfolio")}
-                  </span>
-                  {/* Share button - hidden on mobile, shown in action buttons below */}
-                  <div className="hidden md:block shrink-0">
+                  <span className="break-words min-w-0">{portfolioTitle}</span>
+                  <div className="shrink-0">
                     <ShareButton type="portfolio" userId={user.id} />
                   </div>
                 </div>
@@ -251,29 +266,19 @@ export default async function PortfolioPage({
             />
           </div>
         </div>
-        {/* Mobile action buttons - shown below header on mobile */}
-        <div className="md:hidden mt-4 flex flex-wrap items-center gap-2">
-          <ShareButton type="portfolio" userId={user.id} />
-          {isOwnPortfolio && (
-            <Button asChild variant="outline" size="sm">
-              <Link href={`${getCreatorUrl(user)}/portfolio/edit`}>
-                <Pencil className="h-4 w-4" />
-                <span className="sr-only">{t("managePortfolio")}</span>
-              </Link>
-            </Button>
-          )}
-        </div>
       </div>
 
-      {/* Filters (only for own portfolio) */}
+      {/* Desktop Filters (only for own portfolio) */}
       {isOwnPortfolio && (
-        <PortfolioFilters
-          initialShareStatus={filteredShareStatuses}
-          initialTags={selectedTags}
-          initialCategories={selectedCategories}
-          categories={availableCategories}
-          userId={user.id}
-        />
+        <div className="hidden md:block">
+          <PortfolioFilters
+            initialShareStatus={filteredShareStatuses}
+            initialTags={selectedTags}
+            initialCategories={selectedCategories}
+            categories={availableCategories}
+            userId={user.id}
+          />
+        </div>
       )}
 
       {/* Portfolio Grid */}

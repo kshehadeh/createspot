@@ -11,6 +11,7 @@ interface CategoryFilterProps {
   selected: string[];
   onSelectionChange: (selected: string[]) => void;
   placeholder?: string;
+  startIcon?: React.ReactNode;
 }
 
 export function CategoryFilter({
@@ -18,6 +19,7 @@ export function CategoryFilter({
   selected,
   onSelectionChange,
   placeholder = "Filter by category...",
+  startIcon,
 }: CategoryFilterProps) {
   const tCategories = useTranslations("categories");
 
@@ -33,6 +35,7 @@ export function CategoryFilter({
       selected={selected}
       onSelectionChange={onSelectionChange}
       placeholder={placeholder}
+      startIcon={startIcon}
     />
   );
 }
