@@ -1,12 +1,12 @@
 [
   {
-    "time": "2026-02-14T05:43:20-0500",
-    "commit": "1469d580f087807137ea29b7a28388309c9f37ae",
-    "type": "improvement",
+    "time": "2026-02-14T00:00:00Z",
+    "commit": "499931dfcf069365eacc5087e92dff11aa03005b",
+    "type": "feature",
     "area": "content",
-    "description": "Museum and other filter dropdowns show \"N selected\" when multiple options are chosen instead of listing all badges",
+    "description": "Add above-the-fold feature highlights for Portfolios, Community, Museums, and Exhibits; Portfolios CTA is sign-in when logged out. Remove Explore Exhibits and Learn more from hero overlay.",
     "audience": "public",
-    "impact": "patch",
-    "version": "2.5.1"
+    "impact": "minor",
+    "version": "2.6.0"
   }
 ]
