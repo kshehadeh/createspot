@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/settings";
 import {
@@ -12,7 +13,16 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, Lightbulb, MessageCircle, Share2 } from "lucide-react";
+import {
+  Briefcase,
+  FolderOpen,
+  Landmark,
+  LayoutGrid,
+  Lightbulb,
+  MessageCircle,
+  Share2,
+  Users,
+} from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { getCreatorUrl } from "@/lib/utils";
@@ -126,7 +136,8 @@ async function getHomepageHeroData(): Promise<HomepageHeroData> {
 }
 
 export default async function Home() {
-  const [t, tFooter, heroData] = await Promise.all([
+  const [session, t, tFooter, heroData] = await Promise.all([
+    auth(),
     getTranslations("home"),
     getTranslations("footer"),
     getHomepageHeroData(),
@@ -135,7 +146,7 @@ export default async function Home() {
   return (
     <main className="flex-1">
       {/* Hero Section */}
-      <section className="relative min-h-[420px] overflow-hidden sm:min-h-[520px] lg:min-h-[640px]">
+      <section className="relative min-h-[360px] overflow-hidden sm:min-h-[440px] lg:min-h-[540px]">
         <div className="absolute inset-0 hero-background" />
         {heroData.type === "carousel" && heroData.submissions.length > 0 ? (
           <RecentSubmissionsCarousel
@@ -184,21 +195,148 @@ export default async function Home() {
             <p className="max-w-2xl text-lg text-white/80 sm:text-xl">
               {t("heroDescription")}
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-4">
-              <Button
-                asChild
-                size="lg"
-                className="bg-white text-black shadow-lg shadow-black/25 hover:bg-white/90"
-              >
-                <Link href="/exhibition">{t("heroExploreCta")}</Link>
-              </Button>
-              <Link
-                href="/about"
-                className="text-sm font-medium text-white/90 underline underline-offset-4 decoration-white/40 transition-colors hover:text-white"
-              >
-                {t("learnMore")}
-              </Link>
-            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Highlights */}
+      <section className="relative z-10 -mt-16 px-6">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
+              <CardHeader className="p-5 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 ring-1 ring-emerald-500/30 dark:from-emerald-400/15 dark:to-teal-400/15 dark:ring-emerald-400/25">
+                    <Briefcase className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
+                    {t("highlights.portfolios.title")}
+                  </CardTitle>
+                </div>
+                <CardDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {t("highlights.portfolios.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-5 pb-5 pt-0">
+                {session?.user ? (
+                  <Button
+                    asChild
+                    variant="link"
+                    className="h-auto p-0 text-sm font-medium"
+                  >
+                    <Link
+                      href={`${getCreatorUrl(session.user)}/portfolio`}
+                      className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                    >
+                      {t("highlights.portfolios.ctaView")}
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    variant="link"
+                    className="h-auto p-0 text-sm font-medium"
+                  >
+                    <Link
+                      href="/api/auth/signin"
+                      className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                    >
+                      {t("highlights.portfolios.ctaSignIn")}
+                    </Link>
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
+              <CardHeader className="p-5 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 ring-1 ring-sky-500/30 dark:from-sky-400/15 dark:to-indigo-400/15 dark:ring-sky-400/25">
+                    <Users className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+                  </div>
+                  <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
+                    {t("highlights.community.title")}
+                  </CardTitle>
+                </div>
+                <CardDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {t("highlights.community.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-5 pb-5 pt-0">
+                <Button
+                  asChild
+                  variant="link"
+                  className="h-auto p-0 text-sm font-medium"
+                >
+                  <Link
+                    href="/community"
+                    className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("highlights.community.cta")}
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
+              <CardHeader className="p-5 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 ring-1 ring-amber-500/30 dark:from-amber-400/15 dark:to-rose-400/15 dark:ring-amber-400/25">
+                    <Landmark className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
+                    {t("highlights.museums.title")}
+                  </CardTitle>
+                </div>
+                <CardDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {t("highlights.museums.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-5 pb-5 pt-0">
+                <Button
+                  asChild
+                  variant="link"
+                  className="h-auto p-0 text-sm font-medium"
+                >
+                  <Link
+                    href="/museums"
+                    className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("highlights.museums.cta")}
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
+              <CardHeader className="p-5 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 ring-1 ring-violet-500/30 dark:from-violet-400/15 dark:to-fuchsia-400/15 dark:ring-violet-400/25">
+                    <LayoutGrid className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                  </div>
+                  <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
+                    {t("highlights.exhibits.title")}
+                  </CardTitle>
+                </div>
+                <CardDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {t("highlights.exhibits.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-5 pb-5 pt-0">
+                <Button
+                  asChild
+                  variant="link"
+                  className="h-auto p-0 text-sm font-medium"
+                >
+                  <Link
+                    href="/exhibition"
+                    className="underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
+                  >
+                    {t("highlights.exhibits.cta")}
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

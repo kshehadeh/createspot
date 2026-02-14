@@ -767,6 +767,29 @@
     "missionExhibit": "exhibit their work",
     "missionCreate": "create more",
     "missionSupport": "support fellow humans",
+    "highlights": {
+      "portfolios": {
+        "title": "Portfolios",
+        "description": "Build and share your creative work in a portfolio you control.",
+        "ctaSignIn": "Sign In",
+        "ctaView": "View Portfolio"
+      },
+      "community": {
+        "title": "Community",
+        "description": "See work from people you follow and connect with fellow creatives.",
+        "cta": "Explore"
+      },
+      "museums": {
+        "title": "Museums",
+        "description": "Browse art from museum collections and find inspiration.",
+        "cta": "Browse"
+      },
+      "exhibits": {
+        "title": "Exhibits",
+        "description": "Explore curated exhibits and the permanent collection.",
+        "cta": "View Exhibits"
+      }
+    },
     "features": {
       "inspiration": {
         "title": "Inspiration",
