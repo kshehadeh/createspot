@@ -40,4 +40,5 @@ Now take that object and add it to a file in the `apps/web/changelogs` folder.  
 
 
 ### Important
-Check if we already have a reference to the date and commit that was found.  Also, take as input to the command information about how far back to look (in days).  For example if the command is `/changelog The last 5 days` then look for commits in that period.
+* NEVER change the version if it's already set to a value other than empty.
+* Check if we already have a reference to the date and commit that was found.  Also, take as input to the command information about how far back to look (in days).  For example if the command is `/changelog The last 5 days` then look for commits in that period.

@@ -1,2 +1,62 @@
-[{"time":"2026-02-06T08:38:23-0500","commit":"7bb1addb1383d5db5772d8806f9efd8ad9b59190","type":"feature","area":"global","description":"Add welcome landing page with animated Begin button and image grid for unauthenticated users","audience":"public","impact":"minor","version":"2.4.0"},{"time":"2026-02-06T09:11:58-0500","commit":"9bedea63b805f04ca723a40c14f3d0f15f60ae94","type":"improvement","area":"content","description":"Enhance Create Spot branding overlay with rounded background and backdrop blur","audience":"public","impact":"patch","version":"2.4.0"},{"time":"2026-02-06T09:18:15-0500","commit":"bc19bce65cf0d309b47ccff6081e5c4d6aee2deb","type":"documentation","area":"content","description":"Redo help screenshots and screenshots script with updated UI","audience":"development","impact":"patch","version":"2.4.0"},{"time":"2026-02-06T15:14:34-0500","commit":"1ecc2c97c3c2848ee8f3ffabcd31d4566fbf17e0","type":"improvement","area":"global","description":"Update authentication redirects to new welcome landing page","audience":"public","impact":"patch","version":"2.3.1"},{"time":"2026-02-06T06:31:01-0500","commit":"2bc45dcd5f2d996d95dc93d12bc55cef87f14580","type":"feature","area":"global","description":"Reorganize navigation menu into dropdown-based system","audience":"public","impact":"minor","version":"2.3.0"},{"time":"2026-02-06T12:00:00-0500","commit":"2d8506c93a31c4bd99b17a03f39011f1f1afd93b","type":"improvement","area":"global","description":"Redirect legacy sign-in page to new welcome landing page","audience":"public","impact":"patch","version":"2.3.1"}]
-
+[
+  {
+    "time": "2026-02-06T08:38:23-0500",
+    "commit": "7bb1addb1383d5db5772d8806f9efd8ad9b59190",
+    "type": "feature",
+    "area": "global",
+    "description": "Add welcome landing page with animated Begin button and image grid for unauthenticated users",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.4.0"
+  },
+  {
+    "time": "2026-02-06T09:11:58-0500",
+    "commit": "9bedea63b805f04ca723a40c14f3d0f15f60ae94",
+    "type": "improvement",
+    "area": "content",
+    "description": "Enhance Create Spot branding overlay with rounded background and backdrop blur",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.4.0"
+  },
+  {
+    "time": "2026-02-06T09:18:15-0500",
+    "commit": "bc19bce65cf0d309b47ccff6081e5c4d6aee2deb",
+    "type": "documentation",
+    "area": "content",
+    "description": "Redo help screenshots and screenshots script with updated UI",
+    "audience": "development",
+    "impact": "patch",
+    "version": "2.4.0"
+  },
+  {
+    "time": "2026-02-06T15:14:34-0500",
+    "commit": "1ecc2c97c3c2848ee8f3ffabcd31d4566fbf17e0",
+    "type": "improvement",
+    "area": "global",
+    "description": "Update authentication redirects to new welcome landing page",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.3.1"
+  },
+  {
+    "time": "2026-02-06T06:31:01-0500",
+    "commit": "2bc45dcd5f2d996d95dc93d12bc55cef87f14580",
+    "type": "feature",
+    "area": "global",
+    "description": "Reorganize navigation menu into dropdown-based system",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.3.0"
+  },
+  {
+    "time": "2026-02-06T12:00:00-0500",
+    "commit": "2d8506c93a31c4bd99b17a03f39011f1f1afd93b",
+    "type": "improvement",
+    "area": "global",
+    "description": "Redirect legacy sign-in page to new welcome landing page",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.3.1"
+  }
+]

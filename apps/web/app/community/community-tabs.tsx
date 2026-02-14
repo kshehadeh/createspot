@@ -391,9 +391,7 @@ export function CommunityTabs({
           variant={activeTab === "recents" ? "secondary" : "ghost"}
           size="sm"
           className={`rounded-b-none rounded-t-md border-b-2 -mb-px ${
-            activeTab === "recents"
-              ? "border-secondary"
-              : "border-transparent"
+            activeTab === "recents" ? "border-secondary" : "border-transparent"
           }`}
           onClick={() => setActiveTab("recents")}
         >
@@ -438,10 +436,7 @@ export function CommunityTabs({
         </Button>
       </div>
       {activeTab === "recents" && (
-        <RecentsTab
-          submissions={recentSubmissions}
-          hasMore={recentHasMore}
-        />
+        <RecentsTab submissions={recentSubmissions} hasMore={recentHasMore} />
       )}
       {activeTab === "followers" && <FollowersTab />}
       {activeTab === "following" && <FollowingTab />}

@@ -25,10 +25,7 @@ export default async function CommunityPage() {
   return (
     <PageLayout>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
-      <CommunityTabs
-        recentSubmissions={submissions}
-        recentHasMore={hasMore}
-      />
+      <CommunityTabs recentSubmissions={submissions} recentHasMore={hasMore} />
     </PageLayout>
   );
 }

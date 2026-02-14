@@ -1,1 +1,32 @@
-[{"time":"2026-02-07T08:06:47-0500","commit":"6f1828933a26f2ddb3876ed017f2f5cf8418c940","type":"documentation","area":"content","description":"Add third-party API guides to documentation (Smithsonian, Art Institute of Chicago, Cleveland Museum of Art, Rijksmuseum, Metropolitan Museum of Art)","audience":"development","impact":"patch","version":"2.4.0"},{"time":"2026-02-07T04:45:23-0500","commit":"a8f7363ca66fbfb945280b7ea09ca45e5943905f","type":"feature","area":"global","description":"Add \"Buy me a coffee\" option to navigation and update translations","audience":"public","impact":"minor","version":"2.4.0"},{"time":"2026-02-07T04:32:26-0500","commit":"555d3191208bcfc11e1bc968f6a0f89c41f1adfe","type":"improvement","area":"content","description":"Add web:dev script and enhance help documentation with collections, critiques, and social sharing","audience":"public","impact":"patch","version":"2.4.0"}]
+[
+  {
+    "time": "2026-02-07T08:06:47-0500",
+    "commit": "6f1828933a26f2ddb3876ed017f2f5cf8418c940",
+    "type": "documentation",
+    "area": "content",
+    "description": "Add third-party API guides to documentation (Smithsonian, Art Institute of Chicago, Cleveland Museum of Art, Rijksmuseum, Metropolitan Museum of Art)",
+    "audience": "development",
+    "impact": "patch",
+    "version": "2.4.0"
+  },
+  {
+    "time": "2026-02-07T04:45:23-0500",
+    "commit": "a8f7363ca66fbfb945280b7ea09ca45e5943905f",
+    "type": "feature",
+    "area": "global",
+    "description": "Add \"Buy me a coffee\" option to navigation and update translations",
+    "audience": "public",
+    "impact": "minor",
+    "version": "2.4.0"
+  },
+  {
+    "time": "2026-02-07T04:32:26-0500",
+    "commit": "555d3191208bcfc11e1bc968f6a0f89c41f1adfe",
+    "type": "improvement",
+    "area": "content",
+    "description": "Add web:dev script and enhance help documentation with collections, critiques, and social sharing",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.4.0"
+  }
+]
