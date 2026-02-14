@@ -28,5 +28,15 @@
     "audience": "public",
     "impact": "patch",
     "version": "2.7.1"
+  },
+  {
+    "time": "2026-02-14T22:00:00Z",
+    "commit": "d7a9758e1e0b5174a7cb2c75b874ddc8550b88f1",
+    "type": "improvement",
+    "area": "portfolio",
+    "description": "Optimize mobile portfolio layout: dropdown menu with filters, icons before each filter type (lock for access, folder for categories, tag for tags), reduced spacing between title and breadcrumbs. Auto-close menu when filters are changed.",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.7.2"
   }
 ]
