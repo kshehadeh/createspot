@@ -21,7 +21,8 @@
     "view": "View",
     "viewAll": "View all",
     "none": "None",
-    "unsavedChanges": "Unsaved changes"
+    "unsavedChanges": "Unsaved changes",
+    "countSelected": "{count} selected"
   },
   "auth": {
     "signIn": "Sign in",

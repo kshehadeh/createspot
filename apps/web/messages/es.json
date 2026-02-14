@@ -21,7 +21,8 @@
     "view": "Ver",
     "viewAll": "Ver todo",
     "none": "Ninguno",
-    "unsavedChanges": "Cambios sin guardar"
+    "unsavedChanges": "Cambios sin guardar",
+    "countSelected": "{count} seleccionados"
   },
   "auth": {
     "signIn": "Iniciar sesión",

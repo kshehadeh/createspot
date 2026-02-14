@@ -162,53 +162,52 @@ export function MultiSelect({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "h-10 w-full justify-between text-left font-normal",
+            "h-10 w-full justify-between overflow-hidden text-left font-normal",
             !selected.length && "text-muted-foreground",
             className,
           )}
         >
-          <div className="flex flex-1 flex-wrap gap-1 overflow-hidden">
+          <div className="min-w-0 flex-1 truncate">
             {selected.length === 0 ? (
               <span>{placeholder}</span>
-            ) : (
-              selectedOptions.map((option) => (
-                <Badge
-                  key={option.value}
-                  variant="secondary"
-                  className="mr-1"
-                  onClick={(e) => {
+            ) : selected.length === 1 ? (
+              <Badge
+                variant="secondary"
+                className="shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggle(selectedOptions[0].value);
+                }}
+              >
+                {selectedOptions[0].label}
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="ml-1 inline-flex rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleToggle(selectedOptions[0].value);
+                    }
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
-                    handleToggle(option.value);
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleToggle(selectedOptions[0].value);
                   }}
                 >
-                  {option.label}
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    className="ml-1 inline-flex rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        handleToggle(option.value);
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleToggle(option.value);
-                    }}
-                  >
-                    <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                  </span>
-                </Badge>
-              ))
+                  <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                </span>
+              </Badge>
+            ) : (
+              <span>{t("countSelected", { count: selected.length })}</span>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             {selected.length > 0 && (
               <span
                 role="button"
