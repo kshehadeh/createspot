@@ -44,5 +44,5 @@ export function CreatorMobileNav({ creatorUrl }: CreatorMobileNavProps) {
     },
   ];
 
-  return <MobileNavBar items={items} layout="flex" />;
+  return <MobileNavBar items={items} layout="flex" alwaysExpanded />;
 }

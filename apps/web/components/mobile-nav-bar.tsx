@@ -17,15 +17,22 @@ interface MobileNavBarProps {
   items: MobileNavBarItem[];
   /** Layout when expanded: "grid" = 4-column grid (many items), "flex" = flex with space-around (few items). Default "flex". */
   layout?: "grid" | "flex";
+  /** When true, always show expanded nav (icon + label per item); no collapsed state or overlay. */
+  alwaysExpanded?: boolean;
 }
 
-export function MobileNavBar({ items, layout = "flex" }: MobileNavBarProps) {
+export function MobileNavBar({
+  items,
+  layout = "flex",
+  alwaysExpanded = false,
+}: MobileNavBarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const activeItem = items.find((item) => item.isActive) ?? items[0];
+  const showExpanded = alwaysExpanded || isExpanded;
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40">
-      {isExpanded && (
+      {!alwaysExpanded && isExpanded && (
         <div
           className="fixed inset-0 bg-black/20"
           onClick={() => setIsExpanded(false)}
@@ -33,7 +40,7 @@ export function MobileNavBar({ items, layout = "flex" }: MobileNavBarProps) {
         />
       )}
       <div className="relative border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        {isExpanded ? (
+        {showExpanded ? (
           <nav className="p-2" aria-label="Navigation">
             <ul
               className={cn(
@@ -46,7 +53,7 @@ export function MobileNavBar({ items, layout = "flex" }: MobileNavBarProps) {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    onClick={() => setIsExpanded(false)}
+                    onClick={() => !alwaysExpanded && setIsExpanded(false)}
                     className={cn(
                       "flex flex-col items-center gap-1 rounded-lg py-2 text-xs font-medium transition-colors",
                       layout === "grid" ? "px-1" : "px-4",

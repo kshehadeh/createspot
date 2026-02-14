@@ -38,5 +38,15 @@
     "audience": "public",
     "impact": "patch",
     "version": "2.7.2"
+  },
+  {
+    "time": "2026-02-14T23:00:00Z",
+    "commit": "8d43888",
+    "type": "improvement",
+    "area": "navigation",
+    "description": "Mobile nav on creator and about pages always shows expanded bar (all items with icon and label) instead of minified bar; bottom bar stays pinned for an app-like experience.",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.7.3"
   }
 ]

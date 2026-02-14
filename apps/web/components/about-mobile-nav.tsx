@@ -98,5 +98,5 @@ export function AboutMobileNav() {
     isActive: item.isActive,
   }));
 
-  return <MobileNavBar items={items} layout="grid" />;
+  return <MobileNavBar items={items} layout="grid" alwaysExpanded />;
 }
