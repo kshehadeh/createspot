@@ -100,7 +100,7 @@ export async function resolveShortCode(
 
   if (shortLink.exhibit) {
     const e = shortLink.exhibit;
-    const canonicalPath = `/exhibition/${e.id}`;
+    const canonicalPath = `/inspire/exhibition/${e.id}`;
     const canonicalOgImageUrl = `${BASE_URL}${canonicalPath}/opengraph-image`;
     const metadata = getExhibitMetadata(
       { id: e.id, title: e.title, description: e.description },

@@ -16,16 +16,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Brain,
+  Bug,
   ChevronDown,
   Heart,
+  HelpCircle,
   LayoutGrid,
-  Sparkles,
+  Lock,
   Mail,
+  Palette,
   Plus,
   FolderOpen,
-  Bug,
-  Signpost,
-  Palette,
+  Sparkles,
 } from "lucide-react";
 
 interface DashboardNavigationProps {
@@ -82,11 +84,11 @@ export function DashboardNavigation({
   return (
     <>
       <nav className="flex items-center gap-1">
-        {/* Explore Dropdown */}
+        {/* Inspire Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className={buttonClassName()}>
-            <Signpost className="h-4 w-4" />
-            <span>{t("explore")}</span>
+            <Brain className="h-4 w-4" />
+            <span>{t("inspire")}</span>
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
@@ -146,10 +148,42 @@ export function DashboardNavigation({
                 {t("prompts")}
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={communityRoute.path}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(communityRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                {communityRoute.icon && (
+                  <communityRoute.icon className="h-4 w-4" />
+                )}
+                {t("community")}
+              </Link>
+            </DropdownMenuItem>
+            {user && (
+              <DropdownMenuItem asChild>
+                <Link
+                  href={favoritesRoute.path}
+                  className={cn(
+                    "flex items-center gap-2",
+                    isActive(favoritesRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  {favoritesRoute.icon && (
+                    <favoritesRoute.icon className="h-4 w-4" />
+                  )}
+                  {t("favorites")}
+                </Link>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* My Hub Dropdown (authenticated only) */}
+        {/* Create Dropdown (authenticated only) */}
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger className={buttonClassName()}>
@@ -230,36 +264,6 @@ export function DashboardNavigation({
                     </>
                   );
                 })()}
-              <DropdownMenuItem asChild>
-                <Link
-                  href={communityRoute.path}
-                  className={cn(
-                    "flex items-center gap-2",
-                    isActive(communityRoute.path) &&
-                      "bg-accent text-accent-foreground",
-                  )}
-                >
-                  {communityRoute.icon && (
-                    <communityRoute.icon className="h-4 w-4" />
-                  )}
-                  {t("community")}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link
-                  href={favoritesRoute.path}
-                  className={cn(
-                    "flex items-center gap-2",
-                    isActive(favoritesRoute.path) &&
-                      "bg-accent text-accent-foreground",
-                  )}
-                >
-                  {favoritesRoute.icon && (
-                    <favoritesRoute.icon className="h-4 w-4" />
-                  )}
-                  {t("favorites")}
-                </Link>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}
@@ -268,6 +272,7 @@ export function DashboardNavigation({
         {user?.isAdmin && (
           <DropdownMenu>
             <DropdownMenuTrigger className={buttonClassName()}>
+              <Lock className="h-4 w-4" />
               <span>{t("admin")}</span>
               <ChevronDown className="h-3 w-3" />
             </DropdownMenuTrigger>
@@ -350,6 +355,7 @@ export function DashboardNavigation({
         {/* Support Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className={buttonClassName()}>
+            <HelpCircle className="h-4 w-4" />
             <span>{t("support")}</span>
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>

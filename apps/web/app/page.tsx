@@ -264,7 +264,9 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
                 <Button asChild variant="outline" size="sm" className="w-full">
-                  <Link href="/community">{t("highlights.community.cta")}</Link>
+                  <Link href="/inspire/community">
+                    {t("highlights.community.cta")}
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -287,7 +289,9 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
                 <Button asChild variant="outline" size="sm" className="w-full">
-                  <Link href="/museums">{t("highlights.museums.cta")}</Link>
+                  <Link href="/inspire/museums">
+                    {t("highlights.museums.cta")}
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -310,7 +314,9 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="px-5 pb-5 pt-0">
                 <Button asChild variant="outline" size="sm" className="w-full">
-                  <Link href="/exhibition">{t("highlights.exhibits.cta")}</Link>
+                  <Link href="/inspire/exhibition">
+                    {t("highlights.exhibits.cta")}
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -352,7 +358,7 @@ export default async function Home() {
               <CardContent className="px-6 pb-6 pt-0">
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    href="/exhibition"
+                    href="/inspire/exhibition"
                     className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                   >
                     {t("features.inspiration.ctaExhibits")}

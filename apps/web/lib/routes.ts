@@ -44,65 +44,76 @@ const ROUTES: Record<string, RouteConfig> = {
     icon: Home,
   },
 
-  // Exhibition routes
+  // Inspire section (community, exhibition, museums, prompt)
+  inspire: {
+    path: "/inspire",
+    label: "navigation.inspire",
+    isLink: false,
+    icon: Sparkles,
+  },
+
+  // Exhibition routes (under /inspire)
   exhibition: {
-    path: "/exhibition",
+    path: "/inspire/exhibition",
     label: "navigation.exhibits",
     isLink: false, // Root exhibit page is not a link in breadcrumbs
     icon: LayoutGrid,
+    parentPath: "/inspire",
   },
   exhibitionPermanent: {
-    path: "/exhibition/permanent",
+    path: "/inspire/exhibition/permanent",
     label: "navigation.permanentCollection",
-    parentPath: "/exhibition",
-    // Note: This is a virtual route for breadcrumbs only - links to /exhibition
+    parentPath: "/inspire/exhibition",
+    // Note: This is a virtual route for breadcrumbs only - links to /inspire/exhibition
   },
   exhibitionGallery: {
-    path: "/exhibition/gallery/grid",
+    path: "/inspire/exhibition/gallery/grid",
     label: "navigation.grid",
-    parentPath: "/exhibition/permanent",
+    parentPath: "/inspire/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.gallery.icon,
   },
   exhibitionConstellation: {
-    path: "/exhibition/gallery/path",
+    path: "/inspire/exhibition/gallery/path",
     label: "navigation.constellation",
-    parentPath: "/exhibition/permanent",
+    parentPath: "/inspire/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.constellation.icon,
   },
   exhibitionGlobal: {
-    path: "/exhibition/global",
+    path: "/inspire/exhibition/global",
     label: "navigation.map",
-    parentPath: "/exhibition/permanent",
+    parentPath: "/inspire/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.global.icon,
   },
 
   museums: {
-    path: "/museums",
+    path: "/inspire/museums",
     label: "navigation.museums",
     icon: Landmark,
+    parentPath: "/inspire",
   },
 
-  // Prompt routes
+  // Prompt routes (under /inspire)
   prompt: {
-    path: "/prompt",
+    path: "/inspire/prompt",
     label: "navigation.prompts",
     isLink: false, // Root prompt page is not a link in breadcrumbs
     icon: Sparkles,
+    parentPath: "/inspire",
   },
   promptPlay: {
-    path: "/prompt/play",
+    path: "/inspire/prompt/play",
     label: "navigation.play",
-    parentPath: "/prompt",
+    parentPath: "/inspire/prompt",
   },
   promptHistory: {
-    path: "/prompt/history",
+    path: "/inspire/prompt/history",
     label: "navigation.history",
-    parentPath: "/prompt",
+    parentPath: "/inspire/prompt",
   },
   promptThisWeek: {
-    path: "/prompt/this-week",
+    path: "/inspire/prompt/this-week",
     label: "navigation.thisWeek",
-    parentPath: "/prompt",
+    parentPath: "/inspire/prompt",
   },
 
   // Admin routes
@@ -216,14 +227,16 @@ const ROUTES: Record<string, RouteConfig> = {
     icon: Users,
   },
   community: {
-    path: "/community",
+    path: "/inspire/community",
     label: "navigation.community",
     icon: Users,
+    parentPath: "/inspire",
   },
   favorites: {
-    path: "/favorites",
+    path: "/inspire/favorites",
     label: "navigation.favorites",
     icon: Heart,
+    parentPath: "/inspire",
   },
   about: {
     path: "/about",
@@ -408,10 +421,10 @@ export function buildBreadcrumbFromParent(
 
       // When used as a parent in breadcrumbs, always make it a link
       // (isLink: false only applies when it's the final destination)
-      // Special case: Permanent Collection links to /exhibition instead of /exhibition/permanent
+      // Special case: Permanent Collection links to /inspire/exhibition instead of /inspire/exhibition/permanent
       const href =
-        currentRoute.path === "/exhibition/permanent"
-          ? "/exhibition"
+        currentRoute.path === "/inspire/exhibition/permanent"
+          ? "/inspire/exhibition"
           : currentRoute.path;
       segments.unshift({
         label: translateLabel(currentRoute.label, t),
@@ -477,13 +490,12 @@ export function getBreadcrumbSegments(
       }
       visited.add(currentRoute.path);
 
-      // Special case: Permanent Collection links to /exhibition instead of /exhibition/permanent
+      // Parent segments in the chain are always links; isLink: false only applies to the final segment (set below).
+      // Special case: Permanent Collection links to /inspire/exhibition instead of /inspire/exhibition/permanent
       const href =
-        currentRoute.isLink !== false
-          ? currentRoute.path === "/exhibition/permanent"
-            ? "/exhibition"
-            : currentRoute.path
-          : undefined;
+        currentRoute.path === "/inspire/exhibition/permanent"
+          ? "/inspire/exhibition"
+          : currentRoute.path;
       segments.unshift({
         label: translateLabel(currentRoute.label, t),
         href,
@@ -497,7 +509,7 @@ export function getBreadcrumbSegments(
       }
     }
 
-    // Ensure the last segment is never a link
+    // Ensure the last segment (current page) is never a link
     if (segments.length > 0) {
       const lastIndex = segments.length - 1;
       segments[lastIndex] = {
@@ -521,16 +533,27 @@ export function getBreadcrumbSegments(
   }
 
   // Handle dynamic routes and special cases
-  if (pathname.startsWith("/exhibition/") && pathname !== "/exhibition") {
-    // Dynamic exhibit routes like /exhibition/[id]
+  if (
+    pathname.startsWith("/inspire/exhibition/") &&
+    pathname !== "/inspire/exhibition"
+  ) {
+    // Dynamic exhibit routes like /inspire/exhibition/[id]
     const parts = pathname.split("/").filter(Boolean);
-    if (parts.length >= 2 && parts[0] === "exhibition") {
+    if (
+      parts.length >= 3 &&
+      parts[0] === "inspire" &&
+      parts[1] === "exhibition"
+    ) {
       return [
         {
-          label: t ? translateLabel("navigation.exhibit", t) : "Exhibit",
-          href: "/exhibition",
+          label: t ? translateLabel("navigation.inspire", t) : "Inspire",
+          href: "/inspire",
         },
-        { label: parts[1] }, // Will be replaced by actual exhibit title in specific breadcrumb files
+        {
+          label: t ? translateLabel("navigation.exhibit", t) : "Exhibit",
+          href: "/inspire/exhibition",
+        },
+        { label: parts[2] }, // Will be replaced by actual exhibit title in specific breadcrumb files
       ];
     }
   }

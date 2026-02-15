@@ -118,7 +118,7 @@ export default async function EditExhibitPage({
               {t("editDescription")}
             </p>
           </div>
-          <Link href={`/exhibition/${exhibit.id}`}>
+          <Link href={`/inspire/exhibition/${exhibit.id}`}>
             <Button variant="outline" size="sm">
               View Exhibit
             </Button>

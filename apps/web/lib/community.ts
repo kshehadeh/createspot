@@ -1,5 +1,5 @@
 import type { Prisma } from "@/app/generated/prisma/client";
-import type { ExhibitionSubmission } from "@/app/exhibition/exhibition-grid";
+import type { ExhibitionSubmission } from "@/app/inspire/exhibition/exhibition-grid";
 import { unstable_noStore } from "next/cache";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 import { prisma } from "@/lib/prisma";

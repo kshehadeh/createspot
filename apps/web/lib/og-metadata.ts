@@ -116,7 +116,7 @@ export function getExhibitMetadata(
   exhibit: ExhibitForMetadata,
   baseUrl: string = BASE_URL,
 ): Metadata {
-  const canonicalPath = `/exhibition/${exhibit.id}`;
+  const canonicalPath = `/inspire/exhibition/${exhibit.id}`;
   const ogImageUrl = `${baseUrl}${canonicalPath}/opengraph-image`;
 
   const plainDescription = exhibit.description

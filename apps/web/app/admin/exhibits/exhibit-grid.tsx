@@ -173,7 +173,7 @@ export function ExhibitGrid({ exhibits }: ExhibitGridProps) {
               </CardContent>
               <CardFooter className="p-3 pt-0">
                 <div className="flex gap-2">
-                  <Link href={`/exhibition/${exhibit.id}`}>
+                  <Link href={`/inspire/exhibition/${exhibit.id}`}>
                     <Button variant="outline" size="sm" className="h-9 w-9 p-0">
                       <Eye className="h-4 w-4" />
                       <span className="sr-only">{t("view")}</span>

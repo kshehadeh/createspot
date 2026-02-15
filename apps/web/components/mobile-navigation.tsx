@@ -11,23 +11,24 @@ import { cn, getCreatorUrl } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
 import type { LucideIcon } from "lucide-react";
 import {
+  Brain,
+  Briefcase,
+  Bug,
   ChevronDown,
   ChevronRight,
+  FolderOpen,
+  Heart,
+  HelpCircle,
+  Info,
   LayoutGrid,
   Landmark,
-  Users,
-  User,
-  Info,
-  Briefcase,
-  Heart,
   Lock,
-  Sparkles,
   Mail,
-  Plus,
-  FolderOpen,
-  Bug,
-  Signpost,
   Palette,
+  Plus,
+  Sparkles,
+  User,
+  Users,
 } from "lucide-react";
 import { SupportFormModal } from "./contact/support-form-modal";
 import { ExhibitRequestModal } from "./contact/exhibit-request-form";
@@ -81,7 +82,7 @@ export function MobileNavigation({
   const t = useTranslations("navigation");
 
   // State for expandable sections
-  const [exploreExpanded, setExploreExpanded] = useState(false);
+  const [inspireExpanded, setInspireExpanded] = useState(false);
   const [myHubExpanded, setMyHubExpanded] = useState(false);
   const [adminExpanded, setAdminExpanded] = useState(false);
   const [aboutExpanded, setAboutExpanded] = useState(false);
@@ -133,17 +134,18 @@ export function MobileNavigation({
     const adminSettingsRoute = getRoute("adminSettings");
     const aboutRoute = getRoute("about");
 
-    setExploreExpanded(
+    setInspireExpanded(
       pathname === exhibitionRoute.path ||
         pathname === creatorsRoute.path ||
         pathname === promptRoute.path ||
-        pathname === getRoute("museums").path,
+        pathname === getRoute("museums").path ||
+        pathname === getRoute("community").path ||
+        pathname === favoritesRoute.path,
     );
 
     setMyHubExpanded(
       pathname.startsWith(profileRoute.path) ||
-        pathname.startsWith(portfolioRoute.path) ||
-        pathname.startsWith(favoritesRoute.path),
+        pathname.startsWith(portfolioRoute.path),
     );
 
     setAdminExpanded(
@@ -159,8 +161,7 @@ export function MobileNavigation({
 
     setUserExpanded(
       pathname.startsWith(profileRoute.path) ||
-        pathname.startsWith(portfolioRoute.path) ||
-        pathname.startsWith(favoritesRoute.path),
+        pathname.startsWith(portfolioRoute.path),
     );
   }, [pathname]);
 
@@ -261,12 +262,12 @@ export function MobileNavigation({
 
           {/* Menu Content */}
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-6">
-            {/* Explore Section */}
+            {/* Inspire Section */}
             <MobileSection
-              title={t("explore")}
-              expanded={exploreExpanded}
-              onToggle={() => setExploreExpanded(!exploreExpanded)}
-              icon={Signpost}
+              title={t("inspire")}
+              expanded={inspireExpanded}
+              onToggle={() => setInspireExpanded(!inspireExpanded)}
+              icon={Brain}
             >
               <MobileNavItem
                 href={getRoute("exhibition").path}
@@ -292,9 +293,23 @@ export function MobileNavigation({
                 label={t("prompts")}
                 onClose={() => setIsMenuOpen(false)}
               />
+              <MobileNavItem
+                href={getRoute("community").path}
+                icon={Users}
+                label={t("community")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+              {user && (
+                <MobileNavItem
+                  href={getRoute("favorites").path}
+                  icon={Heart}
+                  label={t("favorites")}
+                  onClose={() => setIsMenuOpen(false)}
+                />
+              )}
             </MobileSection>
 
-            {/* My Hub Section (authenticated only) */}
+            {/* Create Section (authenticated only) */}
             {user && (
               <MobileSection
                 title={t("myHub")}
@@ -350,18 +365,6 @@ export function MobileNavigation({
                       </>
                     );
                   })()}
-                <MobileNavItem
-                  href={getRoute("community").path}
-                  icon={Users}
-                  label={t("community")}
-                  onClose={() => setIsMenuOpen(false)}
-                />
-                <MobileNavItem
-                  href={getRoute("favorites").path}
-                  icon={Heart}
-                  label={t("favorites")}
-                  onClose={() => setIsMenuOpen(false)}
-                />
               </MobileSection>
             )}
 
@@ -371,6 +374,7 @@ export function MobileNavigation({
                 title={t("admin")}
                 expanded={adminExpanded}
                 onToggle={() => setAdminExpanded(!adminExpanded)}
+                icon={Lock}
               >
                 <MobileNavItem
                   href={getRoute("adminUsers").path}
@@ -410,6 +414,7 @@ export function MobileNavigation({
               title={t("support")}
               expanded={aboutExpanded}
               onToggle={() => setAboutExpanded(!aboutExpanded)}
+              icon={HelpCircle}
             >
               <MobileNavItem
                 href={getRoute("about").path}

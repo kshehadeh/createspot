@@ -11,7 +11,7 @@ import { getObjectPositionStyle } from "@/lib/image-utils";
 import { getCreatorUrl } from "@/lib/utils";
 import { PageLayout } from "@/components/page-layout";
 import { ProfileImageViewer } from "@/components/profile-image-viewer";
-import { HistoryList } from "@/app/prompt/history/history-list";
+import { HistoryList } from "@/app/inspire/prompt/history/history-list";
 import { SocialLinks } from "@/components/social-links";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
@@ -600,7 +600,7 @@ export default async function ProfilePage({
                   {t("addPortfolioItem")}
                 </Link>
                 <Link
-                  href="/prompt/play"
+                  href="/inspire/prompt/play"
                   className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
                 >
                   {t("submitToPrompt")}

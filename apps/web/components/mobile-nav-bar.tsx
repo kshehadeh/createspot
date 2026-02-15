@@ -42,45 +42,60 @@ export function MobileNavBar({
       <div className="relative border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         {showExpanded ? (
           <nav className="p-2" aria-label="Navigation">
-            <ul
+            <div
               className={cn(
-                "flex items-center gap-1",
-                layout === "grid" && "grid grid-cols-4 gap-1",
-                layout === "flex" && "justify-around",
+                layout === "flex" &&
+                  "overflow-x-auto touch-pan-x [-webkit-overflow-scrolling:touch] [overscroll-behavior-x:contain] scrollbar-hide",
               )}
             >
-              {items.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    prefetch={true}
-                    onClick={() => !alwaysExpanded && setIsExpanded(false)}
+              <ul
+                className={cn(
+                  "flex items-center gap-1",
+                  layout === "grid" && "grid grid-cols-4 gap-1",
+                  layout === "flex" &&
+                    "flex-nowrap justify-between w-full min-w-min pr-2",
+                )}
+              >
+                {items.map((item) => (
+                  <li
+                    key={item.href}
                     className={cn(
-                      "flex flex-col items-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors min-w-0",
-                      layout === "grid" ? "px-1" : "px-4",
-                      item.isActive
-                        ? "text-primary bg-primary/10"
-                        : "text-muted-foreground",
+                      layout === "flex" && "shrink-0 min-w-[4.5rem]",
                     )}
                   >
-                    <item.icon
+                    <Link
+                      href={item.href}
+                      prefetch={true}
+                      onClick={() =>
+                        !alwaysExpanded && setIsExpanded(false)
+                      }
                       className={cn(
-                        "h-5 w-5 shrink-0",
-                        item.isActive && "text-primary",
-                      )}
-                    />
-                    <span
-                      className={cn(
-                        "truncate text-center w-full",
-                        layout === "grid" && "w-full",
+                        "flex flex-col items-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors min-w-0",
+                        layout === "grid" ? "px-1" : "px-3",
+                        item.isActive
+                          ? "text-primary bg-primary/10"
+                          : "text-muted-foreground",
                       )}
                     >
-                      {item.label}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                      <item.icon
+                        className={cn(
+                          "h-5 w-5 shrink-0",
+                          item.isActive && "text-primary",
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "truncate text-center w-full max-w-[4.5rem]",
+                          layout === "grid" && "w-full max-w-none",
+                        )}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </nav>
         ) : (
           <button

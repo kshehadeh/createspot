@@ -164,6 +164,7 @@
   },
   "navigation": {
     "home": "Inicio",
+    "inspire": "Inspirar",
     "exhibits": "Exposiciones",
     "museums": "Museos",
     "prompts": "Indicaciones",
@@ -213,7 +214,7 @@
     "siteSettings": "Configuración del Sitio",
     "imageEditor": "Editor de Imágenes",
     "explore": "Explorar",
-    "myHub": "Mi Centro",
+    "myHub": "Crear",
     "community": "Comunidad",
     "overview": "Acerca de",
     "manageUsers": "Gestionar Usuarios",

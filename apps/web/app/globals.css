@@ -445,3 +445,12 @@ body {
   animation: begin-gradient-shift 6s ease infinite, begin-click-pulse 0.4s ease-out;
 }
 
+/* Hide scrollbar while keeping scroll (e.g. mobile nav footer) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+

@@ -43,7 +43,7 @@ const HINTS_CONFIG: Record<string, HintConfig[]> = {
     {
       key: "exhibits",
       order: 1,
-      targetSelector: "a[href='/exhibition']",
+      targetSelector: "a[href='/inspire/exhibition']",
       side: "bottom",
       showArrow: true,
       translationKeys: {

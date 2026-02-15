@@ -164,6 +164,7 @@
   },
   "navigation": {
     "home": "Home",
+    "inspire": "Inspire",
     "exhibits": "Exhibits",
     "museums": "Museums",
     "prompts": "Prompts",
@@ -213,7 +214,7 @@
     "siteSettings": "Site Settings",
     "imageEditor": "Image Editor",
     "explore": "Explore",
-    "myHub": "My Hub",
+    "myHub": "Create",
     "community": "Community",
     "overview": "About",
     "manageUsers": "Manage Users",
