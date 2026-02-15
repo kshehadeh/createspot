@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HintPopover } from "@/components/hint-popover";
 import { usePageHints } from "@/lib/hooks/use-page-hints";
 import { SubmissionMobileMenu } from "@/components/submission-mobile-menu";
@@ -88,7 +89,7 @@ export function SubmissionDetail({
   const tSubmission = useTranslations("submission");
   const tProfile = useTranslations("profile");
   const tReference = useTranslations("reference");
-  const [mobileView, setMobileView] = useState<"image" | "text">("image");
+  const tProgression = useTranslations("progression");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isReferenceLightboxOpen, setIsReferenceLightboxOpen] = useState(false);
 
@@ -109,7 +110,8 @@ export function SubmissionDetail({
 
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
-  const hasBoth = hasImage && hasText;
+  const hasJourney = (submission.progressions?.length ?? 0) > 0;
+  const hasReference = !!submission.referenceImageUrl;
   const hasProgressionsGif =
     (submission.progressions?.filter((p) => p.imageUrl).length ?? 0) >= 2;
 
@@ -121,6 +123,82 @@ export function SubmissionDetail({
       submission.prompt.word3,
     ];
     return words[submission.wordIndex - 1];
+  };
+
+  type SubmissionTabKey = "image" | "text" | "journey" | "reference";
+  const tabKeys: SubmissionTabKey[] = (
+    ["image", "text", "journey", "reference"] as const
+  ).filter((key) => {
+    if (key === "image") return hasImage;
+    if (key === "text") return hasText;
+    if (key === "journey") return hasJourney;
+    if (key === "reference") return hasReference;
+    return false;
+  });
+
+  const renderImagePanel = () => (
+    <div className="mb-8">
+      <SubmissionImage
+        imageUrl={submission.imageUrl!}
+        alt={submission.title || tSubmission("submissionAlt")}
+        tags={submission.tags}
+        onExpand={() => setIsLightboxOpen(true)}
+      />
+    </div>
+  );
+
+  const renderTextPanel = () => (
+    <div className="mx-auto max-w-3xl">
+      <Card className="rounded-xl">
+        <CardContent className="p-6">
+          {submission.title && (
+            <h1 className="mb-4 text-2xl font-semibold text-foreground">
+              {submission.title}
+            </h1>
+          )}
+          <ExpandableText text={submission.text!} title={submission.title} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderJourneyPanel = () => (
+    <div className="mt-8">
+      {submission.progressions && submission.progressions.length > 0 && (
+        <ProgressionStrip
+          progressions={submission.progressions}
+          submissionTitle={submission.title}
+        />
+      )}
+    </div>
+  );
+
+  const renderReferencePanel = () => (
+    <div className="mt-8">
+      <h3 className="text-lg font-semibold text-foreground mb-4">
+        {tReference("title")}
+      </h3>
+      <button
+        onClick={() => setIsReferenceLightboxOpen(true)}
+        className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary/50 focus:border-primary focus:outline-none transition-all group bg-muted"
+        aria-label={tReference("viewReference")}
+      >
+        <Image
+          src={submission.referenceImageUrl!}
+          alt={tReference("title")}
+          fill
+          className="object-cover transition-transform group-hover:scale-105"
+          sizes="(max-width: 640px) 128px, 160px"
+        />
+      </button>
+    </div>
+  );
+
+  const tabLabels: Record<SubmissionTabKey, string> = {
+    image: tSubmission("image"),
+    text: tSubmission("text"),
+    journey: tProgression("title"),
+    reference: tReference("title"),
   };
 
   return (
@@ -278,104 +356,31 @@ export function SubmissionDetail({
 
         {/* Main content */}
         <main className="mx-auto max-w-7xl px-6 py-6">
-          {/* Mobile tabs */}
-          {hasBoth && (
-            <div className="mb-6 flex gap-2 md:hidden">
-              <button
-                onClick={() => setMobileView("image")}
-                className={`flex-1 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  mobileView === "image"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-              >
-                {tSubmission("image")}
-              </button>
-              <button
-                onClick={() => setMobileView("text")}
-                className={`flex-1 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  mobileView === "text"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-              >
-                {tSubmission("text")}
-              </button>
+          {tabKeys.length === 0 ? null : tabKeys.length === 1 ? (
+            <div className="mb-12">
+              {tabKeys[0] === "image" && renderImagePanel()}
+              {tabKeys[0] === "text" && renderTextPanel()}
+              {tabKeys[0] === "journey" && renderJourneyPanel()}
+              {tabKeys[0] === "reference" && renderReferencePanel()}
             </div>
-          )}
-
-          {/* Content layout */}
-          <div
-            className={`mb-12 ${hasBoth ? "md:grid md:grid-cols-3 md:gap-8" : ""}`}
-          >
-            {/* Image section */}
-            {hasImage && (
-              <div
-                className={`mb-8 ${hasBoth ? "md:col-span-2 md:mb-0 md:sticky md:top-6" : ""} ${
-                  hasBoth && mobileView === "text" ? "hidden md:block" : ""
-                }`}
-              >
-                <SubmissionImage
-                  imageUrl={submission.imageUrl!}
-                  alt={submission.title || tSubmission("submissionAlt")}
-                  tags={submission.tags}
-                  onExpand={() => setIsLightboxOpen(true)}
-                />
-              </div>
-            )}
-
-            {/* Text section */}
-            {hasText && (
-              <div
-                className={`${hasBoth ? "md:col-span-1" : "mx-auto max-w-3xl"} ${
-                  hasBoth && mobileView === "image" ? "hidden md:block" : ""
-                }`}
-              >
-                <Card className="rounded-xl">
-                  <CardContent className="p-6">
-                    {submission.title && (
-                      <h1 className="mb-4 text-2xl font-semibold text-foreground">
-                        {submission.title}
-                      </h1>
-                    )}
-                    <ExpandableText
-                      text={submission.text!}
-                      title={submission.title}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-          </div>
-
-          {/* Reference image - shown if submission has a reference */}
-          {submission.referenceImageUrl && (
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold text-foreground mb-4">
-                {tReference("title")}
-              </h3>
-              <button
-                onClick={() => setIsReferenceLightboxOpen(true)}
-                className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary/50 focus:border-primary focus:outline-none transition-all group bg-muted"
-                aria-label={tReference("viewReference")}
-              >
-                <Image
-                  src={submission.referenceImageUrl}
-                  alt={tReference("title")}
-                  fill
-                  className="object-cover transition-transform group-hover:scale-105"
-                  sizes="(max-width: 640px) 128px, 160px"
-                />
-              </button>
-            </div>
-          )}
-
-          {/* Progressions strip - shown if submission has progressions */}
-          {submission.progressions && submission.progressions.length > 0 && (
-            <ProgressionStrip
-              progressions={submission.progressions}
-              submissionTitle={submission.title}
-            />
+          ) : (
+            <Tabs defaultValue={tabKeys[0]} className="mb-12 w-full">
+              <TabsList className="mb-6 flex w-full flex-wrap gap-2 bg-muted p-1">
+                {tabKeys.map((key) => (
+                  <TabsTrigger key={key} value={key}>
+                    {tabLabels[key]}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {tabKeys.map((key) => (
+                <TabsContent key={key} value={key} className="mt-0">
+                  {key === "image" && renderImagePanel()}
+                  {key === "text" && renderTextPanel()}
+                  {key === "journey" && renderJourneyPanel()}
+                  {key === "reference" && renderReferencePanel()}
+                </TabsContent>
+              ))}
+            </Tabs>
           )}
         </main>
       </div>
