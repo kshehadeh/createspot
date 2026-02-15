@@ -427,6 +427,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 </Dialog>
 ```
 
+Tabbed interfaces use the shared `@/components/ui/tabs` component (Radix Tabs via shadcn). The submission view (Image, Text, Journey, Reference) and the Community page (Recents, Followers, Following, Blocked) both use this base.
+
 #### Adding New shadcn Components
 
 ```bash
