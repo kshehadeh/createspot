@@ -885,6 +885,20 @@ The app uses Tailwind's responsive prefixes:
 <span className="text-4xl sm:text-6xl">     {/* Font size scales up */}
 ```
 
+### Mobile header dropdown
+
+On mobile, page headers that have many actions (share, edit, filters, etc.) can save vertical space by collapsing those actions into a **title dropdown**: the page title becomes a trigger that opens a panel below it.
+
+- **Purpose**: Save vertical space on mobile by collapsing header actions into a title dropdown.
+- **Structure**:
+  - **Trigger**: Clickable control (button with heading-style text) showing the title and a `ChevronDown` icon that rotates when open. Use `aria-expanded` on the trigger.
+  - **Overlay**: `fixed inset-0 z-40` layer that closes the dropdown on click; give it `aria-hidden` so it is ignored by assistive tech.
+  - **Panel**: `absolute left-0 right-0 top-full z-50 mt-2` with border, background, and padding; contains filters (if any) and action buttons/links.
+- **Behavior**: Toggle open/close on trigger click; close on overlay click; optionally close when an action is taken (e.g. portfolio closes on filter change).
+- **Responsive split**: Use this only in a `md:hidden` (mobile) block; keep a normal inline header in a `hidden md:block` (desktop) block.
+- **Implementation**: A shared controlled component `MobileTitleDropdown` (`open`, `onOpenChange`, `title`, `children`) provides the trigger, overlay, and panel; page-specific wrappers supply panel content and own open state.
+- **Reference**: Shared base [components/mobile-title-dropdown.tsx](../components/mobile-title-dropdown.tsx); implementations: [components/portfolio-mobile-menu.tsx](../components/portfolio-mobile-menu.tsx), [components/submission-mobile-menu.tsx](../components/submission-mobile-menu.tsx).
+
 ## Data Fetching
 
 ### Server Components

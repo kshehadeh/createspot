@@ -25,7 +25,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HintPopover } from "@/components/hint-popover";
 import { usePageHints } from "@/lib/hooks/use-page-hints";
-import { getCategoryIcon } from "@/lib/categories";
+import { SubmissionMobileMenu } from "@/components/submission-mobile-menu";
 import { getCreatorUrl } from "@/lib/utils";
 
 interface ProgressionData {
@@ -132,113 +132,144 @@ export function SubmissionDetail({
         {/* Header with title, user, and actions */}
         <Card className="rounded-none border-x-0 border-t-0">
           <div className="mx-auto max-w-7xl px-6 py-4">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              {/* Title and user name */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {submission.category &&
-                    (() => {
-                      const CategoryIcon = getCategoryIcon(submission.category);
-                      return CategoryIcon ? (
-                        <CategoryIcon className="h-5 w-5 shrink-0 text-muted-foreground sm:h-6 sm:w-6" />
-                      ) : null;
-                    })()}
-                  <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl">
-                    {submission.title || tExhibition("untitled")}
-                  </h1>
-                  <ShareButton
-                    type="submission"
-                    submissionId={submission.id}
-                    className="shrink-0"
-                    userId={submission.user.id}
-                    userSlug={submission.user.slug}
+            {/* Mobile: title dropdown + creator line */}
+            <div className="md:hidden flex flex-col gap-2">
+              <SubmissionMobileMenu
+                submission={{
+                  id: submission.id,
+                  title: submission.title,
+                  shareStatus: submission.shareStatus,
+                  critiquesEnabled: submission.critiquesEnabled,
+                  _count: submission._count,
+                  user: submission.user,
+                }}
+                isOwner={isOwner}
+                isLoggedIn={isLoggedIn}
+                currentUserId={currentUserId}
+                hasImage={hasImage}
+                hasProgressionsGif={hasProgressionsGif}
+              />
+              <div className="flex items-center gap-2">
+                <Link
+                  href={getCreatorUrl(submission.user)}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {submission.user.name || tProfile("anonymous")}
+                </Link>
+                {(submission.user.instagram ||
+                  submission.user.twitter ||
+                  submission.user.linkedin ||
+                  submission.user.website) && (
+                  <SocialLinks
+                    instagram={submission.user.instagram}
+                    twitter={submission.user.twitter}
+                    linkedin={submission.user.linkedin}
+                    website={submission.user.website}
+                    variant="minimal"
                   />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={getCreatorUrl(submission.user)}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {submission.user.name || tProfile("anonymous")}
-                  </Link>
-                  {(submission.user.instagram ||
-                    submission.user.twitter ||
-                    submission.user.linkedin ||
-                    submission.user.website) && (
-                    <SocialLinks
-                      instagram={submission.user.instagram}
-                      twitter={submission.user.twitter}
-                      linkedin={submission.user.linkedin}
-                      website={submission.user.website}
-                      variant="minimal"
-                    />
-                  )}
-                </div>
+                )}
               </div>
+            </div>
 
-              {/* Actions */}
-              <div className="flex flex-wrap items-center gap-3">
-                {/* Edit, Download, and Critique buttons grouped together */}
-                <div className="flex items-center gap-2">
-                  {isOwner && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
-                      className="gap-1.5"
-                    >
-                      <Link
-                        href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                          />
-                        </svg>
-                        {tSubmission("edit")}
-                      </Link>
-                    </Button>
-                  )}
-                  {isOwner && (hasImage || hasProgressionsGif) && (
-                    <CollectionDownloadDropdown
-                      variant="submission"
+            {/* Desktop: full header with inline actions */}
+            <div className="hidden md:block">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl">
+                      {submission.title || tExhibition("untitled")}
+                    </h1>
+                    <ShareButton
+                      type="submission"
                       submissionId={submission.id}
-                      submissionTitle={submission.title || "submission"}
-                      hasImage={hasImage}
-                      hasProgressionsGif={hasProgressionsGif}
+                      className="shrink-0"
+                      userId={submission.user.id}
+                      userSlug={submission.user.slug}
                     />
-                  )}
-                  {isLoggedIn &&
-                    submission.critiquesEnabled &&
-                    (isOwner || submission.shareStatus === "PUBLIC") && (
-                      <CritiqueButton
-                        submissionId={submission.id}
-                        critiquesEnabled={submission.critiquesEnabled}
-                        isOwner={isOwner}
-                        currentUserId={currentUserId}
-                        submissionTitle={submission.title}
-                        user={submission.user}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={getCreatorUrl(submission.user)}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {submission.user.name || tProfile("anonymous")}
+                    </Link>
+                    {(submission.user.instagram ||
+                      submission.user.twitter ||
+                      submission.user.linkedin ||
+                      submission.user.website) && (
+                      <SocialLinks
+                        instagram={submission.user.instagram}
+                        twitter={submission.user.twitter}
+                        linkedin={submission.user.linkedin}
+                        website={submission.user.website}
+                        variant="minimal"
                       />
                     )}
+                  </div>
                 </div>
-                {/* Favorite button with count */}
-                <div className="flex items-center gap-1.5">
-                  {isLoggedIn && (
-                    <FavoriteButton submissionId={submission.id} size="md" />
-                  )}
-                  {submission._count.favorites > 0 && (
-                    <span className="text-sm text-muted-foreground">
-                      {submission._count.favorites}
-                    </span>
-                  )}
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    {isOwner && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="gap-1.5"
+                      >
+                        <Link
+                          href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                          </svg>
+                          {tSubmission("edit")}
+                        </Link>
+                      </Button>
+                    )}
+                    {isOwner && (hasImage || hasProgressionsGif) && (
+                      <CollectionDownloadDropdown
+                        variant="submission"
+                        submissionId={submission.id}
+                        submissionTitle={submission.title || "submission"}
+                        hasImage={hasImage}
+                        hasProgressionsGif={hasProgressionsGif}
+                      />
+                    )}
+                    {isLoggedIn &&
+                      submission.critiquesEnabled &&
+                      (isOwner || submission.shareStatus === "PUBLIC") && (
+                        <CritiqueButton
+                          submissionId={submission.id}
+                          critiquesEnabled={submission.critiquesEnabled}
+                          isOwner={isOwner}
+                          currentUserId={currentUserId}
+                          submissionTitle={submission.title}
+                          user={submission.user}
+                        />
+                      )}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {isLoggedIn && (
+                      <FavoriteButton submissionId={submission.id} size="md" />
+                    )}
+                    {submission._count.favorites > 0 && (
+                      <span className="text-sm text-muted-foreground">
+                        {submission._count.favorites}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
