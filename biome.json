@@ -35,9 +35,6 @@
       "*.mjs",
       "*.json"
     ],
-    "experimentalScannerIgnores": [
-      "apps/web/data/**",
-      "data/**"
-    ]
+    "experimentalScannerIgnores": ["apps/web/data/**", "data/**"]
   }
 }
