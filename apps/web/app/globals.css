@@ -444,3 +444,4 @@ body {
 .begin-button.clicked {
   animation: begin-gradient-shift 6s ease infinite, begin-click-pulse 0.4s ease-out;
 }
+

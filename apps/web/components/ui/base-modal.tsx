@@ -76,7 +76,9 @@ const BaseModalPortal = ({ children }: React.PropsWithChildren<object>) => {
   if (isDesktop) {
     return <DialogPrimitive.Portal>{children}</DialogPrimitive.Portal>;
   }
-  return <>{children}</>;
+  // Mobile: portal to document.body so position:fixed works correctly on iOS
+  // (fixed positioning breaks inside ancestors with transform/will-change/filter)
+  return <VaulDrawer.Portal>{children}</VaulDrawer.Portal>;
 };
 
 const BaseModalOverlay = React.forwardRef<
@@ -86,8 +88,14 @@ const BaseModalOverlay = React.forwardRef<
   const { isDesktop } = React.useContext(BaseModalContext);
 
   if (!isDesktop) {
-    // Vaul handles its own overlay with dimming
-    return null;
+    // Render Vaul's own overlay for proper backdrop + gesture handling
+    return (
+      <VaulDrawer.Overlay
+        ref={ref}
+        className={cn("fixed inset-0 z-50 bg-black/80", className)}
+        {...props}
+      />
+    );
   }
 
   return (
@@ -158,8 +166,8 @@ const BaseModalContent = React.forwardRef<
         )}
         style={{ height: contentHeight } as React.CSSProperties}
       >
-        {/* Drag handle indicator */}
-        <div className="mx-auto mt-4 h-1.5 w-12 shrink-0 rounded-full bg-border" />
+        {/* Vaul drag handle – registers with the gesture system for swipe-to-dismiss */}
+        <VaulDrawer.Handle className="mt-4 mb-0 !h-1.5 !w-12 shrink-0 !rounded-full !bg-border" />
         {children}
       </VaulDrawer.Content>
     </BaseModalPortal>
@@ -242,7 +250,6 @@ const BaseModalScrollArea = ({
     return {
       flex: 1,
       overflowY: "auto" as const,
-      WebkitOverflowScrolling: "touch" as const,
     };
   }, [isDesktop]);
 
