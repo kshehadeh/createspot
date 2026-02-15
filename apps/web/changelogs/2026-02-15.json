@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-02-15T00:00:00Z",
+    "commit": "466c80b",
+    "type": "improvement",
+    "area": "global",
+    "description": "Modals use a shared BaseModal: desktop shows a centered dialog, mobile shows a bottom-sheet drawer with keyboard-aware layout. User stats, exhibit request, create collection, critique, user work, and progression add/edit dialogs now use it.",
+    "audience": "public",
+    "impact": "patch",
+    "version": "2.7.3"
+  }
+]
