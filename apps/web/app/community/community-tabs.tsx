@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getCreatorUrl } from "@/lib/utils";
@@ -381,66 +382,47 @@ export function CommunityTabs({
   recentHasMore,
 }: CommunityTabsProps) {
   const t = useTranslations("community");
-  const [activeTab, setActiveTab] = useState<TabType>("recents");
 
   return (
-    <div>
-      <div className="mb-6 flex border-b border-border">
-        <Button
-          type="button"
-          variant={activeTab === "recents" ? "secondary" : "ghost"}
-          size="sm"
-          className={`rounded-b-none rounded-t-md border-b-2 -mb-px ${
-            activeTab === "recents" ? "border-secondary" : "border-transparent"
-          }`}
-          onClick={() => setActiveTab("recents")}
+    <Tabs defaultValue="recents" className="w-full">
+      <TabsList className="mb-6 h-auto w-full justify-start rounded-none border-b border-border bg-transparent p-0">
+        <TabsTrigger
+          value="recents"
+          className="rounded-b-none rounded-t-md border-b-2 border-transparent bg-transparent px-4 py-2 text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
         >
           {t("tabRecents")}
-        </Button>
-        <Button
-          type="button"
-          variant={activeTab === "followers" ? "secondary" : "ghost"}
-          size="sm"
-          className={`rounded-b-none rounded-t-md border-b-2 -mb-px ${
-            activeTab === "followers"
-              ? "border-secondary"
-              : "border-transparent"
-          }`}
-          onClick={() => setActiveTab("followers")}
+        </TabsTrigger>
+        <TabsTrigger
+          value="followers"
+          className="rounded-b-none rounded-t-md border-b-2 border-transparent bg-transparent px-4 py-2 text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
         >
           {t("tabFollowers")}
-        </Button>
-        <Button
-          type="button"
-          variant={activeTab === "following" ? "secondary" : "ghost"}
-          size="sm"
-          className={`rounded-b-none rounded-t-md border-b-2 -mb-px ${
-            activeTab === "following"
-              ? "border-secondary"
-              : "border-transparent"
-          }`}
-          onClick={() => setActiveTab("following")}
+        </TabsTrigger>
+        <TabsTrigger
+          value="following"
+          className="rounded-b-none rounded-t-md border-b-2 border-transparent bg-transparent px-4 py-2 text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
         >
           {t("tabFollowing")}
-        </Button>
-        <Button
-          type="button"
-          variant={activeTab === "blocked" ? "secondary" : "ghost"}
-          size="sm"
-          className={`rounded-b-none rounded-t-md border-b-2 -mb-px ${
-            activeTab === "blocked" ? "border-secondary" : "border-transparent"
-          }`}
-          onClick={() => setActiveTab("blocked")}
+        </TabsTrigger>
+        <TabsTrigger
+          value="blocked"
+          className="rounded-b-none rounded-t-md border-b-2 border-transparent bg-transparent px-4 py-2 text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
         >
           {t("tabBlocked")}
-        </Button>
-      </div>
-      {activeTab === "recents" && (
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="recents" className="mt-0">
         <RecentsTab submissions={recentSubmissions} hasMore={recentHasMore} />
-      )}
-      {activeTab === "followers" && <FollowersTab />}
-      {activeTab === "following" && <FollowingTab />}
-      {activeTab === "blocked" && <BlockedTab />}
-    </div>
+      </TabsContent>
+      <TabsContent value="followers" className="mt-0">
+        <FollowersTab />
+      </TabsContent>
+      <TabsContent value="following" className="mt-0">
+        <FollowingTab />
+      </TabsContent>
+      <TabsContent value="blocked" className="mt-0">
+        <BlockedTab />
+      </TabsContent>
+    </Tabs>
   );
 }
