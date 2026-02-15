@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalHeader,
+  BaseModalTitle,
+  BaseModalDescription,
+  BaseModalScrollArea,
+} from "@/components/ui/base-modal";
 import { PortfolioItemForm } from "@/components/portfolio-item-form";
 
 interface SubmissionData {
@@ -60,13 +61,17 @@ export function SubmissionEditModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-2xl flex flex-col p-0">
-        <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle>{getTitle()}</DialogTitle>
-          <DialogDescription>{getDescription()}</DialogDescription>
-        </DialogHeader>
-        <div className="overflow-y-auto flex-1 min-h-0 px-6 pb-6">
+    <BaseModal
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      dismissible={false}
+    >
+      <BaseModalContent className="max-w-2xl p-0">
+        <BaseModalHeader>
+          <BaseModalTitle>{getTitle()}</BaseModalTitle>
+          <BaseModalDescription>{getDescription()}</BaseModalDescription>
+        </BaseModalHeader>
+        <BaseModalScrollArea>
           <PortfolioItemForm
             mode={mode === "create" ? "create" : "edit"}
             initialData={initialData}
@@ -74,8 +79,8 @@ export function SubmissionEditModal({
             onCancel={onClose}
             setIsPortfolio={mode === "add-to-portfolio"}
           />
-        </div>
-      </DialogContent>
-    </Dialog>
+        </BaseModalScrollArea>
+      </BaseModalContent>
+    </BaseModal>
   );
 }

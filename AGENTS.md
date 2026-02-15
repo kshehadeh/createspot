@@ -42,6 +42,7 @@ The app will be available at http://localhost:3000
 | [apps/web/docs/DATABASE.md](apps/web/docs/DATABASE.md) | Database schema, Prisma usage, migrations, image storage |
 | [apps/web/docs/IMAGE-HANDLING.md](apps/web/docs/IMAGE-HANDLING.md) | Upload flow, presign, post-processing workflow, resize/WebP, metadata |
 | [apps/web/docs/FRONTEND.md](apps/web/docs/FRONTEND.md) | React components, theming, UI patterns |
+| [apps/web/docs/MODALS.md](apps/web/docs/MODALS.md) | Modal system: BaseModal, responsive dialogs, mobile drawer behavior, keyboard awareness |
 | [apps/web/docs/INTERNATIONALIZATION.md](apps/web/docs/INTERNATIONALIZATION.md) | Translation system, i18n patterns, adding new languages |
 | [apps/web/docs/CREATOR-PROTECTIONS.md](apps/web/docs/CREATOR-PROTECTIONS.md) | Watermarking, download prevention, AI training opt-out |
 | [apps/web/docs/HINTS.md](apps/web/docs/HINTS.md) | Contextual help and hint system, tutorial management |
@@ -333,6 +334,42 @@ if (!session?.user?.isAdmin) {
   // Handle non-admin
 }
 ```
+
+### Modal Usage
+
+The app uses a unified `BaseModal` component that provides responsive behavior:
+- **Desktop**: Centered dialog using Radix UI Dialog
+- **Mobile**: Bottom sheet drawer with swipe-to-dismiss and keyboard-aware layout
+
+```tsx
+import {
+  BaseModal,
+  BaseModalContent,
+  BaseModalHeader,
+  BaseModalTitle,
+  BaseModalDescription,
+  BaseModalFooter,
+} from "@/components/ui/base-modal";
+
+<BaseModal 
+  open={isOpen} 
+  onOpenChange={onClose}
+  dismissible={!isSubmitting}  // Prevent dismissal during operations
+>
+  <BaseModalContent>
+    <BaseModalHeader>
+      <BaseModalTitle>Title</BaseModalTitle>
+      <BaseModalDescription>Description</BaseModalDescription>
+    </BaseModalHeader>
+    <BaseModalFooter>
+      <Button variant="outline" onClick={onClose}>Cancel</Button>
+      <Button onClick={handleConfirm}>Confirm</Button>
+    </BaseModalFooter>
+  </BaseModalContent>
+</BaseModal>
+```
+
+> See [apps/web/docs/MODALS.md](apps/web/docs/MODALS.md) for complete documentation including mobile drawer behavior, keyboard awareness, and migration guide.
 
 ### Image Upload Flow
 

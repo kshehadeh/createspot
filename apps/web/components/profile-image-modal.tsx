@@ -4,13 +4,14 @@ import { useState, useRef } from "react";
 import { User, Upload, Crosshair, Trash2, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalDescription,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalTitle,
+  BaseModalScrollArea,
+} from "@/components/ui/base-modal";
 import { Button } from "@/components/ui/button";
 import { FocalPointModal } from "@/components/focal-point-modal";
 import { ConfirmModal } from "@/components/confirm-modal";
@@ -165,14 +166,14 @@ export function ProfileImageModal({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col md:max-h-[90vh] h-screen md:h-auto md:rounded-lg md:m-4 md:max-w-2xl md:translate-x-[-50%] md:translate-y-[-50%] md:left-[50%] md:top-[50%] w-full m-0 rounded-none left-0 top-0 translate-x-0 translate-y-0">
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle>{t("title")}</DialogTitle>
-            <DialogDescription>{t("description")}</DialogDescription>
-          </DialogHeader>
+      <BaseModal open={isOpen} onOpenChange={onClose} dismissible={!uploading}>
+        <BaseModalContent>
+          <BaseModalHeader>
+            <BaseModalTitle>{t("title")}</BaseModalTitle>
+            <BaseModalDescription>{t("description")}</BaseModalDescription>
+          </BaseModalHeader>
 
-          <div className="flex-1 overflow-y-auto space-y-4 min-h-0">
+          <BaseModalScrollArea>
             {/* Current Image Display - Takes majority of space */}
             <div className="flex justify-center">
               <div className="relative w-full max-w-md overflow-hidden rounded-lg bg-muted">
@@ -233,9 +234,9 @@ export function ProfileImageModal({
               onChange={handleFileSelect}
               className="hidden"
             />
-          </div>
+          </BaseModalScrollArea>
 
-          <DialogFooter className="flex-shrink-0 flex-row gap-2 sm:gap-0">
+          <BaseModalFooter>
             <Button
               type="button"
               variant={hasUploadedImage ? "outline" : "default"}
@@ -281,9 +282,9 @@ export function ProfileImageModal({
                 </Button>
               </>
             )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </BaseModalFooter>
+        </BaseModalContent>
+      </BaseModal>
 
       {/* Focal Point Modal */}
       {currentImageUrl && (

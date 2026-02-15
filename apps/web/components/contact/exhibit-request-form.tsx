@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalDescription,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalTitle,
+} from "@/components/ui/base-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -146,83 +147,95 @@ export function ExhibitRequestModal({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>{t("title")}</DialogTitle>
-            <DialogDescription>{t("formDescription")}</DialogDescription>
-          </DialogHeader>
+      <BaseModal
+        open={isOpen}
+        onOpenChange={handleOpenChange}
+        dismissible={!isSubmitting}
+      >
+        <BaseModalContent className="sm:max-w-[500px]">
+          <BaseModalHeader>
+            <BaseModalTitle>{t("title")}</BaseModalTitle>
+            <BaseModalDescription>{t("formDescription")}</BaseModalDescription>
+          </BaseModalHeader>
 
           {success ? (
-            <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-center">
-              <p className="text-sm font-medium text-foreground">
-                {t("successMessage")}
-              </p>
+            <div className="px-4 pb-4 md:px-6 md:pb-6">
+              <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-center">
+                <p className="text-sm font-medium text-foreground">
+                  {t("successMessage")}
+                </p>
+              </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="exhibitName">{t("nameLabel")}</Label>
-                <Input
-                  id="exhibitName"
-                  placeholder={t("namePlaceholder")}
-                  value={formData.exhibitName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, exhibitName: e.target.value })
-                  }
-                  disabled={isSubmitting}
-                />
-              </div>
+            <>
+              <form
+                id="exhibit-request-form"
+                onSubmit={handleSubmit}
+                className="space-y-4 px-4 md:px-6"
+              >
+                <div className="space-y-2">
+                  <Label htmlFor="exhibitName">{t("nameLabel")}</Label>
+                  <Input
+                    id="exhibitName"
+                    placeholder={t("namePlaceholder")}
+                    value={formData.exhibitName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, exhibitName: e.target.value })
+                    }
+                    disabled={isSubmitting}
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="exhibitDescription">
-                  {t("descriptionLabel")}
-                </Label>
-                <Textarea
-                  id="exhibitDescription"
-                  placeholder={t("descriptionPlaceholder")}
-                  value={formData.exhibitDescription}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      exhibitDescription: e.target.value,
-                    })
-                  }
-                  rows={4}
-                  disabled={isSubmitting}
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="exhibitDescription">
+                    {t("descriptionLabel")}
+                  </Label>
+                  <Textarea
+                    id="exhibitDescription"
+                    placeholder={t("descriptionPlaceholder")}
+                    value={formData.exhibitDescription}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        exhibitDescription: e.target.value,
+                      })
+                    }
+                    rows={4}
+                    disabled={isSubmitting}
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label>{t("submissionsLabel")}</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowBrowser(true)}
-                  disabled={isSubmitting}
-                  className="w-full"
-                >
-                  {t("selectSubmissions")}
-                </Button>
+                <div className="space-y-2">
+                  <Label>{t("submissionsLabel")}</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowBrowser(true)}
+                    disabled={isSubmitting}
+                    className="w-full"
+                  >
+                    {t("selectSubmissions")}
+                  </Button>
 
-                {formData.selectedSubmissionIds.length > 0 && (
-                  <div className="rounded-lg border border-border bg-muted p-3 text-sm">
-                    <p className="text-muted-foreground">
-                      {t("selectedCount", {
-                        count: formData.selectedSubmissionIds.length,
-                      })}
-                    </p>
+                  {formData.selectedSubmissionIds.length > 0 && (
+                    <div className="rounded-lg border border-border bg-muted p-3 text-sm">
+                      <p className="text-muted-foreground">
+                        {t("selectedCount", {
+                          count: formData.selectedSubmissionIds.length,
+                        })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {error && (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+                    {error}
                   </div>
                 )}
-              </div>
+              </form>
 
-              {error && (
-                <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-                  {error}
-                </div>
-              )}
-
-              <div className="flex justify-end gap-2">
+              <BaseModalFooter>
                 <Button
                   type="button"
                   variant="outline"
@@ -231,14 +244,18 @@ export function ExhibitRequestModal({
                 >
                   {tCommon("cancel")}
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  form="exhibit-request-form"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? tCommon("loading") : t("submit")}
                 </Button>
-              </div>
-            </form>
+              </BaseModalFooter>
+            </>
           )}
-        </DialogContent>
-      </Dialog>
+        </BaseModalContent>
+      </BaseModal>
 
       <SubmissionBrowser
         isOpen={showBrowser}

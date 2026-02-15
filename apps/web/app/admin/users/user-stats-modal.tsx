@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalHeader,
+  BaseModalTitle,
+  BaseModalScrollArea,
+} from "@/components/ui/base-modal";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, HardDrive, Image, User } from "lucide-react";
 
@@ -83,15 +84,15 @@ export function UserStatsModal({
   }, [isOpen, userId, t]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
-          <DialogTitle>
+    <BaseModal open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <BaseModalContent className="max-w-2xl">
+        <BaseModalHeader>
+          <BaseModalTitle>
             {t("userStats")}: {userName || t("noName")}
-          </DialogTitle>
-        </DialogHeader>
+          </BaseModalTitle>
+        </BaseModalHeader>
 
-        <div className="overflow-y-auto flex-1 min-h-0 px-6 pb-6">
+        <BaseModalScrollArea>
           {loading && (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -209,8 +210,8 @@ export function UserStatsModal({
               </div>
             </div>
           )}
-        </div>
-      </DialogContent>
-    </Dialog>
+        </BaseModalScrollArea>
+      </BaseModalContent>
+    </BaseModal>
   );
 }

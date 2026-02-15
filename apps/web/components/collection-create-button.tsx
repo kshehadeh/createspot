@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, Loader2 } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalDescription,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalTitle,
+} from "@/components/ui/base-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -86,16 +86,20 @@ export function CollectionCreateButton({
         <span className="hidden md:inline">{t("createNew")}</span>
       </Button>
 
-      <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t("createCollection")}</DialogTitle>
-            <DialogDescription>
+      <BaseModal
+        open={isOpen}
+        onOpenChange={(open) => !open && handleClose()}
+        dismissible={!isCreating}
+      >
+        <BaseModalContent className="max-w-md">
+          <BaseModalHeader>
+            <BaseModalTitle>{t("createCollection")}</BaseModalTitle>
+            <BaseModalDescription>
               {t("createCollectionDescription")}
-            </DialogDescription>
-          </DialogHeader>
+            </BaseModalDescription>
+          </BaseModalHeader>
 
-          <div className="space-y-4 py-2">
+          <div className="space-y-4 px-4 md:px-6">
             <div className="space-y-2">
               <Label htmlFor="name">{t("collectionName")}</Label>
               <Input
@@ -133,7 +137,7 @@ export function CollectionCreateButton({
             </div>
           </div>
 
-          <DialogFooter>
+          <BaseModalFooter>
             <Button
               variant="outline"
               onClick={handleClose}
@@ -154,9 +158,9 @@ export function CollectionCreateButton({
                 t("create")
               )}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </BaseModalFooter>
+        </BaseModalContent>
+      </BaseModal>
     </>
   );
 }

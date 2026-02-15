@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalTitle,
+  BaseModalScrollArea,
+} from "@/components/ui/base-modal";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -164,75 +166,79 @@ export function CritiqueSelectionModal({
   if (!selectionData) return null;
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{t("createCritique")}</DialogTitle>
-        </DialogHeader>
-        <div className="mt-4 space-y-4">
-          {/* Selection preview */}
-          <div className="border border-border rounded-md p-4 bg-muted/50">
-            <div className="text-sm font-medium mb-2">
-              {selectionData.type === "image"
-                ? t("imageSelection")
-                : t("textSelection")}
+    <BaseModal
+      open={open}
+      onOpenChange={(o) => !o && handleClose()}
+      dismissible={!saving}
+    >
+      <BaseModalContent className="max-w-2xl">
+        <BaseModalHeader>
+          <BaseModalTitle>{t("createCritique")}</BaseModalTitle>
+        </BaseModalHeader>
+        <BaseModalScrollArea>
+          <div className="space-y-4">
+            {/* Selection preview */}
+            <div className="border border-border rounded-md p-4 bg-muted/50">
+              <div className="text-sm font-medium mb-2">
+                {selectionData.type === "image"
+                  ? t("imageSelection")
+                  : t("textSelection")}
+              </div>
+              {selectionData.type === "image" ? (
+                <div className="relative w-full max-h-48 flex items-center justify-center bg-background rounded overflow-hidden">
+                  {fragmentPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={fragmentPreview}
+                      alt={t("imageSelection")}
+                      className="max-w-full max-h-48 object-contain"
+                    />
+                  ) : previewError ? (
+                    <div className="h-32 w-full flex flex-col items-center justify-center text-muted-foreground gap-2 p-4 text-center">
+                      <span className="text-destructive text-sm">
+                        {t("previewLoadFailed")}
+                      </span>
+                      <span className="text-xs opacity-70">{previewError}</span>
+                    </div>
+                  ) : (
+                    <div className="h-32 w-full flex items-center justify-center text-muted-foreground">
+                      Loading preview...
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-sm italic text-muted-foreground">
+                  &ldquo;{selectionData.originalText.slice(0, 100)}
+                  {selectionData.originalText.length > 100 ? "..." : ""}&rdquo;
+                </div>
+              )}
             </div>
-            {selectionData.type === "image" ? (
-              <div className="relative w-full max-h-48 flex items-center justify-center bg-background rounded overflow-hidden">
-                {fragmentPreview ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={fragmentPreview}
-                    alt={t("imageSelection")}
-                    className="max-w-full max-h-48 object-contain"
-                  />
-                ) : previewError ? (
-                  <div className="h-32 w-full flex flex-col items-center justify-center text-muted-foreground gap-2 p-4 text-center">
-                    <span className="text-destructive text-sm">
-                      {t("previewLoadFailed")}
-                    </span>
-                    <span className="text-xs opacity-70">{previewError}</span>
-                  </div>
-                ) : (
-                  <div className="h-32 w-full flex items-center justify-center text-muted-foreground">
-                    Loading preview...
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-sm italic text-muted-foreground">
-                &ldquo;{selectionData.originalText.slice(0, 100)}
-                {selectionData.originalText.length > 100 ? "..." : ""}&rdquo;
-              </div>
-            )}
-          </div>
 
-          {/* Critique editor */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">
-              {t("critique")}
-            </label>
-            <RichTextEditor
-              value={critiqueText}
-              onChange={setCritiqueText}
-              placeholder={t("critiquePlaceholder")}
-            />
+            {/* Critique editor */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                {t("critique")}
+              </label>
+              <RichTextEditor
+                value={critiqueText}
+                onChange={setCritiqueText}
+                placeholder={t("critiquePlaceholder")}
+              />
+            </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={handleClose} disabled={saving}>
-              {tCommon("cancel")}
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={saving || !critiqueText.trim()}
-            >
-              {saving ? tCommon("saving") : tCommon("submit")}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </BaseModalScrollArea>
+        <BaseModalFooter>
+          <Button variant="outline" onClick={handleClose} disabled={saving}>
+            {tCommon("cancel")}
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={saving || !critiqueText.trim()}
+          >
+            {saving ? tCommon("saving") : tCommon("submit")}
+          </Button>
+        </BaseModalFooter>
+      </BaseModalContent>
+    </BaseModal>
   );
 }

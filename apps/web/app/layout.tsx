@@ -33,6 +33,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Enable proper keyboard handling on Android Chrome
+  // When keyboard appears, the viewport resizes instead of zooming
+  interactiveWidget: "resizes-content",
 };
 
 export const metadata: Metadata = {

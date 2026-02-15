@@ -7,13 +7,14 @@ import { useTranslations } from "next-intl";
 import { Plus, FolderPlus, Lock, Globe, Loader2 } from "lucide-react";
 import { fetcher } from "@/lib/swr";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalDescription,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalTitle,
+  BaseModalScrollArea,
+} from "@/components/ui/base-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -114,16 +115,16 @@ export function CollectionSelectModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t("addToCollection")}</DialogTitle>
-          <DialogDescription>
+    <BaseModal open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <BaseModalContent className="max-w-md">
+        <BaseModalHeader>
+          <BaseModalTitle>{t("addToCollection")}</BaseModalTitle>
+          <BaseModalDescription>
             {t("addToCollectionDescription", { count: selectedCount })}
-          </DialogDescription>
-        </DialogHeader>
+          </BaseModalDescription>
+        </BaseModalHeader>
 
-        <div className="max-h-[300px] overflow-y-auto py-2">
+        <BaseModalScrollArea>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -241,9 +242,9 @@ export function CollectionSelectModal({
               )}
             </div>
           )}
-        </div>
+        </BaseModalScrollArea>
 
-        <DialogFooter>
+        <BaseModalFooter>
           {showCreateForm ? (
             <>
               <Button
@@ -272,8 +273,8 @@ export function CollectionSelectModal({
               {tCommon("cancel")}
             </Button>
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </BaseModalFooter>
+      </BaseModalContent>
+    </BaseModal>
   );
 }

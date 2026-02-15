@@ -2,15 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalDescription,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalTitle,
+} from "@/components/ui/base-modal";
 import { Button } from "@/components/ui/button";
 
 interface ConfirmModalProps {
@@ -40,29 +38,29 @@ export function ConfirmModal({
   const defaultCancelLabel = cancelLabel ?? tCommon("cancel");
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{message}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel asChild>
-            <Button variant="outline" onClick={onCancel} disabled={isLoading}>
-              {defaultCancelLabel}
-            </Button>
-          </AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <Button
-              variant="destructive"
-              onClick={onConfirm}
-              disabled={isLoading}
-            >
-              {isLoading ? t("defaultDeleting") : defaultConfirmLabel}
-            </Button>
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <BaseModal
+      open={isOpen}
+      onOpenChange={(open) => !open && onCancel()}
+      dismissible={!isLoading}
+    >
+      <BaseModalContent>
+        <BaseModalHeader>
+          <BaseModalTitle>{title}</BaseModalTitle>
+          <BaseModalDescription>{message}</BaseModalDescription>
+        </BaseModalHeader>
+        <BaseModalFooter>
+          <Button variant="outline" onClick={onCancel} disabled={isLoading}>
+            {defaultCancelLabel}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? t("defaultDeleting") : defaultConfirmLabel}
+          </Button>
+        </BaseModalFooter>
+      </BaseModalContent>
+    </BaseModal>
   );
 }

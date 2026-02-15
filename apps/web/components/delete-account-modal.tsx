@@ -5,15 +5,14 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalDescription,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalScrollArea,
+  BaseModalTitle,
+} from "@/components/ui/base-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -58,9 +57,7 @@ export function DeleteAccountModal({
     onClose();
   };
 
-  const handleStep1Confirm = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleStep1Confirm = () => {
     setStep(2);
   };
 
@@ -119,10 +116,14 @@ export function DeleteAccountModal({
   const isConfirmDisabled = step === 2 && confirmationText !== "DELETE";
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
+    <BaseModal
+      open={isOpen}
+      onOpenChange={(open) => !open && handleClose()}
+      dismissible={!isDeleting}
+    >
+      <BaseModalContent>
+        <BaseModalHeader>
+          <BaseModalTitle>
             {step === 1
               ? isAdminDelete
                 ? t("titleAdmin", { name: targetUserName || "User" })
@@ -132,8 +133,10 @@ export function DeleteAccountModal({
                     name: targetUserName || "User",
                   })
                 : t("finalConfirmation")}
-          </AlertDialogTitle>
-          <AlertDialogDescription asChild>
+          </BaseModalTitle>
+        </BaseModalHeader>
+        <BaseModalScrollArea>
+          <BaseModalDescription asChild>
             {step === 1 ? (
               <div className="space-y-2">
                 <div>
@@ -180,18 +183,16 @@ export function DeleteAccountModal({
                 </div>
               </div>
             )}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel asChild>
-            <Button
-              variant="outline"
-              onClick={step === 1 ? handleStep1Cancel : handleStep2Cancel}
-              disabled={isDeleting}
-            >
-              {tCommon("cancel")}
-            </Button>
-          </AlertDialogCancel>
+          </BaseModalDescription>
+        </BaseModalScrollArea>
+        <BaseModalFooter>
+          <Button
+            variant="outline"
+            onClick={step === 1 ? handleStep1Cancel : handleStep2Cancel}
+            disabled={isDeleting}
+          >
+            {tCommon("cancel")}
+          </Button>
           {step === 1 ? (
             <Button
               variant="destructive"
@@ -201,22 +202,20 @@ export function DeleteAccountModal({
               {t("continue")}
             </Button>
           ) : (
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={handleStep2Confirm}
-                disabled={isConfirmDisabled || isDeleting}
-              >
-                {isDeleting
-                  ? t("deleting")
-                  : isAdminDelete
-                    ? t("deleteUser")
-                    : t("deleteMyAccount")}
-              </Button>
-            </AlertDialogAction>
+            <Button
+              variant="destructive"
+              onClick={handleStep2Confirm}
+              disabled={isConfirmDisabled || isDeleting}
+            >
+              {isDeleting
+                ? t("deleting")
+                : isAdminDelete
+                  ? t("deleteUser")
+                  : t("deleteMyAccount")}
+            </Button>
           )}
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </BaseModalFooter>
+      </BaseModalContent>
+    </BaseModal>
   );
 }

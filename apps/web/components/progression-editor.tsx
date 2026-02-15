@@ -17,12 +17,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalTitle,
+  BaseModalScrollArea,
+} from "@/components/ui/base-modal";
 import {
   Tooltip,
   TooltipContent,
@@ -383,90 +384,101 @@ export function ProgressionEditor({
       )}
 
       {/* Add/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
+      <BaseModal
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        dismissible={!uploading}
+      >
+        <BaseModalContent className="max-w-2xl">
+          <BaseModalHeader>
+            <BaseModalTitle>
               {editingIndex !== null
                 ? t("editProgression")
                 : t("addProgression")}
-            </DialogTitle>
-          </DialogHeader>
+            </BaseModalTitle>
+          </BaseModalHeader>
 
-          <div className="space-y-4 py-4">
-            {/* Image upload */}
-            <div className="space-y-2">
-              <Label>{t("image")}</Label>
-              {formData.imageUrl ? (
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                  <Image
-                    src={formData.imageUrl}
-                    alt="Progression preview"
-                    fill
-                    className="object-contain bg-muted"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={handleRemoveImage}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                  <span className="text-sm text-muted-foreground">
-                    {uploading ? "Uploading..." : t("uploadImage")}
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageUpload}
-                    disabled={uploading}
-                  />
-                </label>
+          <BaseModalScrollArea>
+            <div className="space-y-4">
+              {/* Image upload */}
+              <div className="space-y-2">
+                <Label>{t("image")}</Label>
+                {formData.imageUrl ? (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
+                    <Image
+                      src={formData.imageUrl}
+                      alt="Progression preview"
+                      fill
+                      className="object-contain bg-muted"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2"
+                      onClick={handleRemoveImage}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                    <span className="text-sm text-muted-foreground">
+                      {uploading ? "Uploading..." : t("uploadImage")}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={uploading}
+                    />
+                  </label>
+                )}
+              </div>
+
+              {/* Text content */}
+              <div className="space-y-2">
+                <Label>{t("text")}</Label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  {t("textDescription")}
+                </p>
+                <RichTextEditor
+                  value={formData.text || ""}
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, text: value }))
+                  }
+                  placeholder="Enter the creative work at this stage..."
+                />
+              </div>
+
+              {/* Comment */}
+              <div className="space-y-2">
+                <Label>{t("comment")}</Label>
+                <Textarea
+                  value={formData.comment || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      comment: e.target.value,
+                    }))
+                  }
+                  placeholder={t("commentPlaceholder")}
+                  rows={2}
+                />
+              </div>
+
+              {/* Validation message */}
+              {!formData.imageUrl && !formData.text && (
+                <p className="text-sm text-destructive">
+                  {t("mustHaveContent")}
+                </p>
               )}
             </div>
+          </BaseModalScrollArea>
 
-            {/* Text content */}
-            <div className="space-y-2">
-              <Label>{t("text")}</Label>
-              <p className="text-xs text-muted-foreground mb-2">
-                {t("textDescription")}
-              </p>
-              <RichTextEditor
-                value={formData.text || ""}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, text: value }))
-                }
-                placeholder="Enter the creative work at this stage..."
-              />
-            </div>
-
-            {/* Comment */}
-            <div className="space-y-2">
-              <Label>{t("comment")}</Label>
-              <Textarea
-                value={formData.comment || ""}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, comment: e.target.value }))
-                }
-                placeholder={t("commentPlaceholder")}
-                rows={2}
-              />
-            </div>
-
-            {/* Validation message */}
-            {!formData.imageUrl && !formData.text && (
-              <p className="text-sm text-destructive">{t("mustHaveContent")}</p>
-            )}
-          </div>
-
-          <DialogFooter>
+          <BaseModalFooter>
             <Button
               type="button"
               variant="outline"
@@ -481,9 +493,9 @@ export function ProgressionEditor({
             >
               {tCommon("save")}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </BaseModalFooter>
+        </BaseModalContent>
+      </BaseModal>
 
       {/* Delete confirmation */}
       <ConfirmModal

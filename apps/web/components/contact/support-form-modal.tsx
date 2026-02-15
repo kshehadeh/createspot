@@ -5,12 +5,13 @@ import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  BaseModal,
+  BaseModalContent,
+  BaseModalDescription,
+  BaseModalFooter,
+  BaseModalHeader,
+  BaseModalTitle,
+} from "@/components/ui/base-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -122,12 +123,16 @@ export function SupportFormModal({ isOpen, onClose }: SupportFormModalProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>{t("formDescription")}</DialogDescription>
-        </DialogHeader>
+    <BaseModal
+      open={isOpen}
+      onOpenChange={handleClose}
+      dismissible={!isSubmitting}
+    >
+      <BaseModalContent className="sm:max-w-[500px]">
+        <BaseModalHeader>
+          <BaseModalTitle>{t("title")}</BaseModalTitle>
+          <BaseModalDescription>{t("formDescription")}</BaseModalDescription>
+        </BaseModalHeader>
 
         {success ? (
           <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-center">
@@ -201,23 +206,27 @@ export function SupportFormModal({ isOpen, onClose }: SupportFormModalProps) {
                 {error}
               </div>
             )}
-
-            <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleClose(false)}
-                disabled={isSubmitting}
-              >
-                {tCommon("cancel")}
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? tCommon("loading") : t("submit")}
-              </Button>
-            </div>
           </form>
         )}
-      </DialogContent>
-    </Dialog>
+
+        <BaseModalFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleClose(false)}
+            disabled={isSubmitting}
+          >
+            {tCommon("cancel")}
+          </Button>
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={isSubmitting || success}
+          >
+            {isSubmitting ? tCommon("loading") : t("submit")}
+          </Button>
+        </BaseModalFooter>
+      </BaseModalContent>
+    </BaseModal>
   );
 }
