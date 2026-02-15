@@ -1,12 +1,12 @@
 [
   {
-    "time": "2026-02-15T00:00:00Z",
-    "commit": "466c80b",
-    "type": "improvement",
-    "area": "global",
-    "description": "Modals use a shared BaseModal: desktop shows a centered dialog, mobile shows a bottom-sheet drawer with keyboard-aware layout. User stats, exhibit request, create collection, critique, user work, and progression add/edit dialogs now use it.",
+    "time": "2026-02-15T00:00:00-05:00",
+    "commit": "c34278349e50c6e6b8411b6edbf676b7d799874e",
+    "type": "feature",
     "audience": "public",
-    "impact": "patch",
-    "version": "2.7.3"
-  }
+    "area": "global",
+    "description": "Add Inspire section: community, exhibition, museums, prompts, and favorites now live under /inspire with a shared desktop sidebar and mobile pinned footer; main nav renamed Explore to Inspire (Brain icon), My Hub to Create, and added Admin (Lock) and Support (HelpCircle) icons; inspire mobile footer is horizontally scrollable when needed.",
+"impact": "minor",
+  "version": "2.8.0"
+}
 ]
