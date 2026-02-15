@@ -140,7 +140,7 @@ const BaseModalContent = React.forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+          "fixed left-[50%] top-[50%] z-50 flex flex-col w-full max-w-lg max-h-[85vh] overflow-y-auto translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
           className,
         )}
         {...props}
@@ -242,21 +242,12 @@ const BaseModalScrollArea = ({
   className,
   children,
 }: React.PropsWithChildren<{ className?: string }>) => {
-  const { isDesktop } = useBaseModalContent();
-
-  // On mobile, scrollable area height needs to account for header/footer
-  const scrollAreaStyle = React.useMemo(() => {
-    if (isDesktop) return undefined;
-    return {
-      flex: 1,
-      overflowY: "auto" as const,
-    };
-  }, [isDesktop]);
-
   return (
     <div
-      className={cn("px-4 pb-4 md:px-6 md:pb-6 min-h-0", className)}
-      style={scrollAreaStyle}
+      className={cn(
+        "px-4 pb-4 md:px-6 md:pb-6 min-h-0 flex-1 overflow-y-auto",
+        className,
+      )}
     >
       {children}
     </div>
