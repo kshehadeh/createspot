@@ -17,15 +17,18 @@ export function Breadcrumb({ segments }: BreadcrumbProps) {
   }
 
   return (
-    <div className="flex flex-row items-center border-b border-border px-6 py-2 sm:px-12">
+    <div className="flex min-w-0 flex-row flex-nowrap items-center overflow-hidden border-b border-border px-6 py-2 sm:px-12">
       {segments.map((segment, index) => {
         const IconComponent = segment.icon;
 
         return (
-          <span key={index} className="flex items-center">
+          <span
+            key={index}
+            className="flex min-w-0 shrink items-center overflow-hidden"
+          >
             {index > 0 && (
               <svg
-                className="mx-1 h-4 w-4 text-muted-foreground"
+                className="mx-1 h-4 w-4 shrink-0 text-muted-foreground"
                 viewBox="0 0 16 16"
                 fill="none"
                 aria-hidden="true"
@@ -43,15 +46,23 @@ export function Breadcrumb({ segments }: BreadcrumbProps) {
             {segment.href ? (
               <Link
                 href={segment.href}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="flex min-w-0 shrink items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
-                {IconComponent && <IconComponent className="h-5 w-5" />}
-                {segment.label}
+                {IconComponent && (
+                  <IconComponent className="h-5 w-5 shrink-0" />
+                )}
+                <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {segment.label}
+                </span>
               </Link>
             ) : (
-              <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                {IconComponent && <IconComponent className="h-5 w-5" />}
-                {segment.label}
+              <span className="flex min-w-0 shrink items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-muted-foreground">
+                {IconComponent && (
+                  <IconComponent className="h-5 w-5 shrink-0" />
+                )}
+                <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {segment.label}
+                </span>
               </span>
             )}
           </span>
