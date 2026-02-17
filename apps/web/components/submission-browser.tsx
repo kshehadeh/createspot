@@ -47,6 +47,8 @@ interface Submission {
   wordIndex: number | null;
 }
 
+const EMPTY_IDS: string[] = [];
+
 interface SubmissionBrowserProps {
   isOpen: boolean;
   onClose: () => void;
@@ -59,8 +61,8 @@ export function SubmissionBrowser({
   isOpen,
   onClose,
   onSelect,
-  excludeIds = [],
-  preselectedIds = [],
+  excludeIds = EMPTY_IDS,
+  preselectedIds = EMPTY_IDS,
 }: SubmissionBrowserProps) {
   const t = useTranslations("admin.exhibits");
   const tCommon = useTranslations("common");
