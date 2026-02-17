@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { PageLayout } from "@/components/page-layout";
 import { MUSEUM_PAGE_SIZE } from "@/lib/museums/constants";
 import { getMuseumArtworks, getMuseumFacets } from "@/lib/museums/queries";
+import { MuseumsMobileMenu } from "./museums-mobile-menu";
 import { MuseumsPageLayout } from "./museums-page-layout";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -71,22 +72,37 @@ export default async function MuseumsPage({ searchParams }: MuseumsPageProps) {
     getMuseumFacets(),
   ]);
 
+  const filterProps = {
+    facets,
+    initialQuery: q ?? "",
+    initialMuseums: museums,
+    initialArtists: artists,
+    initialMediums: mediums,
+    initialGenres: genres,
+    initialDateStart: dateStart,
+    initialDateEnd: dateEnd,
+  };
+
   return (
     <PageLayout maxWidth="max-w-none" className="w-full">
-      <div className="mb-6">
+      <div className="md:hidden mb-4 w-full">
+        <MuseumsMobileMenu title={t("title")} filterProps={filterProps} />
+      </div>
+
+      <div className="hidden md:block mb-6">
         <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
         <p className="mt-2 text-muted-foreground">{t("description")}</p>
       </div>
 
       <MuseumsPageLayout
         facets={facets}
-        initialQuery={q ?? ""}
-        initialMuseums={museums}
-        initialArtists={artists}
-        initialMediums={mediums}
-        initialGenres={genres}
-        initialDateStart={dateStart}
-        initialDateEnd={dateEnd}
+        initialQuery={filterProps.initialQuery}
+        initialMuseums={filterProps.initialMuseums}
+        initialArtists={filterProps.initialArtists}
+        initialMediums={filterProps.initialMediums}
+        initialGenres={filterProps.initialGenres}
+        initialDateStart={filterProps.initialDateStart}
+        initialDateEnd={filterProps.initialDateEnd}
         initialArtworks={result.artworks}
         initialHasMore={result.hasMore}
       />

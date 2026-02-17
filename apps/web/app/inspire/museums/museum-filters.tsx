@@ -41,6 +41,8 @@ interface MuseumFiltersProps {
   initialDateEnd?: number;
   /** When true, renders without Card wrapper (e.g. inside a bottom sheet). */
   embedded?: boolean;
+  /** Called when filters are applied (e.g. to close mobile dropdown). */
+  onFilterChange?: () => void;
 }
 
 export function MuseumFilters({
@@ -53,6 +55,7 @@ export function MuseumFilters({
   initialDateStart,
   initialDateEnd,
   embedded = false,
+  onFilterChange,
 }: MuseumFiltersProps) {
   const t = useTranslations("museums.filters");
   const router = useRouter();
@@ -166,6 +169,7 @@ export function MuseumFilters({
         scroll: false,
       });
     });
+    onFilterChange?.();
   };
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
