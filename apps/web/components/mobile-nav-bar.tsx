@@ -66,9 +66,7 @@ export function MobileNavBar({
                     <Link
                       href={item.href}
                       prefetch={true}
-                      onClick={() =>
-                        !alwaysExpanded && setIsExpanded(false)
-                      }
+                      onClick={() => !alwaysExpanded && setIsExpanded(false)}
                       className={cn(
                         "flex flex-col items-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors min-w-0",
                         layout === "grid" ? "px-1" : "px-3",
