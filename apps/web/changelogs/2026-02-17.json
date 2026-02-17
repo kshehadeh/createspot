@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-02-17T05:53:49-05:00",
+    "commit": "6a04a37df46e7560f8000857248136775eb51bd0",
+    "type": "feature",
+    "audience": "public",
+    "area": "content",
+    "description": "Museum page filters on mobile are now available via the page title dropdown (same pattern as portfolio) instead of the bottom-docked bar, so they remain accessible with the inspiration bottom nav.",
+    "impact": "minor",
+    "version": "2.9.0"
+  }
+]
