@@ -3,11 +3,20 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { DashboardSection } from "@/components/dashboard-section";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getObjectPositionStyle } from "@/lib/image-utils";
+
+const SubmissionEditModal = dynamic(
+  () =>
+    import("@/components/submission-edit-modal").then((mod) => ({
+      default: mod.SubmissionEditModal,
+    })),
+  { ssr: false }
+);
 
 interface PortfolioSubmission {
   id: string;
@@ -27,6 +36,7 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
   const t = useTranslations("dashboard.portfolio");
   const [submissions, setSubmissions] = useState<PortfolioSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/dashboard/portfolio")
@@ -54,12 +64,19 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
           ))}
         </div>
       ) : submissions.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 py-6 text-center">
-          <p className="text-sm text-muted-foreground">{t("empty")}</p>
-          <Link href="/inspire/prompt/play">
-            <Button>{t("addSubmission")}</Button>
-          </Link>
-        </div>
+        <>
+          <div className="flex flex-col items-center gap-4 py-6 text-center">
+            <p className="text-sm text-muted-foreground">{t("empty")}</p>
+            <Button onClick={() => setIsCreateModalOpen(true)}>
+              {t("addSubmission")}
+            </Button>
+          </div>
+          <SubmissionEditModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            mode="create"
+          />
+        </>
       ) : (
         <div className="grid grid-cols-3 gap-3">
           {submissions.map((s) => (
