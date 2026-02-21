@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -142,6 +143,10 @@ export default async function Home() {
     getTranslations("footer"),
     getHomepageHeroData(),
   ]);
+
+  if (session?.user) {
+    redirect("/dashboard");
+  }
 
   return (
     <main className="flex-1">

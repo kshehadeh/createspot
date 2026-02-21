@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-02-21T00:00:00-05:00",
+    "commit": "",
+    "type": "feature",
+    "audience": "public",
+    "area": "global",
+    "description": "Logged-in users are now redirected from the home page to a new personal dashboard at /dashboard. The dashboard shows a portfolio preview, recent critiques written, recently visited submissions, people you follow with their latest work, and earned badges — each in its own section with quick action links.",
+    "impact": "minor",
+    "version": "2.10.0"
+  }
+]

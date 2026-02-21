@@ -44,6 +44,13 @@ const ROUTES: Record<string, RouteConfig> = {
     icon: Home,
   },
 
+  // Dashboard (logged-in users)
+  dashboard: {
+    path: "/dashboard",
+    label: "navigation.dashboard",
+    icon: Home,
+  },
+
   // Inspire section (community, exhibition, museums, prompt)
   inspire: {
     path: "/inspire",

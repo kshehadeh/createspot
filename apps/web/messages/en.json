@@ -182,6 +182,7 @@
     "critiques": "Critiques",
     "contact": "Contact",
     "help": "Help",
+    "dashboard": "Dashboard",
     "requestExhibit": "Request Exhibit",
     "submitBug": "Submit Bug or Suggestion",
     "buyMeACoffee": "Buy me a coffee",
@@ -1748,5 +1749,36 @@
     "signUpDescription": "Create a free account to submit your work, build your portfolio, and join our community.",
     "createAccount": "Create Account with Google",
     "termsNotice": "By continuing, you agree to our Terms of Service and Privacy Policy."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "portfolio": {
+      "title": "My Portfolio",
+      "viewAll": "View Full Portfolio",
+      "empty": "You haven't added any portfolio items yet."
+    },
+    "critiques": {
+      "title": "Recent Critiques",
+      "empty": "No recent critiques.",
+      "on": "on",
+      "viewAll": "View all critiques",
+      "viewSubmission": "View submission"
+    },
+    "recentViews": {
+      "title": "Recently Visited",
+      "empty": "You haven't visited any submissions yet."
+    },
+    "following": {
+      "title": "People You Follow",
+      "empty": "You aren't following anyone yet.",
+      "viewProfile": "View profile",
+      "viewCommunity": "Browse community",
+      "latestWork": "Latest work"
+    },
+    "badges": {
+      "title": "Badges",
+      "empty": "No badges earned yet. Keep creating!",
+      "viewProfile": "View profile"
+    }
   }
 }

@@ -3,6 +3,7 @@ import { after } from "next/server";
 import { createHash } from "crypto";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { MAX_SUBMISSION_VIEWS_PER_USER } from "@/lib/constants";
 
 function hashIp(ip: string): string {
   return createHash("sha256").update(ip).digest("hex");
@@ -18,6 +19,26 @@ function getClientIp(request: NextRequest): string {
     return realIp;
   }
   return "unknown";
+}
+
+async function pruneOldestViewsForUser(userId: string): Promise<void> {
+  const total = await prisma.submissionView.count({
+    where: { viewerUserId: userId },
+  });
+
+  if (total <= MAX_SUBMISSION_VIEWS_PER_USER) return;
+
+  // Find IDs of records beyond the limit, sorted oldest first
+  const toDelete = await prisma.submissionView.findMany({
+    where: { viewerUserId: userId },
+    orderBy: { viewedAt: "asc" },
+    take: total - MAX_SUBMISSION_VIEWS_PER_USER,
+    select: { id: true },
+  });
+
+  await prisma.submissionView.deleteMany({
+    where: { id: { in: toDelete.map((v) => v.id) } },
+  });
 }
 
 interface RouteParams {
@@ -120,6 +141,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
               },
             });
           }
+
+          // Enforce max views per user — delete oldest beyond limit
+          await pruneOldestViewsForUser(viewerUserId);
         }
       } else {
         // Anonymous user - track by IP hash

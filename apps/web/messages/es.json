@@ -182,6 +182,7 @@
     "critiques": "Críticas",
     "contact": "Contacto",
     "help": "Ayuda",
+    "dashboard": "Panel",
     "requestExhibit": "Solicitar exposición",
     "submitBug": "Enviar error o sugerencia",
     "buyMeACoffee": "Invítame un café",
@@ -1748,5 +1749,36 @@
     "signUpDescription": "Crea una cuenta gratuita para enviar tu trabajo, construir tu portafolio y unirte a nuestra comunidad.",
     "createAccount": "Crear Cuenta con Google",
     "termsNotice": "Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad."
+  },
+  "dashboard": {
+    "title": "Panel",
+    "portfolio": {
+      "title": "Mi Portafolio",
+      "viewAll": "Ver Portafolio Completo",
+      "empty": "Aún no has agregado elementos a tu portafolio."
+    },
+    "critiques": {
+      "title": "Críticas Recientes",
+      "empty": "Sin críticas recientes.",
+      "on": "en",
+      "viewAll": "Ver todas las críticas",
+      "viewSubmission": "Ver envío"
+    },
+    "recentViews": {
+      "title": "Visitados Recientemente",
+      "empty": "Aún no has visitado ningún envío."
+    },
+    "following": {
+      "title": "Personas que Sigues",
+      "empty": "Aún no sigues a nadie.",
+      "viewProfile": "Ver perfil",
+      "viewCommunity": "Ver comunidad",
+      "latestWork": "Último trabajo"
+    },
+    "badges": {
+      "title": "Insignias",
+      "empty": "Aún no has ganado insignias. ¡Sigue creando!",
+      "viewProfile": "Ver perfil"
+    }
   }
 }
