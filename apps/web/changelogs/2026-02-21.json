@@ -5,7 +5,7 @@
     "type": "feature",
     "audience": "public",
     "area": "global",
-    "description": "Logged-in users are now redirected from the home page to a new personal dashboard at /dashboard. The dashboard shows a portfolio preview, recent critiques written, recently visited submissions, people you follow with their latest work, and earned badges — each in its own section with quick action links.",
+    "description": "Logged-in users are now redirected from the home page to a new personal dashboard at /dashboard. The dashboard shows a portfolio preview, recent critiques written, recently visited submissions, people you follow with their latest work, and earned badges — each in its own section with quick action links to view more. When users have no portfolio items, a button allows them to create a submission using the same modal as the main Create menu.",
     "impact": "minor",
     "version": "2.10.0"
   }
