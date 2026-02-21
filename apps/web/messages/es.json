@@ -1755,7 +1755,8 @@
     "portfolio": {
       "title": "Mi Portafolio",
       "viewAll": "Ver Portafolio Completo",
-      "empty": "Aún no has agregado elementos a tu portafolio."
+      "empty": "Aún no has agregado elementos a tu portafolio.",
+      "addSubmission": "Agregar un envío"
     },
     "critiques": {
       "title": "Críticas Recientes",

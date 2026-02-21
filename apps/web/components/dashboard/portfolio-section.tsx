@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import { DashboardSection } from "@/components/dashboard-section";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getObjectPositionStyle } from "@/lib/image-utils";
@@ -53,7 +54,12 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
           ))}
         </div>
       ) : submissions.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        <div className="flex flex-col items-center gap-4 py-6 text-center">
+          <p className="text-sm text-muted-foreground">{t("empty")}</p>
+          <Link href="/inspire/prompt/play">
+            <Button>{t("addSubmission")}</Button>
+          </Link>
+        </div>
       ) : (
         <div className="grid grid-cols-3 gap-3">
           {submissions.map((s) => (

@@ -1755,7 +1755,8 @@
     "portfolio": {
       "title": "My Portfolio",
       "viewAll": "View Full Portfolio",
-      "empty": "You haven't added any portfolio items yet."
+      "empty": "You haven't added any portfolio items yet.",
+      "addSubmission": "Add a submission"
     },
     "critiques": {
       "title": "Recent Critiques",
