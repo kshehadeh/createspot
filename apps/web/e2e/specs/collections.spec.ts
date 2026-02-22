@@ -1,8 +1,9 @@
 import { test, expect } from "../fixtures/test.fixture";
+import { goToOwnCollections } from "../helpers/navigation";
 
 test.describe("Collections", () => {
   test("can view collections page", async ({ page }) => {
-    await page.goto("/creators/me/collections");
+    await goToOwnCollections(page);
     await expect(page).toHaveURL(/\/collections/);
   });
 
@@ -11,11 +12,11 @@ test.describe("Collections", () => {
     cleanup,
     request,
   }) => {
-    await page.goto("/creators/me/collections");
+    await goToOwnCollections(page);
 
     const createButton = page.getByRole("button", {
-      name: /create|new|add/i,
-    });
+      name: /new collection/i,
+    }).first();
     if (!(await createButton.isVisible())) {
       test.skip();
       return;

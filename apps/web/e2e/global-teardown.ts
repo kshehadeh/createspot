@@ -2,11 +2,11 @@ import type { FullConfig } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
 import { resolve } from "node:path";
 import { readRunTimestamp, clearRunTimestamp } from "./helpers/run-timestamp";
-import { getTestUser, cleanupTestData, prisma } from "./helpers/db";
+import { getTestUser, cleanupTestData, disconnectPrisma } from "./helpers/db";
 
 async function globalTeardown(_config: FullConfig) {
-  dotenvConfig({ path: resolve(process.cwd(), "../../.env"), override: false });
-  dotenvConfig({ path: resolve(process.cwd(), ".env"), override: false });
+  dotenvConfig({ path: resolve(process.cwd(), "../../.env"), override: true });
+  dotenvConfig({ path: resolve(process.cwd(), ".env"), override: true });
 
   console.log("[E2E Teardown] Starting cleanup...");
 
@@ -33,7 +33,7 @@ async function globalTeardown(_config: FullConfig) {
     console.error("[E2E Teardown] Error during cleanup:", error);
   } finally {
     clearRunTimestamp();
-    await prisma.$disconnect();
+    await disconnectPrisma();
   }
 }
 

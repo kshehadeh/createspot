@@ -1,13 +1,14 @@
 import { test, expect } from "../fixtures/test.fixture";
+import { goToOwnProfileEdit } from "../helpers/navigation";
 
 test.describe("Profile", () => {
   test("can view profile settings", async ({ page }) => {
-    await page.goto("/creators/me/edit");
+    await goToOwnProfileEdit(page);
     await expect(page).toHaveURL(/\/edit/);
   });
 
   test("can update profile bio", async ({ page, request }) => {
-    await page.goto("/creators/me/edit");
+    await goToOwnProfileEdit(page);
 
     const bioInput = page.locator('textarea[name="bio"]');
     if (!(await bioInput.isVisible())) {
@@ -50,9 +51,11 @@ test.describe("Profile", () => {
   });
 
   test("profile protection settings are accessible", async ({ page }) => {
-    await page.goto("/creators/me/edit");
+    await goToOwnProfileEdit(page);
 
-    const protectionSection = page.getByText(/protection|watermark|download/i);
+    const protectionSection = page
+      .getByText(/protection|watermark|download/i)
+      .first();
     if (await protectionSection.isVisible()) {
       await expect(protectionSection).toBeVisible();
     }

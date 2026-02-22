@@ -59,6 +59,7 @@ model User {
   id                   String       @id @default(cuid())
   email                String       @unique
   emailVerified        DateTime?
+  passwordHash         String?      @db.Text // Non-production credentials login only
   name                 String?
   image                String?
   profileImageUrl      String?      // Custom profile image uploaded by user

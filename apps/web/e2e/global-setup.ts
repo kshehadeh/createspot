@@ -6,62 +6,115 @@ import {
   getTestUser,
   getCurrentPrompt,
   createTestPrompt,
-  prisma,
+  disconnectPrisma,
 } from "./helpers/db";
 
 const AUTH_STATE_PATH = "./e2e/.auth/user.json";
 
 async function globalSetup(config: FullConfig) {
-  dotenvConfig({ path: resolve(process.cwd(), "../../.env"), override: false });
-  dotenvConfig({ path: resolve(process.cwd(), ".env"), override: false });
+  dotenvConfig({ path: resolve(process.cwd(), "../../.env"), override: true });
+  dotenvConfig({ path: resolve(process.cwd(), ".env"), override: true });
 
   const baseURL = config.projects[0].use.baseURL || "http://localhost:3000";
-
-  writeRunTimestamp(new Date());
-
   const email = process.env.E2E_USER_EMAIL;
   const password = process.env.E2E_USER_PASSWORD;
+  const bootstrapSecret = process.env.E2E_BOOTSTRAP_SECRET;
 
   if (!email || !password) {
     throw new Error(
       "E2E_USER_EMAIL and E2E_USER_PASSWORD must be set in environment",
     );
   }
+  if (!bootstrapSecret) {
+    throw new Error("E2E_BOOTSTRAP_SECRET must be set for credentials login");
+  }
 
-  console.log("[E2E Setup] Starting authentication flow...");
+  const normalizedEmail = email.trim().toLowerCase();
 
-  const browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext();
-  const page = await context.newPage();
+  writeRunTimestamp(new Date());
+
+  console.log("[E2E Setup] Bootstrapping test user and authenticating...");
+
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ baseURL });
+  const request = context.request;
 
   try {
-    await page.goto(`${baseURL}/welcome`);
-    await page.waitForLoadState("networkidle");
-
-    const signInButton = page.getByRole("button", {
-      name: /continue with google/i,
+    const bootstrapRes = await request.post("/api/test/users", {
+      data: { email: normalizedEmail, password },
+      headers: { Authorization: `Bearer ${bootstrapSecret}` },
     });
-    await signInButton.click();
+    if (!bootstrapRes.ok()) {
+      const body = await bootstrapRes.text();
+      throw new Error(`Bootstrap API failed: ${bootstrapRes.status()} ${body}`);
+    }
 
-    await page.waitForURL(/accounts\.google\.com/, { timeout: 10000 });
+    const csrfRes = await request.get("/api/auth/csrf");
+    const { csrfToken } = (await csrfRes.json()) as { csrfToken: string };
+    if (!csrfToken) {
+      throw new Error("Failed to get CSRF token");
+    }
 
-    await page.fill('input[type="email"]', email);
-    await page.click("#identifierNext");
-
-    await page.waitForSelector('input[type="password"]', {
-      state: "visible",
-      timeout: 10000,
+    const signInRes = await request.post("/api/auth/callback/credentials", {
+      headers: {
+        "X-Auth-Return-Redirect": "1",
+      },
+      form: {
+        csrfToken,
+        callbackUrl: baseURL,
+        username: normalizedEmail,
+        password,
+      },
     });
-    await page.fill('input[type="password"]', password);
-    await page.click("#passwordNext");
+    if (!signInRes.ok()) {
+      const body = await signInRes.text();
+      throw new Error(
+        `Credentials sign-in failed: ${signInRes.status()} ${body}`,
+      );
+    }
 
-    await page.waitForURL((url) => url.origin === baseURL, { timeout: 30000 });
+    // Auth.js returns 200 even when credentials fail. Validate response URL.
+    const signInData = (await signInRes.json()) as { url?: string };
+    if (!signInData.url) {
+      throw new Error("Credentials sign-in did not return redirect URL");
+    }
+    const signInUrl = new URL(signInData.url, baseURL);
+    const signInError = signInUrl.searchParams.get("error");
+    if (signInError) {
+      throw new Error(
+        `Credentials sign-in returned error: ${signInError} (${signInUrl.toString()})`,
+      );
+    }
 
-    console.log("[E2E Setup] Authentication successful, saving state...");
+    // Verify auth cookie/session was actually established.
+    const sessionRes = await request.get("/api/auth/session");
+    if (!sessionRes.ok()) {
+      throw new Error(`Session check failed: ${sessionRes.status()}`);
+    }
+    const session = (await sessionRes.json()) as
+      | {
+          user?: { email?: string | null } | null;
+        }
+      | null;
+    if (!session?.user?.email) {
+      throw new Error(
+        "Credentials sign-in did not create an authenticated session",
+      );
+    }
+    if (session.user.email.toLowerCase() !== normalizedEmail) {
+      throw new Error(
+        `Authenticated as unexpected user: ${session.user.email} (expected ${normalizedEmail})`,
+      );
+    }
+
     await context.storageState({ path: AUTH_STATE_PATH });
+    console.log("[E2E Setup] Authentication successful, state saved.");
   } catch (error) {
     console.error("[E2E Setup] Authentication failed:", error);
-    await page.screenshot({ path: "./e2e/.auth/setup-failure.png" });
+    await context
+      .newPage()
+      .then((p) => p.screenshot({ path: "./e2e/.auth/setup-failure.png" }))
+      .catch(() => {});
     throw error;
   } finally {
     await browser.close();
@@ -77,7 +130,7 @@ async function globalSetup(config: FullConfig) {
   }
 
   if (!testUser) {
-    throw new Error(`Test user with email ${email} not found in database`);
+    throw new Error(`Test user with email ${normalizedEmail} not found in database`);
   }
 
   const existingPrompt = await getCurrentPrompt();
@@ -88,7 +141,7 @@ async function globalSetup(config: FullConfig) {
     console.log("[E2E Setup] Active prompt already exists:", existingPrompt.id);
   }
 
-  await prisma.$disconnect();
+  await disconnectPrisma();
   console.log("[E2E Setup] Complete!");
 }
 

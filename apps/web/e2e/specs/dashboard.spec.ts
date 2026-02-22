@@ -16,10 +16,9 @@ test.describe("Dashboard", () => {
 
   test("can navigate to play page", async ({ page }) => {
     await page.goto("/dashboard");
-    const playLink = page.getByRole("link", { name: /play|create|submit/i });
-    if (await playLink.isVisible()) {
-      await playLink.click();
-      await expect(page).toHaveURL(/\/inspire\/prompt\/play/);
-    }
+    const playLink = page.locator('a[href*="/inspire/prompt/play"]').first();
+    await playLink.waitFor({ state: "visible", timeout: 10000 });
+    await playLink.click();
+    await expect(page).toHaveURL(/\/inspire\/prompt\/play/);
   });
 });

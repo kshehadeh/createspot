@@ -170,9 +170,7 @@ export function OnboardingSection({
                 </div>
               ) : (
                 <Link
-                  href={
-                    item.key === "submission" ? managePortfolioUrl : item.href
-                  }
+                  href={item.href}
                   className={`flex items-center gap-3 rounded-lg p-3 ${item.bgColor} ${item.hoverRing} hover:ring-2 transition-all`}
                 >
                   <Icon className={`h-5 w-5 shrink-0 ${item.color}`} />

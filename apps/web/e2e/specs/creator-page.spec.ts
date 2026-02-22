@@ -1,13 +1,14 @@
 import { test, expect } from "../fixtures/test.fixture";
+import { goToOwnProfile } from "../helpers/navigation";
 
 test.describe("Creator Page", () => {
   test("can view own creator page", async ({ page }) => {
-    await page.goto("/creators/me");
+    await goToOwnProfile(page);
     await expect(page).toHaveURL(/\/creators\//);
   });
 
   test("creator page shows profile information", async ({ page }) => {
-    await page.goto("/creators/me");
+    await goToOwnProfile(page);
 
     const profileSection = page.locator(
       '[data-testid="creator-profile"], main',
@@ -16,7 +17,7 @@ test.describe("Creator Page", () => {
   });
 
   test("can navigate to portfolio tab", async ({ page }) => {
-    await page.goto("/creators/me");
+    await goToOwnProfile(page);
 
     const portfolioTab = page.getByRole("tab", { name: /portfolio/i });
     if (await portfolioTab.isVisible()) {
@@ -26,7 +27,7 @@ test.describe("Creator Page", () => {
   });
 
   test("can navigate to collections tab", async ({ page }) => {
-    await page.goto("/creators/me");
+    await goToOwnProfile(page);
 
     const collectionsTab = page.getByRole("tab", { name: /collections/i });
     if (await collectionsTab.isVisible()) {
