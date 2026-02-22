@@ -14,7 +14,9 @@
         "scripts/**/*.ts",
         "app/@breadcrumb/**",
         "changelogs/**",
-        "data/**"
+        "data/**",
+        "e2e/**",
+        "playwright.config.ts"
       ]
     }
   },

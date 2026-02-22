@@ -44,3 +44,8 @@ next-env.d.ts
 /apps/web/data/words.json
 /apps/web/data/**/raw/**/*
 /apps/web/data/**/processed/**/*
+
+# E2E tests (Playwright)
+/apps/web/e2e/.auth/
+/apps/web/test-results/
+/apps/web/playwright-report/
