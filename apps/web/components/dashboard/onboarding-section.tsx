@@ -26,7 +26,9 @@ interface OnboardingSectionProps {
   managePortfolioUrl: string;
 }
 
-export function OnboardingSection({ managePortfolioUrl }: OnboardingSectionProps) {
+export function OnboardingSection({
+  managePortfolioUrl,
+}: OnboardingSectionProps) {
   const t = useTranslations("dashboard.onboarding");
   const [status, setStatus] = useState<OnboardingStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -149,10 +151,6 @@ export function OnboardingSection({ managePortfolioUrl }: OnboardingSectionProps
         </button>
       </div>
 
-      <p className="mb-4 text-sm text-muted-foreground">
-        {t("progress", { completed: completedCount, total: items.length })}
-      </p>
-
       <ul className="grid gap-3 sm:grid-cols-2">
         {items.map((item) => {
           const Icon = item.icon;
@@ -173,9 +171,7 @@ export function OnboardingSection({ managePortfolioUrl }: OnboardingSectionProps
               ) : (
                 <Link
                   href={
-                    item.key === "submission"
-                      ? managePortfolioUrl
-                      : item.href
+                    item.key === "submission" ? managePortfolioUrl : item.href
                   }
                   className={`flex items-center gap-3 rounded-lg p-3 ${item.bgColor} ${item.hoverRing} hover:ring-2 transition-all`}
                 >

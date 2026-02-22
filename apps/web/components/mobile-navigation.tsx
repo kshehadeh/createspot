@@ -25,6 +25,7 @@ import {
   Lock,
   Mail,
   Palette,
+  Pencil,
   Plus,
   Sparkles,
   User,
@@ -32,7 +33,6 @@ import {
 } from "lucide-react";
 import { SupportFormModal } from "./contact/support-form-modal";
 import { ExhibitRequestModal } from "./contact/exhibit-request-form";
-import { ThemeToggle } from "./theme-toggle";
 
 // Icon for Help link
 function HelpIcon({ className }: { className?: string }) {
@@ -80,6 +80,7 @@ export function MobileNavigation({
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const t = useTranslations("navigation");
+  const tProfile = useTranslations("profile");
 
   // State for expandable sections
   const [inspireExpanded, setInspireExpanded] = useState(false);
@@ -463,9 +464,32 @@ export function MobileNavigation({
                     expanded={userExpanded}
                     onToggle={() => setUserExpanded(!userExpanded)}
                   >
-                    <div className="flex items-center justify-center px-4 py-2">
-                      <ThemeToggle />
-                    </div>
+                    {(() => {
+                      const profileBase = user.id
+                        ? getCreatorUrl({ id: user.id, slug: user.slug })
+                        : user.slug
+                          ? `/creators/${user.slug}`
+                          : "";
+                      const profileEditHref = profileBase
+                        ? `${profileBase}/edit`
+                        : "";
+                      return profileBase ? (
+                        <>
+                          <MobileNavItem
+                            href={profileBase}
+                            icon={User}
+                            label={tProfile("manageProfile")}
+                            onClose={() => setIsMenuOpen(false)}
+                          />
+                          <MobileNavItem
+                            href={profileEditHref}
+                            icon={Pencil}
+                            label={tProfile("edit")}
+                            onClose={() => setIsMenuOpen(false)}
+                          />
+                        </>
+                      ) : null;
+                    })()}
                     <MobileNavActionItem
                       icon={Lock}
                       label={t("logout")}

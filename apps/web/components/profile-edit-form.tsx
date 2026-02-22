@@ -51,6 +51,7 @@ import {
 import { normalizeUrl, isValidUrl, isValidSlugFormat } from "@/lib/utils";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
 import { ConfirmModal } from "@/components/confirm-modal";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { locales, localeNames, type Locale } from "@/i18n/config";
 
 interface SubmissionOption {
@@ -1223,6 +1224,16 @@ export function ProfileEditForm({
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-foreground">
+            {t("theme")}
+          </label>
+          <p className="mb-3 text-xs text-muted-foreground">
+            {t("themeDescription")}
+          </p>
+          <ThemeToggle />
         </div>
 
         <div>

@@ -37,7 +37,6 @@ const DashboardNavigation = dynamic(
   },
 );
 import { SubmissionEditModal } from "./submission-edit-modal";
-import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
 import { getRoute } from "@/lib/routes";
@@ -124,10 +123,10 @@ export function Header({ user }: HeaderProps) {
                   <SiDiscord className="h-4 w-4" />
                 </a>
               </Button>
-              <ThemeToggle />
             </div>
             {user ? (
               <UserDropdown
+                id={user?.id}
                 name={user?.name}
                 image={user?.image}
                 profileImageUrl={user?.profileImageUrl}
@@ -154,7 +153,6 @@ export function Header({ user }: HeaderProps) {
                 <SiDiscord className="h-4 w-4" />
               </a>
             </Button>
-            <ThemeToggle />
             <MobileNavigation
               user={user}
               onCreateModalOpen={() => setIsCreateModalOpen(true)}

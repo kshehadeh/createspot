@@ -33,12 +33,15 @@
   "profile": {
     "title": "Perfil",
     "edit": "Editar Perfil",
+    "manageProfile": "Gestionar Perfil",
     "name": "Nombre",
     "namePlaceholder": "Tu nombre",
     "bio": "Biografía",
     "bioPlaceholder": "Cuéntanos sobre ti...",
     "language": "Idioma",
     "languageDescription": "Selecciona tu idioma preferido",
+    "theme": "Tema",
+    "themeDescription": "Elige claro, oscuro o del sistema.",
     "location": "Ubicación",
     "country": "País",
     "selectCountry": "Seleccionar país",
@@ -1782,9 +1785,8 @@
       "viewProfile": "Ver perfil"
     },
     "onboarding": {
-      "title": "Comenzando",
+      "title": "Comienza con Create Spot",
       "dismiss": "Descartar",
-      "progress": "{completed} de {total} completado",
       "items": {
         "favorite": {
           "label": "Favorito el envío de alguien",
