@@ -1780,6 +1780,33 @@
       "title": "Insignias",
       "empty": "Aún no has ganado insignias. ¡Sigue creando!",
       "viewProfile": "Ver perfil"
+    },
+    "onboarding": {
+      "title": "Comenzando",
+      "dismiss": "Descartar",
+      "progress": "{completed} de {total} completado",
+      "items": {
+        "favorite": {
+          "label": "Favorito el envío de alguien",
+          "cta": "Explorar la galería de esta semana"
+        },
+        "submission": {
+          "label": "Agrega tu propio envío",
+          "cta": "Crea tu primer envío"
+        },
+        "critique": {
+          "label": "Agrega o recibe una crítica",
+          "cta": "Explora críticas de la comunidad"
+        },
+        "follow": {
+          "label": "Sigue a alguien que admiras",
+          "cta": "Explorar creadores"
+        },
+        "collection": {
+          "label": "Crea una colección",
+          "cta": "Comienza a organizar favoritos"
+        }
+      }
     }
   }
 }

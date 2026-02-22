@@ -131,9 +131,21 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
               }),
             ]);
           } else {
-            // Create new user view
-            await prisma.submissionView.create({
-              data: {
+            // Use upsert to handle race condition - if another request
+            // created the record between our check and create, this will
+            // just update it instead
+            await prisma.submissionView.upsert({
+              where: {
+                submissionId_viewerIpHash: {
+                  submissionId,
+                  viewerIpHash,
+                },
+              },
+              update: {
+                viewerUserId,
+                viewedAt: new Date(),
+              },
+              create: {
                 submissionId,
                 viewerUserId,
                 viewerIpHash,

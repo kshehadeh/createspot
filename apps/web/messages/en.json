@@ -1780,6 +1780,33 @@
       "title": "Badges",
       "empty": "No badges earned yet. Keep creating!",
       "viewProfile": "View profile"
+    },
+    "onboarding": {
+      "title": "Getting Started",
+      "dismiss": "Dismiss",
+      "progress": "{completed} of {total} complete",
+      "items": {
+        "favorite": {
+          "label": "Favorite someone's submission",
+          "cta": "Browse this week's gallery"
+        },
+        "submission": {
+          "label": "Add your own submission",
+          "cta": "Create your first submission"
+        },
+        "critique": {
+          "label": "Add or receive a critique",
+          "cta": "Explore community critiques"
+        },
+        "follow": {
+          "label": "Follow someone you admire",
+          "cta": "Browse creators"
+        },
+        "collection": {
+          "label": "Create a collection",
+          "cta": "Start organizing favorites"
+        }
+      }
     }
   }
 }

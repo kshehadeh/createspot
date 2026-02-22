@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+import { OnboardingSection } from "@/components/dashboard/onboarding-section";
 import { PortfolioSection } from "@/components/dashboard/portfolio-section";
 import { CritiquesSection } from "@/components/dashboard/critiques-section";
 import { RecentViewsSection } from "@/components/dashboard/recent-views-section";
@@ -22,12 +23,19 @@ function SectionSkeleton({ title }: { title: string }) {
 
 interface DashboardProps {
   portfolioUrl: string;
+  managePortfolioUrl: string;
   critiquesUrl: string;
   profileUrl: string;
   userName: string | null;
 }
 
-export function Dashboard({ portfolioUrl, critiquesUrl, profileUrl, userName }: DashboardProps) {
+export function Dashboard({
+  portfolioUrl,
+  managePortfolioUrl,
+  critiquesUrl,
+  profileUrl,
+  userName,
+}: DashboardProps) {
   const firstName = userName?.split(" ")[0] ?? null;
 
   return (
@@ -37,6 +45,8 @@ export function Dashboard({ portfolioUrl, critiquesUrl, profileUrl, userName }: 
           Welcome back, {firstName}
         </h1>
       )}
+
+      <OnboardingSection managePortfolioUrl={managePortfolioUrl} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Suspense fallback={<SectionSkeleton title="My Portfolio" />}>

@@ -89,6 +89,7 @@ model User {
   emailOnNewFollower    Boolean     @default(true)
   welcomeEmailSent     Boolean      @default(false)
   tutorial             Json         @default("{\"status\": \"enabled\", \"global\": {}}")
+  onboardingDismissedAt DateTime?   // When user dismissed the onboarding checklist
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 

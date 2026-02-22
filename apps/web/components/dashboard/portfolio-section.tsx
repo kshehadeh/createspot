@@ -15,7 +15,7 @@ const SubmissionEditModal = dynamic(
     import("@/components/submission-edit-modal").then((mod) => ({
       default: mod.SubmissionEditModal,
     })),
-  { ssr: false }
+  { ssr: false },
 );
 
 interface PortfolioSubmission {
