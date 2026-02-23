@@ -60,32 +60,51 @@ export async function createTestPrompt(userId: string) {
 }
 
 export async function cleanupTestData(userId: string, since: Date) {
-  await getPrisma().critique.deleteMany({
-    where: { critiquerId: userId, createdAt: { gte: since } },
+  const p = getPrisma();
+  // 1s buffer for clock skew between test runner and DB
+  const sinceWithBuffer = new Date(since.getTime() - 1000);
+  const submissionWhere = { userId, createdAt: { gte: sinceWithBuffer } } as const;
+
+  await p.critique.deleteMany({
+    where: { critiquerId: userId, createdAt: { gte: sinceWithBuffer } },
+  });
+  await p.critique.deleteMany({
+    where: { submission: submissionWhere },
   });
 
-  await getPrisma().favorite.deleteMany({
-    where: { userId, createdAt: { gte: since } },
+  await p.favorite.deleteMany({
+    where: { userId, createdAt: { gte: sinceWithBuffer } },
   });
 
-  await getPrisma().collectionSubmission.deleteMany({
-    where: { collection: { userId, createdAt: { gte: since } } },
+  await p.collectionSubmission.deleteMany({
+    where: { collection: { userId, createdAt: { gte: sinceWithBuffer } } },
+  });
+  await p.collectionSubmission.deleteMany({
+    where: { submission: submissionWhere },
   });
 
-  await getPrisma().collection.deleteMany({
-    where: { userId, createdAt: { gte: since } },
+  await p.collection.deleteMany({
+    where: { userId, createdAt: { gte: sinceWithBuffer } },
   });
 
-  await getPrisma().progression.deleteMany({
-    where: { submission: { userId, createdAt: { gte: since } } },
+  await p.submissionView.deleteMany({
+    where: { submission: submissionWhere },
   });
 
-  await getPrisma().submission.deleteMany({
-    where: { userId, createdAt: { gte: since } },
+  await p.progression.deleteMany({
+    where: { submission: submissionWhere },
   });
 
-  await getPrisma().prompt.deleteMany({
-    where: { createdByUserId: userId, createdAt: { gte: since } },
+  await p.shortLink.deleteMany({
+    where: { submission: submissionWhere },
+  });
+
+  await p.submission.deleteMany({
+    where: { userId, createdAt: { gte: sinceWithBuffer } },
+  });
+
+  await p.prompt.deleteMany({
+    where: { createdByUserId: userId, createdAt: { gte: sinceWithBuffer } },
   });
 }
 
