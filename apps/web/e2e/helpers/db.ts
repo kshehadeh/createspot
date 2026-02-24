@@ -24,7 +24,9 @@ export async function getTestUser() {
   if (!email) {
     throw new Error("E2E_USER_EMAIL is not set");
   }
-  return getPrisma().user.findUnique({ where: { email: email.trim().toLowerCase() } });
+  return getPrisma().user.findUnique({
+    where: { email: email.trim().toLowerCase() },
+  });
 }
 
 export async function getCurrentPrompt() {
@@ -63,7 +65,10 @@ export async function cleanupTestData(userId: string, since: Date) {
   const p = getPrisma();
   // 1s buffer for clock skew between test runner and DB
   const sinceWithBuffer = new Date(since.getTime() - 1000);
-  const submissionWhere = { userId, createdAt: { gte: sinceWithBuffer } } as const;
+  const submissionWhere = {
+    userId,
+    createdAt: { gte: sinceWithBuffer },
+  } as const;
 
   await p.critique.deleteMany({
     where: { critiquerId: userId, createdAt: { gte: sinceWithBuffer } },

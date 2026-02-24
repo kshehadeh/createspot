@@ -91,11 +91,9 @@ async function globalSetup(config: FullConfig) {
     if (!sessionRes.ok()) {
       throw new Error(`Session check failed: ${sessionRes.status()}`);
     }
-    const session = (await sessionRes.json()) as
-      | {
-          user?: { email?: string | null } | null;
-        }
-      | null;
+    const session = (await sessionRes.json()) as {
+      user?: { email?: string | null } | null;
+    } | null;
     if (!session?.user?.email) {
       throw new Error(
         "Credentials sign-in did not create an authenticated session",
@@ -130,7 +128,9 @@ async function globalSetup(config: FullConfig) {
   }
 
   if (!testUser) {
-    throw new Error(`Test user with email ${normalizedEmail} not found in database`);
+    throw new Error(
+      `Test user with email ${normalizedEmail} not found in database`,
+    );
   }
 
   const existingPrompt = await getCurrentPrompt();

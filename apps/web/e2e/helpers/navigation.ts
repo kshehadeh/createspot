@@ -11,7 +11,9 @@ export async function openCreateDropdown(page: Page): Promise<void> {
   const createTrigger = page.getByRole("button", { name: /create/i }).first();
   await createTrigger.waitFor({ state: "visible", timeout: 15000 });
   await createTrigger.click();
-  await page.getByRole("menuitem", { name: /^profile$/i }).waitFor({ state: "visible", timeout: 5000 });
+  await page
+    .getByRole("menuitem", { name: /^profile$/i })
+    .waitFor({ state: "visible", timeout: 5000 });
 }
 
 /**
@@ -53,7 +55,9 @@ export async function openUserDropdown(page: Page): Promise<void> {
   const userTrigger = page.locator("header").getByRole("button").last();
   await userTrigger.waitFor({ state: "visible", timeout: 15000 });
   await userTrigger.click();
-  await page.getByRole("menuitem", { name: /edit/i }).waitFor({ state: "visible", timeout: 5000 });
+  await page
+    .getByRole("menuitem", { name: /edit/i })
+    .waitFor({ state: "visible", timeout: 5000 });
 }
 
 /**
@@ -72,6 +76,9 @@ export async function goToOwnProfileEdit(page: Page): Promise<void> {
  */
 export async function goToOwnPortfolioEdit(page: Page): Promise<void> {
   await goToOwnPortfolio(page);
-  await page.getByRole("link", { name: /add portfolio item|manage portfolio/i }).first().click();
+  await page
+    .getByRole("link", { name: /add portfolio item|manage portfolio/i })
+    .first()
+    .click();
   await page.waitForURL(/\/portfolio\/edit/);
 }

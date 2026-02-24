@@ -18,9 +18,9 @@ test.describe("Dashboard", () => {
     await page.goto("/dashboard");
 
     // Play link may be on dashboard (onboarding section) or we go via Inspire → Prompts
-    const playLinkOnDashboard = page.locator(
-      'a[href*="/inspire/prompt/play"]',
-    ).first();
+    const playLinkOnDashboard = page
+      .locator('a[href*="/inspire/prompt/play"]')
+      .first();
     const visible = await playLinkOnDashboard
       .waitFor({ state: "visible", timeout: 8000 })
       .then(() => true)

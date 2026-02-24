@@ -14,9 +14,11 @@ test.describe("Collections", () => {
   }) => {
     await goToOwnCollections(page);
 
-    const createButton = page.getByRole("button", {
-      name: /new collection/i,
-    }).first();
+    const createButton = page
+      .getByRole("button", {
+        name: /new collection/i,
+      })
+      .first();
     if (!(await createButton.isVisible())) {
       test.skip();
       return;

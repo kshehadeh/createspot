@@ -1,9 +1,6 @@
 import { test, expect } from "../fixtures/test.fixture";
 import { testImagePath } from "../helpers/fixture-paths.cjs";
-import {
-  goToOwnPortfolio,
-  goToOwnPortfolioEdit,
-} from "../helpers/navigation";
+import { goToOwnPortfolio, goToOwnPortfolioEdit } from "../helpers/navigation";
 
 test.describe("Portfolio", () => {
   test("can navigate to portfolio page", async ({ page }) => {
@@ -29,7 +26,9 @@ test.describe("Portfolio", () => {
     await dialog.waitFor({ state: "visible", timeout: 10000 });
 
     // Wait for form to be ready (file input is present; it's hidden so use attached)
-    const fileInput = dialog.locator('input[type="file"][accept="image/*"]').first();
+    const fileInput = dialog
+      .locator('input[type="file"][accept="image/*"]')
+      .first();
     await fileInput.waitFor({ state: "attached", timeout: 15000 });
 
     // Select image to upload (main image, not reference)
@@ -37,7 +36,8 @@ test.describe("Portfolio", () => {
 
     // Wait for upload to complete (presign + R2 PUT then form state updates)
     await page.waitForResponse(
-      (res) => res.url().includes("/api/upload/presign") && res.status() === 200,
+      (res) =>
+        res.url().includes("/api/upload/presign") && res.status() === 200,
       { timeout: 15000 },
     );
     const uploadingText = dialog.getByText(/uploading/i);
