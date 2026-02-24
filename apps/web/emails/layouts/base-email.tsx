@@ -76,6 +76,10 @@ export const BaseEmail = ({
 
   const companyInfo = t ? t("footer.companyInfo") : "Create Spot";
 
+  // CAN-SPAM: physical mailing address in every email (use MAILING_ADDRESS env)
+  const mailingAddress =
+    typeof process !== "undefined" && process.env?.MAILING_ADDRESS;
+
   // Build URLs
   const siteUrl = baseUrl || "https://create.spot";
   const profileUrl =
@@ -117,6 +121,9 @@ export const BaseEmail = ({
             )}
           </Text>
           <Text style={styles.footerText}>{companyInfo}</Text>
+          {mailingAddress ? (
+            <Text style={styles.footerText}>{mailingAddress}</Text>
+          ) : null}
         </Container>
       </Body>
     </Html>

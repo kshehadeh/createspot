@@ -1,8 +1,8 @@
 import { prisma } from "./prisma";
-import { sendEmail } from "./email";
+import { sendEmail, listUnsubscribeHeaders } from "./email";
 import { WelcomeEmail } from "@/emails/templates/welcome-email";
 import { getEmailTranslations } from "./email/translations";
-import { getRoute } from "./routes";
+import { buildRoutePath, getRoute } from "./routes";
 
 /**
  * Sends a welcome email to a user if they haven't received one yet.
@@ -54,6 +54,9 @@ export async function sendWelcomeEmailIfNeeded(
     // Get the exhibition URL for the CTA
     const baseUrl = process.env.NEXTAUTH_URL || "https://create.spot";
     const ctaUrl = `${baseUrl}${getRoute("exhibition").path}`;
+    const preferencesUrl = `${baseUrl}${buildRoutePath("profileEdit", {
+      creatorid: userId,
+    })}`;
 
     // Load translations for the user's language
     const t = await getEmailTranslations(user.language, "email");
@@ -63,10 +66,12 @@ export async function sendWelcomeEmailIfNeeded(
       appName: "Create Spot",
     });
 
-    // Send the welcome email
+    // Send the welcome email (idempotency + List-Unsubscribe for deliverability)
     await sendEmail({
       to: user.email,
       subject: emailSubject,
+      idempotencyKey: `welcome-user/${userId}`,
+      headers: listUnsubscribeHeaders(preferencesUrl),
       react: WelcomeEmail({
         name: user.name,
         ctaUrl,

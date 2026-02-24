@@ -19,6 +19,8 @@ export interface BaseEmailOptions {
   tags?: EmailTag[];
   headers?: Record<string, string>;
   text?: string;
+  /** Deterministic key for safe retries (e.g. "welcome-user/{userId}"). Resend caches for 24h. */
+  idempotencyKey?: string;
 }
 
 export interface SendEmailOptions extends BaseEmailOptions {
@@ -76,15 +78,27 @@ export class EmailService {
     }
   }
 
+  private isRetryable(error: unknown): boolean {
+    const status =
+      error && typeof error === "object" && "statusCode" in error
+        ? (error as { statusCode?: number }).statusCode
+        : undefined;
+    return status === 429 || (typeof status === "number" && status >= 500);
+  }
+
   private async executeSend(
     options: SendEmailOptions | PlainEmailOptions,
+    attempt = 0,
   ): Promise<EmailSendResult> {
     this.ensureContent(options);
+
+    const maxRetries = 3;
+    const baseDelayMs = 1000;
 
     try {
       const client = this.getClient();
       const from = this.resolveFrom(options.from);
-      const response = await client.emails.send({
+      const payload = {
         from,
         to: options.to,
         subject: options.subject,
@@ -95,10 +109,25 @@ export class EmailService {
         replyTo: options.replyTo,
         tags: options.tags,
         headers: options.headers,
-      });
+      };
+      const sendOptions = options.idempotencyKey
+        ? { idempotencyKey: options.idempotencyKey }
+        : undefined;
+
+      const response = await client.emails.send(
+        payload as Parameters<Resend["emails"]["send"]>[0],
+        sendOptions as Parameters<Resend["emails"]["send"]>[1],
+      );
 
       return this.handleResponse(response);
     } catch (error) {
+      const shouldRetry = attempt < maxRetries - 1 && this.isRetryable(error);
+      if (shouldRetry) {
+        const delay =
+          Math.min(baseDelayMs * 2 ** attempt, 30000) + Math.random() * 1000;
+        await new Promise((r) => setTimeout(r, delay));
+        return this.executeSend(options, attempt + 1);
+      }
       throw new EmailSendError(
         "Failed to send email via Resend.",
         { attemptedTo: options.to },

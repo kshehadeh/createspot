@@ -65,12 +65,13 @@ async function sendNotificationEmail(
 ): Promise<{ success: boolean; error?: string }> {
   "use step";
 
-  const { sendEmail } = await import("@/lib/email");
+  const { sendEmail, listUnsubscribeHeaders } = await import("@/lib/email");
   const { NewFollowerEmail } = await import(
     "@/emails/templates/new-follower-email"
   );
   const { getEmailTranslations } = await import("@/lib/email/translations");
   const { prisma } = await import("@/lib/prisma");
+  const { buildRoutePath } = await import("@/lib/routes");
 
   try {
     const t = await getEmailTranslations(recipientLanguage, "email");
@@ -86,9 +87,15 @@ async function sendNotificationEmail(
       followerName: followerName || t("newFollower.someone"),
     });
 
+    const preferencesUrl = `${baseUrl}${buildRoutePath("profileEdit", {
+      creatorid: recipientUserId,
+    })}`;
+
     await sendEmail({
       to: recipientEmail,
       subject: emailSubject,
+      idempotencyKey: `new-follower/${followingId}-${followerId}`,
+      headers: listUnsubscribeHeaders(preferencesUrl),
       react: emailComponent,
     });
 

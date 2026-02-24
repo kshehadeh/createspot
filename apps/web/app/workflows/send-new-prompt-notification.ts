@@ -106,13 +106,13 @@ async function sendEmailAndLog(
     prompt.id,
   );
 
-  const { sendEmail } = await import("@/lib/email");
+  const { sendEmail, listUnsubscribeHeaders } = await import("@/lib/email");
   const { NewPromptNotificationEmail } = await import(
     "@/emails/templates/new-prompt-notification-email"
   );
   const { getEmailTranslations } = await import("@/lib/email/translations");
   const { prisma } = await import("@/lib/prisma");
-  const { getRoute } = await import("@/lib/routes");
+  const { getRoute, buildRoutePath } = await import("@/lib/routes");
 
   try {
     const t = await getEmailTranslations(user.language, "email");
@@ -138,9 +138,15 @@ async function sendEmailAndLog(
       word3: prompt.word3,
     });
 
+    const preferencesUrl = `${baseUrl}${buildRoutePath("profileEdit", {
+      creatorid: user.id,
+    })}`;
+
     await sendEmail({
       to: user.email,
       subject: emailSubject,
+      idempotencyKey: `new-prompt/${user.id}-${prompt.id}`,
+      headers: listUnsubscribeHeaders(preferencesUrl),
       react: emailComponent,
     });
 

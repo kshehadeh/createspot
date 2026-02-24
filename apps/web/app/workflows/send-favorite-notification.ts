@@ -95,12 +95,13 @@ async function sendNotificationEmail(
     userLanguage,
   );
 
-  const { sendEmail } = await import("@/lib/email");
+  const { sendEmail, listUnsubscribeHeaders } = await import("@/lib/email");
   const { FavoriteNotificationEmail } = await import(
     "@/emails/templates/favorite-notification-email"
   );
   const { getEmailTranslations } = await import("@/lib/email/translations");
   const { prisma } = await import("@/lib/prisma");
+  const { buildRoutePath } = await import("@/lib/routes");
 
   try {
     // Load translations for the user's language
@@ -133,11 +134,17 @@ async function sendNotificationEmail(
       titleDisplay,
     });
 
+    const preferencesUrl = `${baseUrl}${buildRoutePath("profileEdit", {
+      creatorid: userId,
+    })}`;
+
     console.log("[Workflow] Sending email to", recipientEmail);
 
     await sendEmail({
       to: recipientEmail,
       subject: emailSubject,
+      idempotencyKey: `favorite/${userId}-${submissionId}-${favorerId}`,
+      headers: listUnsubscribeHeaders(preferencesUrl),
       react: emailComponent,
     });
 

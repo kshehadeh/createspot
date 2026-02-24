@@ -47,11 +47,12 @@ export async function sendBadgeAwardEmail(
   // The actual profile page will redirect to slug-based URL if available
   const profileUrl = `${baseUrl}/creators/${userId}`;
 
-  const { sendEmail } = await import("@/lib/email");
+  const { sendEmail, listUnsubscribeHeaders } = await import("@/lib/email");
   const { getEmailTranslations } = await import("@/lib/email/translations");
   const { BadgeAwardEmail } = await import(
     "@/emails/templates/badge-award-email"
   );
+  const { buildRoutePath } = await import("@/lib/routes");
 
   const t = await getEmailTranslations(user.language, "email");
 
@@ -67,10 +68,16 @@ export async function sendBadgeAwardEmail(
 
   const subject = t("badgeAward.subject", { badgeName: badge.name });
 
+  const preferencesUrl = `${baseUrl}${buildRoutePath("profileEdit", {
+    creatorid: userId,
+  })}`;
+
   try {
     await sendEmail({
       to: user.email,
       subject,
+      idempotencyKey: `badge-award/${awardId}`,
+      headers: listUnsubscribeHeaders(preferencesUrl),
       react: emailComponent,
     });
 

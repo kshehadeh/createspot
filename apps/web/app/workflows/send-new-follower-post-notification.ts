@@ -102,12 +102,13 @@ async function sendOneNotification(
 ): Promise<{ success: boolean; error?: string }> {
   "use step";
 
-  const { sendEmail } = await import("@/lib/email");
+  const { sendEmail, listUnsubscribeHeaders } = await import("@/lib/email");
   const { NewFollowerPostEmail } = await import(
     "@/emails/templates/new-follower-post-email"
   );
   const { getEmailTranslations } = await import("@/lib/email/translations");
   const { prisma } = await import("@/lib/prisma");
+  const { buildRoutePath } = await import("@/lib/routes");
 
   try {
     const t = await getEmailTranslations(recipientLanguage, "email");
@@ -129,9 +130,15 @@ async function sendOneNotification(
       titleDisplay,
     });
 
+    const preferencesUrl = `${baseUrl}${buildRoutePath("profileEdit", {
+      creatorid: recipientUserId,
+    })}`;
+
     await sendEmail({
       to: recipientEmail,
       subject: emailSubject,
+      idempotencyKey: `new-follower-post/${recipientUserId}-${submissionId}-${creatorId}`,
+      headers: listUnsubscribeHeaders(preferencesUrl),
       react: emailComponent,
     });
 
