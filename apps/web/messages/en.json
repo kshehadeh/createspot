@@ -315,7 +315,8 @@
     "critiqueHintTitle": "Get Feedback",
     "critiqueHintDescription": "Click the Critique button to view or add feedback on this work. Creators can enable critiques when editing their submissions.",
     "addProgressionHintTitle": "Show Your Process",
-    "addProgressionHintDescription": "Add progressions to show how your work evolved—early sketches, drafts, or in-between steps. Viewers can click each step on your submission page."
+    "addProgressionHintDescription": "Add progressions to show how your work evolved—early sketches, drafts, or in-between steps. Viewers can click each step on your submission page.",
+    "wipBanner": "This submission is a work in progress"
   },
   "categories": {
     "Photography": "Photography",
@@ -364,7 +365,8 @@
     "filterByTags": "Filter by tags...",
     "clearFilters": "Clear",
     "loadMoreError": "Failed to load more items. Please try again.",
-    "bulkDeletePartialError": "Failed to delete {count} item(s). Please try again."
+    "bulkDeletePartialError": "Failed to delete {count} item(s). Please try again.",
+    "wipBadge": "WIP"
   },
   "portfolioEditor": {
     "selectItem": "Select item",
@@ -1354,6 +1356,8 @@
     "portfolioItemForm": {
       "title": "Title",
       "titlePlaceholder": "Give your work a title",
+      "workInProgress": "Work in Progress",
+      "workInProgressDescription": "Mark as in-progress when the main image or text isn't ready yet. Add progressions to document your journey.",
       "image": "Image",
       "textDescription": "Text / Description",
       "textPlaceholder": "Add a description or creative writing...",
@@ -1759,7 +1763,8 @@
       "title": "My Portfolio",
       "viewAll": "View Full Portfolio",
       "empty": "You haven't added any portfolio items yet.",
-      "addSubmission": "Add a submission"
+      "addSubmission": "Add a submission",
+      "wipBadge": "WIP"
     },
     "critiques": {
       "title": "Recent Critiques",

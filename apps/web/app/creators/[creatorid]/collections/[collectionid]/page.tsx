@@ -1,17 +1,17 @@
-import { notFound } from "next/navigation";
+import { Globe, Lock, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { getCollectionMetadata } from "@/lib/og-metadata";
-import { PageLayout } from "@/components/page-layout";
+import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { PageHeader } from "@/components/page-header";
+import { PageLayout } from "@/components/page-layout";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ShareButton } from "@/components/share-button";
-import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { Button } from "@/components/ui/button";
-import { Pencil, Lock, Globe } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { getCollectionMetadata } from "@/lib/og-metadata";
+import { prisma } from "@/lib/prisma";
 import { getCreatorUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -103,6 +103,14 @@ export default async function CollectionViewPage({
                 _count: {
                   select: { favorites: true },
                 },
+                progressions: {
+                  orderBy: { order: "desc" as const },
+                  take: 1,
+                  select: {
+                    imageUrl: true,
+                    text: true,
+                  },
+                },
               },
             },
           },
@@ -135,25 +143,31 @@ export default async function CollectionViewPage({
   const isLoggedIn = !!session?.user;
 
   // Transform submissions for PortfolioGrid
-  const portfolioItems = collection.submissions.map((cs) => ({
-    id: cs.submission.id,
-    title: cs.submission.title,
-    imageUrl: cs.submission.imageUrl,
-    imageFocalPoint: cs.submission.imageFocalPoint as {
-      x: number;
-      y: number;
-    } | null,
-    text: cs.submission.text,
-    isPortfolio: cs.submission.isPortfolio,
-    portfolioOrder: cs.order,
-    tags: cs.submission.tags,
-    category: cs.submission.category,
-    promptId: cs.submission.promptId,
-    wordIndex: cs.submission.wordIndex,
-    prompt: cs.submission.prompt,
-    _count: cs.submission._count,
-    shareStatus: cs.submission.shareStatus,
-  }));
+  const portfolioItems = collection.submissions.map((cs) => {
+    const latest = cs.submission.progressions?.[0];
+    return {
+      id: cs.submission.id,
+      title: cs.submission.title,
+      imageUrl: cs.submission.imageUrl,
+      imageFocalPoint: cs.submission.imageFocalPoint as {
+        x: number;
+        y: number;
+      } | null,
+      text: cs.submission.text,
+      isPortfolio: cs.submission.isPortfolio,
+      isWorkInProgress: cs.submission.isWorkInProgress,
+      portfolioOrder: cs.order,
+      tags: cs.submission.tags,
+      category: cs.submission.category,
+      promptId: cs.submission.promptId,
+      wordIndex: cs.submission.wordIndex,
+      prompt: cs.submission.prompt,
+      _count: cs.submission._count,
+      shareStatus: cs.submission.shareStatus,
+      latestProgressionImageUrl: latest?.imageUrl ?? null,
+      latestProgressionText: latest?.text ?? null,
+    };
+  });
 
   return (
     <PageLayout maxWidth="max-w-6xl">

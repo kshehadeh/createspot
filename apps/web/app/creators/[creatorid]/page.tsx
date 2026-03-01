@@ -1,29 +1,29 @@
-import { notFound } from "next/navigation";
+import { Briefcase, Pencil } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { getTutorialData } from "@/lib/get-tutorial-data";
-import { getUserImageUrl } from "@/lib/user-image";
-import { getObjectPositionStyle } from "@/lib/image-utils";
-import { getCreatorUrl } from "@/lib/utils";
-import { PageLayout } from "@/components/page-layout";
-import { ProfileImageViewer } from "@/components/profile-image-viewer";
 import { HistoryList } from "@/app/inspire/prompt/history/history-list";
-import { SocialLinks } from "@/components/social-links";
+import { ExpandableBio } from "@/components/expandable-bio";
+import { FollowButton } from "@/components/follow-button";
+import { HintPopover } from "@/components/hint-popover";
+import { PageLayout } from "@/components/page-layout";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
-import { ProfileViewTracker } from "@/components/profile-view-tracker";
-import { ExpandableBio } from "@/components/expandable-bio";
-import { ShareButton } from "@/components/share-button";
-import { FollowButton } from "@/components/follow-button";
 import { ProfileBadges } from "@/components/profile-badges";
-import { HintPopover } from "@/components/hint-popover";
-import { getNextPageHint } from "@/lib/hints-helper";
-import { Pencil, Briefcase } from "lucide-react";
+import { ProfileImageViewer } from "@/components/profile-image-viewer";
+import { ProfileViewTracker } from "@/components/profile-view-tracker";
+import { ShareButton } from "@/components/share-button";
+import { SocialLinks } from "@/components/social-links";
 import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
+import { getTutorialData } from "@/lib/get-tutorial-data";
+import { getNextPageHint } from "@/lib/hints-helper";
+import { getObjectPositionStyle } from "@/lib/image-utils";
+import { prisma } from "@/lib/prisma";
+import { getUserImageUrl } from "@/lib/user-image";
+import { getCreatorUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -172,7 +172,7 @@ export default async function ProfilePage({
     : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }; // Public view shows PROFILE and PUBLIC only
 
   // Fetch portfolio items
-  const portfolioItems = await prisma.submission.findMany({
+  const portfolioItemsRaw = await prisma.submission.findMany({
     where: {
       userId: user.id,
       isPortfolio: true,
@@ -190,7 +190,25 @@ export default async function ProfilePage({
       _count: {
         select: { favorites: true },
       },
+      progressions: {
+        orderBy: { order: "desc" },
+        take: 1,
+        select: {
+          imageUrl: true,
+          text: true,
+        },
+      },
     },
+  });
+
+  const portfolioItems = portfolioItemsRaw.map((item) => {
+    const latest = item.progressions?.[0];
+    return {
+      ...item,
+      latestProgressionImageUrl: latest?.imageUrl ?? null,
+      latestProgressionText: latest?.text ?? null,
+      progressions: undefined,
+    };
   });
 
   // Fetch prompt submissions (only those linked to prompts)

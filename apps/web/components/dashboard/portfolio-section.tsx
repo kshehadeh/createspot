@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { DashboardSection } from "@/components/dashboard-section";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 
@@ -25,6 +25,9 @@ interface PortfolioSubmission {
   imageFocalPoint: { x: number; y: number } | null;
   text: string | null;
   shareStatus: string;
+  isWorkInProgress?: boolean;
+  latestProgressionImageUrl?: string | null;
+  latestProgressionText?: string | null;
   createdAt: string;
 }
 
@@ -79,32 +82,50 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
         </>
       ) : (
         <div className="grid grid-cols-3 gap-3">
-          {submissions.map((s) => (
-            <Link
-              key={s.id}
-              href={`${portfolioUrl}#${s.id}`}
-              className="group relative aspect-square overflow-hidden rounded-md bg-muted"
-            >
-              {s.imageUrl ? (
-                <Image
-                  src={s.imageUrl}
-                  alt={s.title ?? ""}
-                  fill
-                  className="object-cover transition-transform duration-200 group-hover:scale-105"
-                  sizes="(max-width: 768px) 30vw, 15vw"
-                  style={{
-                    objectPosition: getObjectPositionStyle(s.imageFocalPoint),
-                  }}
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center p-2">
-                  <p className="line-clamp-3 text-xs text-muted-foreground">
-                    {s.title ?? ""}
-                  </p>
-                </div>
-              )}
-            </Link>
-          ))}
+          {submissions.map((s) => {
+            const displayImageUrl =
+              s.imageUrl ||
+              (s.isWorkInProgress ? s.latestProgressionImageUrl : null);
+            return (
+              <Link
+                key={s.id}
+                href={`${portfolioUrl}#${s.id}`}
+                className={`group relative aspect-square overflow-hidden bg-muted ${
+                  s.isWorkInProgress
+                    ? "rounded-sm border-2 border-dashed border-muted-foreground/40"
+                    : "rounded-md"
+                }`}
+              >
+                {displayImageUrl ? (
+                  <Image
+                    src={displayImageUrl}
+                    alt={s.title ?? ""}
+                    fill
+                    className={`object-cover transition-transform duration-200 group-hover:scale-105 ${
+                      !s.imageUrl && s.isWorkInProgress ? "opacity-70" : ""
+                    }`}
+                    sizes="(max-width: 768px) 30vw, 15vw"
+                    style={{
+                      objectPosition: s.imageUrl
+                        ? getObjectPositionStyle(s.imageFocalPoint)
+                        : undefined,
+                    }}
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center p-2">
+                    <p className="line-clamp-3 text-xs text-muted-foreground">
+                      {s.title ?? ""}
+                    </p>
+                  </div>
+                )}
+                {s.isWorkInProgress && (
+                  <span className="absolute top-1 right-1 rounded bg-amber-500/80 px-1.5 py-0.5 text-[10px] font-medium text-white z-10">
+                    {t("wipBadge")}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </div>
       )}
     </DashboardSection>

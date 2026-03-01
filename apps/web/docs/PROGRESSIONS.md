@@ -13,6 +13,53 @@ Progressions are work-in-progress steps associated with a submission. They let c
 
 A progression must have at least **image** or **text**. Comment is optional.
 
+## Work in Progress (WIP) Submissions
+
+Submissions can be marked as "Work in Progress" via the `isWorkInProgress` field. This indicates the creator's intent that the piece is not yet complete.
+
+### When to Use WIP
+
+- The creator wants to share their creative journey before the final piece is done
+- The submission has no main image or text yet, but has progressions documenting the work
+- The creator wants to set expectations that this is an evolving piece
+
+### WIP vs. Completed Text-Only Work
+
+The `isWorkInProgress` field distinguishes between:
+- **WIP**: "I'm not done yet" — submission may have no main content, only progressions
+- **Completed text-only work**: A finished piece that happens to be text-only (poem, essay, etc.)
+
+Without the explicit flag, the system couldn't tell whether a submission without an image was a finished text work or something still in progress.
+
+### Form Behavior
+
+When the WIP toggle is enabled in the portfolio item form:
+- The "must have image or text" validation is bypassed
+- The submission can be created with zero main content
+- Progressions become the primary content
+
+### Visual Indicators
+
+WIP submissions are rendered differently throughout the UI:
+
+**Grid Tiles (Portfolio Grid, Dashboard):**
+- Dashed border instead of solid
+- Amber "WIP" badge in top-right corner
+- Falls back to latest progression image for thumbnail (with reduced opacity)
+- Construction icon placeholder if no progression images exist
+
+**Submission Detail Page:**
+- Amber WIP banner below the header
+- Defaults to "Journey" tab when no main image/text exists
+
+### Data Flow
+
+When fetching submissions for grid display, queries include:
+- `isWorkInProgress` — to detect WIP status
+- Latest progression data (`imageUrl`, `text`) — for thumbnail fallback
+
+See the Submission model in [DATABASE.md](DATABASE.md) for the `isWorkInProgress` field definition.
+
 ## Data model
 
 The `Progression` model lives in [prisma/schema.prisma](../prisma/schema.prisma):

@@ -95,13 +95,16 @@ User submissions for prompts or standalone portfolio items.
 | imageUrl | String? | Uploaded image URL |
 | text | String? | Sanitized HTML content |
 | isPortfolio | Boolean | Whether to show in portfolio section (default: false) |
+| isWorkInProgress | Boolean | Whether this is a work-in-progress piece (default: false) |
 | tags | String[] | Array of tags for portfolio items (default: []) |
 | category | String? | Category (e.g., "Photography", "Writing", "Digital Art") |
 | createdAt | DateTime | Creation timestamp |
 | updatedAt | DateTime | Last update timestamp |
 
-**Unique constraint:** One submission per user per prompt per word (`userId + promptId + wordIndex`).  
+**Unique constraint:** One submission per user per prompt per word (`userId + promptId + wordIndex`).
 **Note:** `promptId` and `wordIndex` are nullable to support portfolio-only items that aren't tied to prompts.
+
+**Work in Progress (WIP):** When `isWorkInProgress` is true, the submission represents an evolving piece. It may have no main image or text, instead using progressions to document the creative journey. WIP submissions display with a dashed border, amber "WIP" badge, and fall back to the latest progression image for thumbnails. See [PROGRESSIONS.md](PROGRESSIONS.md) for details.
 
 **Portfolio Features:**
 - Submissions can be marked as portfolio items (`isPortfolio: true`)

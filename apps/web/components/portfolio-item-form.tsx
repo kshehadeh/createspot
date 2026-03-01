@@ -1,22 +1,22 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import Link from "next/link";
-import useSWR from "swr";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
-import { toast } from "sonner";
-import { fetcher } from "@/lib/swr";
 import {
+  ChevronDown,
+  ChevronUp,
   Crosshair,
   ImageIcon,
   Info,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import useSWR from "swr";
+import { fetcher } from "@/lib/swr";
 
 // Heavy TipTap editor - dynamically import
 const RichTextEditor = dynamic(
@@ -29,14 +29,16 @@ const RichTextEditor = dynamic(
     ),
   },
 );
+
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FocalPointModal } from "@/components/focal-point-modal";
 import {
   ProgressionEditor,
   ProgressionFormItem,
 } from "@/components/progression-editor";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -44,7 +46,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
@@ -70,6 +71,7 @@ interface SubmissionData {
   category: string | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled?: boolean;
+  isWorkInProgress?: boolean;
   progressions?: Array<{
     id: string;
     imageUrl: string | null;
@@ -127,6 +129,9 @@ export function PortfolioItemForm({
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
   const [critiquesEnabled, setCritiquesEnabled] = useState(
     initialData?.critiquesEnabled ?? false,
+  );
+  const [isWorkInProgress, setIsWorkInProgress] = useState(
+    initialData?.isWorkInProgress ?? false,
   );
   const [referenceImageUrl, setReferenceImageUrl] = useState(
     initialData?.referenceImageUrl || "",
@@ -332,7 +337,7 @@ export function PortfolioItemForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!imageUrl && !text) {
+    if (!imageUrl && !text && !isWorkInProgress) {
       setError(t("errors.addImageOrText"));
       return;
     }
@@ -366,6 +371,7 @@ export function PortfolioItemForm({
             category: category || null,
             shareStatus,
             critiquesEnabled,
+            isWorkInProgress,
           }),
         });
 
@@ -387,6 +393,7 @@ export function PortfolioItemForm({
             category: category || null,
             shareStatus,
             critiquesEnabled,
+            isWorkInProgress,
             referenceImageUrl: referenceImageUrl || null,
             ...(setIsPortfolio ? { isPortfolio: true } : {}),
           }),
@@ -494,6 +501,7 @@ export function PortfolioItemForm({
               category: category || null,
               shareStatus,
               critiquesEnabled,
+              isWorkInProgress,
               referenceImageUrl: referenceImageUrl || null,
             }
           : undefined;
@@ -521,6 +529,22 @@ export function PortfolioItemForm({
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t("titlePlaceholder")}
         />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="isWorkInProgress">{t("workInProgress")}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t("workInProgressDescription")}
+            </p>
+          </div>
+          <Switch
+            id="isWorkInProgress"
+            checked={isWorkInProgress}
+            onCheckedChange={setIsWorkInProgress}
+          />
+        </div>
       </div>
 
       <div>

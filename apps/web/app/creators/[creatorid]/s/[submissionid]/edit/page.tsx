@@ -1,11 +1,11 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { getTutorialData } from "@/lib/get-tutorial-data";
-import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
+import { PageLayout } from "@/components/page-layout";
 import { SubmissionEditForm } from "@/components/submission-edit-form";
+import { auth } from "@/lib/auth";
+import { getTutorialData } from "@/lib/get-tutorial-data";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +26,7 @@ async function getSubmission(id: string) {
       tags: true,
       shareStatus: true,
       critiquesEnabled: true,
+      isWorkInProgress: true,
       referenceImageUrl: true,
       userId: true,
       progressions: {
@@ -101,6 +102,7 @@ export default async function SubmissionEditPage({
           category: submission.category,
           shareStatus: submission.shareStatus,
           critiquesEnabled: submission.critiquesEnabled,
+          isWorkInProgress: submission.isWorkInProgress,
           referenceImageUrl: submission.referenceImageUrl,
           progressions: submission.progressions,
         }}

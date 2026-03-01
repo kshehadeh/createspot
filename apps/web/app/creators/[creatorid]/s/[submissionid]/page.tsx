@@ -1,10 +1,10 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { SubmissionDetail } from "@/components/submission-detail";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getSubmissionMetadata } from "@/lib/og-metadata";
-import { SubmissionDetail } from "@/components/submission-detail";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +26,7 @@ async function getSubmission(id: string) {
       tags: true,
       shareStatus: true,
       critiquesEnabled: true,
+      isWorkInProgress: true,
       referenceImageUrl: true,
       userId: true,
       user: {

@@ -1,18 +1,18 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { PageLayout } from "@/components/page-layout";
-import { PageHeader } from "@/components/page-header";
-import { PortfolioGridProfile } from "@/components/portfolio-grid";
-import { ShareButton } from "@/components/share-button";
-import { PortfolioFilters } from "@/components/portfolio-filters";
-import { PortfolioMobileMenu } from "@/components/portfolio-mobile-menu";
 import { HintPopover } from "@/components/hint-popover";
+import { PageHeader } from "@/components/page-header";
+import { PageLayout } from "@/components/page-layout";
+import { PortfolioFilters } from "@/components/portfolio-filters";
+import { PortfolioGridProfile } from "@/components/portfolio-grid";
+import { PortfolioMobileMenu } from "@/components/portfolio-mobile-menu";
+import { ShareButton } from "@/components/share-button";
+import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getNextPageHint } from "@/lib/hints-helper";
+import { prisma } from "@/lib/prisma";
 import { getCreatorUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -179,28 +179,48 @@ export default async function PortfolioPage({
         select: { category: true },
         distinct: ["category"],
       }),
-      prisma.submission.findMany({
-        where: {
-          userId: user.id,
-          isPortfolio: true,
-          ...shareStatusFilter,
-          ...tagFilter,
-          ...categoryFilter,
-        },
-        orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
-        include: {
-          prompt: {
-            select: {
-              word1: true,
-              word2: true,
-              word3: true,
+      prisma.submission
+        .findMany({
+          where: {
+            userId: user.id,
+            isPortfolio: true,
+            ...shareStatusFilter,
+            ...tagFilter,
+            ...categoryFilter,
+          },
+          orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
+          include: {
+            prompt: {
+              select: {
+                word1: true,
+                word2: true,
+                word3: true,
+              },
+            },
+            _count: {
+              select: { favorites: true },
+            },
+            progressions: {
+              orderBy: { order: "desc" },
+              take: 1,
+              select: {
+                imageUrl: true,
+                text: true,
+              },
             },
           },
-          _count: {
-            select: { favorites: true },
-          },
-        },
-      }),
+        })
+        .then((items) =>
+          items.map((item) => {
+            const latest = item.progressions?.[0];
+            return {
+              ...item,
+              latestProgressionImageUrl: latest?.imageUrl ?? null,
+              latestProgressionText: latest?.text ?? null,
+              progressions: undefined,
+            };
+          }),
+        ),
       getTutorialData(session?.user?.id),
     ]);
 

@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { after } from "next/server";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { after, NextRequest, NextResponse } from "next/server";
 import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
 import { sendNewFollowerPostNotification } from "@/app/workflows/send-new-follower-post-notification";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -72,10 +71,29 @@ export async function GET(request: NextRequest) {
         _count: {
           select: { favorites: true },
         },
+        progressions: {
+          orderBy: { order: "desc" },
+          take: 1,
+          select: {
+            imageUrl: true,
+            text: true,
+          },
+        },
       },
     });
 
-    return NextResponse.json({ submissions });
+    // Map latest progression data for WIP thumbnails
+    const mapped = submissions.map((s) => {
+      const latest = s.progressions?.[0];
+      return {
+        ...s,
+        latestProgressionImageUrl: latest?.imageUrl ?? null,
+        latestProgressionText: latest?.text ?? null,
+        progressions: undefined,
+      };
+    });
+
+    return NextResponse.json({ submissions: mapped });
   }
 
   // Prompt-specific query (original behavior)
@@ -116,6 +134,7 @@ export async function POST(request: NextRequest) {
     category,
     shareStatus,
     critiquesEnabled,
+    isWorkInProgress,
   } = body;
 
   // Validate focal point if provided
@@ -142,8 +161,8 @@ export async function POST(request: NextRequest) {
 
   // Portfolio-only item (no prompt association)
   if (!promptId && isPortfolio) {
-    // Validate that we have at least some content
-    if (!imageUrl && !text) {
+    // Validate that we have at least some content (unless WIP)
+    if (!imageUrl && !text && !isWorkInProgress) {
       return NextResponse.json(
         { error: "Portfolio item must have an image or text" },
         { status: 400 },
@@ -171,6 +190,7 @@ export async function POST(request: NextRequest) {
         category: category || null,
         shareStatus: finalShareStatus,
         critiquesEnabled: critiquesEnabled ?? false,
+        isWorkInProgress: isWorkInProgress ?? false,
       },
     });
 

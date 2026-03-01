@@ -1,28 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Edit, Eye, FileText, Heart, MessageSquare, X } from "lucide-react";
 import Link from "next/link";
-import useSWR from "swr";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { fetcher } from "@/lib/swr";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Heart, X, FileText, Edit, Eye, MessageSquare } from "lucide-react";
-import { ShareButton } from "@/components/share-button";
 import { useSession } from "next-auth/react";
-import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
-import { buildRoutePath } from "@/lib/routes";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
+import useSWR from "swr";
 import {
   BaseLightbox,
   BaseLightboxNavigation,
   BaseLightboxRenderContext,
   LIGHTBOX_BUTTON_CLASS,
 } from "@/components/base-lightbox";
+import { ShareButton } from "@/components/share-button";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
+import { buildRoutePath } from "@/lib/routes";
+import { fetcher } from "@/lib/swr";
 
 interface LightboxSubmission {
   id: string;
@@ -133,6 +133,8 @@ export function SubmissionLightbox({
 
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
+  // For WIP submissions without a main image, show nothing in lightbox
+  // (the grid navigates to detail page instead)
   const isOwner =
     !!currentUserId &&
     !!submission.user?.id &&

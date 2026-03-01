@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { PortfolioItemForm } from "@/components/portfolio-item-form";
 import { HintPopover } from "@/components/hint-popover";
+import { PortfolioItemForm } from "@/components/portfolio-item-form";
 import { usePageHints } from "@/lib/hooks/use-page-hints";
 
 interface SubmissionData {
@@ -16,6 +16,7 @@ interface SubmissionData {
   category: string | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled?: boolean;
+  isWorkInProgress?: boolean;
   progressions?: Array<{
     id: string;
     imageUrl: string | null;

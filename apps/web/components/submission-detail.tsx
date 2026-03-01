@@ -1,32 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
-import { ExpandableText } from "@/components/expandable-text";
-import { SubmissionImage } from "@/components/submission-image";
-import { ShareButton } from "@/components/share-button";
+import { useState } from "react";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
-import { FavoriteButton } from "@/components/favorite-button";
 import { CritiqueButton } from "@/components/critique-button";
+import { ExpandableText } from "@/components/expandable-text";
+import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
-import { SubmissionLightbox } from "@/components/submission-lightbox";
+import { HintPopover } from "@/components/hint-popover";
 import { ProgressionStrip } from "@/components/progression-strip";
+import { ShareButton } from "@/components/share-button";
 import { SocialLinks } from "@/components/social-links";
+import { SubmissionImage } from "@/components/submission-image";
+import { SubmissionLightbox } from "@/components/submission-lightbox";
+import { SubmissionMobileMenu } from "@/components/submission-mobile-menu";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   VisuallyHidden,
 } from "@/components/ui/dialog";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HintPopover } from "@/components/hint-popover";
 import { usePageHints } from "@/lib/hooks/use-page-hints";
-import { SubmissionMobileMenu } from "@/components/submission-mobile-menu";
+import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { getCreatorUrl } from "@/lib/utils";
 
 interface ProgressionData {
@@ -49,6 +49,7 @@ interface SubmissionDetailProps {
     tags: string[];
     shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
     critiquesEnabled?: boolean;
+    isWorkInProgress?: boolean;
     referenceImageUrl?: string | null;
     user: {
       id: string;
@@ -125,6 +126,8 @@ export function SubmissionDetail({
     return words[submission.wordIndex - 1];
   };
 
+  const isWip = submission.isWorkInProgress;
+
   type SubmissionTabKey = "image" | "text" | "journey" | "reference";
   const tabKeys: SubmissionTabKey[] = (
     ["image", "text", "journey", "reference"] as const
@@ -135,6 +138,10 @@ export function SubmissionDetail({
     if (key === "reference") return hasReference;
     return false;
   });
+
+  // For WIP submissions without main content, default to journey tab
+  const defaultTab =
+    isWip && !hasImage && !hasText && hasJourney ? "journey" : tabKeys[0];
 
   const renderImagePanel = () => (
     <div className="mb-8">
@@ -354,6 +361,28 @@ export function SubmissionDetail({
           </div>
         </Card>
 
+        {/* WIP banner */}
+        {isWip && (
+          <div className="mx-auto max-w-7xl px-6 pt-4">
+            <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+              <svg
+                className="h-4 w-4 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+              {tSubmission("wipBanner")}
+            </div>
+          </div>
+        )}
+
         {/* Main content */}
         <main className="mx-auto max-w-7xl px-6 py-6">
           {tabKeys.length === 0 ? null : tabKeys.length === 1 ? (
@@ -364,7 +393,7 @@ export function SubmissionDetail({
               {tabKeys[0] === "reference" && renderReferencePanel()}
             </div>
           ) : (
-            <Tabs defaultValue={tabKeys[0]} className="mb-12 w-full">
+            <Tabs defaultValue={defaultTab} className="mb-12 w-full">
               <TabsList className="mb-6 flex w-full flex-wrap gap-2 bg-muted p-1">
                 {tabKeys.map((key) => (
                   <TabsTrigger key={key} value={key}>

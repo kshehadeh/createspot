@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { after } from "next/server";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { after, NextRequest, NextResponse } from "next/server";
+import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -135,6 +134,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     shareStatus,
     critiquesEnabled,
     referenceImageUrl,
+    isWorkInProgress,
   } = body;
 
   // Validate focal point if provided
@@ -230,6 +230,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     updateData.critiquesEnabled = critiquesEnabled;
   if (referenceImageUrl !== undefined)
     updateData.referenceImageUrl = referenceImageUrl;
+  if (isWorkInProgress !== undefined)
+    updateData.isWorkInProgress = isWorkInProgress;
 
   // Handle shareStatus - if linking to a prompt, force PUBLIC
   if (promptId !== undefined && promptId !== null) {

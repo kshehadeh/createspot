@@ -315,7 +315,8 @@
     "critiqueHintTitle": "Obtener Comentarios",
     "critiqueHintDescription": "Haz clic en el botón Crítica para ver o añadir comentarios sobre este trabajo. Los creadores pueden habilitar críticas al editar sus publicaciones.",
     "addProgressionHintTitle": "Muestra tu proceso",
-    "addProgressionHintDescription": "Añade progresiones para mostrar cómo evolucionó tu trabajo—bocetos, borradores o pasos intermedios. Los visitantes pueden hacer clic en cada paso en tu página de publicación."
+    "addProgressionHintDescription": "Añade progresiones para mostrar cómo evolucionó tu trabajo—bocetos, borradores o pasos intermedios. Los visitantes pueden hacer clic en cada paso en tu página de publicación.",
+    "wipBanner": "Esta publicación es un trabajo en progreso"
   },
   "categories": {
     "Photography": "Fotografía",
@@ -364,7 +365,8 @@
     "filterByTags": "Filtrar por etiquetas...",
     "clearFilters": "Limpiar",
     "loadMoreError": "Error al cargar más elementos. Por favor, inténtalo de nuevo.",
-    "bulkDeletePartialError": "Error al eliminar {count} elemento(s). Por favor, inténtalo de nuevo."
+    "bulkDeletePartialError": "Error al eliminar {count} elemento(s). Por favor, inténtalo de nuevo.",
+    "wipBadge": "WIP"
   },
   "portfolioEditor": {
     "selectItem": "Seleccionar elemento",
@@ -1354,6 +1356,8 @@
     "portfolioItemForm": {
       "title": "Título",
       "titlePlaceholder": "Dale un título a tu trabajo",
+      "workInProgress": "Trabajo en Progreso",
+      "workInProgressDescription": "Marca como en progreso cuando la imagen o texto principal aún no está listo. Añade progresiones para documentar tu proceso.",
       "image": "Imagen",
       "textDescription": "Texto / Descripción",
       "textPlaceholder": "Añade una descripción o escritura creativa...",
@@ -1759,7 +1763,8 @@
       "title": "Mi Portafolio",
       "viewAll": "Ver Portafolio Completo",
       "empty": "Aún no has agregado elementos a tu portafolio.",
-      "addSubmission": "Agregar un envío"
+      "addSubmission": "Agregar un envío",
+      "wipBadge": "WIP"
     },
     "critiques": {
       "title": "Críticas Recientes",

@@ -1,33 +1,43 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { TextThumbnail } from "@/components/text-thumbnail";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Construction,
+  Eye,
+  Globe,
+  Lock,
+  Pencil,
+  Star,
+  Trash2,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ConfirmModal } from "@/components/confirm-modal";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
-import { ConfirmModal } from "@/components/confirm-modal";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
+import { TextThumbnail } from "@/components/text-thumbnail";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -39,7 +49,6 @@ import {
 import { getCategoryIcon } from "@/lib/categories";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { getCreatorUrl } from "@/lib/utils";
-import { Pencil, Trash2, Star, Lock, Eye, Globe } from "lucide-react";
 
 // Prevent right-click context menu on images for download protection
 const handleImageContextMenu = (e: React.MouseEvent) => {
@@ -69,6 +78,9 @@ export interface PortfolioItem {
   };
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled?: boolean;
+  isWorkInProgress?: boolean;
+  latestProgressionImageUrl?: string | null;
+  latestProgressionText?: string | null;
   user?: {
     id: string;
     slug?: string | null;
@@ -399,11 +411,17 @@ function SortablePortfolioItem({
     onEdit?.(item);
   };
 
+  const isWip = item.isWorkInProgress;
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
-      className={`group overflow-hidden border-0 rounded-none transition-shadow duration-300 ${
+      className={`group overflow-hidden transition-shadow duration-300 ${
+        isWip
+          ? "border-2 border-dashed border-muted-foreground/40 rounded-sm"
+          : "border-0 rounded-none"
+      } ${
         isDragging || isSortableDragging ? "ring-2 ring-ring" : ""
       } hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)]`}
     >
@@ -426,7 +444,32 @@ function SortablePortfolioItem({
           />
         ) : item.text ? (
           <TextThumbnail text={item.text} className="h-full w-full" />
+        ) : isWip && item.latestProgressionImageUrl ? (
+          <Image
+            src={item.latestProgressionImageUrl}
+            alt={item.title || t("portfolioItemAlt")}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105 select-none opacity-70"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            draggable={false}
+          />
+        ) : isWip && item.latestProgressionText ? (
+          <TextThumbnail
+            text={item.latestProgressionText}
+            className="h-full w-full opacity-70"
+          />
+        ) : isWip ? (
+          <div className="flex h-full w-full items-center justify-center">
+            <Construction className="h-10 w-10 text-muted-foreground/50" />
+          </div>
         ) : null}
+
+        {/* WIP badge */}
+        {isWip && (
+          <Badge className="absolute top-2 right-2 bg-amber-500/80 text-white hover:bg-amber-500/80 text-xs z-10">
+            {t("wipBadge")}
+          </Badge>
+        )}
 
         {/* Drag handle indicator in top left (only in edit mode) */}
         {allowEdit && (
@@ -790,7 +833,11 @@ function PortfolioGridContent({
                     <div className="absolute -inset-1 rounded-sm bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 opacity-60 blur-sm" />
                   )}
                   <Card
-                    className={`group relative overflow-hidden border-0 rounded-none transition-shadow duration-300 hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)] ${isFeatured ? "ring-2 ring-amber-400/50" : ""}`}
+                    className={`group relative overflow-hidden transition-shadow duration-300 hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)] ${
+                      item.isWorkInProgress
+                        ? "border-2 border-dashed border-muted-foreground/40 rounded-sm"
+                        : "border-0 rounded-none"
+                    } ${isFeatured ? "ring-2 ring-amber-400/50" : ""}`}
                   >
                     <div
                       className="protected-image-wrapper relative aspect-square cursor-pointer overflow-hidden bg-muted"
@@ -804,7 +851,6 @@ function PortfolioGridContent({
                               `${getCreatorUrl(creator)}/s/${item.id}`,
                             );
                           }
-                          // Note: If creator is missing, we can't navigate - this shouldn't happen
                         }
                       }}
                       onContextMenu={handleImageContextMenu}
@@ -828,7 +874,34 @@ function PortfolioGridContent({
                           text={item.text}
                           className="h-full w-full"
                         />
+                      ) : item.isWorkInProgress &&
+                        item.latestProgressionImageUrl ? (
+                        <Image
+                          src={item.latestProgressionImageUrl}
+                          alt={item.title || t("portfolioItemAlt")}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105 select-none opacity-70"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          draggable={false}
+                        />
+                      ) : item.isWorkInProgress &&
+                        item.latestProgressionText ? (
+                        <TextThumbnail
+                          text={item.latestProgressionText}
+                          className="h-full w-full opacity-70"
+                        />
+                      ) : item.isWorkInProgress ? (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <Construction className="h-10 w-10 text-muted-foreground/50" />
+                        </div>
                       ) : null}
+
+                      {/* WIP badge */}
+                      {item.isWorkInProgress && (
+                        <Badge className="absolute top-2 right-2 bg-amber-500/80 text-white hover:bg-amber-500/80 text-xs z-10">
+                          {t("wipBadge")}
+                        </Badge>
+                      )}
 
                       {/* Share status indicator - only show when owner is viewing */}
                       {item.shareStatus && isOwnProfile && (
