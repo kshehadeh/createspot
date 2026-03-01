@@ -1,0 +1,32 @@
+[
+  {
+    "time": "2026-02-24T00:00:00-05:00",
+    "commit": "db89af9",
+    "type": "feature",
+    "audience": "public",
+    "area": "profile",
+    "description": "Dashboard now includes an onboarding checklist that tracks your progress (e.g. completing your first submission, adding a profile photo) with the ability to dismiss the section.",
+    "impact": "minor",
+    "version": "2.11.0"
+  },
+  {
+    "time": "2026-02-24T00:00:00-05:00",
+    "commit": "91ff634",
+    "type": "improvement",
+    "audience": "public",
+    "area": "global",
+    "description": "Theme toggle (light/dark) has been moved from the header to profile settings. The user menu and mobile nav now include quick links to View Profile and Edit Profile.",
+    "impact": "patch",
+    "version": "2.11.0"
+  },
+  {
+    "time": "2026-02-24T00:00:00-05:00",
+    "commit": "81b820e",
+    "type": "improvement",
+    "audience": "public",
+    "area": "global",
+    "description": "Email notifications now follow best practices for compliance and reliability: physical address in footers (CAN-SPAM), List-Unsubscribe headers for easier opt-out, and improved delivery with idempotency and retries.",
+    "impact": "patch",
+    "version": "2.11.0"
+  }
+]
