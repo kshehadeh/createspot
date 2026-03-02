@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { SupportFormModal } from "./contact/support-form-modal";
 import { ExhibitRequestModal } from "./contact/exhibit-request-form";
+import { ThemeToggle } from "./theme-toggle";
 
 // Icon for Help link
 function HelpIcon({ className }: { className?: string }) {
@@ -454,6 +455,14 @@ export function MobileNavigation({
                 }}
               />
             </MobileSection>
+
+            {/* Theme switcher - above user section */}
+            <div className="flex items-center justify-between border-t border-border pt-4 px-4 mb-2">
+              <span className="text-sm font-medium text-foreground">
+                {tProfile("theme")}
+              </span>
+              <ThemeToggle />
+            </div>
 
             {/* User Section */}
             {user ? (

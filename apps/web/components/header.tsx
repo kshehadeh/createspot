@@ -37,6 +37,7 @@ const DashboardNavigation = dynamic(
   },
 );
 import { SubmissionEditModal } from "./submission-edit-modal";
+import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
 import { getRoute } from "@/lib/routes";
@@ -107,6 +108,7 @@ export function Header({ user }: HeaderProps) {
               onCreateModalOpen={() => setIsCreateModalOpen(true)}
             />
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Button
                 asChild
                 variant="ghost"
