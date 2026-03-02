@@ -18,5 +18,25 @@
     "description": "Add Product Hunt badge for Create Spot promotion on home page.",
     "impact": "minor",
     "version": "2.12.0"
+  },
+  {
+    "time": "2026-03-02T04:59:04-05:00",
+    "commit": "f24287327fbbc4a02ccd2955fffa6f73f5f8db45",
+    "type": "feature",
+    "audience": "public",
+    "area": "global",
+    "description": "Add ThemeToggle component for theme switching in header and mobile navigation.",
+    "impact": "minor",
+    "version": "2.13.0"
+  },
+  {
+    "time": "2026-03-02T05:14:20-05:00",
+    "commit": "0c9dd7b079a26445a3d7da5579eab5811f4364cc",
+    "type": "feature",
+    "audience": "public",
+    "area": "content",
+    "description": "Enhance welcome image display with floating animations and masking effects.",
+    "impact": "minor",
+    "version": "2.13.0"
   }
 ]
