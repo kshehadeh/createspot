@@ -1,0 +1,22 @@
+[
+  {
+    "time": "2026-03-02T04:35:20-05:00",
+    "commit": "ea561881f654c12b8286c54bdec9377fe4799522",
+    "type": "improvement",
+    "audience": "public",
+    "area": "profile",
+    "description": "Redesign onboarding layout on dashboard.",
+    "impact": "minor",
+    "version": "2.12.0"
+  },
+  {
+    "time": "2026-03-02T04:42:45-05:00",
+    "commit": "45722b2ca0fd1f4725e4def054789d55d6c8c119",
+    "type": "feature",
+    "audience": "public",
+    "area": "content",
+    "description": "Add Product Hunt badge for Create Spot promotion on home page.",
+    "impact": "minor",
+    "version": "2.12.0"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "time": "2026-03-01T10:27:03-05:00",
+    "commit": "d9bb7641857f385e64636135f6f8b6b98addda20",
+    "type": "feature",
+    "audience": "public",
+    "area": "games",
+    "description": "Submissions can be saved as work-in-progress (WIP) before publishing.",
+    "impact": "minor",
+    "version": "2.12.0"
+  },
+  {
+    "time": "2026-03-01T10:27:37-05:00",
+    "commit": "f15234d8fa5c98f338f2880f54d01792ac03160e",
+    "type": "documentation",
+    "audience": "public",
+    "area": "content",
+    "description": "Update help screenshots and documentation for WIP feature.",
+    "impact": "patch",
+    "version": "2.12.0"
+  },
+  {
+    "time": "2026-03-01T10:28:14-05:00",
+    "commit": "fc208fa4a36e2aab7d6cbe764b46d4af3daafd9a",
+    "type": "improvement",
+    "audience": "development",
+    "area": "content",
+    "description": "Update help screenshot capture script and environment variables.",
+    "impact": "patch",
+    "version": "2.12.0"
+  }
+]

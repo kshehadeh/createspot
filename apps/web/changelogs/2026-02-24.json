@@ -28,5 +28,25 @@
     "description": "Email notifications now follow best practices for compliance and reliability: physical address in footers (CAN-SPAM), List-Unsubscribe headers for easier opt-out, and improved delivery with idempotency and retries.",
     "impact": "patch",
     "version": "2.11.0"
+  },
+  {
+    "time": "2026-02-24T04:19:14-05:00",
+    "commit": "2350efedee5744b81cf951c3e950849f911df03c",
+    "type": "improvement",
+    "audience": "development",
+    "area": "global",
+    "description": "Format e2e tests and helpers.",
+    "impact": "patch",
+    "version": "2.12.0"
+  },
+  {
+    "time": "2026-02-24T04:19:22-05:00",
+    "commit": "36cc818813bc9855f822837f86ecb4f4b94aefe8",
+    "type": "documentation",
+    "audience": "development",
+    "area": "global",
+    "description": "Add email-best-practices agent skill.",
+    "impact": "patch",
+    "version": "2.12.0"
   }
 ]

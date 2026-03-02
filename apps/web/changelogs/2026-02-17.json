@@ -8,5 +8,15 @@
     "description": "Museum page filters on mobile are now available via the page title dropdown (same pattern as portfolio) instead of the bottom-docked bar, so they remain accessible with the inspiration bottom nav.",
     "impact": "minor",
     "version": "2.9.0"
+  },
+  {
+    "time": "2026-02-17T04:03:15-05:00",
+    "commit": "e3aca87acb25b1deb44cc170a7a851d0317532fa",
+    "type": "fix",
+    "audience": "development",
+    "area": "portfolio",
+    "description": "Submission browser now uses a constant for default exclude and preselected IDs.",
+    "impact": "patch",
+    "version": "2.12.0"
   }
 ]

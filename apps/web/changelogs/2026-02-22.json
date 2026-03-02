@@ -1,0 +1,32 @@
+[
+  {
+    "time": "2026-02-22T09:05:31-05:00",
+    "commit": "6695b0969e2c6fb76c1cd62a6214d92267cd89c5",
+    "type": "feature",
+    "audience": "development",
+    "area": "global",
+    "description": "Add Playwright e2e testing configuration and update dependencies.",
+    "impact": "patch",
+    "version": "2.12.0"
+  },
+  {
+    "time": "2026-02-22T16:41:04-05:00",
+    "commit": "8c0e5367f67f57a08dea82b8eaba82c42c7bd064",
+    "type": "feature",
+    "audience": "development",
+    "area": "global",
+    "description": "Add e2e testing helpers for user authentication and navigation.",
+    "impact": "patch",
+    "version": "2.12.0"
+  },
+  {
+    "time": "2026-02-22T16:42:45-05:00",
+    "commit": "f76733f6f80dfebb7abe3cc88465d51b556e0fca",
+    "type": "improvement",
+    "audience": "development",
+    "area": "global",
+    "description": "Update .env.example and .gitignore for e2e testing configuration.",
+    "impact": "patch",
+    "version": "2.12.0"
+  }
+]

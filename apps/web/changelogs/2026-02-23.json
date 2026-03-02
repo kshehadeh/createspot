@@ -1,0 +1,22 @@
+[
+  {
+    "time": "2026-02-23T04:31:04-05:00",
+    "commit": "e046606ff1dacb6932bd75245f098d82cd250bf0",
+    "type": "fix",
+    "audience": "development",
+    "area": "global",
+    "description": "Improve e2e dashboard navigation test for play page.",
+    "impact": "patch",
+    "version": "2.12.0"
+  },
+  {
+    "time": "2026-02-23T07:22:47-05:00",
+    "commit": "3d68827cd3f9cee1c32a958956fcf4d02a71fda6",
+    "type": "fix",
+    "audience": "development",
+    "area": "global",
+    "description": "Enhance e2e cleanupTestData function for improved data removal.",
+    "impact": "patch",
+    "version": "2.12.0"
+  }
+]
