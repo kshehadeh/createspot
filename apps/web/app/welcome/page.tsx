@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { auth, signIn } from "@/lib/auth";
 import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
 import { prisma } from "@/lib/prisma";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateSpotLogo } from "@/components/create-spot-logo";
 
@@ -85,49 +86,54 @@ export default async function WelcomePage() {
 
   return (
     <main className="flex h-[calc(100vh-var(--navbar-height))] flex-col overflow-hidden lg:flex-row">
-      {/* Left side - Image tiles */}
-      <div className="relative flex-1 overflow-hidden">
+      {/* Left side - Image tiles (hidden on mobile, show login only) */}
+      <div className="relative hidden flex-1 overflow-hidden lg:block">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-orange-500/5" />
         {imageSubmissions.length > 0 && (
-          <div
-            className="relative grid h-full"
-            style={{
-              gridTemplateColumns:
-                imageSubmissions.length === 1
-                  ? "1fr"
-                  : imageSubmissions.length === 2
-                    ? "repeat(2, 1fr)"
-                    : imageSubmissions.length <= 4
-                      ? "repeat(2, 1fr)"
-                      : imageSubmissions.length <= 6
-                        ? "repeat(3, 1fr)"
-                        : "repeat(4, 1fr)",
-              gridTemplateRows:
-                imageSubmissions.length <= 2
-                  ? "1fr"
-                  : imageSubmissions.length <= 4
-                    ? "repeat(2, 1fr)"
-                    : imageSubmissions.length <= 6
-                      ? "repeat(2, 1fr)"
-                      : "repeat(3, 1fr)",
-            }}
-          >
-            {imageSubmissions.slice(0, 12).map((submission, index) => (
-              <div
-                key={submission.id}
-                className="group relative overflow-hidden bg-muted"
-                style={{
-                  animationDelay: `${index * 50}ms`,
-                }}
-              >
-                <img
-                  src={submission.imageUrl!}
-                  alt={submission.title || t("submissionAlt")}
-                  className="h-full w-full object-cover transition-opacity group-hover:opacity-90"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-              </div>
-            ))}
+          <div className="welcome-image-area-mask absolute inset-0 overflow-hidden">
+            {imageSubmissions.slice(0, 12).map((submission, index) => {
+              const row = Math.floor(index / 4);
+              const col = index % 4;
+              const top = 3 + row * 31;
+              const gap = 3;
+              const marginLeft = 2;
+              const colWidths = ["22%", "22%", "22%", "21%"];
+              const leftByCol = [
+                marginLeft,
+                marginLeft + 22 + gap,
+                marginLeft + 44 + gap * 2,
+                marginLeft + 66 + gap * 3,
+              ];
+              const left = leftByCol[col];
+              const width = colWidths[col];
+              const sizeVariant = index % 4;
+              const heights = ["26%", "22%", "28%", "24%"];
+              const height = heights[sizeVariant];
+              const floatClass =
+                col % 2 === 0 ? "welcome-float-bt" : "welcome-float-tb";
+              return (
+                <div
+                  key={submission.id}
+                  className={`absolute rounded-xl overflow-hidden bg-muted shadow-md ${floatClass}`}
+                  style={{
+                    top: `${top}%`,
+                    left: `${left}%`,
+                    width,
+                    height,
+                    zIndex: index,
+                    animationDelay: `${(index * 0.5) % 6}s`,
+                  }}
+                >
+                  <Image
+                    src={submission.imageUrl!}
+                    alt={submission.title || t("submissionAlt")}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 30vw, 280px"
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -136,15 +142,14 @@ export default async function WelcomePage() {
 
         {/* Create Spot branding overlay - lower right */}
         <div className="pointer-events-none absolute bottom-[25%] right-8 z-10 hidden lg:block">
-          <div className="flex items-center gap-4 rounded-xl bg-black/40 pl-8 pr-6 py-4 backdrop-blur-sm">
-            <h1 className="rainbow-sheen whitespace-nowrap text-6xl font-normal font-permanent-marker">
+          <div className="flex items-center gap-4 pl-8 pr-6 py-4">
+            <h1 className="whitespace-nowrap text-6xl font-normal font-permanent-marker text-white/90">
               Create Spot
             </h1>
             <CreateSpotLogo
-              className="h-16 w-auto flex-shrink-0"
-              base="white"
-              highlight="white"
-              rainbow
+              className="h-16 w-auto flex-shrink-0 opacity-90"
+              base="rgba(255,255,255,0.9)"
+              highlight="rgba(255,255,255,0.9)"
             />
           </div>
         </div>

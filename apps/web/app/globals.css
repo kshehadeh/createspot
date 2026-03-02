@@ -223,6 +223,75 @@ body {
   animation: logo-sheen 5s ease-in-out infinite;
 }
 
+/* Welcome page image float - slow drift so images overlap over time */
+@keyframes welcome-float-lr {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(6%, 0);
+  }
+}
+
+@keyframes welcome-float-rl {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-6%, 0);
+  }
+}
+
+@keyframes welcome-float-tb {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0, 5%);
+  }
+}
+
+@keyframes welcome-float-bt {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0, -5%);
+  }
+}
+
+.welcome-float-lr {
+  animation: welcome-float-lr 5s ease-in-out infinite;
+}
+
+.welcome-float-rl {
+  animation: welcome-float-rl 5s ease-in-out infinite;
+}
+
+.welcome-float-tb {
+  animation: welcome-float-tb 5s ease-in-out infinite;
+}
+
+.welcome-float-bt {
+  animation: welcome-float-bt 5s ease-in-out infinite;
+}
+
+/* Welcome page: fade image area at edges so overlapping images blend into background */
+.welcome-image-area-mask {
+  mask-image:
+    linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%);
+  -webkit-mask-composite: source-in;
+}
+
 /* Leaflet popup theme styling */
 .leaflet-popup-content-wrapper {
   background: hsl(var(--background)) !important;
