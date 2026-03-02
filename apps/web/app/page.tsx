@@ -453,6 +453,23 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="flex justify-center px-6 py-6">
+        <a
+          href="https://www.producthunt.com/products/create-spot?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-create-spot"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block transition-opacity hover:opacity-80"
+        >
+          <img
+            alt="Create Spot - A home for creativity | Product Hunt"
+            width={250}
+            height={54}
+            src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1083287&theme=neutral&t=1772444248450"
+            className="h-auto w-[250px]"
+          />
+        </a>
+      </section>
+
       <footer className="px-6 py-8 text-center text-sm text-muted-foreground">
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
           <span>
