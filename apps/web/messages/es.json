@@ -1792,6 +1792,9 @@
     "onboarding": {
       "title": "Comienza con Create Spot",
       "dismiss": "Descartar",
+      "welcomeTitle": "Comencemos",
+      "welcomeBody": "Aquí tienes algunos pasos rápidos para explorar, crear y conectar con la comunidad.",
+      "stepsTitle": "Lo que puedes hacer ahora",
       "items": {
         "favorite": {
           "label": "Favorito el envío de alguien",

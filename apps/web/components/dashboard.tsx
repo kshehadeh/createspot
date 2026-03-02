@@ -23,7 +23,6 @@ function SectionSkeleton({ title }: { title: string }) {
 
 interface DashboardProps {
   portfolioUrl: string;
-  managePortfolioUrl: string;
   critiquesUrl: string;
   profileUrl: string;
   userName: string | null;
@@ -31,7 +30,6 @@ interface DashboardProps {
 
 export function Dashboard({
   portfolioUrl,
-  managePortfolioUrl,
   critiquesUrl,
   profileUrl,
   userName,
@@ -46,7 +44,7 @@ export function Dashboard({
         </h1>
       )}
 
-      <OnboardingSection managePortfolioUrl={managePortfolioUrl} />
+      <OnboardingSection />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Suspense fallback={<SectionSkeleton title="My Portfolio" />}>

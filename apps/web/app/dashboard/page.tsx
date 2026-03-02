@@ -24,14 +24,12 @@ export default async function DashboardPage() {
 
   const creatorUrl = getCreatorUrl(session.user);
   const portfolioUrl = `${creatorUrl}/portfolio`;
-  const managePortfolioUrl = `${creatorUrl}/portfolio/edit`;
   const critiquesUrl = `${creatorUrl}/critiques`;
 
   return (
     <PageLayout maxWidth="max-w-6xl">
       <Dashboard
         portfolioUrl={portfolioUrl}
-        managePortfolioUrl={managePortfolioUrl}
         critiquesUrl={critiquesUrl}
         profileUrl={creatorUrl}
         userName={session.user.name ?? null}

@@ -22,13 +22,7 @@ interface OnboardingStatus {
   dismissed: boolean;
 }
 
-interface OnboardingSectionProps {
-  managePortfolioUrl: string;
-}
-
-export function OnboardingSection({
-  managePortfolioUrl,
-}: OnboardingSectionProps) {
+export function OnboardingSection() {
   const t = useTranslations("dashboard.onboarding");
   const [status, setStatus] = useState<OnboardingStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,50 +52,30 @@ export function OnboardingSection({
       completed: status.hasFavorited,
       href: "/inspire/exhibition/gallery/grid",
       icon: Heart,
-      color: "text-rose-600 dark:text-rose-300",
-      bgColor:
-        "bg-gradient-to-br from-rose-200 to-rose-400 dark:bg-none dark:bg-rose-800/50",
-      hoverRing: "hover:ring-rose-400",
     },
     {
       key: "submission" as const,
       completed: status.hasSubmission,
       href: "/inspire/prompt/play",
       icon: Sparkles,
-      color: "text-amber-600 dark:text-amber-300",
-      bgColor:
-        "bg-gradient-to-br from-amber-200 to-amber-400 dark:bg-none dark:bg-amber-800/50",
-      hoverRing: "hover:ring-amber-400",
     },
     {
       key: "critique" as const,
       completed: status.hasCritique,
       href: "/inspire/exhibition/gallery/grid",
       icon: MessageCircle,
-      color: "text-sky-600 dark:text-sky-300",
-      bgColor:
-        "bg-gradient-to-br from-sky-200 to-sky-400 dark:bg-none dark:bg-sky-800/50",
-      hoverRing: "hover:ring-sky-400",
     },
     {
       key: "follow" as const,
       completed: status.hasFollowing,
       href: "/creators",
       icon: UserPlus,
-      color: "text-emerald-600 dark:text-emerald-300",
-      bgColor:
-        "bg-gradient-to-br from-emerald-200 to-emerald-400 dark:bg-none dark:bg-emerald-800/50",
-      hoverRing: "hover:ring-emerald-400",
     },
     {
       key: "collection" as const,
       completed: status.hasCollection,
       href: "/inspire/favorites",
       icon: FolderHeart,
-      color: "text-violet-600 dark:text-violet-300",
-      bgColor:
-        "bg-gradient-to-br from-violet-200 to-violet-400 dark:bg-none dark:bg-violet-800/50",
-      hoverRing: "hover:ring-violet-400",
     },
   ];
 
@@ -133,14 +107,8 @@ export function OnboardingSection({
   };
 
   return (
-    <div className="not-first-child rounded-xl border border-primary/30 bg-white p-5 dark:bg-background">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <h2 className="text-base font-semibold text-foreground">
-            {t("title")}
-          </h2>
-        </div>
+    <div className="not-first-child overflow-hidden rounded-xl border bg-card text-foreground shadow-sm">
+      <div className="flex justify-end p-4">
         <button
           onClick={handleDismiss}
           disabled={dismissing}
@@ -151,43 +119,65 @@ export function OnboardingSection({
         </button>
       </div>
 
-      <ul className="grid gap-3 sm:grid-cols-2">
-        {items.map((item) => {
-          const Icon = item.icon;
-          return (
-            <li key={item.key}>
-              {item.completed ? (
-                <div className="flex items-center gap-3 rounded-lg p-3 bg-muted">
-                  <CheckCircle2 className={`h-5 w-5 shrink-0 ${item.color}`} />
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground line-through">
-                      {t(`items.${item.key}.label`)}
-                    </span>
-                    <span className="text-sm text-muted-foreground/80">
-                      {t(`items.${item.key}.cta`)}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 rounded-lg p-3 ${item.bgColor} ${item.hoverRing} hover:ring-2 transition-all`}
-                >
-                  <Icon className={`h-5 w-5 shrink-0 ${item.color}`} />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-foreground">
-                      {t(`items.${item.key}.label`)}
-                    </span>
-                    <span className="text-sm text-foreground/80">
-                      {t(`items.${item.key}.cta`)}
-                    </span>
-                  </div>
-                </Link>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      <div className="flex flex-col gap-6 px-5 pb-6 sm:px-6 lg:flex-row">
+        <div className="relative overflow-hidden rounded-lg bg-muted/60 p-5 sm:p-6 lg:w-2/5">
+          <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-primary/5" />
+          <div className="pointer-events-none absolute -bottom-10 right-0 h-28 w-28 rounded-full bg-primary/10" />
+          <div className="relative space-y-3">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <Sparkles className="h-4 w-4" />
+              {t("title")}
+            </div>
+            <h2 className="text-xl font-semibold leading-snug">
+              {t("welcomeTitle")}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {t("welcomeBody")}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex-1 space-y-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("stepsTitle")}
+          </h3>
+          <ul className="space-y-3">
+            {items.map((item, index) => {
+              const Icon = item.icon;
+              const completed = item.completed;
+              return (
+                <li key={item.key}>
+                  <Link
+                    href={item.href}
+                    className="group flex items-start gap-3 rounded-lg border border-border/60 bg-muted/40 p-3 transition hover:border-primary/40 hover:bg-muted"
+                  >
+                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border group-hover:ring-primary/40">
+                      {completed ? (
+                        <CheckCircle2 className="h-5 w-5 text-primary" />
+                      ) : (
+                        <span className="text-sm font-semibold text-muted-foreground">
+                          {index + 1}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col gap-0.5">
+                      <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                        <Icon className="h-4 w-4 text-primary" />
+                        <span className={completed ? "line-through text-muted-foreground" : undefined}>
+                          {t(`items.${item.key}.label`)}
+                        </span>
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {t(`items.${item.key}.cta`)}
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
