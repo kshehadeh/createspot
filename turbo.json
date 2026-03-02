@@ -13,6 +13,7 @@
     "R2_PUBLIC_URL",
     "RESEND_API_KEY",
     "RESEND_FROM_EMAIL",
+    "MAILING_ADDRESS",
     "CRON_SECRET"
   ],
   "tasks": {
@@ -31,6 +32,7 @@
         "R2_PUBLIC_URL",
         "RESEND_API_KEY",
         "RESEND_FROM_EMAIL",
+        "MAILING_ADDRESS",
         "CRON_SECRET"
       ],
       "outputs": [".next/**"]
