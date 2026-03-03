@@ -131,9 +131,7 @@ export function OnboardingSection() {
             <h2 className="text-xl font-semibold leading-snug">
               {t("welcomeTitle")}
             </h2>
-            <p className="text-sm text-muted-foreground">
-              {t("welcomeBody")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("welcomeBody")}</p>
           </div>
         </div>
 
@@ -163,7 +161,13 @@ export function OnboardingSection() {
                     <div className="flex flex-1 flex-col gap-0.5">
                       <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                         <Icon className="h-4 w-4 text-primary" />
-                        <span className={completed ? "line-through text-muted-foreground" : undefined}>
+                        <span
+                          className={
+                            completed
+                              ? "line-through text-muted-foreground"
+                              : undefined
+                          }
+                        >
                           {t(`items.${item.key}.label`)}
                         </span>
                       </div>
