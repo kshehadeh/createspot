@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 import { withWorkflow } from "workflow/next";
 
@@ -32,4 +33,15 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["pdfkit"],
 };
 
-export default withWorkflow(withNextIntl(nextConfig));
+export default withSentryConfig(withWorkflow(withNextIntl(nextConfig)), {
+  org: process.env.SENTRY_ORG ?? "___ORG_SLUG___",
+  project: process.env.SENTRY_PROJECT ?? "___PROJECT_SLUG___",
+
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  widenClientFileUpload: true,
+
+  tunnelRoute: "/monitoring",
+
+  silent: !process.env.CI,
+});

@@ -1,6 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalEnv": [
+    "SENTRY_AUTH_TOKEN",
+    "SENTRY_ORG",
+    "SENTRY_PROJECT",
     "DATABASE_URL",
     "NEXTAUTH_URL",
     "NEXTAUTH_SECRET",
@@ -20,6 +23,9 @@
     "build": {
       "dependsOn": ["^build"],
       "env": [
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
         "DATABASE_URL",
         "NEXTAUTH_URL",
         "NEXTAUTH_SECRET",
