@@ -95,7 +95,7 @@ export function Header({ user }: HeaderProps) {
               base="currentColor"
               highlight="rgb(161 161 170)"
             />
-            <span className="hidden whitespace-nowrap text-2xl font-normal md:inline font-permanent-marker">
+            <span className="whitespace-nowrap text-2xl font-normal font-permanent-marker">
               Create Spot
             </span>
           </Link>
