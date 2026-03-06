@@ -29,10 +29,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [session, t, tFooter, { submissions, hasMore }] = await Promise.all([
+  const [session, t, tFooter, tNav, { submissions, hasMore }] = await Promise.all([
     auth(),
     getTranslations("home"),
     getTranslations("footer"),
+    getTranslations("navigation"),
     getExhibitionSubmissions({ skip: 0, take: EXHIBITION_PAGE_SIZE }),
   ]);
 
@@ -54,10 +55,10 @@ export default async function Home() {
     <main className="flex min-h-screen flex-col">
       {/* Minimal brand strip */}
       <section className="flex shrink-0 items-center justify-between gap-4 border-b border-border/50 bg-background/80 px-4 py-3 backdrop-blur-sm sm:px-6">
-        <div className="min-w-0">
-          <h1 className="truncate text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             {t("heroTitle")}{" "}
-            <span className="font-permanent-marker bg-gradient-to-r from-amber-400 via-rose-400 to-violet-400 bg-clip-text text-transparent">
+            <span className="inline-block font-permanent-marker bg-gradient-to-r from-amber-400 via-rose-400 to-violet-400 bg-clip-text text-transparent pr-[0.2em] -mr-[0.2em]">
               {t("heroTitleHighlight")}
             </span>
           </h1>
@@ -66,8 +67,14 @@ export default async function Home() {
           </p>
         </div>
         <Link
+          href="/welcome"
+          className="begin-button shrink-0 rounded-full px-4 py-2 text-sm font-medium text-primary-foreground transition-colors sm:hidden"
+        >
+          {tNav("jumpIn")}
+        </Link>
+        <Link
           href="/about"
-          className="shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 hidden sm:inline-flex"
         >
           {t("brandCta")}
         </Link>
