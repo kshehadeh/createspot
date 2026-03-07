@@ -18,5 +18,35 @@
     "description": "Add Vercel Speed Insights for Core Web Vitals reporting in Vercel dashboard.",
     "impact": "patch",
     "version": "2.14.2"
+  },
+  {
+    "time": "2026-03-07T15:00:00-05:00",
+    "commit": "c81b393",
+    "type": "feature",
+    "audience": "internal",
+    "area": "global",
+    "description": "Enable Next.js 16 Partial Prerendering (PPR) with cache components for faster page loads and improved SEO. Public pages now serve a static HTML shell instantly with dynamic content streamed in.",
+    "impact": "minor",
+    "version": "2.15.0"
+  },
+  {
+    "time": "2026-03-07T15:10:00-05:00",
+    "commit": "472d144",
+    "type": "feature",
+    "audience": "internal",
+    "area": "global",
+    "description": "Convert data fetchers (prompts, exhibits, exhibitions, creators, museums, short URLs, site settings) to use cache directive with granular cache tags and revalidation on mutations.",
+    "impact": "minor",
+    "version": "2.15.0"
+  },
+  {
+    "time": "2026-03-07T15:20:00-05:00",
+    "commit": "1adc67a",
+    "type": "refactor",
+    "audience": "internal",
+    "area": "global",
+    "description": "Extract page components into cached and dynamic layers with Suspense boundaries for PPR compatibility (home page, creator profile, critiques, breadcrumbs).",
+    "impact": "minor",
+    "version": "2.15.0"
   }
 ]
