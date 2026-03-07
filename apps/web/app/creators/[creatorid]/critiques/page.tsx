@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -20,8 +21,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
-
 interface CreatorCritiquesPageProps {
   params: Promise<{ creatorid: string }>;
 }
@@ -30,28 +29,21 @@ export async function generateMetadata({
   params,
 }: CreatorCritiquesPageProps): Promise<Metadata> {
   const { creatorid } = await params;
-  const creatorUser = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: { name: true },
-  });
+  const creator = await getCreator(creatorid);
 
-  if (!creatorUser) {
+  if (!creator) {
     return { title: "Creator Not Found | Create Spot" };
   }
 
-  const creatorName = creatorUser.name || "Creator";
-  const t = await getTranslations("critique");
-  const pageTitle = `${t("allCritiques")} | ${creatorName} | Create Spot`;
+  const creatorName = creator.name || "Creator";
 
   return {
-    title: pageTitle,
-    description: t("allCritiquesDescription"),
+    title: `Critiques | ${creatorName} | Create Spot`,
+    description: "View and manage critiques on your submissions",
   };
 }
 
-export default async function CreatorCritiquesListPage({
+async function CreatorCritiquesContent({
   params,
 }: CreatorCritiquesPageProps) {
   const { creatorid } = await params;
@@ -168,5 +160,15 @@ export default async function CreatorCritiquesListPage({
         </div>
       )}
     </PageLayout>
+  );
+}
+
+export default async function CreatorCritiquesListPage({
+  params,
+}: CreatorCritiquesPageProps) {
+  return (
+    <Suspense fallback={<PageLayout maxWidth="max-w-6xl"><PageHeader title="..." /></PageLayout>}>
+      <CreatorCritiquesContent params={params} />
+    </Suspense>
   );
 }

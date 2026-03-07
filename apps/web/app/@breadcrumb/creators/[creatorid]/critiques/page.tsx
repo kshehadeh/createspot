@@ -1,25 +1,19 @@
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { prisma } from "@/lib/prisma";
+import { getCreator } from "@/lib/creators";
 import { Breadcrumb } from "@/components/breadcrumb";
-
-export const dynamic = "force-dynamic";
 
 interface CreatorCritiquesListBreadcrumbProps {
   params: Promise<{ creatorid: string }>;
 }
 
-export default async function CreatorCritiquesListBreadcrumb({
+async function CreatorCritiquesBreadcrumbContent({
   params,
 }: CreatorCritiquesListBreadcrumbProps) {
   const { creatorid } = await params;
   const tNavigation = await getTranslations("navigation");
 
-  const creator = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: { id: true, name: true },
-  });
+  const creator = await getCreator(creatorid);
 
   if (!creator) {
     return (
@@ -43,5 +37,15 @@ export default async function CreatorCritiquesListBreadcrumb({
         { label: tNavigation("critiques") },
       ]}
     />
+  );
+}
+
+export default function CreatorCritiquesListBreadcrumb({
+  params,
+}: CreatorCritiquesListBreadcrumbProps) {
+  return (
+    <Suspense fallback={null}>
+      <CreatorCritiquesBreadcrumbContent params={params} />
+    </Suspense>
   );
 }

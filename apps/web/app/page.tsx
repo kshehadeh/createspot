@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
-import { getExhibitionSubmissions } from "@/lib/exhibition";
-import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
-import { HomeGrid } from "@/app/home-grid";
+import { HomeAuthGate } from "@/app/home-auth-gate";
+import { HomeContent } from "@/app/home-content";
 import packageJson from "@/package.json";
-
-export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("home");
@@ -29,31 +25,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [session, t, tFooter, tNav, { submissions, hasMore }] =
-    await Promise.all([
-      auth(),
-      getTranslations("home"),
-      getTranslations("footer"),
-      getTranslations("navigation"),
-      getExhibitionSubmissions({ skip: 0, take: EXHIBITION_PAGE_SIZE }),
-    ]);
-
-  if (session?.user) {
-    redirect("/dashboard");
-  }
-
-  const initialSubmissions = submissions.map((submission) => ({
-    ...submission,
-    imageFocalPoint: submission.imageFocalPoint as
-      | { x: number; y: number }
-      | null
-      | undefined,
-    tags: submission.tags ?? [],
-    category: submission.category ?? null,
-  }));
+  const [t, tFooter, tNav] = await Promise.all([
+    getTranslations("home"),
+    getTranslations("footer"),
+    getTranslations("navigation"),
+  ]);
 
   return (
     <main className="flex min-h-screen flex-col">
+      {/* Redirect logged-in users without blocking the page shell */}
+      <Suspense fallback={null}>
+        <HomeAuthGate />
+      </Suspense>
+
       {/* Minimal brand strip */}
       <section className="flex shrink-0 items-center justify-between gap-4 border-b border-border/50 bg-background/80 px-4 py-3 backdrop-blur-sm sm:px-6">
         <div className="min-w-0 flex-1">
@@ -81,13 +65,9 @@ export default async function Home() {
         </Link>
       </section>
 
-      {/* Art-first grid */}
+      {/* Art-first grid -- cached server component */}
       <section className="flex-1 px-4 py-6 sm:px-6">
-        <HomeGrid
-          initialSubmissions={initialSubmissions}
-          initialHasMore={hasMore}
-          isLoggedIn={false}
-        />
+        <HomeContent />
       </section>
 
       <footer className="shrink-0 border-t border-border/50 px-4 py-6 text-center text-sm text-muted-foreground">

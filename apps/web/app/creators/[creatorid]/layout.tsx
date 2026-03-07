@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { getCreator } from "@/lib/creators";
 import { getCreatorUrl } from "@/lib/utils";
@@ -9,7 +10,7 @@ interface CreatorLayoutProps {
   params: Promise<{ creatorid: string }>;
 }
 
-export default async function CreatorLayout({
+async function CreatorLayoutContent({
   children,
   params,
 }: CreatorLayoutProps) {
@@ -31,5 +32,13 @@ export default async function CreatorLayout({
       <div className="flex-1 min-w-0 pb-16 md:pb-0">{children}</div>
       <CreatorMobileNav creatorUrl={creatorUrl} />
     </div>
+  );
+}
+
+export default function CreatorLayout({ children, params }: CreatorLayoutProps) {
+  return (
+    <Suspense fallback={<div className="flex flex-1" />}>
+      <CreatorLayoutContent params={params}>{children}</CreatorLayoutContent>
+    </Suspense>
   );
 }

@@ -24,8 +24,11 @@ import { getObjectPositionStyle } from "@/lib/image-utils";
 import { prisma } from "@/lib/prisma";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getCreatorUrl } from "@/lib/utils";
-
-export const dynamic = "force-dynamic";
+import {
+  getCachedPublicProfileData,
+  getDynamicOwnerProfileData,
+  getProfileMetadataUser,
+} from "./profile-data";
 
 const MAX_PORTFOLIO_ITEMS = 10;
 
@@ -34,26 +37,11 @@ interface ProfilePageProps {
   searchParams: Promise<{ view?: string | string[] }>;
 }
 
-async function getUser(creatorid: string) {
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: {
-      id: true,
-      name: true,
-      bio: true,
-    },
-  });
-
-  return user;
-}
-
 export async function generateMetadata({
   params,
 }: ProfilePageProps): Promise<Metadata> {
   const { creatorid } = await params;
-  const user = await getUser(creatorid);
+  const user = await getProfileMetadataUser(creatorid);
   const t = await getTranslations("profile");
 
   if (!user) {
@@ -112,39 +100,36 @@ export default async function ProfilePage({
     : paramsSearch.view;
   const isPublicViewRequested = viewParam === "public";
 
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [{ slug: creatorid }, { id: creatorid }],
-    },
-    select: {
-      id: true,
-      name: true,
-      image: true,
-      profileImageUrl: true,
-      profileImageFocalPoint: true,
-      bio: true,
-      instagram: true,
-      twitter: true,
-      linkedin: true,
-      website: true,
-      featuredSubmissionId: true,
-      slug: true,
-      badgeAwards: {
-        select: {
-          badgeKey: true,
-          awardedAt: true,
-        },
-        orderBy: { awardedAt: "desc" },
-      },
-    },
-  });
+  const metadataUser = await getProfileMetadataUser(creatorid);
 
-  if (!user) {
+  if (!metadataUser) {
     notFound();
   }
 
-  const isOwnProfile = session?.user?.id === user.id;
+  const isOwnProfile = session?.user?.id === metadataUser.id;
   const isLoggedIn = !!session?.user;
+
+  // When viewing own profile with ?view=public, show public view
+  const isPublicView = isOwnProfile && isPublicViewRequested;
+  const effectiveIsOwnProfile = isOwnProfile && !isPublicView;
+  const profileData = effectiveIsOwnProfile
+    ? await getDynamicOwnerProfileData(creatorid)
+    : await getCachedPublicProfileData(creatorid);
+
+  if (!profileData) {
+    notFound();
+  }
+
+  const {
+    user,
+    portfolioItems,
+    allPortfolioItems,
+    initialItems,
+    hasMore,
+    submissionCount,
+    featuredSubmission,
+    hasSocialLinks,
+  } = profileData;
 
   let isFollowingCreator = false;
   if (session?.user && !isOwnProfile) {
@@ -161,158 +146,6 @@ export default async function ProfilePage({
 
   // Get tutorial data for hints
   const tutorialData = await getTutorialData(session?.user?.id);
-
-  // When viewing own profile with ?view=public, show public view
-  const isPublicView = isOwnProfile && isPublicViewRequested;
-  const effectiveIsOwnProfile = isOwnProfile && !isPublicView;
-
-  // Build share status filter based on ownership and view mode
-  const shareStatusFilter = effectiveIsOwnProfile
-    ? {} // Owner sees all their items in private view
-    : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }; // Public view shows PROFILE and PUBLIC only
-
-  // Fetch portfolio items
-  const portfolioItemsRaw = await prisma.submission.findMany({
-    where: {
-      userId: user.id,
-      isPortfolio: true,
-      ...shareStatusFilter,
-    },
-    orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
-      _count: {
-        select: { favorites: true },
-      },
-      progressions: {
-        orderBy: { order: "desc" },
-        take: 1,
-        select: {
-          imageUrl: true,
-          text: true,
-        },
-      },
-    },
-  });
-
-  const portfolioItems = portfolioItemsRaw.map((item) => {
-    const latest = item.progressions?.[0];
-    return {
-      ...item,
-      latestProgressionImageUrl: latest?.imageUrl ?? null,
-      latestProgressionText: latest?.text ?? null,
-      progressions: undefined,
-    };
-  });
-
-  // Fetch prompt submissions (only those linked to prompts)
-  const prompts = await prisma.prompt.findMany({
-    where: {
-      submissions: {
-        some: {
-          userId: user.id,
-          ...shareStatusFilter,
-        },
-      },
-    },
-    orderBy: { weekStart: "desc" },
-    take: 6,
-    include: {
-      submissions: {
-        where: {
-          userId: user.id,
-          ...shareStatusFilter,
-        },
-        orderBy: { wordIndex: "asc" },
-      },
-    },
-  });
-
-  const hasMore = prompts.length > 5;
-  const initialItems = hasMore ? prompts.slice(0, 5) : prompts;
-
-  // Count submissions - filter by share status in public view
-  const submissionCount = await prisma.submission.count({
-    where: {
-      userId: user.id,
-      ...(effectiveIsOwnProfile
-        ? {}
-        : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }),
-    },
-  });
-
-  const hasSocialLinks =
-    user.instagram || user.twitter || user.linkedin || user.website;
-
-  // Fetch featured submission if set
-  const featuredSubmissionRaw = user.featuredSubmissionId
-    ? await prisma.submission.findUnique({
-        where: { id: user.featuredSubmissionId },
-        include: {
-          prompt: {
-            select: {
-              word1: true,
-              word2: true,
-              word3: true,
-            },
-          },
-          user: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-            },
-          },
-          _count: {
-            select: {
-              favorites: true,
-            },
-          },
-        },
-      })
-    : null;
-
-  // Only show featured submission if share status allows it
-  const featuredSubmission =
-    featuredSubmissionRaw &&
-    (effectiveIsOwnProfile ||
-      featuredSubmissionRaw.shareStatus === "PROFILE" ||
-      featuredSubmissionRaw.shareStatus === "PUBLIC")
-      ? featuredSubmissionRaw
-      : null;
-
-  // Include featured submission in portfolio items if it's not already there
-  const allPortfolioItems = [...portfolioItems];
-  if (
-    featuredSubmission &&
-    !portfolioItems.some((item) => item.id === featuredSubmission.id)
-  ) {
-    // Add featured submission at the beginning - map to PortfolioItem format
-    allPortfolioItems.unshift({
-      id: featuredSubmission.id,
-      title: featuredSubmission.title,
-      imageUrl: featuredSubmission.imageUrl,
-      imageFocalPoint: featuredSubmission.imageFocalPoint as {
-        x: number;
-        y: number;
-      } | null,
-      text: featuredSubmission.text,
-      isPortfolio: featuredSubmission.isPortfolio,
-      portfolioOrder: featuredSubmission.portfolioOrder,
-      tags: featuredSubmission.tags,
-      category: featuredSubmission.category,
-      promptId: featuredSubmission.promptId,
-      wordIndex: featuredSubmission.wordIndex,
-      prompt: featuredSubmission.prompt,
-      _count: featuredSubmission._count,
-    } as (typeof portfolioItems)[0]);
-  }
 
   return (
     <PageLayout maxWidth="max-w-5xl">
