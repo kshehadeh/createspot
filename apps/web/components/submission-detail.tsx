@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { CritiqueButton } from "@/components/critique-button";
 import { ExpandableText } from "@/components/expandable-text";
@@ -93,9 +93,16 @@ export function SubmissionDetail({
   const tProgression = useTranslations("progression");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isReferenceLightboxOpen, setIsReferenceLightboxOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Local state for submission data that can be updated after editing
   const [submission] = useState(initialSubmission);
+
+  // Defer Radix UI (Tabs, DropdownMenu) until after mount to avoid hydration mismatch:
+  // Radix generates stable useId()s per tree position; server/client can differ and cause ID mismatch.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Get the next hint to show using the hook
   // The hook looks up hints from centralized config and handles all logic
@@ -181,21 +188,21 @@ export function SubmissionDetail({
   );
 
   const renderReferencePanel = () => (
-    <div className="mt-8">
+    <div className="w-full">
       <h3 className="text-lg font-semibold text-foreground mb-4">
         {tReference("title")}
       </h3>
       <button
         onClick={() => setIsReferenceLightboxOpen(true)}
-        className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary/50 focus:border-primary focus:outline-none transition-all group bg-muted"
+        className="relative w-full aspect-video max-h-[70vh] rounded-lg overflow-hidden border-2 border-transparent hover:border-primary/50 focus:border-primary focus:outline-none transition-all group bg-muted"
         aria-label={tReference("viewReference")}
       >
         <Image
           src={submission.referenceImageUrl!}
           alt={tReference("title")}
           fill
-          className="object-cover transition-transform group-hover:scale-105"
-          sizes="(max-width: 640px) 128px, 160px"
+          className="object-contain transition-transform group-hover:scale-[1.02]"
+          sizes="(max-width: 1024px) 100vw, 1280px"
         />
       </button>
     </div>
@@ -207,6 +214,52 @@ export function SubmissionDetail({
     journey: tProgression("title"),
     reference: tReference("title"),
   };
+
+  // Before mount: render a static shell (no Radix) to avoid hydration ID mismatch.
+  if (!mounted) {
+    return (
+      <FavoritesProvider
+        isLoggedIn={isLoggedIn}
+        initialSubmissionIds={[submission.id]}
+      >
+        <div className="min-h-screen bg-background">
+          <Card className="rounded-none border-x-0 border-t-0">
+            <div className="mx-auto max-w-7xl px-6 py-4">
+              <div className="md:hidden flex flex-col gap-2">
+                <span className="text-xl font-bold text-foreground">
+                  {submission.title || tExhibition("untitled")}
+                </span>
+                <Link
+                  href={getCreatorUrl(submission.user)}
+                  className="text-sm text-muted-foreground"
+                >
+                  {submission.user.name || tProfile("anonymous")}
+                </Link>
+              </div>
+              <div className="hidden md:block">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-col gap-1">
+                    <h1 className="text-xl font-bold text-foreground sm:text-2xl">
+                      {submission.title || tExhibition("untitled")}
+                    </h1>
+                    <Link
+                      href={getCreatorUrl(submission.user)}
+                      className="text-sm text-muted-foreground"
+                    >
+                      {submission.user.name || tProfile("anonymous")}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+          <main className="mx-auto max-w-7xl px-6 py-6">
+            <div className="mb-12 min-h-[40vh]" aria-hidden />
+          </main>
+        </div>
+      </FavoritesProvider>
+    );
+  }
 
   return (
     <FavoritesProvider

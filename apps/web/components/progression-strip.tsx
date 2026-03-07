@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { ChevronRight, FileText, MessageSquareText } from "lucide-react";
+import { FileText, MessageSquareText } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -44,23 +44,25 @@ export function ProgressionStrip({
 
   return (
     <>
-      <div className="mt-8">
+      <div className="w-full">
         {/* Section header */}
         <h3 className="text-lg font-semibold text-foreground mb-4">
           {t("title")}
         </h3>
 
-        {/* Horizontal scrollable strip */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
+        {/* Flex row: progression order left to right, fills available space, max 4 per row */}
+        <div className="flex flex-row flex-wrap gap-4 w-full">
           <TooltipProvider delayDuration={300}>
             {progressions.map((progression, index) => (
-              <div key={progression.id} className="flex items-center">
-                {/* Thumbnail */}
+              <div
+                key={progression.id}
+                className="min-w-[140px] flex-1 basis-1/4 min-h-0"
+              >
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => handleThumbnailClick(index)}
-                      className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary/50 focus:border-primary focus:outline-none transition-all group bg-muted"
+                      className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary/50 focus:border-primary focus:outline-none transition-all group bg-muted"
                       aria-label={t("viewProgression")}
                     >
                       {progression.imageUrl ? (
@@ -69,12 +71,12 @@ export function ProgressionStrip({
                           alt={`${t("progressionStep", { step: index + 1 })}`}
                           fill
                           className="object-cover transition-transform group-hover:scale-105"
-                          sizes="(max-width: 640px) 80px, 96px"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         />
                       ) : (
                         // Text-only progression
                         <div className="w-full h-full flex items-center justify-center bg-muted">
-                          <FileText className="h-8 w-8 text-muted-foreground" />
+                          <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground" />
                         </div>
                       )}
 
@@ -112,11 +114,6 @@ export function ProgressionStrip({
                     )}
                   </TooltipContent>
                 </Tooltip>
-
-                {/* Arrow between thumbnails (except after last) */}
-                {index < progressions.length - 1 && (
-                  <ChevronRight className="h-5 w-5 text-muted-foreground/50 flex-shrink-0 mx-1" />
-                )}
               </div>
             ))}
           </TooltipProvider>
