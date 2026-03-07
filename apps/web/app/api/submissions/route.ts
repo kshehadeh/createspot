@@ -1,4 +1,5 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { revalidateTag } from "next/cache";
 import { after, NextRequest, NextResponse } from "next/server";
 import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
 import { sendNewFollowerPostNotification } from "@/app/workflows/send-new-follower-post-notification";
@@ -228,6 +229,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    revalidateTag("prompt-submissions", "max");
+    revalidateTag("exhibition-facets", "max");
+    revalidateTag("exhibition-submissions", "max");
     return NextResponse.json({ submission });
   }
 
@@ -346,6 +350,9 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  revalidateTag("prompt-submissions", "max");
+  revalidateTag("exhibition-facets", "max");
+  revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ submission });
 }
 
@@ -385,6 +392,9 @@ export async function DELETE(request: NextRequest) {
       },
     });
 
+    revalidateTag("prompt-submissions", "max");
+    revalidateTag("exhibition-facets", "max");
+    revalidateTag("exhibition-submissions", "max");
     return NextResponse.json({ success: true });
   }
 
@@ -417,5 +427,8 @@ export async function DELETE(request: NextRequest) {
     where: { id: submissionId },
   });
 
+  revalidateTag("prompt-submissions", "max");
+  revalidateTag("exhibition-facets", "max");
+  revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ success: true });
 }

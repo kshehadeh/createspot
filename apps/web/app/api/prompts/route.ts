@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -52,6 +53,8 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  revalidateTag("current-prompt", "max");
+  revalidateTag("prompt-submissions", "max");
   return NextResponse.json({ prompt });
 }
 
@@ -112,6 +115,8 @@ export async function PUT(request: NextRequest) {
     data: updateData,
   });
 
+  revalidateTag("current-prompt", "max");
+  revalidateTag("prompt-submissions", "max");
   return NextResponse.json({ prompt });
 }
 
@@ -156,5 +161,7 @@ export async function DELETE(request: NextRequest) {
     where: { id },
   });
 
+  revalidateTag("current-prompt", "max");
+  revalidateTag("prompt-submissions", "max");
   return NextResponse.json({ success: true });
 }

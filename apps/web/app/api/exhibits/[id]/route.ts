@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -204,6 +205,8 @@ export async function PUT(
     },
   });
 
+  revalidateTag("exhibits", "max");
+  revalidateTag(`exhibit-${id}`, "max");
   return NextResponse.json({ exhibit });
 }
 
@@ -232,5 +235,7 @@ export async function DELETE(
     where: { id },
   });
 
+  revalidateTag("exhibits", "max");
+  revalidateTag(`exhibit-${id}`, "max");
   return NextResponse.json({ success: true });
 }

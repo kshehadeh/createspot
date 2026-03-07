@@ -1,5 +1,5 @@
 import type { Prisma } from "@/app/generated/prisma/client";
-import { unstable_noStore } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "./prisma";
 import { EXHIBITION_PAGE_SIZE } from "./exhibition-constants";
 
@@ -105,7 +105,10 @@ export async function getExhibitionSubmissions({
   skip = 0,
   take = EXHIBITION_PAGE_SIZE,
 }: ExhibitionFilterInput & { skip?: number; take?: number }) {
-  unstable_noStore();
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("exhibition-submissions");
+
   const limit = Math.max(1, Math.min(take, 30));
 
   // If exhibitId is provided, we need to order by exhibit submission order
@@ -202,6 +205,10 @@ export async function getExhibitionSubmissions({
 }
 
 export async function getExhibitionFacets(exhibitId?: string) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("exhibition-facets");
+
   const baseWhere: Prisma.SubmissionWhereInput = {
     shareStatus: "PUBLIC",
   };

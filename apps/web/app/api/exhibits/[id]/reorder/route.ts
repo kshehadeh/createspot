@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -90,5 +91,7 @@ export async function POST(
     isolationLevel: "ReadCommitted",
   });
 
+  revalidateTag(`exhibit-${exhibitId}`, "max");
+  revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ success: true });
 }

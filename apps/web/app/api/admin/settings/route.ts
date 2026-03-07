@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -6,8 +7,6 @@ import {
   updateSiteSettings,
   type HomepageCarouselFallback,
 } from "@/lib/settings";
-
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   const session = await auth();
@@ -77,6 +76,9 @@ export async function PUT(request: NextRequest) {
     homepageCarouselFallback: body.homepageCarouselFallback ?? undefined,
     homepageHeroSubmissionId: body.homepageHeroSubmissionId ?? undefined,
   });
+
+  revalidateTag("site-settings", "max");
+  revalidateTag("homepage-hero", "max");
 
   return NextResponse.json({ settings });
 }

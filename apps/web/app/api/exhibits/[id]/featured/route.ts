@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -32,6 +33,7 @@ export async function PUT(
       data: { featuredSubmissionId: null },
     });
 
+    revalidateTag(`exhibit-${exhibitId}`, "max");
     return NextResponse.json({ success: true });
   }
 
@@ -57,5 +59,6 @@ export async function PUT(
     data: { featuredSubmissionId: submissionId },
   });
 
+  revalidateTag(`exhibit-${exhibitId}`, "max");
   return NextResponse.json({ success: true });
 }

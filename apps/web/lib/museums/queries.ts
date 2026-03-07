@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/app/generated/prisma/client";
 import type { MuseumArtworkListItem } from "./types";
@@ -25,6 +26,10 @@ export interface MuseumArtworksResult {
 export async function getMuseumArtworks(
   filters: MuseumArtworkFilters,
 ): Promise<MuseumArtworksResult> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("museum-artworks");
+
   const skip = Math.max(filters.skip ?? 0, 0);
   const take = Math.min(
     Math.max(filters.take ?? MUSEUM_PAGE_SIZE, 1),
@@ -136,6 +141,10 @@ export interface MuseumFacets {
 }
 
 export async function getMuseumFacets(): Promise<MuseumFacets> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("museum-facets");
+
   const [museumGroups, sample] = await Promise.all([
     prisma.museumArtwork.groupBy({
       by: ["museumId"],

@@ -1,4 +1,5 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { revalidateTag } from "next/cache";
 import { after, NextRequest, NextResponse } from "next/server";
 import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
 import { auth } from "@/lib/auth";
@@ -284,6 +285,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
   }
 
+  revalidateTag("prompt-submissions", "max");
+  revalidateTag("exhibition-facets", "max");
+  revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ submission });
 }
 
@@ -321,5 +325,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     where: { id },
   });
 
+  revalidateTag("prompt-submissions", "max");
+  revalidateTag("exhibition-facets", "max");
+  revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ success: true });
 }

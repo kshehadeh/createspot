@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 export type HomepageCarouselFallback = "latest" | "hero";
@@ -15,6 +16,10 @@ const DEFAULT_SETTINGS: SiteSettings = {
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("site-settings");
+
   const rows = await prisma.siteSetting.findMany({
     where: {
       key: {

@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/settings";
 
@@ -31,6 +32,10 @@ export type HomepageHeroData =
     };
 
 export async function getHomepageHeroData(): Promise<HomepageHeroData> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("homepage-hero");
+
   const settings = await getSiteSettings();
 
   if (settings.homepageCarouselExhibitId) {

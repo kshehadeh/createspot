@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { customAlphabet } from "nanoid";
+import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCreatorUrl } from "@/lib/utils";
 import {
@@ -30,6 +31,10 @@ export interface ResolvedShortLink {
 export async function resolveShortCode(
   code: string,
 ): Promise<ResolvedShortLink | null> {
+  "use cache";
+  cacheLife("max");
+  cacheTag("short-link", `short-link-${code}`);
+
   const shortLink = await prisma.shortLink.findUnique({
     where: { code },
     include: {

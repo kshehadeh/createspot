@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "./prisma";
 
 export interface ExhibitWithDetails {
@@ -42,6 +42,10 @@ export interface ExhibitWithDetails {
 }
 
 export async function getCurrentExhibits(): Promise<ExhibitWithDetails[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("exhibits");
+
   const now = new Date();
   const exhibits = await prisma.exhibit.findMany({
     where: {
@@ -95,6 +99,10 @@ export async function getCurrentExhibits(): Promise<ExhibitWithDetails[]> {
 }
 
 export async function getUpcomingExhibits(): Promise<ExhibitWithDetails[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("exhibits");
+
   const now = new Date();
   const exhibits = await prisma.exhibit.findMany({
     where: {
@@ -146,10 +154,13 @@ export async function getUpcomingExhibits(): Promise<ExhibitWithDetails[]> {
   return exhibits;
 }
 
-// Wrap with React.cache() to deduplicate queries within a single request
-export const getExhibitById = cache(async function getExhibitById(
+export async function getExhibitById(
   id: string,
 ): Promise<ExhibitWithDetails | null> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("exhibits", `exhibit-${id}`);
+
   const exhibit = await prisma.exhibit.findUnique({
     where: { id },
     include: {
@@ -192,4 +203,4 @@ export const getExhibitById = cache(async function getExhibitById(
   });
 
   return exhibit;
-});
+}

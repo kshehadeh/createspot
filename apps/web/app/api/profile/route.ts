@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
@@ -373,6 +374,12 @@ export async function PUT(request: NextRequest) {
         console.error("[process-uploaded-image]", err);
       }
     });
+  }
+
+  // Invalidate cached creator lookups (by id and slug) for profile views
+  revalidateTag(`creator-${user.id}`, "max");
+  if (user.slug) {
+    revalidateTag(`creator-${user.slug}`, "max");
   }
 
   // Create response
