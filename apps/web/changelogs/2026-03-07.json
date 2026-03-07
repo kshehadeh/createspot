@@ -48,5 +48,15 @@
     "description": "Extract page components into cached and dynamic layers with Suspense boundaries for PPR compatibility (home page, creator profile, critiques, breadcrumbs).",
     "impact": "minor",
     "version": "2.15.0"
+  },
+  {
+    "time": "2026-03-07T19:30:00-05:00",
+    "commit": "d103ade889a9593edefc575f97242eec5373c56c",
+    "type": "fix",
+    "audience": "public",
+    "area": "global",
+    "description": "Speed up anonymous homepage loads with a lightweight public shell, prioritized lead artwork loading, and reduced non-critical route prefetching.",
+    "impact": "patch",
+    "version": "2.15.1"
   }
 ]
