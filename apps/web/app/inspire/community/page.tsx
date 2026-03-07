@@ -7,8 +7,6 @@ import { CommunityTabs } from "@/app/inspire/community/community-tabs";
 import { getFollowingFeedSubmissions } from "@/lib/community";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 
-export const dynamic = "force-dynamic";
-
 export default async function CommunityPage() {
   const session = await auth();
 

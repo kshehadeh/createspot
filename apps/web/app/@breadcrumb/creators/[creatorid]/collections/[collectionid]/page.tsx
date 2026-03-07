@@ -2,8 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/breadcrumb";
 
-export const dynamic = "force-dynamic";
-
 interface CollectionViewBreadcrumbProps {
   params: Promise<{ creatorid: string; collectionid: string }>;
 }

@@ -7,8 +7,6 @@ import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { ExhibitionGrid } from "@/app/inspire/exhibition/exhibition-grid";
 
-export const dynamic = "force-dynamic";
-
 async function getFavorites(userId: string) {
   return prisma.favorite.findMany({
     where: { userId },

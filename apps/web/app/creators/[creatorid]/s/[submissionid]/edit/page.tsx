@@ -7,8 +7,6 @@ import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
-
 interface SubmissionEditPageProps {
   params: Promise<{ creatorid: string; submissionid: string }>;
 }

@@ -7,8 +7,6 @@ import { PageLayout } from "@/components/page-layout";
 import { ExhibitContentManager } from "../../exhibit-content-manager";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
-
 interface ExhibitContentPageProps {
   params: Promise<{ id: string }>;
 }

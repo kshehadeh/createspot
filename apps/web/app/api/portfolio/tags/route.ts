@@ -3,8 +3,6 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/app/generated/prisma/client";
 
-export const dynamic = "force-dynamic";
-
 export async function GET(request: NextRequest) {
   const session = await auth();
 

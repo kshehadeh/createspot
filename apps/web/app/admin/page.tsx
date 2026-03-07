@@ -13,8 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sparkles, Users, LayoutGrid, Bell, Settings } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminPage() {
   const session = await auth();
 

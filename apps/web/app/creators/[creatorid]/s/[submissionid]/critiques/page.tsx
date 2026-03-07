@@ -7,8 +7,6 @@ import { getCreatorUrl } from "@/lib/utils";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { CritiquesPageContent } from "./critiques-page-content";
 
-export const dynamic = "force-dynamic";
-
 interface CritiquesPageProps {
   params: Promise<{ creatorid: string; submissionid: string }>;
 }

@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { GalleryContent } from "../gallery-content";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Grid Exhibition | Create Spot",
   description:

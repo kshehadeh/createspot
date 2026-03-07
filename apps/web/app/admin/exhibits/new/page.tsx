@@ -7,8 +7,6 @@ import { PageLayout } from "@/components/page-layout";
 import { ExhibitFormSimple } from "../exhibit-form-simple";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
-
 export default async function NewExhibitPage() {
   const session = await auth();
 

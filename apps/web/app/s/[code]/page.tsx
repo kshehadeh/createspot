@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import { resolveShortCode } from "@/lib/short-url";
 import { ShortUrlRedirect } from "@/components/short-url-redirect";
 
-export const dynamic = "force-dynamic";
-
 interface ShortUrlPageProps {
   params: Promise<{ code: string }>;
 }

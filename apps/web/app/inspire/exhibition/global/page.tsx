@@ -4,8 +4,6 @@ import { getExhibitById } from "@/lib/exhibits";
 import { PageLayout } from "@/components/page-layout";
 import { GlobalExhibitionWrapper } from "./global-exhibition-wrapper";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Map Exhibition | Create Spot",
   description:

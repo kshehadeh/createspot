@@ -6,8 +6,6 @@ import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { ImageEditorWrapper } from "@/components/image-editor-wrapper";
 
-export const dynamic = "force-dynamic";
-
 interface ImageEditorPageProps {
   params: Promise<{ creatorid: string; submissionid: string }>;
 }

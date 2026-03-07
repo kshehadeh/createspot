@@ -6,8 +6,6 @@ import { PageLayout } from "@/components/page-layout";
 import { ThisWeekContent } from "./this-week-content";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 
-export const dynamic = "force-dynamic";
-
 export default async function ThisWeekPage() {
   // Fetch translations, session, and prompt in parallel
   const [t, session, prompt] = await Promise.all([

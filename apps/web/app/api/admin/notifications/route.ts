@@ -3,8 +3,6 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatNotificationMetadata } from "@/lib/notifications/metadata";
 
-export const dynamic = "force-dynamic";
-
 export async function GET(request: NextRequest) {
   const session = await auth();
 

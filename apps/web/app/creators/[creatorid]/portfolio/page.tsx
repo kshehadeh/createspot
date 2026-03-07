@@ -15,8 +15,6 @@ import { getNextPageHint } from "@/lib/hints-helper";
 import { prisma } from "@/lib/prisma";
 import { getCreatorUrl } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
-
 interface PortfolioPageProps {
   params: Promise<{ creatorid: string }>;
   searchParams: Promise<{

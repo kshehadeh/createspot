@@ -8,8 +8,6 @@ import { PageHeader } from "@/components/page-header";
 import { CollectionCard } from "@/components/collection-card";
 import { CollectionCreateButton } from "@/components/collection-create-button";
 
-export const dynamic = "force-dynamic";
-
 interface CollectionsPageProps {
   params: Promise<{ creatorid: string }>;
 }

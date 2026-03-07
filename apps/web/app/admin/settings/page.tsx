@@ -7,8 +7,6 @@ import { getSiteSettings } from "@/lib/settings";
 import { PageLayout } from "@/components/page-layout";
 import { SettingsForm } from "./settings-form";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminSettingsPage() {
   const session = await auth();
 

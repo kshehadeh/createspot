@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
-
 const ARTIST_SEARCH_LIMIT = 25;
 
 export async function GET(request: NextRequest) {

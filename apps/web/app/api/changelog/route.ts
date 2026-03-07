@@ -3,8 +3,6 @@ import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-export const runtime = "nodejs";
-
 interface ChangelogEntry {
   time: string;
   commit: string;

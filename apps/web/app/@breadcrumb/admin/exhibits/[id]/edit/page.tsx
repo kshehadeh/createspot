@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Breadcrumb } from "@/components/breadcrumb";
 
-export const dynamic = "force-dynamic";
-
 interface AdminExhibitEditBreadcrumbProps {
   params: Promise<{ id: string }>;
 }

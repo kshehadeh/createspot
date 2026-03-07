@@ -6,8 +6,6 @@ import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getSubmissionMetadata } from "@/lib/og-metadata";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
-
 interface SubmissionPageProps {
   params: Promise<{ creatorid: string; submissionid: string }>;
 }

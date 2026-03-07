@@ -4,8 +4,6 @@ import { auth } from "@/lib/auth";
 import { PageLayout } from "@/components/page-layout";
 import { NotificationsTable } from "./notifications-table";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminNotificationsPage() {
   const session = await auth();
 

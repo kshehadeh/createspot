@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { HistoryList } from "./history-list";
 
-export const dynamic = "force-dynamic";
-
 export default async function HistoryPage() {
   const t = await getTranslations("prompt.history");
   const session = await auth();

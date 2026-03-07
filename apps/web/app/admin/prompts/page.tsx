@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { AdminPrompts } from "../admin-prompts";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminPromptsPage() {
   const session = await auth();
 

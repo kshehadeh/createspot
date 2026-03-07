@@ -5,8 +5,6 @@ import { getExhibitionSubmissions } from "@/lib/exhibition";
 import { PageLayout } from "@/components/page-layout";
 import { ConstellationExhibitHeader } from "../../constellation/constellation-exhibit-header";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Path Exhibition | Create Spot",
   description:

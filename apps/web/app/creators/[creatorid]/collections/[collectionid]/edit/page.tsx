@@ -6,8 +6,6 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { CollectionEditForm } from "@/components/collection-edit-form";
 
-export const dynamic = "force-dynamic";
-
 interface CollectionEditPageProps {
   params: Promise<{ creatorid: string; collectionid: string }>;
 }

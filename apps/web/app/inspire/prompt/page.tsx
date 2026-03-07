@@ -14,8 +14,6 @@ import {
   ArrowRightIcon,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("prompt");
   return {

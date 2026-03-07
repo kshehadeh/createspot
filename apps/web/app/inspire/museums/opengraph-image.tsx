@@ -7,7 +7,6 @@ import {
   OG_IMAGE_SIZE as size,
 } from "@/lib/og-image";
 
-export const dynamic = "force-dynamic";
 export { size, contentType };
 
 export default async function MuseumsOpenGraphImage() {

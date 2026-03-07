@@ -7,8 +7,6 @@ import { PageHeader } from "@/components/page-header";
 import { ProfileHeader } from "@/components/profile-header";
 import { ProfileEditForm } from "@/components/profile-edit-form";
 
-export const dynamic = "force-dynamic";
-
 interface ProfileEditPageProps {
   params: Promise<{ creatorid: string }>;
 }

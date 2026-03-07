@@ -20,8 +20,6 @@ import { ExpandableBio } from "@/components/expandable-bio";
 import { EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
 import { getCreatorUrl } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
-
 interface ExhibitPageProps {
   params: Promise<{ exhibitId: string }>;
 }

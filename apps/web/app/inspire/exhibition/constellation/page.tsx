@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
 interface ConstellationExhibitionPageProps {
   searchParams: Promise<{
     exhibitId?: string | string[];

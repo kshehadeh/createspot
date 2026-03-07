@@ -2,8 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { getExhibitById } from "@/lib/exhibits";
 import { Breadcrumb } from "@/components/breadcrumb";
 
-export const dynamic = "force-dynamic";
-
 interface ExhibitBreadcrumbProps {
   params: Promise<{ exhibitId: string }>;
 }

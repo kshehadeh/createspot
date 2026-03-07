@@ -6,8 +6,6 @@ import { PageLayout } from "@/components/page-layout";
 import { Dashboard } from "@/components/dashboard";
 import { getCreatorUrl } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("dashboard");
   return {

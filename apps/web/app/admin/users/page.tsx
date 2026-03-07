@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { UsersList } from "./users-list";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminUsersPage() {
   const session = await auth();
 

@@ -5,8 +5,6 @@ import { PageHeader } from "@/components/page-header";
 import { CreatorsFilters } from "@/components/creators-filters";
 import { CreatorsGrid } from "@/components/creators-grid";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Creators | Create Spot",
   description:

@@ -7,8 +7,6 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateSpotLogo } from "@/components/create-spot-logo";
 
-export const dynamic = "force-dynamic";
-
 function GoogleIcon() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 24 24">

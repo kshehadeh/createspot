@@ -7,8 +7,6 @@ import { PageLayout } from "@/components/page-layout";
 import { ExhibitFormSimple } from "../../exhibit-form-simple";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
-
 interface EditExhibitPageProps {
   params: Promise<{ id: string }>;
 }

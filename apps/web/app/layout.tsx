@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono, Permanent_Marker } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { NextIntlClientProvider } from "next-intl";
@@ -10,6 +11,7 @@ import { GlobalHints } from "@/components/global-hints";
 import { UrlTracker } from "@/components/url-tracker";
 import { DeferredAnalytics } from "@/components/deferred-analytics";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { HtmlLangSetter } from "@/components/html-lang-setter";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import "./globals.css";
@@ -34,8 +36,6 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  // Enable proper keyboard handling on Android Chrome
-  // When keyboard appears, the viewport resizes instead of zooming
   interactiveWidget: "resizes-content",
 };
 
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+async function RootLayoutContent({
   children,
   breadcrumb,
 }: {
@@ -75,31 +75,50 @@ export default async function RootLayout({
     getMessages(),
   ]);
 
-  // Fetch tutorial data for global hints
   const tutorialData = await getTutorialData(session?.user?.id);
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <NextIntlClientProvider messages={messages}>
+      <HtmlLangSetter locale={locale} />
+      <div className="flex min-h-screen flex-col bg-background">
+        <Header user={session?.user} />
+        {breadcrumb != null ? (
+          <Suspense fallback={null}>{breadcrumb}</Suspense>
+        ) : null}
+        {children}
+      </div>
+      <GlobalHints tutorialData={tutorialData} userId={session?.user?.id} />
+      <UrlTracker />
+      <DeferredAnalytics />
+      <SpeedInsights />
+    </NextIntlClientProvider>
+  );
+}
+
+export default function RootLayout({
+  children,
+  breadcrumb,
+}: {
+  children: React.ReactNode;
+  breadcrumb?: React.ReactNode;
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${permanentMarker.variable} antialiased overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <NextIntlClientProvider messages={messages}>
-            <SessionProvider>
-              <div className="flex min-h-screen flex-col bg-background">
-                <Header user={session?.user} />
-                {breadcrumb}
+          <SessionProvider>
+            <Suspense
+              fallback={
+                <div className="flex min-h-screen flex-col bg-background" />
+              }
+            >
+              <RootLayoutContent breadcrumb={breadcrumb}>
                 {children}
-              </div>
-              <GlobalHints
-                tutorialData={tutorialData}
-                userId={session?.user?.id}
-              />
-              <UrlTracker />
-              <DeferredAnalytics />
-              <SpeedInsights />
-            </SessionProvider>
-          </NextIntlClientProvider>
+              </RootLayoutContent>
+            </Suspense>
+          </SessionProvider>
         </ThemeProvider>
         <Toaster />
       </body>

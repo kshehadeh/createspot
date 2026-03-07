@@ -10,8 +10,6 @@ import { getCreatorUrl } from "@/lib/utils";
 import { Briefcase, Eye, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
-
 interface PortfolioEditPageProps {
   params: Promise<{ creatorid: string }>;
 }

@@ -6,8 +6,6 @@ import { getExhibitById } from "@/lib/exhibits";
 import { PageLayout } from "@/components/page-layout";
 import { ConstellationExhibitHeader } from "../../../constellation/constellation-exhibit-header";
 
-export const dynamic = "force-dynamic";
-
 interface PathExhibitPageProps {
   params: Promise<{ exhibitId: string }>;
 }

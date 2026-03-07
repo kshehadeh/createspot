@@ -15,8 +15,6 @@ import type { ExhibitionType } from "@/lib/exhibition-constants";
 import { EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
 import { getCurrentExhibits, getUpcomingExhibits } from "@/lib/exhibits";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Exhibits | Create Spot",
   description:

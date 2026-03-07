@@ -9,8 +9,6 @@ import { ExhibitFilters } from "./exhibit-filters";
 import { Button } from "@/components/ui/button";
 import { isExhibitActive } from "@/lib/exhibit-utils";
 
-export const dynamic = "force-dynamic";
-
 interface AdminExhibitsPageProps {
   searchParams: Promise<{
     curator?: string | string[];

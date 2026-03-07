@@ -7,8 +7,6 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { SubmissionSlots } from "./submission-slots";
 
-export const dynamic = "force-dynamic";
-
 export default async function PlayPage() {
   const t = await getTranslations("prompt.play");
   const session = await auth();

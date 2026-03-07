@@ -14,8 +14,6 @@ import { getCollectionMetadata } from "@/lib/og-metadata";
 import { prisma } from "@/lib/prisma";
 import { getCreatorUrl } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
-
 interface CollectionViewPageProps {
   params: Promise<{ creatorid: string; collectionid: string }>;
 }

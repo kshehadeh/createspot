@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import { getExhibitById } from "@/lib/exhibits";
 import { GalleryContent } from "../../gallery-content";
 
-export const dynamic = "force-dynamic";
-
 interface GridExhibitPageProps {
   params: Promise<{ exhibitId: string }>;
   searchParams: Promise<{
