@@ -43,9 +43,7 @@ export async function generateMetadata({
   };
 }
 
-async function CreatorCritiquesContent({
-  params,
-}: CreatorCritiquesPageProps) {
+async function CreatorCritiquesContent({ params }: CreatorCritiquesPageProps) {
   const { creatorid } = await params;
   const [session, creator] = await Promise.all([auth(), getCreator(creatorid)]);
 
@@ -167,7 +165,13 @@ export default async function CreatorCritiquesListPage({
   params,
 }: CreatorCritiquesPageProps) {
   return (
-    <Suspense fallback={<PageLayout maxWidth="max-w-6xl"><PageHeader title="..." /></PageLayout>}>
+    <Suspense
+      fallback={
+        <PageLayout maxWidth="max-w-6xl">
+          <PageHeader title="..." />
+        </PageLayout>
+      }
+    >
       <CreatorCritiquesContent params={params} />
     </Suspense>
   );

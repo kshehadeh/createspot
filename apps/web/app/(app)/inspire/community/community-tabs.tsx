@@ -12,7 +12,7 @@ import { UserMinus, UserX, UserCheck } from "lucide-react";
 import {
   ExhibitionGrid,
   type ExhibitionSubmission,
-} from "@/app/inspire/exhibition/exhibition-grid";
+} from "@/app/(app)/inspire/exhibition/exhibition-grid";
 
 type TabType = "recents" | "followers" | "following" | "blocked";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import type { ExhibitionSubmission } from "@/app/inspire/exhibition/exhibition-grid";
-import { ExhibitionGrid } from "@/app/inspire/exhibition/exhibition-grid";
+import type { ExhibitionSubmission } from "@/app/(app)/inspire/exhibition/exhibition-grid";
+import { ExhibitionGrid } from "@/app/(app)/inspire/exhibition/exhibition-grid";
 
 interface HomeGridProps {
   initialSubmissions: ExhibitionSubmission[];
@@ -21,6 +21,8 @@ export function HomeGrid({
       initialHasMore={initialHasMore}
       loadMoreEndpoint="/api/exhibition"
       loadMoreParams={{}}
+      priorityCount={1}
+      lightboxUsesSessionProvider={true}
     />
   );
 }

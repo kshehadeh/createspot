@@ -1,19 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono, Permanent_Marker } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
-import { GlobalHints } from "@/components/global-hints";
-import { UrlTracker } from "@/components/url-tracker";
-import { DeferredAnalytics } from "@/components/deferred-analytics";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { HtmlLangSetter } from "@/components/html-lang-setter";
-import { auth } from "@/lib/auth";
-import { getTutorialData } from "@/lib/get-tutorial-data";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -62,65 +51,22 @@ export const metadata: Metadata = {
   },
 };
 
-async function RootLayoutContent({
-  children,
-  breadcrumb,
-}: {
-  children: React.ReactNode;
-  breadcrumb?: React.ReactNode;
-}) {
-  const [session, locale, messages] = await Promise.all([
-    auth(),
-    getLocale(),
-    getMessages(),
-  ]);
-
-  const tutorialData = await getTutorialData(session?.user?.id);
-
-  return (
-    <NextIntlClientProvider messages={messages}>
-      <HtmlLangSetter locale={locale} />
-      <div className="flex min-h-screen flex-col bg-background">
-        <Header user={session?.user} />
-        {breadcrumb != null ? (
-          <Suspense fallback={null}>{breadcrumb}</Suspense>
-        ) : null}
-        {children}
-      </div>
-      <GlobalHints tutorialData={tutorialData} userId={session?.user?.id} />
-      <UrlTracker />
-      <DeferredAnalytics />
-      <SpeedInsights />
-    </NextIntlClientProvider>
-  );
-}
-
 export default function RootLayout({
   children,
-  breadcrumb,
 }: {
   children: React.ReactNode;
-  breadcrumb?: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${permanentMarker.variable} antialiased overflow-x-hidden`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <SessionProvider>
-            <Suspense
-              fallback={
-                <div className="flex min-h-screen flex-col bg-background" />
-              }
-            >
-              <RootLayoutContent breadcrumb={breadcrumb}>
-                {children}
-              </RootLayoutContent>
-            </Suspense>
-          </SessionProvider>
-        </ThemeProvider>
-        <Toaster />
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </Suspense>
       </body>
     </html>
   );

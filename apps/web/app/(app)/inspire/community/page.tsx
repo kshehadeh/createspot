@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import { CommunityTabs } from "@/app/inspire/community/community-tabs";
+import { CommunityTabs } from "@/app/(app)/inspire/community/community-tabs";
 import { getFollowingFeedSubmissions } from "@/lib/community";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 

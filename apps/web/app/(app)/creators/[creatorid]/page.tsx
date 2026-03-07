@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { HistoryList } from "@/app/inspire/prompt/history/history-list";
+import { HistoryList } from "@/app/(app)/inspire/prompt/history/history-list";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { FollowButton } from "@/components/follow-button";
 import { HintPopover } from "@/components/hint-popover";

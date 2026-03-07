@@ -5,7 +5,7 @@ import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { geocodeLocation } from "@/lib/geocoding";
-import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
+import { processUploadedImage } from "@/app/(app)/workflows/process-uploaded-image";
 import { normalizeUrl, isValidUrl, isValidSlugFormat } from "@/lib/utils";
 import { isValidLocale } from "@/i18n/config";
 

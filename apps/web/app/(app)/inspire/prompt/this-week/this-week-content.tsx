@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ExhibitionGrid } from "@/app/inspire/exhibition/exhibition-grid";
+import { ExhibitionGrid } from "@/app/(app)/inspire/exhibition/exhibition-grid";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 
 interface Submission {

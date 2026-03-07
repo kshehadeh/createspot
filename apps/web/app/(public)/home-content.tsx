@@ -1,6 +1,6 @@
 import { getExhibitionSubmissions } from "@/lib/exhibition";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
-import { HomeGrid } from "@/app/home-grid";
+import { HomeGrid } from "./home-grid";
 
 export async function HomeContent() {
   "use cache";

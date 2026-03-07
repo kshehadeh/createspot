@@ -197,7 +197,9 @@ async function getProfileData({
   }
 
   const hasMore = prompts.length > INITIAL_PROMPT_GROUPS;
-  const initialItems = hasMore ? prompts.slice(0, INITIAL_PROMPT_GROUPS) : prompts;
+  const initialItems = hasMore
+    ? prompts.slice(0, INITIAL_PROMPT_GROUPS)
+    : prompts;
 
   return {
     user,

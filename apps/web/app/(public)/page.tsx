@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { HomeAuthGate } from "@/app/home-auth-gate";
-import { HomeContent } from "@/app/home-content";
+import { HomeAuthGate } from "./home-auth-gate";
+import { HomeContent } from "./home-content";
 import packageJson from "@/package.json";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -25,10 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [t, tFooter, tNav] = await Promise.all([
+  const [t, tFooter] = await Promise.all([
     getTranslations("home"),
     getTranslations("footer"),
-    getTranslations("navigation"),
   ]);
 
   return (
@@ -52,13 +51,8 @@ export default async function Home() {
           </p>
         </div>
         <Link
-          href="/welcome"
-          className="begin-button shrink-0 rounded-full px-4 py-2 text-sm font-medium text-primary-foreground transition-colors sm:hidden"
-        >
-          {tNav("jumpIn")}
-        </Link>
-        <Link
           href="/about"
+          prefetch={false}
           className="shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 hidden sm:inline-flex"
         >
           {t("brandCta")}
@@ -78,6 +72,7 @@ export default async function Home() {
           <span className="hidden sm:inline">|</span>
           <Link
             href="/about/terms"
+            prefetch={false}
             className="transition-colors hover:text-foreground underline underline-offset-4"
           >
             {tFooter("terms")}

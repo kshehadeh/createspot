@@ -1,7 +1,7 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { revalidateTag } from "next/cache";
 import { after, NextRequest, NextResponse } from "next/server";
-import { processUploadedImage } from "@/app/workflows/process-uploaded-image";
+import { processUploadedImage } from "@/app/(app)/workflows/process-uploaded-image";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 

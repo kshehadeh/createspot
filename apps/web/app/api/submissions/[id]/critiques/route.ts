@@ -3,7 +3,7 @@ import { after } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type * as runtime from "@prisma/client/runtime/client";
-import { sendCritiqueNotification } from "@/app/workflows/send-critique-notification";
+import { sendCritiqueNotification } from "@/app/(app)/workflows/send-critique-notification";
 import { uploadFragment } from "@/lib/r2-fragments";
 import { Prisma } from "@/app/generated/prisma/client";
 

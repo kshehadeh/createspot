@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { sendNewFollowerNotification } from "@/app/workflows/send-new-follower-notification";
+import { sendNewFollowerNotification } from "@/app/(app)/workflows/send-new-follower-notification";
 
 export async function GET(request: NextRequest) {
   const session = await auth();

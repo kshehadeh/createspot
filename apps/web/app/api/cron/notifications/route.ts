@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendNewPromptNotification } from "@/app/workflows/send-new-prompt-notification";
-import { checkBadgeAwards } from "@/app/workflows/check-badge-awards";
+import { sendNewPromptNotification } from "@/app/(app)/workflows/send-new-prompt-notification";
+import { checkBadgeAwards } from "@/app/(app)/workflows/check-badge-awards";
 
 export async function GET(request: NextRequest) {
   // Verify cron secret for security

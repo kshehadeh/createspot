@@ -95,6 +95,7 @@ export function DashboardNavigation({
             <DropdownMenuItem asChild>
               <Link
                 href={exhibitionRoute.path}
+                prefetch={false}
                 className={cn(
                   "flex items-center gap-2",
                   isActive(exhibitionRoute.path) &&
@@ -110,6 +111,7 @@ export function DashboardNavigation({
             <DropdownMenuItem asChild>
               <Link
                 href={museumsRoute.path}
+                prefetch={false}
                 className={cn(
                   "flex items-center gap-2",
                   isActive(museumsRoute.path) &&
@@ -123,6 +125,7 @@ export function DashboardNavigation({
             <DropdownMenuItem asChild>
               <Link
                 href={creatorsRoute.path}
+                prefetch={false}
                 className={cn(
                   "flex items-center gap-2",
                   isActive(creatorsRoute.path) &&
@@ -138,6 +141,7 @@ export function DashboardNavigation({
             <DropdownMenuItem asChild>
               <Link
                 href={promptRoute.path}
+                prefetch={false}
                 className={cn(
                   "flex items-center gap-2",
                   isActive(promptRoute.path) &&
@@ -151,6 +155,7 @@ export function DashboardNavigation({
             <DropdownMenuItem asChild>
               <Link
                 href={communityRoute.path}
+                prefetch={false}
                 className={cn(
                   "flex items-center gap-2",
                   isActive(communityRoute.path) &&
@@ -167,6 +172,7 @@ export function DashboardNavigation({
               <DropdownMenuItem asChild>
                 <Link
                   href={favoritesRoute.path}
+                  prefetch={false}
                   className={cn(
                     "flex items-center gap-2",
                     isActive(favoritesRoute.path) &&
@@ -221,6 +227,7 @@ export function DashboardNavigation({
                       <DropdownMenuItem asChild>
                         <Link
                           href={creatorBase}
+                          prefetch={false}
                           className={cn(
                             "flex items-center gap-2",
                             isProfileActive &&
@@ -236,6 +243,7 @@ export function DashboardNavigation({
                       <DropdownMenuItem asChild>
                         <Link
                           href={`${creatorBase}/portfolio`}
+                          prefetch={false}
                           className={cn(
                             "flex items-center gap-2",
                             isPortfolioActive &&
@@ -251,6 +259,7 @@ export function DashboardNavigation({
                       <DropdownMenuItem asChild>
                         <Link
                           href={`${creatorBase}/collections`}
+                          prefetch={false}
                           className={cn(
                             "flex items-center gap-2",
                             isCollectionsActive &&
@@ -280,6 +289,7 @@ export function DashboardNavigation({
               <DropdownMenuItem asChild>
                 <Link
                   href={adminUsersRoute.path}
+                  prefetch={false}
                   className={cn(
                     "flex items-center gap-2",
                     pathname.startsWith(adminUsersRoute.path) &&
@@ -295,6 +305,7 @@ export function DashboardNavigation({
               <DropdownMenuItem asChild>
                 <Link
                   href={adminPromptsRoute.path}
+                  prefetch={false}
                   className={cn(
                     "flex items-center gap-2",
                     pathname.startsWith(adminPromptsRoute.path) &&
@@ -308,6 +319,7 @@ export function DashboardNavigation({
               <DropdownMenuItem asChild>
                 <Link
                   href={adminExhibitsRoute.path}
+                  prefetch={false}
                   className={cn(
                     "flex items-center gap-2",
                     pathname.startsWith(adminExhibitsRoute.path) &&
@@ -323,6 +335,7 @@ export function DashboardNavigation({
               <DropdownMenuItem asChild>
                 <Link
                   href={adminNotificationsRoute.path}
+                  prefetch={false}
                   className={cn(
                     "flex items-center gap-2",
                     pathname.startsWith(adminNotificationsRoute.path) &&
@@ -336,6 +349,7 @@ export function DashboardNavigation({
               <DropdownMenuItem asChild>
                 <Link
                   href={adminSettingsRoute.path}
+                  prefetch={false}
                   className={cn(
                     "flex items-center gap-2",
                     pathname.startsWith(adminSettingsRoute.path) &&
@@ -363,6 +377,7 @@ export function DashboardNavigation({
             <DropdownMenuItem asChild>
               <Link
                 href={aboutRoute.path}
+                prefetch={false}
                 className={cn(
                   "flex items-center gap-2",
                   isActive(aboutRoute.path) &&

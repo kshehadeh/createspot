@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { SessionProvider } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { TextThumbnail } from "@/components/text-thumbnail";
@@ -44,6 +45,8 @@ interface ExhibitionGridProps {
   showWordInsteadOfTitle?: boolean;
   loadMoreEndpoint?: string;
   loadMoreParams?: Record<string, string>;
+  priorityCount?: number;
+  lightboxUsesSessionProvider?: boolean;
 }
 
 export function ExhibitionGrid({
@@ -53,6 +56,8 @@ export function ExhibitionGrid({
   showWordInsteadOfTitle = false,
   loadMoreEndpoint,
   loadMoreParams,
+  priorityCount = 0,
+  lightboxUsesSessionProvider = false,
 }: ExhibitionGridProps) {
   const [items, setItems] = useState(submissions);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -127,6 +132,8 @@ export function ExhibitionGrid({
         onLoadMore={loadMore}
         loadError={loadError}
         showWordInsteadOfTitle={showWordInsteadOfTitle}
+        priorityCount={priorityCount}
+        lightboxUsesSessionProvider={lightboxUsesSessionProvider}
       />
     </FavoritesProvider>
   );
@@ -140,6 +147,8 @@ function GridContent({
   onLoadMore,
   loadError,
   showWordInsteadOfTitle = false,
+  priorityCount = 0,
+  lightboxUsesSessionProvider = false,
 }: Omit<ExhibitionGridProps, "initialHasMore"> & {
   hasMore: boolean;
   isLoading: boolean;
@@ -205,7 +214,9 @@ function GridContent({
         className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full min-w-0"
       >
         <AnimatePresence mode="popLayout">
-          {submissions.map((submission) => {
+          {submissions.map((submission, index) => {
+            const isPriorityImage = index < priorityCount;
+
             return (
               <motion.article
                 key={submission.id}
@@ -223,6 +234,9 @@ function GridContent({
                       src={submission.imageUrl}
                       alt={submission.title || t("submissionAlt")}
                       fill
+                      priority={isPriorityImage}
+                      loading={isPriorityImage ? "eager" : undefined}
+                      fetchPriority={isPriorityImage ? "high" : undefined}
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       style={{
@@ -341,7 +355,7 @@ function GridContent({
           const hasPrevious = currentIndex > 0;
           const hasNext =
             currentIndex >= 0 && currentIndex < submissions.length - 1;
-          return (
+          const lightbox = (
             <SubmissionLightbox
               submission={{
                 ...selectedSubmission,
@@ -371,6 +385,12 @@ function GridContent({
               }}
             />
           );
+
+          if (lightboxUsesSessionProvider) {
+            return <SessionProvider session={null}>{lightbox}</SessionProvider>;
+          }
+
+          return lightbox;
         })()}
     </>
   );

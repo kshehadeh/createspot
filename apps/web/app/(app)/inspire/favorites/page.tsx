@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import { ExhibitionGrid } from "@/app/inspire/exhibition/exhibition-grid";
+import { ExhibitionGrid } from "@/app/(app)/inspire/exhibition/exhibition-grid";
 
 async function getFavorites(userId: string) {
   return prisma.favorite.findMany({
