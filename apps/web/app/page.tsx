@@ -29,13 +29,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [session, t, tFooter, tNav, { submissions, hasMore }] = await Promise.all([
-    auth(),
-    getTranslations("home"),
-    getTranslations("footer"),
-    getTranslations("navigation"),
-    getExhibitionSubmissions({ skip: 0, take: EXHIBITION_PAGE_SIZE }),
-  ]);
+  const [session, t, tFooter, tNav, { submissions, hasMore }] =
+    await Promise.all([
+      auth(),
+      getTranslations("home"),
+      getTranslations("footer"),
+      getTranslations("navigation"),
+      getExhibitionSubmissions({ skip: 0, take: EXHIBITION_PAGE_SIZE }),
+    ]);
 
   if (session?.user) {
     redirect("/dashboard");
