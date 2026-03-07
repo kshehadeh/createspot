@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { GlobalHints } from "@/components/global-hints";
 import { UrlTracker } from "@/components/url-tracker";
 import { DeferredAnalytics } from "@/components/deferred-analytics";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import "./globals.css";
@@ -96,6 +97,7 @@ export default async function RootLayout({
               />
               <UrlTracker />
               <DeferredAnalytics />
+              <SpeedInsights />
             </SessionProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
