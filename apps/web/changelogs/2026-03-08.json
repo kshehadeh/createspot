@@ -8,5 +8,15 @@
     "description": "Disable Next.js link prefetching by default via custom Link component; app now uses @/components/link throughout.",
     "impact": "patch",
     "version": "2.15.2"
+  },
+  {
+    "time": "2026-03-08T12:00:00-04:00",
+    "commit": "b760981",
+    "type": "perf",
+    "audience": "public",
+    "area": "global",
+    "description": "Improve initial render: stream home grid after shell (Suspense + skeleton), add route loading UI, add Submission index for home feed query, defer tutorial data in app layout.",
+    "impact": "patch",
+    "version": "2.15.3"
   }
 ]
