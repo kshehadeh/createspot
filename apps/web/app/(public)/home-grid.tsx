@@ -21,7 +21,7 @@ export function HomeGrid({
       initialHasMore={initialHasMore}
       loadMoreEndpoint="/api/exhibition"
       loadMoreParams={{}}
-      priorityCount={1}
+      priorityCount={2}
       lightboxUsesSessionProvider={true}
     />
   );

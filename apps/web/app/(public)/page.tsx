@@ -25,20 +25,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const LOG_INIT_RENDER =
-  process.env.NODE_ENV === "development" &&
-  process.env.INIT_RENDER_DEBUG !== "0";
-
 export default async function Home() {
   const [t, tFooter] = await Promise.all([
     getTranslations("home"),
     getTranslations("footer"),
   ]);
-  if (LOG_INIT_RENDER) {
-    console.log(
-      "[INIT-RENDER] page-home translations done (duration omitted: prerender-safe)",
-    );
-  }
 
   return (
     <main className="flex min-h-screen flex-col">

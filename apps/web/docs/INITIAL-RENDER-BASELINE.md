@@ -31,40 +31,16 @@ Records for `/` and `/dashboard`:
 
 If the document is streamed, the first chunk may arrive quickly while later chunks fill in dynamic segments; the waterfall will show the document request receiving data over time.
 
-## 3. Where to record results
+## 3. Performance tab (optional)
+
+To compare JS/hydration cost vs server TTFB: open DevTools → Performance, record a load of `/`, then inspect the timeline for the document request (TTFB) and any long main-thread tasks.
+
+## 4. Where to record results
 
 - Paste script output or DevTools timing numbers into the investigation notes.
 - Compare cold (first load after restart) vs warm (second load) to see cache impact.
 
-## 4. Server timing instrumentation
-
-Temporary `[INIT-RENDER]` logs are added in development (disable with `INIT_RENDER_DEBUG=0`). After starting the dev server, load `/` or an app route and check the terminal for:
-
-- `layout-public i18n` / `layout-public total` – (public) layout
-- `page-home translations` / `page-home total` – home page
-- `home-content getExhibitionSubmissions` / `home-content total` – grid data
-- `layout-app auth+locale+messages` / `layout-app getTutorialData` / `layout-app total` – (app) layout
-- `exhibition prisma.findMany (home)` – DB query for home grid
-
-Use these to see which await dominates and to compare cold vs warm (run the measure script twice and compare both terminal logs and response times).
-
-## 5. Client hydration (ExhibitionGrid)
-
-With `NEXT_PUBLIC_INIT_RENDER_DEBUG` set (e.g. in `.env.local`: `NEXT_PUBLIC_INIT_RENDER_DEBUG=1`), the home grid client component records Performance marks:
-
-- `exhibition-grid-render-start` – start of first render
-- `exhibition-grid-hydration-done` – after first commit (useEffect)
-- Measure: `exhibition-grid-hydration` – duration between them
-
-To compare JS/hydration cost vs server TTFB:
-
-1. Open DevTools → Performance.
-2. Start recording, then load `/` (or refresh).
-3. Stop when the page is interactive.
-4. In the timeline, find the document request (TTFB) and the `exhibition-grid-hydration` measure (under User Timing).
-5. If TTFB is much larger than the hydration measure, the delay is mostly server-side; if hydration is large, optimize client bundle or defer heavy components.
-
-## 6. Sample baseline and cold vs warm
+## 5. Sample baseline and cold vs warm
 
 | Route     | Response start (ms) | Body end (ms) | Streaming markers |
 |----------|----------------------|---------------|-------------------|

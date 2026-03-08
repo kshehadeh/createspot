@@ -28,10 +28,6 @@ function pickPublicMessages(messages: Record<string, unknown>) {
   }, {});
 }
 
-const LOG_INIT_RENDER =
-  process.env.NODE_ENV === "development" &&
-  process.env.INIT_RENDER_DEBUG !== "0";
-
 export default async function PublicLayout({
   children,
 }: {
@@ -42,11 +38,6 @@ export default async function PublicLayout({
     getMessages(),
     getTranslations("navigation"),
   ]);
-  if (LOG_INIT_RENDER) {
-    console.log(
-      "[INIT-RENDER] layout-public i18n done (no duration: Date.now before await not allowed in prerender)",
-    );
-  }
 
   return (
     <NextIntlClientProvider messages={pickPublicMessages(messages)}>

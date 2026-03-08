@@ -32,7 +32,7 @@ Based on the investigation (baseline TTFB, cold vs warm, server instrumentation,
 | Ensure `generateMetadata()` for home doesn’t add duplicate translation work; reuse or share with page. | Small. | Low. | Low |
 | Keep `"use cache"` and `cacheLife("minutes")` for `HomeContent` / `getExhibitionSubmissions`; consider longer cache for home if content freshness allows. | Warm requests stay fast. | Low (stale content). | Low |
 
-**Fast experiment:** In `(public)/layout.tsx`, load a minimal set of message keys for the header and measure layout time with `[INIT-RENDER]` logs.
+**Fast experiment:** In `(public)/layout.tsx`, load a minimal set of message keys for the header and measure layout time (e.g. with DevTools Performance or the measure-document-timing script).
 
 ---
 
@@ -48,7 +48,7 @@ Based on the investigation (baseline TTFB, cold vs warm, server instrumentation,
 | Consider deferring `_count.favorites` to a follow-up or client fetch if it’s not critical for first paint. | Slightly simpler/faster query. | Low. | Medium |
 | Keep `cacheLife("minutes")` and `cacheTag("exhibition-submissions")`; use `revalidatePath`/`updateTag` when content changes. | Warm requests stay cached. | Low. | Done |
 
-**Fast experiment:** Add the composite index, restart DB, run cold home request and compare `[INIT-RENDER] exhibition prisma.findMany (home)` duration.
+**Fast experiment:** Add the composite index, restart DB, run cold home request and compare TTFB (e.g. with the measure-document-timing script or DevTools Network).
 
 ---
 
@@ -64,7 +64,7 @@ Based on the investigation (baseline TTFB, cold vs warm, server instrumentation,
 | Use `priorityCount={1}` (or small N) so only the first image is high priority; keep rest lazy. | Already in place; verify in Production. | Low. | Done |
 | Reduce or conditionally load SessionProvider / next-auth on home if not needed above the fold. | Smaller client bundle for anonymous home. | Low. | Low |
 
-**Fast experiment:** With `NEXT_PUBLIC_INIT_RENDER_DEBUG=1`, record Performance timeline, compare `exhibition-grid-hydration` measure to document TTFB. If hydration is a large share of “time to interactive,” apply one of the above.
+**Fast experiment:** Record a Performance timeline for `/`, compare main-thread scripting time to document TTFB. If client work is a large share of “time to interactive,” apply one of the above.
 
 ---
 
@@ -79,7 +79,7 @@ Based on the investigation (baseline TTFB, cold vs warm, server instrumentation,
 | Move `getTutorialData()` into a Suspense boundary with `fallback={null}` or a small placeholder so header + children can stream before tutorial data. | App routes show shell sooner. | Low. | Low |
 | Keep root Suspense fallback minimal; ensure theme/fonts don’t block first paint. | Minor. | Low. | Low |
 
-**Fast experiment:** Wrap `getTutorialData` (and any UI that depends on it) in Suspense and reload an app route; compare TTFB with `[INIT-RENDER] layout-app getTutorialData` log.
+**Fast experiment:** Wrap `getTutorialData` (and any UI that depends on it) in Suspense and reload an app route; compare TTFB with the measure-document-timing script or DevTools.
 
 ---
 
@@ -89,4 +89,4 @@ Based on the investigation (baseline TTFB, cold vs warm, server instrumentation,
 - **Then:** Add DB composite index for home feed; optionally reduce/split i18n payload for the shell.
 - **Then:** Defer heavy client modules if hydration User Timing shows they matter; wrap `getTutorialData` in Suspense for app routes.
 
-Re-run the measure script and `[INIT-RENDER]` logs after each change to confirm impact.
+Re-run the measure script (or DevTools) after each change to confirm impact.
