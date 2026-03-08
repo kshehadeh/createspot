@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-03-08T05:58:11-04:00",
+    "commit": "01df5cebdef7797a27f3aacbae52ae38dea7f52a",
+    "type": "refactor",
+    "audience": "internal",
+    "area": "global",
+    "description": "Disable Next.js link prefetching by default via custom Link component; app now uses @/components/link throughout.",
+    "impact": "patch",
+    "version": "2.15.2"
+  }
+]
