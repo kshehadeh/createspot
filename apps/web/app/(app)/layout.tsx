@@ -11,6 +11,24 @@ import { UrlTracker } from "@/components/url-tracker";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 
+const LOG_INIT_RENDER =
+  process.env.NODE_ENV === "development" &&
+  process.env.INIT_RENDER_DEBUG !== "0";
+
+async function GlobalHintsWithData({ userId }: { userId: string | undefined }) {
+  if (!userId) return null;
+  const afterI18n = Date.now();
+  const tutorialData = await getTutorialData(userId);
+  if (LOG_INIT_RENDER) {
+    console.log(
+      "[INIT-RENDER] layout-app getTutorialData",
+      Date.now() - afterI18n,
+      "ms",
+    );
+  }
+  return <GlobalHints tutorialData={tutorialData} userId={userId} />;
+}
+
 async function AppLayoutContent({
   children,
   breadcrumb,
@@ -24,8 +42,6 @@ async function AppLayoutContent({
     getMessages(),
   ]);
 
-  const tutorialData = await getTutorialData(session?.user?.id);
-
   return (
     <NextIntlClientProvider messages={messages}>
       <HtmlLangSetter locale={locale} />
@@ -36,7 +52,9 @@ async function AppLayoutContent({
         ) : null}
         {children}
       </div>
-      <GlobalHints tutorialData={tutorialData} userId={session?.user?.id} />
+      <Suspense fallback={null}>
+        <GlobalHintsWithData userId={session?.user?.id} />
+      </Suspense>
       <UrlTracker />
       <DeferredAnalytics />
       <SpeedInsights />

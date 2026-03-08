@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { HomeAuthGate } from "./home-auth-gate";
 import { HomeContent } from "./home-content";
+import { HomeGridSkeleton } from "./home-grid-skeleton";
 import packageJson from "@/package.json";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,11 +25,20 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const LOG_INIT_RENDER =
+  process.env.NODE_ENV === "development" &&
+  process.env.INIT_RENDER_DEBUG !== "0";
+
 export default async function Home() {
   const [t, tFooter] = await Promise.all([
     getTranslations("home"),
     getTranslations("footer"),
   ]);
+  if (LOG_INIT_RENDER) {
+    console.log(
+      "[INIT-RENDER] page-home translations done (duration omitted: prerender-safe)",
+    );
+  }
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -59,9 +69,11 @@ export default async function Home() {
         </Link>
       </section>
 
-      {/* Art-first grid -- cached server component */}
+      {/* Art-first grid -- cached server component; stream shell first, grid when ready */}
       <section className="flex-1 px-4 py-6 sm:px-6">
-        <HomeContent />
+        <Suspense fallback={<HomeGridSkeleton />}>
+          <HomeContent />
+        </Suspense>
       </section>
 
       <footer className="shrink-0 border-t border-border/50 px-4 py-6 text-center text-sm text-muted-foreground">

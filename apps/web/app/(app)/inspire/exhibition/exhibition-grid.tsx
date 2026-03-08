@@ -49,6 +49,11 @@ interface ExhibitionGridProps {
   lightboxUsesSessionProvider?: boolean;
 }
 
+const MEASURE_HYDRATION =
+  typeof window !== "undefined" &&
+  process.env.NODE_ENV === "development" &&
+  process.env.NEXT_PUBLIC_INIT_RENDER_DEBUG !== "0";
+
 export function ExhibitionGrid({
   submissions,
   isLoggedIn,
@@ -59,6 +64,9 @@ export function ExhibitionGrid({
   priorityCount = 0,
   lightboxUsesSessionProvider = false,
 }: ExhibitionGridProps) {
+  if (MEASURE_HYDRATION) {
+    performance.mark("exhibition-grid-render-start");
+  }
   const [items, setItems] = useState(submissions);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,6 +81,21 @@ export function ExhibitionGrid({
     setNextSkip(submissions.length);
     setLoadError(null);
   }, [initialHasMore, submissions]);
+
+  useEffect(() => {
+    if (MEASURE_HYDRATION && typeof performance !== "undefined") {
+      performance.mark("exhibition-grid-hydration-done");
+      try {
+        performance.measure(
+          "exhibition-grid-hydration",
+          "exhibition-grid-render-start",
+          "exhibition-grid-hydration-done",
+        );
+      } catch {
+        // ignore if marks were cleared
+      }
+    }
+  }, []);
 
   const loadMore = useCallback(async () => {
     if (isLoading || !hasMore) return;

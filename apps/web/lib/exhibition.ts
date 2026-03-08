@@ -165,6 +165,10 @@ export async function getExhibitionSubmissions({
       : [];
 
     // Fetch submissions that match the filters and are in the exhibit
+    const logTiming =
+      process.env.NODE_ENV === "development" &&
+      process.env.INIT_RENDER_DEBUG !== "0";
+    const queryStart = logTiming ? Date.now() : 0;
     const submissions = await prisma.submission.findMany({
       where: {
         shareStatus: "PUBLIC",
@@ -172,6 +176,13 @@ export async function getExhibitionSubmissions({
       },
       include: submissionInclude,
     });
+    if (logTiming) {
+      console.log(
+        "[INIT-RENDER] exhibition prisma.findMany (exhibit)",
+        Date.now() - queryStart,
+        "ms",
+      );
+    }
 
     // Sort by the order in submissionIds (maintaining exhibit order)
     const sortedSubmissions = submissionIds
@@ -187,6 +198,10 @@ export async function getExhibitionSubmissions({
   } else {
     // Normal ordering for non-exhibit views
     orderBy = { createdAt: "desc" };
+    const logTiming =
+      process.env.NODE_ENV === "development" &&
+      process.env.INIT_RENDER_DEBUG !== "0";
+    const queryStart = logTiming ? Date.now() : 0;
     const submissions = await prisma.submission.findMany({
       where: whereClause,
       orderBy,
@@ -194,6 +209,13 @@ export async function getExhibitionSubmissions({
       skip,
       take: limit + 1,
     });
+    if (logTiming) {
+      console.log(
+        "[INIT-RENDER] exhibition prisma.findMany (home)",
+        Date.now() - queryStart,
+        "ms",
+      );
+    }
 
     const hasMore = submissions.length > limit;
 

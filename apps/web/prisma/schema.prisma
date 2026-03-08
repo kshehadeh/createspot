@@ -199,6 +199,7 @@ model Submission {
   @@index([userId, isPortfolio])
   @@index([userId, isPortfolio, portfolioOrder])
   @@index([shareStatus])
+  @@index([shareStatus, isPortfolio, createdAt])
 }
 
 model Progression {

@@ -13,6 +13,8 @@
         "postcss.config.mjs",
         "scripts/**/*.ts",
         "app/@breadcrumb/**",
+        "app/(public)/loading.tsx",
+        "app/(app)/loading.tsx",
         "changelogs/**",
         "data/**",
         "e2e/**",
