@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-03-08T16:00:00-04:00",
+    "commit": "e30129f",
+    "type": "perf",
+    "audience": "public",
+    "area": "global",
+    "description": "Reduce initial JS bundle payload: lazy load country-state-city data (~8.7MB), defer Sentry replay integration, add optimizePackageImports for simple-icons, dynamic import SubmissionLightbox in ExhibitionGrid.",
+    "impact": "patch",
+    "version": "2.15.5"
+  }
+]
