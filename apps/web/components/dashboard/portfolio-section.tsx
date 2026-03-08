@@ -86,10 +86,12 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
             const displayImageUrl =
               s.imageUrl ||
               (s.isWorkInProgress ? s.latestProgressionImageUrl : null);
+            const creatorBase = portfolioUrl.replace(/\/portfolio\/?$/, "");
+            const submissionViewUrl = `${creatorBase}/s/${s.id}`;
             return (
               <Link
                 key={s.id}
-                href={`${portfolioUrl}#${s.id}`}
+                href={submissionViewUrl}
                 className={`group relative aspect-square overflow-hidden bg-muted ${
                   s.isWorkInProgress
                     ? "rounded-sm border-2 border-dashed border-muted-foreground/40"
