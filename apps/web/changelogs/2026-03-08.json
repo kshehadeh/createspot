@@ -18,5 +18,15 @@
     "description": "Improve initial render: stream home grid after shell (Suspense + skeleton), add route loading UI, add Submission index for home feed query, defer tutorial data in app layout.",
     "impact": "patch",
     "version": "2.15.3"
+  },
+  {
+    "time": "2026-03-08T12:35:00-04:00",
+    "commit": "f447c25",
+    "type": "fix",
+    "audience": "public",
+    "area": "portfolio",
+    "description": "Open Graph images for submission, profile, portfolio, collection, and exhibit pages now load correctly; move opengraph-image metadata files outside (app) route group to fix 404s.",
+    "impact": "patch",
+    "version": "2.15.4"
   }
 ]
