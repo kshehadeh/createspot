@@ -10,9 +10,6 @@ if (hasValidDsn) {
     sendDefaultPii: true,
     tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
 
-    // Attach local variable values to stack frames
-    includeLocalVariables: true,
-
     enableLogs: true,
   });
 }
