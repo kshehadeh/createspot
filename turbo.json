@@ -24,6 +24,7 @@
       "dependsOn": ["^build"],
       "env": [
         "SENTRY_AUTH_TOKEN",
+        "SENTRY_DSN",
         "SENTRY_ORG",
         "SENTRY_PROJECT",
         "DATABASE_URL",
