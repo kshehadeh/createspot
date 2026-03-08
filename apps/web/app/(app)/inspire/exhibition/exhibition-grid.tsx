@@ -1,18 +1,35 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { SessionProvider } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
-import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { Card, CardContent } from "@/components/ui/card";
+
+// Heavy components - lazy load the lightbox and session provider
+// These are only needed when a user clicks on a submission
+const SubmissionLightbox = dynamic(
+  () =>
+    import("@/components/submission-lightbox").then(
+      (mod) => mod.SubmissionLightbox,
+    ),
+  { ssr: false },
+);
+
+const SessionProvider = dynamic(
+  () =>
+    import("next-auth/react").then((mod) => ({
+      default: mod.SessionProvider,
+    })),
+  { ssr: false },
+);
 
 export interface ExhibitionSubmission {
   id: string;

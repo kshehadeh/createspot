@@ -18,8 +18,36 @@ if (hasValidDsn) {
 
     enableLogs: true,
 
-    integrations: [Sentry.replayIntegration()],
+    // Replay integration is lazy-loaded below to reduce initial bundle size (~300KB savings)
+    integrations: [],
   });
+
+  // Lazy load replay integration after initial page load to reduce bundle size
+  // This defers loading the rrweb session replay code until after hydration
+  if (typeof window !== "undefined") {
+    const loadReplay = async () => {
+      try {
+        const replay = await Sentry.lazyLoadIntegration("replayIntegration");
+        if (replay) {
+          Sentry.addIntegration(replay);
+        }
+      } catch {
+        // Silently fail if lazy loading is not supported or blocked
+      }
+    };
+
+    // Use requestIdleCallback for non-critical loading
+    if ("requestIdleCallback" in window) {
+      (
+        window as typeof window & {
+          requestIdleCallback: (cb: () => void) => void;
+        }
+      ).requestIdleCallback(loadReplay);
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      setTimeout(loadReplay, 1000);
+    }
+  }
 }
 
 // Hook into App Router navigation transitions (App Router only)

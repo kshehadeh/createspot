@@ -8,7 +8,11 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const nextConfig: NextConfig = {
   cacheComponents: true,
   experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion"],
+    optimizePackageImports: [
+      "lucide-react",
+      "framer-motion",
+      "@icons-pack/react-simple-icons",
+    ],
   },
   images: {
     remotePatterns: [

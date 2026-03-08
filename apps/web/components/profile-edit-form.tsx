@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "@/components/link";
@@ -35,7 +35,23 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { TutorialManager } from "@/lib/tutorial-manager";
-import { Country, State, City } from "country-state-city";
+
+// Heavy country-state-city data (~8.7MB) - dynamically import the location fields
+const LocationFields = dynamic(
+  () =>
+    import("@/components/location-fields").then((mod) => mod.LocationFields),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="space-y-4">
+        <div>
+          <div className="mb-2 h-4 w-24 rounded bg-muted animate-pulse" />
+          <div className="h-10 w-full rounded-md border border-input bg-muted/50 animate-pulse" />
+        </div>
+      </div>
+    ),
+  },
+);
 import {
   Briefcase,
   ArrowRight,
@@ -229,49 +245,6 @@ export function ProfileEditForm({
 
   // Slug validation debounce timer
   const slugValidationTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Get available states/provinces for selected country
-  const availableStates = useMemo(
-    () => (country ? State.getStatesOfCountry(country) : []),
-    [country],
-  );
-
-  // Get available cities for selected country and state
-  const availableCities = useMemo(
-    () =>
-      country && stateProvince
-        ? City.getCitiesOfState(country, stateProvince)
-        : [],
-    [country, stateProvince],
-  );
-
-  // Reset state when country changes
-  useEffect(() => {
-    if (country) {
-      const isValidState = availableStates.some(
-        (s) => s.isoCode === stateProvince,
-      );
-      if (stateProvince && !isValidState) {
-        setStateProvince("");
-        setCity("");
-      }
-    } else if (stateProvince) {
-      setStateProvince("");
-      setCity("");
-    }
-  }, [country, stateProvince, availableStates]);
-
-  // Reset city when state changes
-  useEffect(() => {
-    if (stateProvince && availableCities.length > 0) {
-      const isValidCity = availableCities.some((c) => c.name === city);
-      if (city && !isValidCity) {
-        setCity("");
-      }
-    } else if (stateProvince && !country) {
-      setCity("");
-    }
-  }, [stateProvince, city, availableCities, country]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -789,23 +762,6 @@ export function ProfileEditForm({
       saveProfile(true, { website: finalValue });
     }
   }, [website, saveProfile]);
-
-  const handleCityChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setCity(e.target.value);
-    },
-    [],
-  );
-
-  const handleCityBlur = useCallback(() => {
-    if (city !== initialValuesRef.current.city) {
-      saveProfile(true, {
-        country,
-        stateProvince,
-        city,
-      });
-    }
-  }, [city, country, stateProvince, saveProfile]);
 
   const handleCountryChange = useCallback(
     (value: string) => {
@@ -1506,119 +1462,20 @@ export function ProfileEditForm({
           <h3 className="text-sm font-medium text-foreground">
             {t("location")}
           </h3>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <label
-                htmlFor="country"
-                className="mb-2 block text-sm font-medium text-foreground"
-              >
-                {t("country")}
-              </label>
-              <Select value={country} onValueChange={handleCountryChange}>
-                <SelectTrigger id="country">
-                  <SelectValue placeholder={t("selectCountry")} />
-                </SelectTrigger>
-                <SelectContent className="!max-h-[60vh]">
-                  {Country.getAllCountries().map((c) => (
-                    <SelectItem key={c.isoCode} value={c.isoCode}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {availableStates.length > 0 && (
-              <div>
-                <label
-                  htmlFor="state"
-                  className="mb-2 block text-sm font-medium text-foreground"
-                >
-                  {t("stateProvince")}
-                </label>
-                <Select
-                  value={stateProvince}
-                  onValueChange={handleStateProvinceChange}
-                  disabled={!country}
-                >
-                  <SelectTrigger id="state">
-                    <SelectValue
-                      placeholder={
-                        country ? t("selectState") : t("selectCountryFirst")
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="!max-h-[60vh]">
-                    {availableStates.map((s) => (
-                      <SelectItem key={s.isoCode} value={s.isoCode}>
-                        {s.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {availableStates.length > 0 && availableCities.length > 0 && (
-              <div>
-                <label
-                  htmlFor="city"
-                  className="mb-2 block text-sm font-medium text-foreground"
-                >
-                  {t("city")}
-                </label>
-                <Select
-                  value={city}
-                  onValueChange={handleCitySelectChange}
-                  disabled={!country || !stateProvince}
-                >
-                  <SelectTrigger id="city">
-                    <SelectValue
-                      placeholder={
-                        !country
-                          ? t("selectCountryFirst")
-                          : !stateProvince
-                            ? t("selectStateFirst")
-                            : t("selectCity")
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="!max-h-[60vh]">
-                    {availableCities.map((c) => (
-                      <SelectItem key={c.name} value={c.name}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {((availableStates.length === 0 && country) ||
-              (availableStates.length > 0 &&
-                stateProvince &&
-                availableCities.length === 0)) && (
-              <div>
-                <label
-                  htmlFor="city"
-                  className="mb-2 block text-sm font-medium text-foreground"
-                >
-                  {t("city")}
-                </label>
-                <Input
-                  type="text"
-                  id="city"
-                  value={city}
-                  onChange={handleCityChange}
-                  onBlur={handleCityBlur}
-                  placeholder={t("enterCity")}
-                  disabled={
-                    !country || (availableStates.length > 0 && !stateProvince)
-                  }
-                />
-              </div>
-            )}
-          </div>
+          <LocationFields
+            country={country}
+            stateProvince={stateProvince}
+            city={city}
+            onCountryChange={handleCountryChange}
+            onStateProvinceChange={handleStateProvinceChange}
+            onCityChange={handleCitySelectChange}
+            selectCountryLabel={t("selectCountry")}
+            selectStateLabel={t("selectState")}
+            selectCityLabel={t("selectCity")}
+            selectCountryFirstLabel={t("selectCountryFirst")}
+            stateProvinceLabel={t("stateProvince")}
+            cityLabel={t("city")}
+          />
         </div>
 
         {/* Email Preferences */}
