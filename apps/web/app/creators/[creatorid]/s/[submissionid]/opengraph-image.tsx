@@ -19,26 +19,38 @@ interface RouteParams {
 export default async function OpenGraphImage({ params }: RouteParams) {
   const { creatorid, submissionid } = await params;
 
-  const submission = await prisma.submission.findUnique({
-    where: { id: submissionid },
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
+  const [submission, creator] = await Promise.all([
+    prisma.submission.findUnique({
+      where: { id: submissionid },
+      include: {
+        prompt: {
+          select: {
+            word1: true,
+            word2: true,
+            word3: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
-      user: {
-        select: {
-          id: true,
-          name: true,
-        },
+    }),
+    prisma.user.findFirst({
+      where: {
+        OR: [{ slug: creatorid }, { id: creatorid }],
       },
-    },
-  });
+      select: { id: true },
+    }),
+  ]);
 
-  if (!canShowSubmissionForOg(submission, creatorid)) {
+  if (!submission || !creator || submission.userId !== creator.id) {
+    return createOgNotFoundResponse("Submission Not Found");
+  }
+
+  if (!canShowSubmissionForOg(submission, creator.id)) {
     return createOgNotFoundResponse("Submission Not Found");
   }
 
