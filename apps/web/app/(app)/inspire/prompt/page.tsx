@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/link";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { getCurrentPrompt } from "@/lib/prompts";

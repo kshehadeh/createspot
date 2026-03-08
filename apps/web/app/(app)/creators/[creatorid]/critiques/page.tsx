@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/link";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";

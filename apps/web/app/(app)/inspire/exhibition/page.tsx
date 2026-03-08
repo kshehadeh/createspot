@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/link";
 import Image from "next/image";
 import { PageLayout } from "@/components/page-layout";
 import {

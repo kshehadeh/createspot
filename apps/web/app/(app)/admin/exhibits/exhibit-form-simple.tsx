@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/link";
 import { useTranslations } from "next-intl";
 import { FeaturedSubmissionSelector } from "@/components/featured-submission-selector";
 

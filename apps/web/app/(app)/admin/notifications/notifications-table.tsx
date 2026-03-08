@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
+import Link from "@/components/link";
 import {
   Table,
   TableBody,

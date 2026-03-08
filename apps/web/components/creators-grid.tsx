@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { User } from "lucide-react";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getCreatorUrl } from "@/lib/utils";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import Link from "@/components/link";
 import { useTranslations } from "next-intl";
 import { CreateSpotLogo } from "./create-spot-logo";
 import { MobileNavigation } from "./mobile-navigation";

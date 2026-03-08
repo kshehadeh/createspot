@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/link";
 import Image from "next/image";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { TextThumbnail } from "@/components/text-thumbnail";

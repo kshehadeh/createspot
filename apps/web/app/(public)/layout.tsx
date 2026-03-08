@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/link";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { CreateSpotLogo } from "@/components/create-spot-logo";

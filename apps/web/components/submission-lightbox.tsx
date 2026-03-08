@@ -1,7 +1,7 @@
 "use client";
 
 import { Edit, Eye, FileText, Heart, MessageSquare, X } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
