@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import Link from "@/components/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -42,6 +43,7 @@ async function getUser(creatorid: string) {
 export async function generateMetadata({
   params,
 }: PortfolioPageProps): Promise<Metadata> {
+  await connection();
   const { creatorid } = await params;
   const user = await getUser(creatorid);
   const t = await getTranslations("profile");
@@ -82,6 +84,7 @@ export default async function PortfolioPage({
   params,
   searchParams,
 }: PortfolioPageProps) {
+  await connection();
   const { creatorid } = await params;
   const resolvedSearchParams = await searchParams;
   const [session, t, user] = await Promise.all([

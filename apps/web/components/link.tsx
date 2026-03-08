@@ -9,7 +9,7 @@ import type { ComponentProps } from "react";
  * Pass prefetch={true} to opt in for specific links.
  */
 const Link = forwardRef<HTMLAnchorElement, ComponentProps<typeof NextLink>>(
-  function Link({ prefetch = false, ...props }, ref) {
+  function Link({ prefetch = true, ...props }, ref) {
     return <NextLink ref={ref} prefetch={prefetch} {...props} />;
   },
 );
