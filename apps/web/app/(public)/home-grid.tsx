@@ -19,6 +19,7 @@ export function HomeGrid({
       submissions={initialSubmissions}
       isLoggedIn={isLoggedIn}
       initialHasMore={initialHasMore}
+      alwaysShowTitleAuthor={true}
       loadMoreEndpoint="/api/exhibition"
       loadMoreParams={{}}
       priorityCount={2}

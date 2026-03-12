@@ -60,6 +60,8 @@ interface ExhibitionGridProps {
   isLoggedIn: boolean;
   initialHasMore: boolean;
   showWordInsteadOfTitle?: boolean;
+  /** When true, title/author are always visible on desktop. On mobile they are always visible regardless. */
+  alwaysShowTitleAuthor?: boolean;
   loadMoreEndpoint?: string;
   loadMoreParams?: Record<string, string>;
   priorityCount?: number;
@@ -71,6 +73,7 @@ export function ExhibitionGrid({
   isLoggedIn,
   initialHasMore,
   showWordInsteadOfTitle = false,
+  alwaysShowTitleAuthor = false,
   loadMoreEndpoint,
   loadMoreParams,
   priorityCount = 0,
@@ -149,6 +152,7 @@ export function ExhibitionGrid({
         onLoadMore={loadMore}
         loadError={loadError}
         showWordInsteadOfTitle={showWordInsteadOfTitle}
+        alwaysShowTitleAuthor={alwaysShowTitleAuthor}
         priorityCount={priorityCount}
         lightboxUsesSessionProvider={lightboxUsesSessionProvider}
       />
@@ -164,6 +168,7 @@ function GridContent({
   onLoadMore,
   loadError,
   showWordInsteadOfTitle = false,
+  alwaysShowTitleAuthor = false,
   priorityCount = 0,
   lightboxUsesSessionProvider = false,
 }: Omit<ExhibitionGridProps, "initialHasMore"> & {
@@ -290,18 +295,22 @@ function GridContent({
                         </svg>
                       </div>
                     )}
-                    {/* Hover overlay with creator name and title/word */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <div className="px-4 text-center">
-                        <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
-                          {showWordInsteadOfTitle
-                            ? getWord(submission) || t("untitled")
-                            : submission.title || t("untitled")}
-                        </h3>
-                        <p className="text-sm font-medium text-white/90 drop-shadow-md">
-                          {submission.user.name || tProfile("anonymous")}
-                        </p>
-                      </div>
+                    {/* Title/author in lower right; no overlay. Mobile always visible; desktop per alwaysShowTitleAuthor. */}
+                    <div
+                      className={
+                        alwaysShowTitleAuthor
+                          ? "absolute bottom-2 right-2 z-10 flex flex-col items-end justify-end text-right"
+                          : "absolute bottom-2 right-2 z-10 flex flex-col items-end justify-end text-right opacity-0 transition-opacity duration-300 max-md:opacity-100 md:group-hover:opacity-100"
+                      }
+                    >
+                      <h3 className="text-lg font-semibold text-white drop-shadow-lg">
+                        {showWordInsteadOfTitle
+                          ? getWord(submission) || t("untitled")
+                          : submission.title || t("untitled")}
+                      </h3>
+                      <p className="text-sm font-medium text-white/90 drop-shadow-md">
+                        {submission.user.name || tProfile("anonymous")}
+                      </p>
                     </div>
                   </div>
                 ) : submission.text ? (
@@ -321,18 +330,22 @@ function GridContent({
                         />
                       </div>
                     )}
-                    {/* Hover overlay with creator name and title/word */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/80 via-black/60 to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <div className="px-4 text-center">
-                        <h3 className="mb-2 text-lg font-semibold text-white drop-shadow-lg">
-                          {showWordInsteadOfTitle
-                            ? getWord(submission) || t("untitled")
-                            : submission.title || t("untitled")}
-                        </h3>
-                        <p className="text-sm font-medium text-white/90 drop-shadow-md">
-                          {submission.user.name || tProfile("anonymous")}
-                        </p>
-                      </div>
+                    {/* Title/author in lower right; no overlay. Mobile always visible; desktop per alwaysShowTitleAuthor. */}
+                    <div
+                      className={
+                        alwaysShowTitleAuthor
+                          ? "absolute bottom-2 right-2 z-10 flex flex-col items-end justify-end text-right"
+                          : "absolute bottom-2 right-2 z-10 flex flex-col items-end justify-end text-right opacity-0 transition-opacity duration-300 max-md:opacity-100 md:group-hover:opacity-100"
+                      }
+                    >
+                      <h3 className="text-lg font-semibold text-white drop-shadow-lg">
+                        {showWordInsteadOfTitle
+                          ? getWord(submission) || t("untitled")
+                          : submission.title || t("untitled")}
+                      </h3>
+                      <p className="text-sm font-medium text-white/90 drop-shadow-md">
+                        {submission.user.name || tProfile("anonymous")}
+                      </p>
                     </div>
                   </div>
                 ) : null}
