@@ -43,7 +43,9 @@ interface LocationFieldsProps {
 type CountryStateCityModule = {
   Country: { getAllCountries: () => CountryData[] };
   State: { getStatesOfCountry: (countryCode: string) => StateData[] };
-  City: { getCitiesOfState: (countryCode: string, stateCode: string) => CityData[] };
+  City: {
+    getCitiesOfState: (countryCode: string, stateCode: string) => CityData[];
+  };
 };
 
 // Lazy-loaded country-state-city module
@@ -188,7 +190,9 @@ export function LocationFields({
           >
             <SelectTrigger id="state">
               <SelectValue
-                placeholder={country ? selectStateLabel : selectCountryFirstLabel}
+                placeholder={
+                  country ? selectStateLabel : selectCountryFirstLabel
+                }
               />
             </SelectTrigger>
             <SelectContent className="!max-h-[60vh]">
