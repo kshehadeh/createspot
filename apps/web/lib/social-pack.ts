@@ -133,3 +133,31 @@ export function buildCaptionText(
 
   return lines.join("\n").trim();
 }
+
+/**
+ * Extract file extension from a URL path.
+ * Returns "jpg" as default if no extension found.
+ */
+export function getExtensionFromUrl(url: string): string {
+  try {
+    const pathname = new URL(url).pathname;
+    const match = pathname.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+    if (match?.[1]) {
+      const ext = match[1].toLowerCase();
+      if (["jpg", "jpeg", "png", "gif", "webp", "bmp"].includes(ext)) {
+        return ext === "jpeg" ? "jpg" : ext;
+      }
+    }
+  } catch {
+    // URL parsing failed, try simple extraction
+  }
+  // Fallback: try regex on raw string
+  const fallbackMatch = url.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+  if (fallbackMatch?.[1]) {
+    const ext = fallbackMatch[1].toLowerCase();
+    if (["jpg", "jpeg", "png", "gif", "webp", "bmp"].includes(ext)) {
+      return ext === "jpeg" ? "jpg" : ext;
+    }
+  }
+  return "jpg";
+}

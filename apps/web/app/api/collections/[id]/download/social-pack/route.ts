@@ -7,6 +7,7 @@ import {
   generateSocialVariants,
   buildCaptionText,
   SOCIAL_PLATFORM_PRESETS,
+  getExtensionFromUrl,
 } from "@/lib/social-pack";
 
 interface RouteParams {
@@ -39,6 +40,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                   word2: true,
                   word3: true,
                 },
+              },
+              progressions: {
+                orderBy: { order: "asc" },
               },
             },
           },
@@ -116,6 +120,49 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     archive.append(captionText, {
       name: `${folderName}/caption.txt`,
     });
+
+    // Add reference image if exists
+    if (submission.referenceImageUrl) {
+      try {
+        const refBuffer = await fetchImageBuffer(submission.referenceImageUrl);
+        const ext = getExtensionFromUrl(submission.referenceImageUrl);
+        archive.append(refBuffer, {
+          name: `${folderName}/reference.${ext}`,
+        });
+      } catch (error) {
+        console.error("Failed to load reference image for social pack:", error);
+      }
+    }
+
+    // Add progressions if exist
+    if (submission.progressions.length > 0) {
+      for (const progression of submission.progressions) {
+        const progNum = progression.order + 1;
+
+        if (progression.imageUrl) {
+          try {
+            const progBuffer = await fetchImageBuffer(progression.imageUrl);
+            const ext = getExtensionFromUrl(progression.imageUrl);
+            archive.append(progBuffer, {
+              name: `${folderName}/progressions/${progNum}.${ext}`,
+            });
+          } catch (error) {
+            console.error(
+              `Failed to load progression ${progNum} image for social pack:`,
+              error,
+            );
+          }
+        } else if (progression.text || progression.comment) {
+          // Text-only progression
+          const textContent = [progression.text, progression.comment]
+            .filter(Boolean)
+            .join("\n\n");
+          archive.append(textContent, {
+            name: `${folderName}/progressions/${progNum}.txt`,
+          });
+        }
+      }
+    }
   }
 
   archive.finalize();
