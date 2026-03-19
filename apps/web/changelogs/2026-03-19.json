@@ -1,0 +1,22 @@
+[
+  {
+    "time": "2026-03-19T07:13:28-04:00",
+    "commit": "1640cab",
+    "type": "feature",
+    "audience": "public",
+    "area": "portfolio",
+    "description": "Social pack downloads now include progression images and reference image.",
+    "impact": "minor",
+    "version": "2.16.0"
+  },
+  {
+    "time": "2026-03-19T07:26:10-04:00",
+    "commit": "dc3105d",
+    "type": "feature",
+    "audience": "public",
+    "area": "portfolio",
+    "description": "Submission PDF downloads now include progressions page with grid layout and reference image page.",
+    "impact": "minor",
+    "version": "2.16.0"
+  }
+]
