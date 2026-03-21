@@ -13,57 +13,53 @@ export function createCanvas(width: number, height: number): HTMLCanvasElement {
 }
 
 /**
- * Load an image from URL and draw it to a canvas
+ * Load an image from URL and draw it to a canvas, respecting EXIF orientation.
  *
- * This function includes retry logic with cache-busting to handle intermittent
- * CORS issues caused by Cloudflare CDN caching responses without CORS headers.
- * When an image is first loaded without crossOrigin, the cached response may
- * lack Access-Control-Allow-Origin headers. Retrying with a cache-busting
- * parameter forces a fresh request that includes proper CORS headers.
+ * Uses fetch + createImageBitmap({ imageOrientation: 'from-image' }) so that
+ * EXIF orientation tags are always applied, avoiding the inconsistent canvas
+ * behaviour of ctx.drawImage(imgElement) across browsers.
+ *
+ * Retries with cache-busting to handle intermittent Cloudflare CDN responses
+ * that lack CORS headers.
  */
 export async function loadImageToCanvas(
   url: string,
   maxRetries: number = 3,
 ): Promise<HTMLCanvasElement> {
-  const attemptLoad = (
+  const attemptLoad = async (
     urlToLoad: string,
     attempt: number,
   ): Promise<HTMLCanvasElement> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
+    try {
+      const response = await fetch(urlToLoad, { mode: "cors" });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const blob = await response.blob();
+      const bitmap = await createImageBitmap(blob, {
+        imageOrientation: "from-image",
+      });
 
-      img.onload = () => {
-        // Use naturalWidth/naturalHeight to ensure we get the actual image dimensions
-        const width = img.naturalWidth || img.width;
-        const height = img.naturalHeight || img.height;
-        const canvas = createCanvas(width, height);
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          reject(new Error("Failed to get canvas context"));
-          return;
-        }
-        ctx.drawImage(img, 0, 0);
-        resolve(canvas);
-      };
-
-      img.onerror = () => {
-        if (attempt < maxRetries) {
-          // Retry with a cache-busting parameter to bypass CDN cached response
-          // that may lack CORS headers (common with Cloudflare)
-          const cacheBustUrl = addCacheBustParam(url, attempt);
-          resolve(attemptLoad(cacheBustUrl, attempt + 1));
-        } else {
-          reject(
-            new Error(
-              `Failed to load image after ${maxRetries} attempts. This may be a CORS configuration issue.`,
-            ),
-          );
-        }
-      };
-
-      img.src = urlToLoad;
-    });
+      const canvas = createCanvas(bitmap.width, bitmap.height);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        bitmap.close();
+        throw new Error("Failed to get canvas context");
+      }
+      ctx.drawImage(bitmap, 0, 0);
+      bitmap.close();
+      return canvas;
+    } catch {
+      if (attempt < maxRetries) {
+        // Retry with a cache-busting parameter to bypass CDN cached response
+        // that may lack CORS headers (common with Cloudflare)
+        const cacheBustUrl = addCacheBustParam(url, attempt);
+        return attemptLoad(cacheBustUrl, attempt + 1);
+      }
+      throw new Error(
+        `Failed to load image after ${maxRetries} attempts. This may be a CORS configuration issue.`,
+      );
+    }
   };
 
   return attemptLoad(url, 1);

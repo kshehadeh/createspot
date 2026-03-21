@@ -46,6 +46,7 @@ export async function processImageForStorage(
     format === "webp"
   ) {
     const resized = await image
+      .rotate() // apply EXIF orientation and strip the tag
       .resize(maxLongEdge, maxLongEdge, {
         fit: "inside",
         withoutEnlargement: true,
