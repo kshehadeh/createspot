@@ -1701,6 +1701,7 @@
     "rotateLeft": "Rotate Left",
     "rotateRight": "Rotate Right",
     "save": "Save",
+    "saving": "Saving...",
     "saved": "Image saved successfully"
   },
   "progression": {

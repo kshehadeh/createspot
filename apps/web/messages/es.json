@@ -1701,6 +1701,7 @@
     "rotateLeft": "Rotar Izquierda",
     "rotateRight": "Rotar Derecha",
     "save": "Guardar",
+    "saving": "Guardando...",
     "saved": "Imagen guardada exitosamente"
   },
   "progression": {
