@@ -1,0 +1,32 @@
+[
+  {
+    "time": "2026-03-21T19:31:42-04:00",
+    "commit": "2a7c9ea",
+    "type": "fix",
+    "audience": "public",
+    "area": "tools",
+    "description": "Fixed missing 'Saving...' translation in the image editor save button.",
+    "impact": "patch",
+    "version": "2.16.1"
+  },
+  {
+    "time": "2026-03-21T19:32:15-04:00",
+    "commit": "a02a87c",
+    "type": "fix",
+    "audience": "public",
+    "area": "tools",
+    "description": "Fixed image editor reverting to the original image after saving changes.",
+    "impact": "patch",
+    "version": "2.16.1"
+  },
+  {
+    "time": "2026-03-21T19:32:27-04:00",
+    "commit": "4ab7c79",
+    "type": "fix",
+    "audience": "public",
+    "area": "tools",
+    "description": "Fixed image editor rotating images 90 degrees when applying non-rotation edits (caused by unhandled EXIF orientation data).",
+    "impact": "patch",
+    "version": "2.16.1"
+  }
+]
