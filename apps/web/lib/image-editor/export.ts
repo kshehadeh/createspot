@@ -35,10 +35,13 @@ export async function canvasToFile(
 }
 
 /**
- * Get MIME type from file extension or URL
+ * Get MIME type from file extension or URL.
+ * Strips query parameters before parsing the extension so cache-busted
+ * URLs like "image.webp?t=1234" are handled correctly.
  */
 export function getMimeTypeFromSource(source: string): string {
-  const extension = source.split(".").pop()?.toLowerCase();
+  const pathPart = source.split("?")[0];
+  const extension = pathPart.split(".").pop()?.toLowerCase();
   switch (extension) {
     case "png":
       return "image/png";

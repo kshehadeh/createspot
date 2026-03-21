@@ -256,8 +256,8 @@ export function ImageEditor({
 
       const data = await response.json();
 
-      // Update image URL with the new one
-      setImageUrl(data.imageUrl);
+      // Update image URL with cache-busting query param to force browser refresh
+      setImageUrl(`${data.imageUrl}?t=${Date.now()}`);
       setPreviewImageUrl(null);
 
       // Reset adjustments
