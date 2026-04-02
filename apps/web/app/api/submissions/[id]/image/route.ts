@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import {
   S3Client,
@@ -102,35 +103,23 @@ export async function POST(
     const result = await processImageForStorage(buffer);
 
     const oldKey = submission.imageUrl.replace(`${publicUrlBase}/`, "");
-    const baseKeyWithoutExt = oldKey.replace(/\.[^.]+$/, "");
-    const newKey = `${baseKeyWithoutExt}.${result.extension}`;
-    const keyChanged = oldKey !== newKey;
+    const folder = oldKey.substring(0, oldKey.lastIndexOf("/"));
+    const newKey = `${folder}/${randomUUID()}.${result.extension}`;
 
-    if (keyChanged) {
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: newKey,
+        Body: result.buffer,
+        ContentType: result.contentType,
+      }),
+    );
+    try {
       await s3Client.send(
-        new PutObjectCommand({
-          Bucket: bucket,
-          Key: newKey,
-          Body: result.buffer,
-          ContentType: result.contentType,
-        }),
+        new DeleteObjectCommand({ Bucket: bucket, Key: oldKey }),
       );
-      try {
-        await s3Client.send(
-          new DeleteObjectCommand({ Bucket: bucket, Key: oldKey }),
-        );
-      } catch (err) {
-        console.error("Failed to delete old R2 object:", err);
-      }
-    } else {
-      await s3Client.send(
-        new PutObjectCommand({
-          Bucket: bucket,
-          Key: newKey,
-          Body: result.buffer,
-          ContentType: result.contentType,
-        }),
-      );
+    } catch (err) {
+      console.error("Failed to delete old R2 object:", err);
     }
 
     const newImageUrl = `${publicUrlBase}/${newKey}`;
