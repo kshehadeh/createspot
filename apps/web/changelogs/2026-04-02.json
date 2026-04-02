@@ -1,0 +1,12 @@
+[
+  {
+    "time": "2026-04-02T00:00:00-04:00",
+    "commit": "048a8ad",
+    "type": "fix",
+    "audience": "public",
+    "area": "tools",
+    "description": "Fixed saved image not updating in the editor due to browser caching the old image URL.",
+    "impact": "patch",
+    "version": "2.16.2"
+  }
+]
