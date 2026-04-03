@@ -2,24 +2,22 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-interface ChangelogEntry {
-  time: string;
-  commit: string;
-  type: string;
-  audience?: "public" | "development";
-  area: string;
-  description: string;
-  impact?: "patch" | "minor" | "major";
-  version?: string;
+interface ChangelogRelease {
+  tagName: string;
+  publishedAt: string;
+  body: string;
+  htmlUrl: string;
 }
 
 interface ChangelogResponse {
-  entries: ChangelogEntry[];
-  total: number;
+  releases: ChangelogRelease[];
+  hasMore: boolean;
+  error?: string;
 }
 
 function formatDate(value: string) {
@@ -47,17 +45,13 @@ export function ChangelogClient({ initialLimit }: { initialLimit: number }) {
         setIsLoading(true);
         setError(null);
 
-        const res = await fetch(
-          `/api/changelog?limit=${limit}&audience=public`,
-          {
-            cache: "no-store",
-          },
-        );
-        if (!res.ok) {
-          throw new Error(`Request failed (${res.status})`);
-        }
-
+        const res = await fetch(`/api/changelog?limit=${limit}`, {
+          cache: "no-store",
+        });
         const json = (await res.json()) as ChangelogResponse;
+        if (!res.ok) {
+          throw new Error(json.error ?? `Request failed (${res.status})`);
+        }
         if (!cancelled) setData(json);
       } catch (e) {
         if (!cancelled) {
@@ -74,8 +68,8 @@ export function ChangelogClient({ initialLimit }: { initialLimit: number }) {
     };
   }, [limit]);
 
-  const entries = useMemo(() => data?.entries ?? [], [data]);
-  const canLoadMore = data ? entries.length < data.total : false;
+  const releases = useMemo(() => data?.releases ?? [], [data]);
+  const canLoadMore = data?.hasMore ?? false;
 
   return (
     <div className="space-y-6">
@@ -87,7 +81,7 @@ export function ChangelogClient({ initialLimit }: { initialLimit: number }) {
         </Card>
       ) : null}
 
-      {isLoading && entries.length === 0 ? (
+      {isLoading && releases.length === 0 ? (
         <Card>
           <CardContent className="p-6 text-sm text-muted-foreground">
             {t("loading")}
@@ -96,28 +90,52 @@ export function ChangelogClient({ initialLimit }: { initialLimit: number }) {
       ) : null}
 
       <div className="grid gap-4">
-        {entries.map((entry) => (
-          <Card key={`${entry.commit}-${entry.time}-${entry.description}`}>
+        {releases.map((release) => (
+          <Card key={release.tagName}>
             <CardContent className="p-6">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="capitalize">
-                    {entry.type}
-                  </Badge>
-                  <Badge variant="outline" className="capitalize">
-                    {entry.area}
-                  </Badge>
-                  <Badge variant="outline">
-                    {entry.version ? `v${entry.version}` : t("unreleased")}
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {formatDate(entry.time)}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                  {release.tagName}
+                </h2>
+                <div className="flex flex-col items-start gap-2 sm:items-end">
+                  <div className="text-xs text-muted-foreground">
+                    {formatDate(release.publishedAt)}
+                  </div>
+                  <a
+                    href={release.htmlUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                  >
+                    {t("viewOnGitHub")}
+                  </a>
                 </div>
               </div>
-              <p className="mt-3 text-sm leading-relaxed text-foreground/90">
-                {entry.description}
-              </p>
+              <div className="mt-4 text-sm leading-relaxed text-foreground/90">
+                {release.body ? (
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-a:text-primary">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        a: ({ href, children }) => (
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary underline underline-offset-2"
+                          >
+                            {children}
+                          </a>
+                        ),
+                      }}
+                    >
+                      {release.body}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">{t("emptyBody")}</p>
+                )}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -132,8 +150,10 @@ export function ChangelogClient({ initialLimit }: { initialLimit: number }) {
           >
             {isLoading ? t("loadingMore") : t("loadMore")}
           </Button>
-        ) : data && entries.length > 0 ? (
+        ) : releases.length > 0 ? (
           <p className="text-sm text-muted-foreground">{t("end")}</p>
+        ) : !isLoading && !error ? (
+          <p className="text-sm text-muted-foreground">{t("empty")}</p>
         ) : null}
       </div>
     </div>

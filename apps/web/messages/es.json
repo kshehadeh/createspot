@@ -717,12 +717,14 @@
     "title": "Actualizaciones | Create Spot",
     "description": "Actualizaciones y mejoras recientes en Create Spot.",
     "mainTitle": "Actualizaciones",
-    "mainDescription": "Una lista continua de mejoras, correcciones y nuevas funciones.",
+    "mainDescription": "Notas de cada versión publicada en GitHub.",
     "loading": "Cargando actualizaciones...",
     "loadMore": "Cargar más",
     "loadingMore": "Cargando...",
     "end": "Estás al día.",
-    "unreleased": "Sin publicar",
+    "viewOnGitHub": "Ver en GitHub",
+    "emptyBody": "Sin notas para esta versión.",
+    "empty": "No se encontraron versiones.",
     "loadError": "No se pudieron cargar las actualizaciones: {error}"
   },
   "upload": {

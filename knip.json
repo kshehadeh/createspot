@@ -20,7 +20,6 @@
         "app/creators/[creatorid]/collections/[collectionid]/opengraph-image.tsx",
         "app/creators/[creatorid]/s/[submissionid]/opengraph-image.tsx",
         "app/inspire/exhibition/[exhibitId]/opengraph-image.tsx",
-        "changelogs/**",
         "data/**",
         "e2e/**",
         "playwright.config.ts"
