@@ -63,9 +63,18 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           NOTES_FILE="${{ steps.notes.outputs.path }}"
           if gh release view "$TAG" --repo "${{ github.repository }}" &>/dev/null; then
-            gh release edit "$TAG" --repo "${{ github.repository }}" --notes-file "$NOTES_FILE"
+            gh release edit "$TAG" \
+              --repo "${{ github.repository }}" \
+              --notes-file "$NOTES_FILE" \
+              --latest \
+              --verify-tag
           else
-            gh release create "$TAG" --repo "${{ github.repository }}" --title "$TAG" --notes-file "$NOTES_FILE"
+            gh release create "$TAG" \
+              --repo "${{ github.repository }}" \
+              --title "$TAG" \
+              --notes-file "$NOTES_FILE" \
+              --latest \
+              --verify-tag
           fi
 
       - name: Post changelog to Discord
