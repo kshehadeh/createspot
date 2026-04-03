@@ -353,6 +353,14 @@ export function getRoute(key: keyof typeof ROUTES): RouteConfig {
 }
 
 /**
+ * True only for the public creators directory (`/creators`), not creator
+ * profiles, portfolios, or submissions under `/creators/[creatorid]/...`.
+ */
+export function isCreatorsListingPath(pathname: string): boolean {
+  return pathname === "/creators" || pathname === "/creators/";
+}
+
+/**
  * Build a route path by replacing dynamic segments with actual values.
  *
  * @param key - Route key from ROUTES

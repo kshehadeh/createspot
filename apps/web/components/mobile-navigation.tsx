@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "./ui/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { cn, getCreatorUrl } from "@/lib/utils";
-import { getRoute } from "@/lib/routes";
+import { getRoute, isCreatorsListingPath } from "@/lib/routes";
 import type { LucideIcon } from "lucide-react";
 import {
   Brain,
@@ -290,6 +290,7 @@ export function MobileNavigation({
                 icon={Users}
                 label={t("creators")}
                 onClose={() => setIsMenuOpen(false)}
+                isActive={isCreatorsListingPath(pathname)}
               />
               <MobileNavItem
                 href={getRoute("prompt").path}

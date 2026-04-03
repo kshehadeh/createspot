@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "@/components/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { getRoute } from "@/lib/routes";
+import { getRoute, isCreatorsListingPath } from "@/lib/routes";
 import { cn, getCreatorUrl } from "@/lib/utils";
 import { SupportFormModal } from "@/components/contact/support-form-modal";
 import { ExhibitRequestModal } from "@/components/contact/exhibit-request-form";
@@ -79,7 +79,7 @@ export function DashboardNavigation({
   const isInspireActive =
     isActive(exhibitionRoute.path) ||
     isActive(museumsRoute.path) ||
-    isActive(creatorsRoute.path) ||
+    isCreatorsListingPath(pathname) ||
     isActive(promptRoute.path) ||
     isActive(communityRoute.path) ||
     (user ? isActive(favoritesRoute.path) : false);
@@ -157,7 +157,7 @@ export function DashboardNavigation({
                 prefetch={false}
                 className={cn(
                   "flex items-center gap-2",
-                  isActive(creatorsRoute.path) &&
+                  isCreatorsListingPath(pathname) &&
                     "bg-accent text-accent-foreground",
                 )}
               >
