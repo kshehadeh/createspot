@@ -67,11 +67,13 @@ interface MobileNavigationUser {
 interface MobileNavigationProps {
   user?: MobileNavigationUser | null;
   onCreateModalOpen?: () => void;
+  showCreateButton?: boolean;
 }
 
 export function MobileNavigation({
   user,
   onCreateModalOpen,
+  showCreateButton = true,
 }: MobileNavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -187,7 +189,7 @@ export function MobileNavigation({
   return (
     <>
       {/* Mobile Create Button */}
-      {user && (
+      {user && showCreateButton && (
         <button
           onClick={handleCreateClick}
           className="flex items-center justify-center w-9 h-9 rounded-md text-foreground hover:bg-accent transition-colors md:hidden"
