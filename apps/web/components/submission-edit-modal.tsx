@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  BaseModal,
-  BaseModalContent,
-  BaseModalHeader,
-  BaseModalTitle,
-  BaseModalDescription,
-  BaseModalScrollArea,
-} from "@/components/ui/base-modal";
+  FullScreenModal,
+  FullScreenModalContent,
+  FullScreenModalHeader,
+  FullScreenModalTitle,
+  FullScreenModalDescription,
+  FullScreenModalBody,
+} from "@/components/ui/full-screen-modal";
 import { PortfolioItemForm } from "@/components/portfolio-item-form";
 
 interface SubmissionData {
@@ -61,26 +61,26 @@ export function SubmissionEditModal({
   };
 
   return (
-    <BaseModal
-      open={isOpen}
-      onOpenChange={(open) => !open && onClose()}
-      dismissible={false}
-    >
-      <BaseModalContent className="max-w-2xl p-0">
-        <BaseModalHeader>
-          <BaseModalTitle>{getTitle()}</BaseModalTitle>
-          <BaseModalDescription>{getDescription()}</BaseModalDescription>
-        </BaseModalHeader>
-        <BaseModalScrollArea>
-          <PortfolioItemForm
-            mode={mode === "create" ? "create" : "edit"}
-            initialData={initialData}
-            onSuccess={handleSuccess}
-            onCancel={onClose}
-            setIsPortfolio={mode === "add-to-portfolio"}
-          />
-        </BaseModalScrollArea>
-      </BaseModalContent>
-    </BaseModal>
+    <FullScreenModal open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <FullScreenModalContent>
+        <FullScreenModalHeader>
+          <FullScreenModalTitle>{getTitle()}</FullScreenModalTitle>
+          <FullScreenModalDescription>
+            {getDescription()}
+          </FullScreenModalDescription>
+        </FullScreenModalHeader>
+        <FullScreenModalBody>
+          <div className="mx-auto w-full max-w-2xl">
+            <PortfolioItemForm
+              mode={mode === "create" ? "create" : "edit"}
+              initialData={initialData}
+              onSuccess={handleSuccess}
+              onCancel={onClose}
+              setIsPortfolio={mode === "add-to-portfolio"}
+            />
+          </div>
+        </FullScreenModalBody>
+      </FullScreenModalContent>
+    </FullScreenModal>
   );
 }
