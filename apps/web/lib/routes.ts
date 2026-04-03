@@ -14,6 +14,7 @@ import {
   Mail,
   Settings,
   ScrollText,
+  Rss,
 } from "lucide-react";
 import { EXHIBITION_CONFIGS } from "./exhibition-constants";
 import { Home } from "lucide-react";
@@ -49,6 +50,13 @@ const ROUTES: Record<string, RouteConfig> = {
     path: "/dashboard",
     label: "navigation.dashboard",
     icon: Home,
+  },
+
+  // Social feed (home page)
+  feed: {
+    path: "/",
+    label: "navigation.feed",
+    icon: Rss,
   },
 
   // Inspire section (community, exhibition, museums, prompt)

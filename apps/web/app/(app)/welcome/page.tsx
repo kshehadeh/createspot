@@ -190,7 +190,7 @@ export default async function WelcomePage() {
             <form
               action={async () => {
                 "use server";
-                await signIn("google", { redirectTo: "/dashboard" });
+                await signIn("google", { redirectTo: "/" });
               }}
             >
               <button
@@ -216,7 +216,7 @@ export default async function WelcomePage() {
             <form
               action={async () => {
                 "use server";
-                await signIn("google", { redirectTo: "/dashboard" });
+                await signIn("google", { redirectTo: "/" });
               }}
             >
               <button
