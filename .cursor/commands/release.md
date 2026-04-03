@@ -1,7 +1,13 @@
-Start by using the git-commit skill to commit the current changes. Then use the changelog, version-bump to prepare the changelog, bump the version and then commit the changelog and version bump. Then push the code to the remote. Finally, post the changelog to Discord using the post-changelog-to-discord script:
-  
+Run a release from the repo root with a clean `main` branch and all work already committed:
+
 ```bash
-DISCORD_WEBHOOK_URL=<your-webhook-url> bun apps/web/scripts/post-changelog-to-discord.ts
+bun run release
 ```
 
-The webhook URL should be set as an environment variable or passed directly to the script.
+This bumps `apps/web/package.json`, commits, tags `v*`, and pushes. GitHub Actions then deploys to Vercel, creates the GitHub Release, and posts to Discord when secrets are configured.
+
+To preview Discord formatting locally (no post):
+
+```bash
+DISCORD_RELEASE_BODY=$'## Changes\n\n- ...' DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..." GITHUB_REF_NAME="v0.0.0" bun run --cwd apps/web changelog:discord --dry-run
+```

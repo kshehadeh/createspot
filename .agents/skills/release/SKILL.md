@@ -1,112 +1,36 @@
 ---
 name: release
-description: Perform a full release: check for changes since last release, update changelogs, bump version, commit, and push to remote.
+description: Run the automated release script to bump version from git commits, tag, and push; CI publishes GitHub Release and Discord.
 ---
 
 # Release
 
-This skill performs a complete release workflow: document changes, bump version, commit, and push.
+Releases are driven by **`bun run release`** at the repo root ([`scripts/release.ts`](scripts/release.ts)).
 
-## Workflow
+## What the script does
 
-### Step 1: Find Commits Since Last Release
+1. Ensures current branch is `main` (override with `RELEASE_BRANCH`).
+2. Ensures a clean working tree (no uncommitted changes).
+3. Finds the latest `v*` tag merged into `HEAD` and lists commits since that tag; aborts if there is nothing new.
+4. Chooses **minor** if any commit subject matches conventional `feat:` / `feat(scope):` / `feature:`; otherwise **patch**. Breaking-change markers are **not** used for the bump level.
+5. Bumps `apps/web/package.json` version accordingly.
+6. Commits with `chore(release): bump version to X.Y.Z`, creates annotated tag `vX.Y.Z`, pushes `main` and the tag.
 
-1. Find the last release commit by searching for "chore(release)" or "bump version" in git log
-2. List all commits since that release
-3. Check which commits are already documented in `apps/web/changelogs/*.json`
+## After push
 
-### Step 2: Document Undocumented Commits
+Pushing `v*` triggers [`release.yml`](../../../.github/workflows/release.yml), which deploys to Vercel, creates or updates the GitHub Release (notes from `git log` since the previous tag), and posts the same notes to Discord when `DISCORD_WEBHOOK_URL` is set.
 
-For each undocumented commit, create changelog entries following the changelog skill format:
+## Maintainer setup
 
-```json
-{
-  "time": "ISO datetime",
-  "commit": "short sha",
-  "type": "fix | improvement | feature | documentation",
-  "audience": "public | development",
-  "area": "global | content | profile | portfolio | collection | games | tools",
-  "description": "Brief one-sentence description",
-  "impact": "patch | minor | major",
-  "version": ""
-}
-```
+- **GitHub Actions:** `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, optional `DISCORD_WEBHOOK_URL`.
+- **App (Vercel env):** `CHANGELOG_GITHUB_REPO` (`owner/repo`), optional `GITHUB_TOKEN` for the About changelog page.
 
-**Entry Rules:**
-- `patch`: bug fixes, small improvements, documentation
-- `minor`: new features or notable user-facing improvements  
-- `major`: breaking changes
-- A single commit may have multiple entries if it contains multiple discrete changes
-- Multiple commits for the same feature should be consolidated into one entry
-- Do NOT duplicate entries - check existing changelogs first
-
-**Area Definitions:**
-- Global: Navigation, Authentication
-- Content: About pages, home page, etc
-- Portfolio: Viewing, editing, sharing portfolios
-- Collections: Viewing, editing, creating, sharing collections
-- Games: Prompt and other inspiration games
-- Tools: Image editor
-
-### Step 3: Version Bump
-
-1. Read current version from `apps/web/package.json`
-2. Find all unreleased entries (where `version` is empty or missing)
-3. Determine highest impact among unreleased entries: `major` > `minor` > `patch`
-4. If no unreleased entries exist, report "nothing to release" and stop
-5. Calculate new version:
-   - `patch`: `X.Y.Z` -> `X.Y.(Z+1)`
-   - `minor`: `X.Y.Z` -> `X.(Y+1).0`
-   - `major`: `X.Y.Z` -> `(X+1).0.0`
-6. Update `apps/web/package.json` with new version
-7. Stamp all unreleased entries with the new version
-
-### Step 4: Commit Changes
-
-1. Stage all modified files:
-   - `apps/web/package.json`
-   - `apps/web/changelogs/*.json`
-2. Create commit with message:
-   ```
-   chore(release): bump version to X.Y.Z
-   ```
-3. Include co-authorship in commit
-
-### Step 5: Push to Remote
-
-Push the commits to the remote repository.
-
-### Step 6: Post Changelog to Discord
-
-After successfully pushing, post the changelog to Discord:
+## Local Discord test (optional)
 
 ```bash
-bun run changelog:discord
+DISCORD_RELEASE_BODY="## Changes\n\n- example" DISCORD_WEBHOOK_URL="..." GITHUB_REF_NAME="v1.0.0" bun run --cwd apps/web changelog:discord --dry-run
 ```
-
-This uses the `changelog:discord` script which runs `bun scripts/post-changelog-to-discord.ts`.
-
-**Requirements:**
-- `DISCORD_WEBHOOK_URL` environment variable must be set
-- If the webhook is not configured, skip this step with a note
-
-**Options:**
-- `--dry-run` can be used to preview the message without posting
 
 ## Output
 
-Report:
-- Previous version and new version
-- Number of changelog entries added
-- Number of entries stamped with version
-- Impact level used
-- Commit SHA created
-- Push status
-- Discord post status (posted, skipped, or dry-run)
-
-## Safety
-
-- Never modify existing `version` values in changelogs
-- Never change `time`, `commit`, `type`, `area`, or `description` fields
-- Do not release if there are no unreleased entries
-- Always verify git status before committing
+Report whether the script ran, new version, tag name, and that CI will handle GitHub + Discord.

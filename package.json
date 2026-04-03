@@ -16,7 +16,8 @@
     "clean": "turbo daemon clean && rm -rf .turbo apps/*/.turbo packages/*/.turbo",
     "format": "biome format --write .",
     "knip": "knip",
-    "changelog:discord": "turbo run changelog:discord"
+    "changelog:discord": "turbo run changelog:discord",
+    "release": "bun scripts/release.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",

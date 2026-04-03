@@ -85,6 +85,7 @@ apps/web/docs/           # Developer documentation
 | `bun run format` | Format code with Biome |
 | `bun run format:check` | Check formatting without changes |
 | `bun run validate` | Run full validation (lint, format, knip, build) |
+| `bun run release` | On clean `main`, bump `apps/web` version from commits since last `v*` tag, commit, tag, and push (CI deploys and publishes GitHub Release + Discord) |
 
 > **Important**: After making major changes to the codebase (e.g., schema changes, new features, significant refactoring), always run `bun run validate` to ensure everything passes linting, formatting, dependency checks, and builds successfully before completing the task.
 
@@ -320,6 +321,7 @@ Required variables (see `.env.example`):
 | `R2_SECRET_ACCESS_KEY` | R2 secret key |
 | `R2_BUCKET_NAME` | R2 bucket name |
 | `R2_PUBLIC_URL` | Public URL for R2 bucket |
+| `CHANGELOG_GITHUB_REPO` | `owner/repo` for the About changelog (GitHub Releases API); optional `GITHUB_TOKEN` for rate limits / private repos |
 
 ## Key Patterns
 
