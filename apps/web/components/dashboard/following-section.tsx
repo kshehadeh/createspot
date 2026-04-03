@@ -40,7 +40,7 @@ export function FollowingSection() {
   const action = (
     <Link
       href="/inspire/community"
-      className="text-sm font-medium text-primary hover:underline underline-offset-4"
+      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:underline underline-offset-4"
     >
       {t("viewCommunity")}
     </Link>
@@ -69,7 +69,7 @@ export function FollowingSection() {
 
             return (
               <li key={user.id}>
-                <div className="flex items-center gap-3 rounded-md p-2 -mx-2">
+                <div className="-mx-2 flex items-center gap-3 rounded-md p-2">
                   <Link href={profileUrl} className="shrink-0">
                     <div className="relative h-9 w-9 overflow-hidden rounded-full bg-muted">
                       {avatar ? (

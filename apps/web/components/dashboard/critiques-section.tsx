@@ -42,7 +42,7 @@ export function CritiquesSection({ critiquesUrl }: CritiquesSectionProps) {
   const action = (
     <Link
       href={critiquesUrl}
-      className="text-sm font-medium text-primary hover:underline underline-offset-4"
+      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:underline underline-offset-4"
     >
       {t("viewAll")}
     </Link>
@@ -66,7 +66,7 @@ export function CritiquesSection({ critiquesUrl }: CritiquesSectionProps) {
               <li key={c.id}>
                 <Link
                   href={submissionUrl}
-                  className="flex items-center gap-3 rounded-md p-2 -mx-2 transition-colors hover:bg-muted/60"
+                  className="-mx-2 flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-muted/60"
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground truncate">

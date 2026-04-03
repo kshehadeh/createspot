@@ -58,7 +58,7 @@ export function RecentViewsSection() {
               <li key={v.submission.id}>
                 <Link
                   href={submissionUrl}
-                  className="flex items-center gap-3 rounded-md p-2 -mx-2 transition-colors hover:bg-muted/60"
+                  className="-mx-2 flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-muted/60"
                 >
                   <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-muted">
                     {v.submission.imageUrl ? (

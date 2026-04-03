@@ -52,7 +52,7 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
   const action = (
     <Link
       href={portfolioUrl}
-      className="text-sm font-medium text-primary hover:underline underline-offset-4"
+      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:underline underline-offset-4"
     >
       {t("viewAll")}
     </Link>
@@ -61,7 +61,7 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
   return (
     <DashboardSection title={t("title")} action={action}>
       {loading ? (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="aspect-square w-full rounded-md" />
           ))}
@@ -81,7 +81,7 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
           />
         </>
       ) : (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {submissions.map((s) => {
             const displayImageUrl =
               s.imageUrl ||
@@ -106,7 +106,7 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
                     className={`object-cover transition-transform duration-200 group-hover:scale-105 ${
                       !s.imageUrl && s.isWorkInProgress ? "opacity-70" : ""
                     }`}
-                    sizes="(max-width: 768px) 30vw, 15vw"
+                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 28vw, 180px"
                     style={{
                       objectPosition: s.imageUrl
                         ? getObjectPositionStyle(s.imageFocalPoint)

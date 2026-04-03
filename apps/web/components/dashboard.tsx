@@ -37,16 +37,16 @@ export function Dashboard({
   const firstName = userName?.split(" ")[0] ?? null;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5 md:space-y-6">
       {firstName && (
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+        <h1 className="text-2xl font-bold text-foreground text-balance sm:text-3xl">
           Welcome back, {firstName}
         </h1>
       )}
 
       <OnboardingSection />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Suspense fallback={<SectionSkeleton title="My Portfolio" />}>
           <PortfolioSection portfolioUrl={portfolioUrl} />
         </Suspense>
@@ -60,7 +60,7 @@ export function Dashboard({
         </Suspense>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Suspense fallback={<SectionSkeleton title="People You Follow" />}>
           <FollowingSection />
         </Suspense>
