@@ -155,13 +155,13 @@ function FeedListContent({
   }, [hasMore, isLoading, loadMore]);
 
   const fab = showActionBar && isLoggedIn && (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+    <div className="fixed right-4 z-50 flex flex-col items-center gap-2.5 sm:right-6" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}>
       <button
         type="button"
         onClick={() => setIsCreateModalOpen(true)}
         title={t("newPost")}
         aria-label={t("newPost")}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Plus className="h-5 w-5" />
       </button>
@@ -169,7 +169,7 @@ function FeedListContent({
         href="/dashboard"
         title={t("dashboard")}
         aria-label={t("dashboard")}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <LayoutDashboard className="h-5 w-5" />
       </Link>

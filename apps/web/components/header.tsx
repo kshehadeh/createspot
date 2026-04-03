@@ -84,7 +84,7 @@ export function Header({ user }: HeaderProps) {
 
   return (
     <>
-      <header className="flex items-center justify-between border-b border-border px-6 py-4 sm:px-12">
+      <header className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6 sm:py-4 lg:px-12">
         <div className="flex items-center">
           <Link
             href={getRoute("home").path}
@@ -95,14 +95,14 @@ export function Header({ user }: HeaderProps) {
               base="currentColor"
               highlight="rgb(161 161 170)"
             />
-            <span className="whitespace-nowrap text-2xl font-normal font-permanent-marker">
+            <span className="whitespace-nowrap text-xl font-normal font-permanent-marker sm:text-2xl">
               Create Spot
             </span>
           </Link>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:gap-4">
+          <div className="hidden md:flex md:items-center md:gap-3">
             <DashboardNavigation
               user={user}
               onCreateModalOpen={() => setIsCreateModalOpen(true)}

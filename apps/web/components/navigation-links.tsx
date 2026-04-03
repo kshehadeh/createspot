@@ -70,10 +70,34 @@ export function DashboardNavigation({
     return pathname.startsWith(path);
   };
 
+  const creatorBase = user?.id
+    ? getCreatorUrl({
+        id: user.id,
+        slug: user.slug,
+      })
+    : null;
+  const isInspireActive =
+    isActive(exhibitionRoute.path) ||
+    isActive(museumsRoute.path) ||
+    isActive(creatorsRoute.path) ||
+    isActive(promptRoute.path) ||
+    isActive(communityRoute.path) ||
+    (user ? isActive(favoritesRoute.path) : false);
+  const isMyHubActive = creatorBase
+    ? pathname.startsWith(creatorBase)
+    : isActive(profileRoute.path) || isActive(portfolioRoute.path);
+  const isAdminActive =
+    pathname.startsWith(adminUsersRoute.path) ||
+    pathname.startsWith(adminPromptsRoute.path) ||
+    pathname.startsWith(adminExhibitsRoute.path) ||
+    pathname.startsWith(adminNotificationsRoute.path) ||
+    pathname.startsWith(adminSettingsRoute.path);
+  const isSupportActive = isActive(aboutRoute.path);
+
   const buttonClassName = () => {
     return cn(
-      "flex items-center gap-2 px-2 py-1.5 text-sm transition-colors whitespace-nowrap overflow-hidden text-ellipsis max-w-full",
-      "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+      "flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-colors whitespace-nowrap",
+      "text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
     );
   };
 
@@ -86,12 +110,17 @@ export function DashboardNavigation({
       <nav className="flex items-center gap-1">
         {/* Inspire Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger className={buttonClassName()}>
+          <DropdownMenuTrigger
+            className={cn(
+              buttonClassName(),
+              isInspireActive && "bg-accent text-accent-foreground",
+            )}
+          >
             <Brain className="h-4 w-4" />
             <span>{t("inspire")}</span>
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align="start" className="min-w-52">
             <DropdownMenuItem asChild>
               <Link
                 href={exhibitionRoute.path}
@@ -192,12 +221,17 @@ export function DashboardNavigation({
         {/* Create Dropdown (authenticated only) */}
         {user && (
           <DropdownMenu>
-            <DropdownMenuTrigger className={buttonClassName()}>
+            <DropdownMenuTrigger
+              className={cn(
+                buttonClassName(),
+                isMyHubActive && "bg-accent text-accent-foreground",
+              )}
+            >
               <Palette className="h-4 w-4" />
               <span>{t("myHub")}</span>
               <ChevronDown className="h-3 w-3" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align="start" className="min-w-52">
               <DropdownMenuItem
                 onClick={handleCreateClick}
                 className="flex items-center gap-2"
@@ -208,10 +242,7 @@ export function DashboardNavigation({
               <DropdownMenuSeparator />
               {user.id &&
                 (() => {
-                  const creatorBase = getCreatorUrl({
-                    id: user.id,
-                    slug: user.slug,
-                  });
+                  if (!creatorBase) return null;
                   const isProfileActive =
                     pathname.startsWith(creatorBase) &&
                     !pathname.startsWith(`${creatorBase}/portfolio`) &&
@@ -280,12 +311,17 @@ export function DashboardNavigation({
         {/* Admin Dropdown (admin only) */}
         {user?.isAdmin && (
           <DropdownMenu>
-            <DropdownMenuTrigger className={buttonClassName()}>
+            <DropdownMenuTrigger
+              className={cn(
+                buttonClassName(),
+                isAdminActive && "bg-accent text-accent-foreground",
+              )}
+            >
               <Lock className="h-4 w-4" />
               <span>{t("admin")}</span>
               <ChevronDown className="h-3 w-3" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align="start" className="min-w-52">
               <DropdownMenuItem asChild>
                 <Link
                   href={adminUsersRoute.path}
@@ -368,12 +404,17 @@ export function DashboardNavigation({
 
         {/* Support Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger className={buttonClassName()}>
+          <DropdownMenuTrigger
+            className={cn(
+              buttonClassName(),
+              isSupportActive && "bg-accent text-accent-foreground",
+            )}
+          >
             <HelpCircle className="h-4 w-4" />
             <span>{t("support")}</span>
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align="start" className="min-w-52">
             <DropdownMenuItem asChild>
               <Link
                 href={aboutRoute.path}

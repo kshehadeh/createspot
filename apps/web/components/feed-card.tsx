@@ -336,7 +336,7 @@ export function FeedCard({
         </div>
         <time
           dateTime={new Date(submission.createdAt).toISOString()}
-          className="shrink-0 text-xs text-muted-foreground"
+          className="shrink-0 text-xs text-muted-foreground [font-variant-numeric:tabular-nums]"
         >
           {formatRelativeTime(submission.createdAt)}
         </time>
@@ -471,21 +471,25 @@ export function FeedCard({
       )}
 
       {/* Interaction bar */}
-      <div className="flex items-center gap-3 px-4 py-2">
+      <div className="flex items-center gap-2.5 px-4 py-2">
         {isLoggedIn && (
-          <FavoriteButton submissionId={submission.id} size="sm" />
+          <FavoriteButton
+            submissionId={submission.id}
+            size="sm"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-foreground transition-colors hover:bg-muted hover:text-foreground"
+          />
         )}
         <ShareButton
           type="submission"
           submissionId={submission.id}
           userId={submission.user.id}
           userSlug={submission.user.slug}
-          className="flex items-center justify-center rounded-full bg-transparent p-0 text-foreground hover:text-muted-foreground transition-colors h-7 w-7"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-transparent p-0 text-foreground transition-colors hover:bg-muted hover:text-foreground"
         />
         {submission.critiquesEnabled && (
           <Link
             href={`${submissionUrl}/critiques`}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-foreground hover:text-muted-foreground transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label={t("critiques")}
           >
             <svg
@@ -505,7 +509,7 @@ export function FeedCard({
         )}
         <Link
           href={submissionUrl}
-          className="ml-auto text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="ml-auto rounded-md px-1.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           {t("viewSubmission")}
         </Link>

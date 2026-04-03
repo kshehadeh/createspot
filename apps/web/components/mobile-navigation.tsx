@@ -192,7 +192,7 @@ export function MobileNavigation({
       {user && showCreateButton && (
         <button
           onClick={handleCreateClick}
-          className="flex items-center justify-center w-9 h-9 rounded-md text-foreground hover:bg-accent transition-colors md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
           aria-label={t("create")}
         >
           <span className="text-xl font-medium">+</span>
@@ -201,7 +201,7 @@ export function MobileNavigation({
       {/* Mobile Hamburger Button */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="flex flex-col gap-1.5 p-2 text-foreground md:hidden"
+        className="flex flex-col gap-1.5 rounded-lg p-2 text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
         aria-label={t("toggleMenu")}
         aria-expanded={isMenuOpen}
       >
@@ -233,7 +233,7 @@ export function MobileNavigation({
       {/* Mobile Slide-in Menu */}
       <div
         ref={menuRef}
-        className={`fixed right-0 top-0 z-50 h-full w-72 transform border-l border-border bg-background transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed right-0 top-0 z-50 h-full w-full max-w-80 transform border-l border-border bg-background transition-transform duration-300 ease-in-out md:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -561,7 +561,7 @@ function MobileSection({
     <div className="mb-2">
       <button
         onClick={onToggle}
-        className="flex items-center justify-between w-full px-4 py-3 text-left text-sm font-medium transition-colors rounded-lg hover:bg-accent text-foreground"
+        className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <div className="flex items-center gap-2">
           {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
@@ -611,7 +611,7 @@ function MobileNavItem({
         rel="noreferrer"
         onClick={onClose}
         className={cn(
-          "flex items-center gap-3 px-4 py-3 text-sm transition-colors rounded-lg",
+          "flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors",
           "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
         )}
       >
@@ -626,7 +626,7 @@ function MobileNavItem({
       href={href}
       onClick={onClose}
       className={cn(
-        "flex items-center gap-3 px-4 py-3 text-sm transition-colors rounded-lg",
+        "flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors",
         isActive
           ? "bg-accent text-accent-foreground font-medium"
           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
@@ -651,7 +651,7 @@ function MobileNavActionItem({
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-3 px-4 py-3 text-sm text-left text-muted-foreground transition-colors rounded-lg hover:bg-accent hover:text-accent-foreground w-full"
+      className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Icon className="h-5 w-5" />
       {label}

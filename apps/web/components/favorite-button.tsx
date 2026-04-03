@@ -25,6 +25,10 @@ export function FavoriteButton({
 
   const iconSize = size === "sm" ? "h-4 w-4" : "h-5 w-5";
   const buttonSize = size === "sm" ? "h-7 w-7" : "h-8 w-8";
+  const useCustomStyle = className.length > 0;
+  const buttonClassName = useCustomStyle
+    ? className
+    : `flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${buttonSize}`;
 
   return (
     <motion.button
@@ -33,7 +37,7 @@ export function FavoriteButton({
       disabled={state.isLoading}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      className={`flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70 disabled:opacity-50 ${buttonSize} ${className}`}
+      className={buttonClassName}
       aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
     >
       <motion.svg
