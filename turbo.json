@@ -51,6 +51,9 @@
     "lint": {},
     "validate": {
       "dependsOn": ["lint", "build"]
+    },
+    "changelog:discord": {
+      "cache": false
     }
   }
 }

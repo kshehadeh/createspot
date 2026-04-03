@@ -76,6 +76,23 @@ For each undocumented commit, create changelog entries following the changelog s
 
 Push the commits to the remote repository.
 
+### Step 6: Post Changelog to Discord
+
+After successfully pushing, post the changelog to Discord:
+
+```bash
+bun run changelog:discord
+```
+
+This uses the `changelog:discord` script which runs `bun scripts/post-changelog-to-discord.ts`.
+
+**Requirements:**
+- `DISCORD_WEBHOOK_URL` environment variable must be set
+- If the webhook is not configured, skip this step with a note
+
+**Options:**
+- `--dry-run` can be used to preview the message without posting
+
 ## Output
 
 Report:
@@ -85,6 +102,7 @@ Report:
 - Impact level used
 - Commit SHA created
 - Push status
+- Discord post status (posted, skipped, or dry-run)
 
 ## Safety
 

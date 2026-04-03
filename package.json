@@ -15,7 +15,8 @@
     "validate": "turbo run validate && bun run knip",
     "clean": "turbo daemon clean && rm -rf .turbo apps/*/.turbo packages/*/.turbo",
     "format": "biome format --write .",
-    "knip": "knip"
+    "knip": "knip",
+    "changelog:discord": "turbo run changelog:discord"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
