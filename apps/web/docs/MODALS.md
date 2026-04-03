@@ -25,6 +25,15 @@ components/ui/base-modal.tsx
 ├── BaseModalDescription - Description component (accessibility)
 └── BaseModalScrollArea - Scrollable content wrapper
 
+components/ui/full-screen-modal.tsx
+├── FullScreenModal           - Root wrapper (Radix Dialog, always full-viewport)
+├── FullScreenModalContent    - Full-viewport container with X close button
+├── FullScreenModalHeader     - Sticky header with border-bottom
+├── FullScreenModalTitle      - Title component (accessibility)
+├── FullScreenModalDescription - Description component (accessibility)
+├── FullScreenModalBody       - Scrollable body area (flex-1)
+└── FullScreenModalFooter     - Sticky footer with border-top
+
 lib/hooks/
 └── use-keyboard-visible.ts - Detects virtual keyboard state
 ```
@@ -203,13 +212,72 @@ The following modals have been migrated to use BaseModal:
 | FocalPointModal | `components/focal-point-modal.tsx` | Image focal point selection |
 | CollectionSelectModal | `components/collection-select-modal.tsx` | Collection picker with create form |
 | SupportFormModal | `components/contact/support-form-modal.tsx` | Support request form |
-| SubmissionEditModal | `components/submission-edit-modal.tsx` | Portfolio item editor |
+| SubmissionEditModal | `components/submission-edit-modal.tsx` | Portfolio item editor — uses **FullScreenModal** |
 | UserStatsModal | `app/admin/users/user-stats-modal.tsx` | Admin user storage and works stats |
 | ExhibitRequestModal | `components/contact/exhibit-request-form.tsx` | Exhibit request form with submission picker |
 | CollectionCreateButton | `components/collection-create-button.tsx` | Inline create-collection form |
 | CritiqueSelectionModal | `components/critique-selection-modal.tsx` | Create critique for image/text selection |
 | UserWorkModal | `components/user-work-modal.tsx` | User recent work list |
 | ProgressionEditor (add/edit) | `components/progression-editor.tsx` | Add/edit progression step form |
+
+### Full-screen form modals (FullScreenModal)
+
+The following components use `FullScreenModal` for full-viewport form experiences:
+
+| Component | Location |
+|-----------|----------|
+| SubmissionEditModal (add/edit/add-to-portfolio) | `components/submission-edit-modal.tsx` |
+| Submission slot form (play page) | `app/(app)/inspire/prompt/play/submission-slots.tsx` |
+
+## FullScreenModal Component
+
+`FullScreenModal` fills the entire viewport and is intended for complex forms that benefit from having the full screen. It uses Radix UI Dialog on all viewport sizes (no bottom-sheet on mobile).
+
+### Basic Usage
+
+```tsx
+import {
+  FullScreenModal,
+  FullScreenModalContent,
+  FullScreenModalHeader,
+  FullScreenModalTitle,
+  FullScreenModalDescription,
+  FullScreenModalBody,
+  FullScreenModalFooter,
+} from "@/components/ui/full-screen-modal";
+
+<FullScreenModal open={isOpen} onOpenChange={(open) => !open && onClose()}>
+  <FullScreenModalContent>
+    <FullScreenModalHeader>
+      <FullScreenModalTitle>Title</FullScreenModalTitle>
+      <FullScreenModalDescription>Description</FullScreenModalDescription>
+    </FullScreenModalHeader>
+    <FullScreenModalBody className="mx-auto w-full max-w-2xl">
+      {/* form or content */}
+    </FullScreenModalBody>
+    <FullScreenModalFooter>
+      <Button variant="outline" onClick={onClose}>Cancel</Button>
+      <Button type="submit">Save</Button>
+    </FullScreenModalFooter>
+  </FullScreenModalContent>
+</FullScreenModal>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `open` | `boolean` | required | Controls modal visibility |
+| `onOpenChange` | `(open: boolean) => void` | required | Callback when open state changes |
+| `dismissible` | `boolean` | `true` | When `false`, hides the X button and blocks Escape key |
+
+### When to use FullScreenModal vs BaseModal
+
+| Use case | Component |
+|----------|-----------|
+| Complex multi-field forms (submission, portfolio) | `FullScreenModal` |
+| Short confirmations, pickers, simple forms | `BaseModal` |
+| Media viewers, lightboxes | Raw `Dialog` |
 
 ### Full-screen and media viewers (intentionally not BaseModal)
 
