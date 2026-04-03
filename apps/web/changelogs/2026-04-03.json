@@ -48,5 +48,25 @@
     "description": "Added automated release workflow with changelog management, version bumping, and Discord changelog posting.",
     "impact": "patch",
     "version": "2.17.0"
+  },
+  {
+    "time": "2026-04-03T06:32:40-04:00",
+    "commit": "a992a04",
+    "type": "improvement",
+    "audience": "development",
+    "area": "global",
+    "description": "Enhanced release workflow with Discord integration and removed obsolete scripts and skills.",
+    "impact": "patch",
+    "version": "2.17.1"
+  },
+  {
+    "time": "2026-04-03T06:32:45-04:00",
+    "commit": "5e77612",
+    "type": "improvement",
+    "audience": "development",
+    "area": "global",
+    "description": "Extracted public header to separate component for better code organization and maintainability.",
+    "impact": "patch",
+    "version": "2.17.1"
   }
 ]
