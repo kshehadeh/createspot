@@ -8,18 +8,21 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { auth } from "@/lib/auth";
 
 const PUBLIC_MESSAGE_KEYS = [
+  "categories",
   "common",
   "critique",
   "exhibition",
   "feed",
   "footer",
   "home",
+  "imageEditor",
   "modals",
   "navigation",
   "profile",
   "progression",
   "reference",
   "submission",
+  "upload",
 ] as const;
 
 function pickPublicMessages(messages: Record<string, unknown>) {
