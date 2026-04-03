@@ -68,5 +68,25 @@
     "description": "Extracted public header to separate component for better code organization and maintainability.",
     "impact": "patch",
     "version": "2.17.1"
+  },
+  {
+    "time": "2026-04-03T06:52:04-04:00",
+    "commit": "d03e2c2",
+    "type": "fix",
+    "audience": "public",
+    "area": "global",
+    "description": "Support and exhibit request modals on public pages now load their translations correctly instead of showing missing-message errors.",
+    "impact": "patch",
+    "version": "2.17.2"
+  },
+  {
+    "time": "2026-04-03T06:52:04-04:00",
+    "commit": "f8add01",
+    "type": "fix",
+    "audience": "public",
+    "area": "global",
+    "description": "Mobile bottom navigation docks use more side padding and even spacing so edge tabs are easier to tap without triggering system gestures.",
+    "impact": "patch",
+    "version": "2.17.2"
   }
 ]
