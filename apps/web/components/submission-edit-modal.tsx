@@ -70,7 +70,7 @@ export function SubmissionEditModal({
           </FullScreenModalDescription>
         </FullScreenModalHeader>
         <FullScreenModalBody>
-          <div className="mx-auto w-full max-w-2xl">
+          <div className="mx-auto w-full max-w-3xl">
             <PortfolioItemForm
               mode={mode === "create" ? "create" : "edit"}
               initialData={initialData}

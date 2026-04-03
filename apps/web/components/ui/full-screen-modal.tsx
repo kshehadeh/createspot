@@ -66,7 +66,7 @@ const FullScreenModalHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex shrink-0 flex-col space-y-1 border-b border-border px-6 py-4 pr-14",
+      "flex shrink-0 flex-col space-y-1 border-b border-border px-4 py-4 pr-14 sm:px-6",
       className,
     )}
     {...props}
@@ -106,7 +106,10 @@ const FullScreenModalBody = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("min-h-0 flex-1 overflow-y-auto px-6 py-6", className)}
+    className={cn(
+      "min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6",
+      className,
+    )}
     {...props}
   />
 );

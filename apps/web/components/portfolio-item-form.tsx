@@ -519,8 +519,8 @@ export function PortfolioItemForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
+    <form onSubmit={handleSubmit} className="space-y-7 md:space-y-8">
+      <div className="space-y-2">
         <Label htmlFor="title">{t("title")}</Label>
         <Input
           id="title"
@@ -531,7 +531,7 @@ export function PortfolioItemForm({
         />
       </div>
 
-      <div>
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <Label htmlFor="isWorkInProgress">{t("workInProgress")}</Label>
@@ -547,7 +547,7 @@ export function PortfolioItemForm({
         </div>
       </div>
 
-      <div>
+      <div className="space-y-2">
         <Label>{t("image")}</Label>
         {imageUrl ? (
           <div className="relative">
@@ -786,7 +786,7 @@ export function PortfolioItemForm({
         )}
       </div>
 
-      <div>
+      <div className="space-y-2">
         <Label>{t("textDescription")}</Label>
         <RichTextEditor
           value={text}
@@ -795,7 +795,7 @@ export function PortfolioItemForm({
         />
       </div>
 
-      <div>
+      <div className="space-y-2">
         <Label>{t("category")}</Label>
         <Select
           value={category || "__none__"}
@@ -823,7 +823,7 @@ export function PortfolioItemForm({
         </Select>
       </div>
 
-      <div>
+      <div className="space-y-2">
         <Label>{t("tags")}</Label>
         <div className="flex min-h-[42px] flex-wrap items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 focus-within:border-ring focus-within:outline-none focus-within:ring-2 focus-within:ring-ring">
           {tags.map((tag, index) => (
@@ -900,7 +900,7 @@ export function PortfolioItemForm({
 
       {/* Reference image - only shown when editing an existing submission */}
       {mode === "edit" && initialData?.id && (
-        <div>
+        <div className="space-y-2">
           <Label>{tReference("title")}</Label>
           <p className="mb-2 text-xs text-muted-foreground">
             {tReference("description")}
@@ -1002,7 +1002,7 @@ export function PortfolioItemForm({
         onCancel={() => setShowRemoveReferenceConfirm(false)}
       />
 
-      <div>
+      <div className="space-y-2">
         <Label>{t("visibility")}</Label>
         <div className="space-y-2">
           {[
@@ -1055,7 +1055,7 @@ export function PortfolioItemForm({
         </div>
       </div>
 
-      <div>
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <Label htmlFor="critiquesEnabled">
@@ -1097,15 +1097,29 @@ export function PortfolioItemForm({
       </div>
 
       {error && (
-        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+        <div
+          className="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
+          aria-live="polite"
+        >
           {error}
         </div>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex flex-col-reverse gap-3 border-t border-border/60 pt-2 sm:flex-row sm:justify-end">
+        {onCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="w-full sm:w-auto"
+          >
+            {tCommon("cancel")}
+          </Button>
+        )}
         <Button
           type="submit"
           disabled={saving || uploading || uploadingReference}
+          className="w-full sm:w-auto"
         >
           {saving
             ? t("saving")
@@ -1113,11 +1127,6 @@ export function PortfolioItemForm({
               ? t("addToPortfolio")
               : t("saveChanges")}
         </Button>
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            {tCommon("cancel")}
-          </Button>
-        )}
       </div>
 
       {/* Remove Image Confirmation Modal */}

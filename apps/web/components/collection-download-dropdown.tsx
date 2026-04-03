@@ -18,12 +18,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type CollectionDownloadDropdownProps =
   | {
       variant: "collection";
       collectionId: string;
       collectionName: string;
+      /** Icon-only trigger (e.g. mobile FAB); omits label and chevron. */
+      compactTrigger?: boolean;
+      triggerClassName?: string;
     }
   | {
       variant: "submission";
@@ -31,6 +35,8 @@ type CollectionDownloadDropdownProps =
       submissionTitle: string;
       hasImage?: boolean;
       hasProgressionsGif?: boolean;
+      compactTrigger?: boolean;
+      triggerClassName?: string;
     };
 
 export function CollectionDownloadDropdown(
@@ -39,6 +45,8 @@ export function CollectionDownloadDropdown(
   const t = useTranslations("collections");
   const tSubmission = useTranslations("submission");
   const [isDownloading, setIsDownloading] = useState(false);
+  const compactTrigger = props.compactTrigger === true;
+  const triggerClassName = props.triggerClassName;
 
   const isCollection = props.variant === "collection";
   const safeName = isCollection
@@ -204,18 +212,31 @@ export function CollectionDownloadDropdown(
     props.hasProgressionsGif === true;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" disabled={isDownloading}>
+        <Button
+          variant={compactTrigger ? "ghost" : "outline"}
+          size="sm"
+          disabled={isDownloading}
+          className={cn(compactTrigger && "h-12 w-12 shrink-0 rounded-full p-0", triggerClassName)}
+          aria-label={compactTrigger ? t("downloadAs") : undefined}
+          title={compactTrigger ? t("downloadAs") : undefined}
+        >
           {isDownloading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2
+              className={cn("animate-spin", compactTrigger ? "h-5 w-5" : "h-4 w-4")}
+            />
           ) : (
-            <Download className="h-4 w-4" />
+            <Download className={cn(compactTrigger ? "h-5 w-5" : "h-4 w-4")} />
           )}
-          <span className="hidden md:inline">
-            {isDownloading ? t("downloading") : t("downloadAs")}
-          </span>
-          <ChevronDown className="ml-2 h-4 w-4" />
+          {!compactTrigger && (
+            <>
+              <span className="hidden md:inline">
+                {isDownloading ? t("downloading") : t("downloadAs")}
+              </span>
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

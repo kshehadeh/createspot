@@ -1190,3 +1190,16 @@ Use **mini-action links** for navigation to related areas within the site. These
 8. **Track views client-side** - Use `ProfileViewTracker` for non-blocking analytics
 9. **Handle nullable fields** - Portfolio items may not have `promptId` or `wordIndex`
 10. **Use mini-action links** for related page navigation instead of buttons
+
+## UI Consistency Checklist
+
+Use this quick checklist before shipping any new or updated screen:
+
+1. **Mobile-first layout first** - Base layout is single-column, then scale with `md:`/`lg:`; avoid cramped multi-column cards on phones.
+2. **Shared card rhythm** - Keep card spacing consistent (`rounded-xl`, consistent padding, predictable title/action spacing).
+3. **Navigation parity** - Desktop and mobile expose equivalent IA groups and labels (`Inspire`, `My Hub`, `Admin`, `Support`).
+4. **Action ergonomics** - Icon actions should use consistent hit targets (`h-8 w-8` minimum in dense card rows, `h-10+` for floating actions).
+5. **Safe-area aware floating UI** - Floating buttons should account for `env(safe-area-inset-bottom)` on mobile.
+6. **Modal/form hierarchy** - Form submit is primary, cancel is secondary, and mobile action rows stack vertically.
+7. **Readable metadata hierarchy** - Keep author/date/title/meta visual order consistent between feed and dashboard surfaces.
+8. **Focus states everywhere** - Interactive controls should include clear `focus-visible` styles.

@@ -1,15 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Link from "@/components/link";
 import { Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/share-button";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { FavoriteButton } from "@/components/favorite-button";
 import { CritiqueButton } from "@/components/critique-button";
-import { MobileTitleDropdown } from "@/components/mobile-title-dropdown";
 import { getCreatorUrl } from "@/lib/utils";
 
 interface SubmissionMobileMenuProps {
@@ -44,33 +41,44 @@ export function SubmissionMobileMenu({
   hasImage,
   hasProgressionsGif,
 }: SubmissionMobileMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const tExhibition = useTranslations("exhibition");
   const tSubmission = useTranslations("submission");
 
-  const titleContent = (
-    <span className="break-words">
-      {submission.title || tExhibition("untitled")}
-    </span>
-  );
-
   return (
-    <MobileTitleDropdown
-      open={isOpen}
-      onOpenChange={setIsOpen}
-      title={titleContent}
-    >
-      <div className="flex flex-wrap items-center gap-2">
+    <>
+      <div className="flex flex-col gap-1.5">
+        <h1 className="break-words text-2xl leading-tight font-bold text-foreground">
+          {submission.title || tExhibition("untitled")}
+        </h1>
+        {isLoggedIn &&
+          submission.critiquesEnabled &&
+          (isOwner || submission.shareStatus === "PUBLIC") && (
+            <div className="flex flex-wrap items-center gap-2">
+              <CritiqueButton
+                submissionId={submission.id}
+                critiquesEnabled={submission.critiquesEnabled}
+                isOwner={isOwner}
+                currentUserId={currentUserId}
+                submissionTitle={submission.title}
+                user={submission.user}
+              />
+            </div>
+          )}
+      </div>
+
+      <div
+        className="fixed right-4 z-40 flex flex-col items-center gap-2.5 md:hidden"
+        style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.5rem)" }}
+      >
         {isOwner && (
-          <Button variant="outline" size="sm" asChild className="gap-1.5">
-            <Link
-              href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
-              onClick={() => setIsOpen(false)}
-            >
-              <Pencil className="h-4 w-4" />
-              {tSubmission("edit")}
-            </Link>
-          </Button>
+          <Link
+            href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
+            aria-label={tSubmission("edit")}
+            title={tSubmission("edit")}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95"
+          >
+            <Pencil className="h-5 w-5" />
+          </Link>
         )}
         {isOwner && (hasImage || hasProgressionsGif) && (
           <CollectionDownloadDropdown
@@ -79,37 +87,25 @@ export function SubmissionMobileMenu({
             submissionTitle={submission.title || "submission"}
             hasImage={hasImage}
             hasProgressionsGif={hasProgressionsGif}
+            compactTrigger
+            triggerClassName="flex items-center justify-center bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95 hover:bg-accent"
           />
         )}
-        {isLoggedIn &&
-          submission.critiquesEnabled &&
-          (isOwner || submission.shareStatus === "PUBLIC") && (
-            <CritiqueButton
-              submissionId={submission.id}
-              critiquesEnabled={submission.critiquesEnabled}
-              isOwner={isOwner}
-              currentUserId={currentUserId}
-              submissionTitle={submission.title}
-              user={submission.user}
-            />
-          )}
-        <div className="flex items-center gap-1.5">
-          {isLoggedIn && (
-            <FavoriteButton submissionId={submission.id} size="md" />
-          )}
-          {submission._count.favorites > 0 && (
-            <span className="text-sm text-muted-foreground">
-              {submission._count.favorites}
-            </span>
-          )}
-        </div>
+        {isLoggedIn && (
+          <FavoriteButton
+            submissionId={submission.id}
+            size="md"
+            className="relative flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95"
+          />
+        )}
         <ShareButton
           type="submission"
           submissionId={submission.id}
           userId={submission.user.id}
           userSlug={submission.user.slug}
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
         />
       </div>
-    </MobileTitleDropdown>
+    </>
   );
 }

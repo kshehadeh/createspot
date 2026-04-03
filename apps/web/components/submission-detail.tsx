@@ -271,7 +271,7 @@ export function SubmissionDetail({
         <Card className="rounded-none border-x-0 border-t-0">
           <div className="mx-auto max-w-7xl px-6 py-4">
             {/* Mobile: title dropdown + creator line */}
-            <div className="md:hidden flex flex-col gap-2">
+            <div className="md:hidden flex flex-col gap-0.5">
               <SubmissionMobileMenu
                 submission={{
                   id: submission.id,
