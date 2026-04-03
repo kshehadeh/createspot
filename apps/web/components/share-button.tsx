@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { getCreatorUrl } from "@/lib/utils";
 
 type ShareButtonPropsBase = {
   className?: string;
-  /** Override default aria-label/title (e.g. "Share submission"). */
+  /** Override default aria-label/title (e.g. "Copy submission link"). */
   ariaLabel?: string;
 };
 
@@ -35,12 +34,12 @@ type ShareButtonProps =
 
 const DEFAULT_LABELS: Record<
   NonNullable<ShareButtonProps["type"]>,
-  { share: string; copied: string }
+  { copy: string; copied: string }
 > = {
-  submission: { share: "Share submission", copied: "Link copied!" },
-  collection: { share: "Share collection", copied: "Link copied!" },
-  profile: { share: "Share profile", copied: "Link copied!" },
-  portfolio: { share: "Share portfolio", copied: "Link copied!" },
+  submission: { copy: "Copy submission link", copied: "Link copied!" },
+  collection: { copy: "Copy collection link", copied: "Link copied!" },
+  profile: { copy: "Copy profile link", copied: "Link copied!" },
+  portfolio: { copy: "Copy portfolio link", copied: "Link copied!" },
 };
 
 function getCanonicalUrl(
@@ -65,130 +64,106 @@ function getCanonicalUrl(
   }
 }
 
-function getShortLinkType(
-  type: ShareButtonProps["type"],
-): { type: string; targetId: string } | null {
-  switch (type) {
-    case "submission":
-      return { type: "submission", targetId: "" };
-    case "collection":
-      return { type: "collection", targetId: "" };
-    default:
-      return null;
+async function fetchShortUrl(
+  apiType: "submission" | "collection",
+  targetId: string,
+): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `/api/short-link?type=${apiType}&targetId=${encodeURIComponent(targetId)}`,
+    );
+    if (!res.ok) return null;
+    const data = (await res.json()) as { code?: string; shortUrl?: string };
+    if (data.shortUrl && typeof data.shortUrl === "string")
+      return data.shortUrl;
+    if (data.code && typeof window !== "undefined") {
+      const base = window.location.origin.replace(/\/$/, "");
+      return `${base}/s/${data.code}`;
+    }
+  } catch {
+    // ignore
   }
+  return null;
 }
 
 export function ShareButton(props: ShareButtonProps) {
   const { type, className = "", ariaLabel } = props;
 
   const [copied, setCopied] = useState(false);
-  const [resolvedUser, setResolvedUser] = useState<{
-    id: string;
-    slug: string | null;
-  } | null>(
-    type === "submission" && props.userId
-      ? { id: props.userId, slug: props.userSlug ?? null }
-      : null,
+  const [prefetchedShortUrl, setPrefetchedShortUrl] = useState<string | null>(
+    null,
   );
 
   const submissionId = type === "submission" ? props.submissionId : undefined;
+  const collectionId = type === "collection" ? props.collectionId : undefined;
+
   useEffect(() => {
-    if (
-      type !== "submission" ||
-      resolvedUser ||
-      typeof window === "undefined" ||
-      !submissionId
-    ) {
+    if (type !== "submission" && type !== "collection") {
+      setPrefetchedShortUrl(null);
       return;
     }
-    const fetchSubmission = async () => {
-      try {
-        const response = await fetch(`/api/submissions/${submissionId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setResolvedUser({
-            id: data.submission.userId,
-            slug: data.submission.user?.slug ?? null,
-          });
-        }
-      } catch {
-        // Silently fail
-      }
+    const targetId =
+      type === "submission"
+        ? submissionId
+        : type === "collection"
+          ? collectionId
+          : undefined;
+    if (!targetId || typeof window === "undefined") {
+      setPrefetchedShortUrl(null);
+      return;
+    }
+    const apiType = type === "submission" ? "submission" : "collection";
+    setPrefetchedShortUrl(null);
+    let cancelled = false;
+    (async () => {
+      const url = await fetchShortUrl(apiType, targetId);
+      if (!cancelled && url) setPrefetchedShortUrl(url);
+    })();
+    return () => {
+      cancelled = true;
     };
-    fetchSubmission();
-  }, [type, submissionId, resolvedUser]);
+  }, [type, submissionId, collectionId]);
 
-  const canonicalUrl = getCanonicalUrl(
-    props,
-    type === "submission" ? resolvedUser : null,
-  );
+  const canonicalUrl = getCanonicalUrl(props, null);
 
-  async function handleShare() {
-    let urlToShare = canonicalUrl;
-    const shortLink = getShortLinkType(type);
-    if (shortLink) {
-      const targetId =
-        type === "submission"
-          ? props.submissionId
-          : type === "collection"
-            ? props.collectionId
-            : "";
-      try {
-        const res = await fetch(
-          `/api/short-link?type=${shortLink.type}&targetId=${encodeURIComponent(targetId)}`,
-        );
-        if (res.ok) {
-          const data = (await res.json()) as {
-            code?: string;
-            shortUrl?: string;
-          };
-          if (data.shortUrl && typeof data.shortUrl === "string") {
-            urlToShare = data.shortUrl;
-          } else if (data.code && typeof window !== "undefined") {
-            const base = window.location.origin.replace(/\/$/, "");
-            urlToShare = `${base}/s/${data.code}`;
-          }
-        }
-      } catch {
-        // Use canonical URL on error
-      }
+  async function handleCopy() {
+    let urlToCopy: string | null = null;
+
+    if (type === "submission" || type === "collection") {
+      const targetId = type === "submission" ? submissionId : collectionId;
+      if (!targetId) return;
+      const apiType = type === "submission" ? "submission" : "collection";
+      // Only ever copy `/s/{code}` from the short-link API, never the canonical creator URL.
+      urlToCopy =
+        prefetchedShortUrl ?? (await fetchShortUrl(apiType, targetId));
+      if (!urlToCopy) return;
+    } else {
+      urlToCopy = canonicalUrl || null;
     }
 
-    if (!urlToShare) return;
+    if (!urlToCopy) return;
 
-    const shareData = { url: urlToShare };
-    if (navigator.share && navigator.canShare?.(shareData)) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch (err) {
-        if ((err as Error).name === "AbortError") return;
-      }
-    }
     try {
-      await navigator.clipboard.writeText(urlToShare);
+      await navigator.clipboard.writeText(urlToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy to clipboard:", err);
+    } catch {
+      // Clipboard may be denied without permission
     }
   }
 
   const labels = DEFAULT_LABELS[type];
-  const label = ariaLabel ?? (copied ? labels.copied : labels.share);
+  const label = ariaLabel ?? (copied ? labels.copied : labels.copy);
 
   const useCustomStyle = className.length > 0;
   const buttonClassName = useCustomStyle
     ? className
-    : `flex items-center justify-center rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${className}`;
+    : `flex items-center justify-center rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground active:brightness-95 ${className}`;
 
   return (
-    <motion.button
+    <button
       type="button"
-      onClick={handleShare}
-      {...(useCustomStyle
-        ? {}
-        : { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } })}
+      onClick={() => void handleCopy()}
       className={buttonClassName}
       aria-label={label}
       title={label}
@@ -222,6 +197,6 @@ export function ShareButton(props: ShareButtonProps) {
           />
         </svg>
       )}
-    </motion.button>
+    </button>
   );
 }

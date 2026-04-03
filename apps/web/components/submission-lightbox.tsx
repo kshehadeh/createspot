@@ -497,7 +497,7 @@ export function SubmissionLightbox({
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Share submission</p>
+              <p>{t("shareSubmission")}</p>
             </TooltipContent>
           </Tooltip>
         )}
