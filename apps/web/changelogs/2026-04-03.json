@@ -1,0 +1,52 @@
+[
+  {
+    "time": "2026-04-03T05:43:16-04:00",
+    "commit": "d4db3dd",
+    "type": "feature",
+    "audience": "public",
+    "area": "content",
+    "description": "Replaced the home page with an Instagram-style social feed showing recent submissions from the community.",
+    "impact": "minor",
+    "version": "2.17.0"
+  },
+  {
+    "time": "2026-04-03T06:00:34-04:00",
+    "commit": "80ef9ff",
+    "type": "improvement",
+    "audience": "public",
+    "area": "games",
+    "description": "Submission creation and editing forms now open in a full-screen modal for a more focused, consistent experience.",
+    "impact": "patch",
+    "version": "2.17.0"
+  },
+  {
+    "time": "2026-04-03T05:43:32-04:00",
+    "commit": "36ddb19",
+    "type": "fix",
+    "audience": "public",
+    "area": "global",
+    "description": "The site logo in the header now always navigates to the home page regardless of the current section.",
+    "impact": "patch",
+    "version": "2.17.0"
+  },
+  {
+    "time": "2026-04-03T06:00:48-04:00",
+    "commit": "fd4fa5e",
+    "type": "fix",
+    "audience": "public",
+    "area": "global",
+    "description": "Fixed missing translation namespaces on public pages that could cause untranslated text to appear.",
+    "impact": "patch",
+    "version": "2.17.0"
+  },
+  {
+    "time": "2026-04-02T16:37:04-04:00",
+    "commit": "6a4bba9",
+    "type": "documentation",
+    "audience": "development",
+    "area": "global",
+    "description": "Added automated release workflow with changelog management, version bumping, and Discord changelog posting.",
+    "impact": "patch",
+    "version": "2.17.0"
+  }
+]
