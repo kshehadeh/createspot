@@ -6,8 +6,10 @@ import { PublicHeader } from "@/components/public-header";
 import { auth } from "@/lib/auth";
 
 const PUBLIC_MESSAGE_KEYS = [
+  "admin",
   "categories",
   "common",
+  "contact",
   "critique",
   "exhibition",
   "feed",
