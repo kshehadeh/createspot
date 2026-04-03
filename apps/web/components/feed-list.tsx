@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -9,6 +10,42 @@ import { FeedCard, type FeedCardSubmission } from "@/components/feed-card";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
+
+const SubmissionLightbox = dynamic(
+  () =>
+    import("@/components/submission-lightbox").then(
+      (mod) => mod.SubmissionLightbox,
+    ),
+  { ssr: false },
+);
+
+function getFeedSubmissionWord(submission: FeedCardSubmission): string {
+  if (!submission.prompt || !submission.wordIndex) return "";
+  const words = [
+    submission.prompt.word1,
+    submission.prompt.word2,
+    submission.prompt.word3,
+  ];
+  return words[submission.wordIndex - 1];
+}
+
+function mapFeedSubmissionForLightbox(submission: FeedCardSubmission) {
+  return {
+    id: submission.id,
+    title: submission.title,
+    imageUrl: submission.imageUrl,
+    text: submission.text,
+    shareStatus: "PUBLIC" as const,
+    critiquesEnabled: submission.critiquesEnabled,
+    user: {
+      id: submission.user.id,
+      name: submission.user.name,
+      image: submission.user.image,
+      slug: submission.user.slug,
+    },
+    _count: submission._count,
+  };
+}
 
 interface FeedListProps {
   initialSubmissions: FeedCardSubmission[];
@@ -61,7 +98,23 @@ function FeedListContent({
   const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [lightboxSubmissionId, setLightboxSubmissionId] = useState<
+    string | null
+  >(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const handleOpenLightbox = useCallback((id: string) => {
+    setLightboxSubmissionId(id);
+  }, []);
+
+  useEffect(() => {
+    if (
+      lightboxSubmissionId &&
+      !submissions.some((s) => s.id === lightboxSubmissionId)
+    ) {
+      setLightboxSubmissionId(null);
+    }
+  }, [submissions, lightboxSubmissionId]);
 
   const loadMore = useCallback(async () => {
     if (isLoading || !hasMore || !nextCursor) return;
@@ -152,6 +205,7 @@ function FeedListContent({
             isLoggedIn={isLoggedIn}
             currentUserId={currentUserId}
             priority={index < 3}
+            onOpenLightbox={handleOpenLightbox}
           />
         ))}
         {isLoading && (
@@ -176,6 +230,48 @@ function FeedListContent({
           onSuccess={() => router.refresh()}
         />
       )}
+      {lightboxSubmissionId &&
+        (() => {
+          const selected = submissions.find(
+            (s) => s.id === lightboxSubmissionId,
+          );
+          if (!selected) return null;
+          const currentIndex = submissions.findIndex(
+            (s) => s.id === lightboxSubmissionId,
+          );
+          const hasPrevious = currentIndex > 0;
+          const hasNext =
+            currentIndex >= 0 && currentIndex < submissions.length - 1;
+          return (
+            <SubmissionLightbox
+              submission={mapFeedSubmissionForLightbox(selected)}
+              word={getFeedSubmissionWord(selected)}
+              onClose={() => setLightboxSubmissionId(null)}
+              isOpen
+              currentUserId={currentUserId}
+              navigation={{
+                onGoToPrevious: () => {
+                  if (hasPrevious) {
+                    setLightboxSubmissionId(submissions[currentIndex - 1].id);
+                  }
+                },
+                onGoToNext: () => {
+                  if (hasNext) {
+                    setLightboxSubmissionId(submissions[currentIndex + 1].id);
+                  }
+                },
+                hasPrevious,
+                hasNext,
+                nextImageUrl: hasNext
+                  ? (submissions[currentIndex + 1]?.imageUrl ?? null)
+                  : null,
+                prevImageUrl: hasPrevious
+                  ? (submissions[currentIndex - 1]?.imageUrl ?? null)
+                  : null,
+              }}
+            />
+          );
+        })()}
     </>
   );
 }

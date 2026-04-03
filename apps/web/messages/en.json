@@ -245,6 +245,7 @@
     "nextSlide": "Next",
     "goToSlide": "Go to slide {n}",
     "progressionStep": "Step {step} of {total}",
+    "openLightbox": "Open submission",
     "viewSubmission": "View",
     "critiques": "Critiques",
     "favorites": "{count, plural, one {# like} other {# likes}}",

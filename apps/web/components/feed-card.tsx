@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from "react";
 import Image from "next/image";
 import Link from "@/components/link";
 import { useTranslations } from "next-intl";
@@ -9,7 +16,35 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";
-import { getCreatorUrl } from "@/lib/utils";
+import { cn, getCreatorUrl } from "@/lib/utils";
+
+const TAP_MAX_PX = 12;
+
+function useImageTapToLightbox(onTap: () => void) {
+  const startRef = useRef<{ x: number; y: number; id: number } | null>(null);
+
+  const onPointerDown = useCallback((e: PointerEvent<HTMLDivElement>) => {
+    startRef.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
+  }, []);
+
+  const onPointerUp = useCallback(
+    (e: PointerEvent<HTMLDivElement>) => {
+      const s = startRef.current;
+      startRef.current = null;
+      if (!s || e.pointerId !== s.id) return;
+      if (Math.hypot(e.clientX - s.x, e.clientY - s.y) <= TAP_MAX_PX) {
+        onTap();
+      }
+    },
+    [onTap],
+  );
+
+  const onPointerCancel = useCallback((_e: PointerEvent<HTMLDivElement>) => {
+    startRef.current = null;
+  }, []);
+
+  return { onPointerDown, onPointerUp, onPointerCancel };
+}
 
 interface Progression {
   id: string;
@@ -54,6 +89,8 @@ interface FeedCardProps {
   isLoggedIn: boolean;
   currentUserId?: string | null;
   priority?: boolean;
+  /** When set, tapping an image slide opens the submission lightbox (short tap; drags the carousel). */
+  onOpenLightbox?: (submissionId: string) => void;
 }
 
 type Slide =
@@ -154,24 +191,44 @@ function ImageSlide({
   imageUrl,
   alt,
   priority,
+  imageTapHandlers,
+  imageTapA11y,
 }: {
   imageUrl: string;
   alt: string;
   focalPoint?: { x: number; y: number } | null;
   priority?: boolean;
+  imageTapHandlers?: {
+    onPointerDown: (e: PointerEvent<HTMLDivElement>) => void;
+    onPointerUp: (e: PointerEvent<HTMLDivElement>) => void;
+    onPointerCancel: (e: PointerEvent<HTMLDivElement>) => void;
+  };
+  imageTapA11y?: {
+    role: "button";
+    tabIndex: number;
+    "aria-label": string;
+    onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
+  };
 }) {
+  const interactive = !!(imageTapHandlers && imageTapA11y);
+
   return (
-    <div className="relative h-full w-full bg-muted">
+    <div
+      className={cn(
+        "relative h-full w-full bg-muted",
+        interactive && "cursor-pointer",
+      )}
+      {...(interactive ? { ...imageTapHandlers, ...imageTapA11y } : {})}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={imageUrl}
         alt={alt}
-        className="h-full w-full object-contain select-none"
+        className="pointer-events-none h-full w-full object-contain select-none"
         style={{ WebkitUserSelect: "none", userSelect: "none" }}
         draggable={false}
         loading={priority ? "eager" : "lazy"}
       />
-      <div className="absolute inset-0" aria-hidden="true" />
     </div>
   );
 }
@@ -181,9 +238,30 @@ export function FeedCard({
   isLoggedIn,
   currentUserId: _currentUserId,
   priority = false,
+  onOpenLightbox,
 }: FeedCardProps) {
   const t = useTranslations("feed");
   const slides = buildSlides(submission, t);
+
+  const openLightbox = useCallback(() => {
+    onOpenLightbox?.(submission.id);
+  }, [onOpenLightbox, submission.id]);
+
+  const imageTapHandlers = useImageTapToLightbox(openLightbox);
+
+  const imageTapA11y = onOpenLightbox
+    ? {
+        role: "button" as const,
+        tabIndex: 0,
+        "aria-label": t("openLightbox"),
+        onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openLightbox();
+          }
+        },
+      }
+    : undefined;
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -280,43 +358,63 @@ export function FeedCard({
                       alt={slide.alt}
                       focalPoint={slide.focalPoint}
                       priority={priority && index === 0}
+                      imageTapHandlers={
+                        onOpenLightbox ? imageTapHandlers : undefined
+                      }
+                      imageTapA11y={imageTapA11y}
                     />
                   )}
                   {slide.type === "text" && (
                     <TextSlide html={slide.html} title={slide.title} />
                   )}
                   {slide.type === "reference" && (
-                    <div className="relative h-full w-full bg-muted">
+                    <div
+                      className={cn(
+                        "relative h-full w-full bg-muted",
+                        onOpenLightbox && "cursor-pointer",
+                      )}
+                      {...(onOpenLightbox && imageTapA11y
+                        ? { ...imageTapHandlers, ...imageTapA11y }
+                        : {})}
+                    >
                       <Image
                         src={slide.imageUrl}
                         alt={t("referenceAlt")}
                         fill
-                        className="object-contain"
+                        className="pointer-events-none object-contain"
                         sizes="(max-width: 640px) 100vw, 600px"
                       />
-                      <span className="absolute bottom-2 left-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
+                      <span className="pointer-events-none absolute bottom-2 left-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
                         {t("reference")}
                       </span>
                     </div>
                   )}
                   {slide.type === "progression" && (
-                    <div className="relative h-full w-full bg-muted">
+                    <div
+                      className={cn(
+                        "relative h-full w-full bg-muted",
+                        onOpenLightbox && slide.imageUrl && "cursor-pointer",
+                      )}
+                      {...(onOpenLightbox && slide.imageUrl && imageTapA11y
+                        ? { ...imageTapHandlers, ...imageTapA11y }
+                        : {})}
+                    >
                       {slide.imageUrl ? (
                         <Image
                           src={slide.imageUrl}
                           alt={slide.label}
                           fill
-                          className="object-contain"
+                          className="pointer-events-none object-contain"
                           sizes="(max-width: 640px) 100vw, 600px"
                         />
                       ) : slide.html ? (
                         <TextSlide html={slide.html} />
                       ) : null}
-                      <span className="absolute bottom-2 left-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
+                      <span className="pointer-events-none absolute bottom-2 left-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
                         {slide.label}
                       </span>
                       {slide.comment && (
-                        <span className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white max-w-[60%] truncate">
+                        <span className="pointer-events-none absolute bottom-2 right-2 max-w-[60%] truncate rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
                           {slide.comment}
                         </span>
                       )}

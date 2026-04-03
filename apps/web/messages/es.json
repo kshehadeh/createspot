@@ -245,6 +245,7 @@
     "nextSlide": "Siguiente",
     "goToSlide": "Ir a la diapositiva {n}",
     "progressionStep": "Paso {step} de {total}",
+    "openLightbox": "Abrir publicación",
     "viewSubmission": "Ver",
     "critiques": "Críticas",
     "favorites": "{count, plural, one {# me gusta} other {# me gusta}}",
