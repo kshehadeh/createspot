@@ -109,7 +109,7 @@ export function DashboardNavigation({
     <>
       <nav className="flex items-center gap-1">
         {/* Inspire Dropdown */}
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
               buttonClassName(),
@@ -220,7 +220,7 @@ export function DashboardNavigation({
 
         {/* Create Dropdown (authenticated only) */}
         {user && (
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger
               className={cn(
                 buttonClassName(),
@@ -310,7 +310,7 @@ export function DashboardNavigation({
 
         {/* Admin Dropdown (admin only) */}
         {user?.isAdmin && (
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger
               className={cn(
                 buttonClassName(),
@@ -403,7 +403,7 @@ export function DashboardNavigation({
         )}
 
         {/* Support Dropdown */}
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
               buttonClassName(),

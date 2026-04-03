@@ -66,7 +66,7 @@ export function UserDropdown({
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="flex items-center gap-2 border-l border-border pl-4 outline-none">
         {name && (
           <span className="hidden text-sm text-foreground lg:inline">
