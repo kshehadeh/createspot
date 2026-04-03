@@ -15,7 +15,7 @@ export interface MobileNavBarItem {
 
 interface MobileNavBarProps {
   items: MobileNavBarItem[];
-  /** Layout when expanded: "grid" = 4-column grid (many items), "flex" = flex with space-around (few items). Default "flex". */
+  /** Layout when expanded: "grid" = 4-column grid (many items), "flex" = flex with even spacing (few items). Default "flex". */
   layout?: "grid" | "flex";
   /** When true, always show expanded nav (icon + label per item); no collapsed state or overlay. */
   alwaysExpanded?: boolean;
@@ -30,6 +30,10 @@ export function MobileNavBar({
   const activeItem = items.find((item) => item.isActive) ?? items[0];
   const showExpanded = alwaysExpanded || isExpanded;
 
+  /** Keeps first/last items off screen edges and gesture zones (iOS back-swipe, etc.). */
+  const navInsetX =
+    "pl-[max(2rem,env(safe-area-inset-left,0px))] pr-[max(2rem,env(safe-area-inset-right,0px))]";
+
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40">
       {!alwaysExpanded && isExpanded && (
@@ -39,9 +43,9 @@ export function MobileNavBar({
           aria-hidden
         />
       )}
-      <div className="relative border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="relative border-t border-border bg-background/95 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] backdrop-blur supports-[backdrop-filter]:bg-background/80">
         {showExpanded ? (
-          <nav className="p-2" aria-label="Navigation">
+          <nav className={cn("py-2", navInsetX)} aria-label="Navigation">
             <div
               className={cn(
                 layout === "flex" &&
@@ -53,7 +57,7 @@ export function MobileNavBar({
                   "flex items-center gap-1",
                   layout === "grid" && "grid grid-cols-4 gap-1",
                   layout === "flex" &&
-                    "flex-nowrap justify-between w-full min-w-min pr-2",
+                    "flex-nowrap justify-evenly w-full min-w-min",
                 )}
               >
                 {items.map((item) => (
@@ -99,7 +103,10 @@ export function MobileNavBar({
           <button
             type="button"
             onClick={() => setIsExpanded(true)}
-            className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-foreground"
+            className={cn(
+              "flex w-full items-center justify-center gap-2 py-3 text-sm font-medium text-foreground",
+              navInsetX,
+            )}
             aria-expanded={isExpanded}
             aria-label="Open navigation menu"
           >
