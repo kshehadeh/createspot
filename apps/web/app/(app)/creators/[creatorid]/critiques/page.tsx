@@ -8,17 +8,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getCreator } from "@/lib/creators";
 import { getCreatorUrl } from "@/lib/utils";
-import { buildRoutePath } from "@/lib/routes";
+import { CreatorCritiquesSubmissionsTable } from "@/components/creator-critiques-submissions-table";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
 interface CreatorCritiquesPageProps {
@@ -92,7 +84,6 @@ async function CreatorCritiquesContent({ params }: CreatorCritiquesPageProps) {
   }));
 
   const t = await getTranslations("critique");
-  const tExhibition = await getTranslations("exhibition");
   const creatorUrl = getCreatorUrl(creatorUser);
 
   return (
@@ -114,48 +105,11 @@ async function CreatorCritiquesContent({ params }: CreatorCritiquesPageProps) {
           </Button>
         </div>
       ) : (
-        <div className="rounded-lg border border-border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("submissionName")}</TableHead>
-                <TableHead className="w-32 text-right">
-                  {t("critiquers")}
-                </TableHead>
-                <TableHead className="w-40 text-right" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>
-                    <Link
-                      href={`${creatorUrl}/s/${row.id}`}
-                      className="font-medium hover:underline"
-                    >
-                      {row.title || tExhibition("untitled")}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {row.critiquerCount}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link
-                        href={buildRoutePath("submissionCritiques", {
-                          creatorid,
-                          submissionid: row.id,
-                        })}
-                      >
-                        {t("viewCritiques")}
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <CreatorCritiquesSubmissionsTable
+          rows={rows}
+          creatorUrl={creatorUrl}
+          creatorid={creatorid}
+        />
       )}
     </PageLayout>
   );
