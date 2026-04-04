@@ -60,9 +60,11 @@ const publicCaptures: Capture[] = [
 // Pages that require authentication (capture after login)
 const authCaptures: Capture[] = [
   { name: "dashboard", url: "/dashboard", waitUntil: "networkidle" },
-  { name: "this-week-gallery", url: "/inspire/prompt/this-week", waitUntil: "networkidle" },
-  { name: "play-submit", url: "/inspire/prompt/play", waitUntil: "networkidle" },
-  { name: "prompt-history", url: "/inspire/prompt/history", waitUntil: "networkidle" },
+  {
+    name: "exhibition-grid",
+    url: "/inspire/exhibition/gallery/grid",
+    waitUntil: "networkidle",
+  },
   { name: "community", url: "/inspire/community", waitUntil: "networkidle" },
 ];
 

@@ -78,15 +78,6 @@
         "group": "Inspiration",
         "pages": [
           {
-            "group": "Prompts",
-            "pages": [
-              "inspiration/prompts",
-              "inspiration/prompts/submitting-prompt-work",
-              "inspiration/prompts/browsing-prompt-history",
-              "inspiration/prompts/viewing-others-submissions"
-            ]
-          },
-          {
             "group": "Museums",
             "pages": [
               "inspiration/museums"
@@ -116,16 +107,7 @@
               "administration/exhibits/curators-vs-featured-artists"
             ]
           },
-          "administration/notification-manager",
-          {
-            "group": "Prompts",
-            "pages": [
-              "administration/prompts",
-              "administration/prompts/creating-prompts",
-              "administration/prompts/updating-prompts",
-              "administration/prompts/word-selection-ideas"
-            ]
-          }
+          "administration/notification-manager"
         ]
       },
       { "group": "A Word About AI", "pages": ["a-word-about-ai"] },
