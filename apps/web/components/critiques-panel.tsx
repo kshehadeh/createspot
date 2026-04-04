@@ -12,15 +12,9 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ConfirmModal } from "@/components/confirm-modal";
-import {
-  ChevronDown,
-  ChevronRight,
-  Eye,
-  MessageCircle,
-  NotebookPen,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, Eye, NotebookPen } from "lucide-react";
 import { toast } from "sonner";
-import { getCreatorUrl } from "@/lib/utils";
+import { cn, getCreatorUrl } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -64,6 +58,22 @@ export interface CritiquesPanelProps {
   currentUserId?: string | null;
   submissionTitle?: string | null;
   onUnseenCountChange?: (count: number) => void;
+}
+
+function critiqueBubbleClass(align: "incoming" | "outgoing") {
+  return cn(
+    "min-w-0 max-w-[min(92%,26rem)] px-3.5 py-2.5 shadow-sm",
+    align === "incoming"
+      ? "rounded-2xl rounded-tl-md border border-border/60 bg-muted/80 text-foreground"
+      : "rounded-2xl rounded-tr-md border border-primary/35 bg-primary text-primary-foreground",
+  );
+}
+
+function critiqueProseClass(align: "incoming" | "outgoing") {
+  return cn(
+    "prose prose-sm max-w-none flex-1 font-mono text-sm leading-relaxed",
+    align === "incoming" ? "dark:prose-invert" : "prose-invert",
+  );
 }
 
 export function CritiquesPanel({
@@ -414,10 +424,24 @@ export function CritiquesPanel({
   }
 
   function renderCritiqueBody(critique: Critique) {
+    const critiqueAlign: "incoming" | "outgoing" = isOwner
+      ? "incoming"
+      : "outgoing";
+    const replyAlign: "incoming" | "outgoing" = isOwner
+      ? "outgoing"
+      : "incoming";
+
+    const metaMutedIncoming =
+      "text-xs text-muted-foreground [&_button]:text-muted-foreground [&_button:hover]:text-foreground";
+    const metaMutedOutgoing =
+      "text-xs text-primary-foreground/80 [&_button]:text-primary-foreground/90 [&_button:hover]:text-primary-foreground";
+    const deleteOnPrimary =
+      "text-red-200 hover:text-red-100 hover:underline dark:text-red-300 dark:hover:text-red-200";
+
     return (
-      <>
+      <div className="flex flex-col gap-3">
         {editingId === critique.id ? (
-          <div className="space-y-3">
+          <div className="w-full rounded-xl border border-border bg-card p-3 shadow-sm space-y-3">
             <RichTextEditor
               value={editCritique}
               onChange={setEditCritique}
@@ -444,213 +468,250 @@ export function CritiquesPanel({
             </div>
           </div>
         ) : (
-          <>
-            <div className="flex items-start gap-3 mb-2">
-              <div
-                className="prose prose-sm dark:prose-invert max-w-none flex-1 font-mono text-sm"
-                dangerouslySetInnerHTML={{ __html: critique.critique }}
-              />
-              {critique.selectionData && (
-                <SelectionThumbnail
-                  selectionData={critique.selectionData}
-                  onClick={() => setSelectedLightbox(critique.selectionData!)}
+          <div
+            className={cn(
+              "flex w-full min-w-0",
+              critiqueAlign === "incoming" ? "justify-start" : "justify-end",
+            )}
+          >
+            <div className={critiqueBubbleClass(critiqueAlign)}>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
+                <div
+                  className={critiqueProseClass(critiqueAlign)}
+                  dangerouslySetInnerHTML={{ __html: critique.critique }}
                 />
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-              <time dateTime={critique.createdAt}>
-                {formatCritiqueDate(critique.createdAt)}
-              </time>
-              {critique.seenAt != null && (
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span
-                        className="inline-flex shrink-0 text-muted-foreground focus:outline-none"
-                        role="img"
-                        aria-label={t("seenOn", {
+                {critique.selectionData && (
+                  <SelectionThumbnail
+                    selectionData={critique.selectionData}
+                    onClick={() => setSelectedLightbox(critique.selectionData!)}
+                  />
+                )}
+              </div>
+              <div
+                className={cn(
+                  "mt-2 flex flex-wrap items-center gap-x-2 gap-y-1",
+                  critiqueAlign === "incoming"
+                    ? metaMutedIncoming
+                    : metaMutedOutgoing,
+                )}
+              >
+                <time dateTime={critique.createdAt}>
+                  {formatCritiqueDate(critique.createdAt)}
+                </time>
+                {critique.seenAt != null && (
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span
+                          className={cn(
+                            "inline-flex shrink-0 focus:outline-none",
+                            critiqueAlign === "incoming"
+                              ? "text-muted-foreground"
+                              : "text-primary-foreground/85",
+                          )}
+                          role="img"
+                          aria-label={t("seenOn", {
+                            date: formatCritiqueDate(critique.seenAt),
+                          })}
+                        >
+                          <Eye size={12} strokeWidth={1.5} className="block" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {t("seenOn", {
                           date: formatCritiqueDate(critique.seenAt),
                         })}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                {!isOwner && (
+                  <>
+                    {(canEdit(critique) || canDelete(critique)) && (
+                      <span aria-hidden> · </span>
+                    )}
+                    {canEdit(critique) && (
+                      <button
+                        type="button"
+                        className="hover:underline"
+                        onClick={() => startEdit(critique)}
                       >
-                        <Eye size={12} strokeWidth={1.5} className="block" />
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {t("seenOn", {
-                        date: formatCritiqueDate(critique.seenAt),
-                      })}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-              {!isOwner && (
-                <>
-                  {(canEdit(critique) || canDelete(critique)) && (
+                        {tCommon("edit")}
+                      </button>
+                    )}
+                    {canEdit(critique) && canDelete(critique) && (
+                      <span aria-hidden> · </span>
+                    )}
+                    {canDelete(critique) && (
+                      <button
+                        type="button"
+                        className={cn(
+                          critiqueAlign === "outgoing"
+                            ? deleteOnPrimary
+                            : "text-destructive hover:text-destructive hover:underline",
+                        )}
+                        onClick={() => setShowDeleteConfirm(critique.id)}
+                      >
+                        {tCommon("delete")}
+                      </button>
+                    )}
+                  </>
+                )}
+                {isOwner && (
+                  <>
                     <span aria-hidden> · </span>
-                  )}
-                  {canEdit(critique) && (
-                    <button
-                      type="button"
-                      className="hover:text-foreground hover:underline"
-                      onClick={() => startEdit(critique)}
-                    >
-                      {tCommon("edit")}
-                    </button>
-                  )}
-                  {canEdit(critique) && canDelete(critique) && (
-                    <span aria-hidden> · </span>
-                  )}
-                  {canDelete(critique) && (
                     <button
                       type="button"
                       className="text-destructive hover:text-destructive hover:underline"
-                      onClick={() => setShowDeleteConfirm(critique.id)}
+                      onClick={() => setShowDeleteCreatorConfirm(critique.id)}
                     >
                       {tCommon("delete")}
                     </button>
-                  )}
-                </>
+                    {!critique.response && (
+                      <>
+                        <span aria-hidden> · </span>
+                        <button
+                          type="button"
+                          className="hover:underline"
+                          onClick={() => {
+                            setReplyingId(critique.id);
+                            setReplyText("");
+                          }}
+                        >
+                          {t("reply")}
+                        </button>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {critique.response && !(replyingId === critique.id) ? (
+          editingResponseId === critique.id ? (
+            <div className="w-full rounded-xl border border-border bg-card p-3 shadow-sm space-y-3">
+              <RichTextEditor
+                value={editResponseText}
+                onChange={setEditResponseText}
+                placeholder={t("responsePlaceholder")}
+              />
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => handleEditResponse(critique.id)}
+                  disabled={saving}
+                >
+                  {saving ? t("saving") : tCommon("save")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setEditingResponseId(null);
+                    setEditResponseText("");
+                  }}
+                >
+                  {tCommon("cancel")}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div
+              className={cn(
+                "flex w-full min-w-0",
+                replyAlign === "incoming" ? "justify-start" : "justify-end",
               )}
-              {isOwner && (
-                <>
-                  <span aria-hidden> · </span>
-                  <button
-                    type="button"
-                    className="text-destructive hover:text-destructive hover:underline"
-                    onClick={() => setShowDeleteCreatorConfirm(critique.id)}
-                  >
-                    {tCommon("delete")}
-                  </button>
-                  {!critique.response && (
+            >
+              <div
+                className={critiqueBubbleClass(replyAlign)}
+                aria-label={isOwner ? t("yourReply") : t("creatorReply")}
+              >
+                <span className="sr-only">
+                  {isOwner ? t("yourReply") : t("creatorReply")}
+                </span>
+                <div
+                  className={cn(critiqueProseClass(replyAlign), "flex-none")}
+                  dangerouslySetInnerHTML={{
+                    __html: critique.response,
+                  }}
+                />
+                <div
+                  className={cn(
+                    "mt-2 flex flex-wrap items-center gap-x-2 gap-y-1",
+                    replyAlign === "incoming"
+                      ? metaMutedIncoming
+                      : metaMutedOutgoing,
+                  )}
+                >
+                  <time dateTime={critique.updatedAt}>
+                    {formatCritiqueDate(critique.updatedAt)}
+                  </time>
+                  {isOwner && (
                     <>
                       <span aria-hidden> · </span>
                       <button
                         type="button"
-                        className="hover:text-foreground hover:underline"
-                        onClick={() => {
-                          setReplyingId(critique.id);
-                          setReplyText("");
-                        }}
+                        className="hover:underline"
+                        onClick={() => startEditResponse(critique)}
                       >
-                        {t("reply")}
+                        {tCommon("edit")}
+                      </button>
+                      <span aria-hidden> · </span>
+                      <button
+                        type="button"
+                        className={cn(
+                          replyAlign === "outgoing"
+                            ? deleteOnPrimary
+                            : "text-destructive hover:text-destructive hover:underline",
+                        )}
+                        onClick={() =>
+                          setShowDeleteResponseConfirm(critique.id)
+                        }
+                      >
+                        {tCommon("delete")}
                       </button>
                     </>
                   )}
-                </>
-              )}
-            </div>
-          </>
-        )}
-        {(critique.response || replyingId === critique.id) && (
-          <div className="mt-4 ml-3">
-            <div className="flex flex-row items-center gap-2 text-accent-foreground">
-              <div className="shrink-0" aria-hidden>
-                <MessageCircle size={14} strokeWidth={1.5} className="block" />
-              </div>
-              <div className="text-sm font-medium text-accent-foreground">
-                {isOwner ? t("yourReply") : t("creatorReply")}
-              </div>
-            </div>
-            <div className="mt-2 pl-6">
-              {critique.response && !(replyingId === critique.id) ? (
-                <>
-                  {editingResponseId === critique.id ? (
-                    <div className="space-y-3">
-                      <RichTextEditor
-                        value={editResponseText}
-                        onChange={setEditResponseText}
-                        placeholder={t("responsePlaceholder")}
-                      />
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => handleEditResponse(critique.id)}
-                          disabled={saving}
-                        >
-                          {saving ? t("saving") : tCommon("save")}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setEditingResponseId(null);
-                            setEditResponseText("");
-                          }}
-                        >
-                          {tCommon("cancel")}
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div
-                        className="prose prose-sm dark:prose-invert max-w-none mb-1 font-mono text-sm"
-                        dangerouslySetInnerHTML={{
-                          __html: critique.response,
-                        }}
-                      />
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                        <time dateTime={critique.updatedAt}>
-                          {formatCritiqueDate(critique.updatedAt)}
-                        </time>
-                        {isOwner && (
-                          <>
-                            <span aria-hidden> · </span>
-                            <button
-                              type="button"
-                              className="hover:text-foreground hover:underline"
-                              onClick={() => startEditResponse(critique)}
-                            >
-                              {tCommon("edit")}
-                            </button>
-                            <span aria-hidden> · </span>
-                            <button
-                              type="button"
-                              className="text-destructive hover:text-destructive hover:underline"
-                              onClick={() =>
-                                setShowDeleteResponseConfirm(critique.id)
-                              }
-                            >
-                              {tCommon("delete")}
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </>
-              ) : replyingId === critique.id ? (
-                <div className="space-y-3">
-                  <RichTextEditor
-                    value={replyText}
-                    onChange={setReplyText}
-                    placeholder={t("responsePlaceholder")}
-                  />
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => handleReply(critique.id)}
-                      disabled={saving}
-                    >
-                      {saving ? t("saving") : tCommon("save")}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setReplyingId(null);
-                        setReplyText("");
-                      }}
-                    >
-                      {tCommon("cancel")}
-                    </Button>
-                  </div>
                 </div>
-              ) : null}
+              </div>
+            </div>
+          )
+        ) : null}
+
+        {replyingId === critique.id ? (
+          <div className="w-full rounded-xl border border-dashed border-primary/40 bg-muted/30 p-3 shadow-sm space-y-3">
+            <p className="text-sm font-medium text-foreground">
+              {t("yourReply")}
+            </p>
+            <RichTextEditor
+              value={replyText}
+              onChange={setReplyText}
+              placeholder={t("responsePlaceholder")}
+            />
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={() => handleReply(critique.id)}
+                disabled={saving}
+              >
+                {saving ? t("saving") : tCommon("save")}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setReplyingId(null);
+                  setReplyText("");
+                }}
+              >
+                {tCommon("cancel")}
+              </Button>
             </div>
           </div>
-        )}
-      </>
+        ) : null}
+      </div>
     );
   }
 
@@ -682,47 +743,59 @@ export function CritiquesPanel({
                   })
                 }
               >
-                <div className="mb-3 flex items-center gap-3 rounded-lg bg-muted/60 px-3 py-2">
-                  <CollapsibleTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 shrink-0 p-0"
-                      aria-expanded={isOpen}
-                    >
-                      {isOpen ? (
-                        <ChevronDown className="h-5 w-5" />
-                      ) : (
-                        <ChevronRight className="h-5 w-5" />
-                      )}
-                    </Button>
-                  </CollapsibleTrigger>
-                  <div className="shrink-0 text-muted-foreground" aria-hidden>
-                    <NotebookPen
-                      size={18}
-                      strokeWidth={1.5}
-                      className="block"
-                    />
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 min-w-0">
-                    {group.header}
-                  </div>
-                  {isOwner && hasUnseen && (
-                    <Badge variant="secondary">{t("unseen")}</Badge>
+                <div
+                  className={cn(
+                    "min-w-0",
+                    isOpen &&
+                      "mb-4 overflow-hidden rounded-xl border border-border/40 bg-muted/10",
                   )}
-                </div>
-                <CollapsibleContent>
-                  <div className="space-y-4 pl-6">
-                    {group.critiques.map((critique, index) => (
-                      <div key={critique.id}>
-                        {index > 0 && (
-                          <div className="my-4 border-t border-dotted border-border" />
+                >
+                  <div
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2",
+                      isOpen
+                        ? "border-b border-border/35 bg-muted/45"
+                        : "mb-3 rounded-lg bg-muted/60",
+                    )}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 shrink-0 p-0"
+                        aria-expanded={isOpen}
+                      >
+                        {isOpen ? (
+                          <ChevronDown className="h-5 w-5" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5" />
                         )}
-                        {renderCritiqueBody(critique)}
-                      </div>
-                    ))}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <div className="shrink-0 text-muted-foreground" aria-hidden>
+                      <NotebookPen
+                        size={18}
+                        strokeWidth={1.5}
+                        className="block"
+                      />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 min-w-0">
+                      {group.header}
+                    </div>
+                    {isOwner && hasUnseen && (
+                      <Badge variant="secondary">{t("unseen")}</Badge>
+                    )}
                   </div>
-                </CollapsibleContent>
+                  <CollapsibleContent>
+                    <div className="space-y-4 px-3 pb-3 pt-3 sm:px-4">
+                      {group.critiques.map((critique) => (
+                        <div key={critique.id} className="min-w-0">
+                          {renderCritiqueBody(critique)}
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </div>
               </Collapsible>
             );
           })
