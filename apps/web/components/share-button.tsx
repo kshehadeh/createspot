@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getCreatorUrl } from "@/lib/utils";
 
 type ShareButtonPropsBase = {
@@ -64,7 +64,7 @@ function getCanonicalUrl(
   }
 }
 
-/** Dedupe concurrent fetches for the same target (e.g. many ShareButtons on the feed). */
+/** Dedupe concurrent fetches for the same target (e.g. double-click or parallel UI). */
 const shortLinkInflight = new Map<string, Promise<string | null>>();
 
 async function fetchShortUrl(
@@ -104,39 +104,9 @@ export function ShareButton(props: ShareButtonProps) {
   const { type, className = "", ariaLabel } = props;
 
   const [copied, setCopied] = useState(false);
-  const [prefetchedShortUrl, setPrefetchedShortUrl] = useState<string | null>(
-    null,
-  );
 
   const submissionId = type === "submission" ? props.submissionId : undefined;
   const collectionId = type === "collection" ? props.collectionId : undefined;
-
-  useEffect(() => {
-    if (type !== "submission" && type !== "collection") {
-      setPrefetchedShortUrl(null);
-      return;
-    }
-    const targetId =
-      type === "submission"
-        ? submissionId
-        : type === "collection"
-          ? collectionId
-          : undefined;
-    if (!targetId || typeof window === "undefined") {
-      setPrefetchedShortUrl(null);
-      return;
-    }
-    const apiType = type === "submission" ? "submission" : "collection";
-    setPrefetchedShortUrl(null);
-    let cancelled = false;
-    (async () => {
-      const url = await fetchShortUrl(apiType, targetId);
-      if (!cancelled && url) setPrefetchedShortUrl(url);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [type, submissionId, collectionId]);
 
   const canonicalUrl = getCanonicalUrl(props, null);
 
@@ -148,8 +118,8 @@ export function ShareButton(props: ShareButtonProps) {
       if (!targetId) return;
       const apiType = type === "submission" ? "submission" : "collection";
       // Only ever copy `/s/{code}` from the short-link API, never the canonical creator URL.
-      urlToCopy =
-        prefetchedShortUrl ?? (await fetchShortUrl(apiType, targetId));
+      // Fetch on demand so the home feed does not N+1 `/api/short-link` on pageload.
+      urlToCopy = await fetchShortUrl(apiType, targetId);
       if (!urlToCopy) return;
     } else {
       urlToCopy = canonicalUrl || null;
