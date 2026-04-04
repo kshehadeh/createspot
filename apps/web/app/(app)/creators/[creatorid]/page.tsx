@@ -15,7 +15,8 @@ import { ProfileImageViewer } from "@/components/profile-image-viewer";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ShareButton } from "@/components/share-button";
 import { SocialLinks } from "@/components/social-links";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getNextPageHint } from "@/lib/hints-helper";
@@ -219,21 +220,33 @@ export default async function ProfilePage({
                     );
                   })()}
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h1 className="text-2xl font-semibold text-foreground truncate">
+                    <div className="flex items-start justify-between gap-4">
+                      <h1 className="min-w-0 flex-1 break-words text-2xl font-bold text-foreground sm:text-3xl">
                         {user.name || t("anonymous")}
                       </h1>
-                      <ShareButton
-                        type="profile"
-                        userId={user.id}
-                        slug={user.slug}
-                      />
-                      {isLoggedIn && !effectiveIsOwnProfile && (
-                        <FollowButton
-                          targetUserId={user.id}
-                          initialIsFollowing={isFollowingCreator}
+                      <div className="flex shrink-0 items-center gap-1 pt-0.5">
+                        <ShareButton
+                          type="profile"
+                          userId={user.id}
+                          slug={user.slug}
+                          className={cn(
+                            buttonVariants({
+                              variant: "outline",
+                              size: "icon",
+                            }),
+                            "shrink-0",
+                          )}
                         />
-                      )}
+                        {isLoggedIn && !effectiveIsOwnProfile && (
+                          <FollowButton
+                            targetUserId={user.id}
+                            initialIsFollowing={isFollowingCreator}
+                            variant="outline"
+                            size="icon"
+                            className="h-10 w-10 shrink-0 [&_span]:hidden"
+                          />
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <p className="text-sm text-foreground/90">
@@ -296,31 +309,49 @@ export default async function ProfilePage({
                 );
               })()}
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-2xl font-semibold text-foreground truncate">
+                <div className="flex items-start justify-between gap-4">
+                  <h1 className="min-w-0 flex-1 break-words text-2xl font-bold text-foreground sm:text-3xl">
                     {user.name || t("anonymous")}
                   </h1>
-                  <ShareButton
-                    type="profile"
-                    userId={user.id}
-                    slug={user.slug}
-                  />
-                  {isOwnProfile && !isPublicView && (
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`${getCreatorUrl(user)}/edit`}>
-                        <Pencil className="h-4 w-4" />
-                        <span className="hidden md:inline">
-                          {t("editProfile")}
-                        </span>
-                      </Link>
-                    </Button>
-                  )}
-                  {isLoggedIn && !effectiveIsOwnProfile && (
-                    <FollowButton
-                      targetUserId={user.id}
-                      initialIsFollowing={isFollowingCreator}
+                  <div className="flex shrink-0 items-center gap-1 pt-0.5">
+                    <ShareButton
+                      type="profile"
+                      userId={user.id}
+                      slug={user.slug}
+                      className={cn(
+                        buttonVariants({
+                          variant: "outline",
+                          size: "icon",
+                        }),
+                        "shrink-0",
+                      )}
                     />
-                  )}
+                    {isOwnProfile && !isPublicView && (
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="icon"
+                        className="h-10 w-10 shrink-0"
+                      >
+                        <Link
+                          href={`${getCreatorUrl(user)}/edit`}
+                          aria-label={t("editProfile")}
+                          title={t("editProfile")}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    )}
+                    {isLoggedIn && !effectiveIsOwnProfile && (
+                      <FollowButton
+                        targetUserId={user.id}
+                        initialIsFollowing={isFollowingCreator}
+                        variant="outline"
+                        size="icon"
+                        className="h-10 w-10 shrink-0 [&_span]:hidden"
+                      />
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <p className="text-sm text-muted-foreground">
