@@ -19,6 +19,7 @@ import {
   Brain,
   Bug,
   ChevronDown,
+  FileText,
   Heart,
   HelpCircle,
   LayoutGrid,
@@ -27,6 +28,7 @@ import {
   Palette,
   Plus,
   FolderOpen,
+  ScrollText,
 } from "lucide-react";
 
 interface DashboardNavigationProps {
@@ -55,6 +57,8 @@ export function DashboardNavigation({
   const communityRoute = getRoute("community");
   const favoritesRoute = getRoute("favorites");
   const aboutRoute = getRoute("about");
+  const changelogRoute = getRoute("aboutChangelog");
+  const termsRoute = getRoute("terms");
   const adminUsersRoute = getRoute("adminUsers");
   const adminExhibitsRoute = getRoute("adminExhibits");
   const adminNotificationsRoute = getRoute("adminNotifications");
@@ -394,6 +398,34 @@ export function DashboardNavigation({
               >
                 {aboutRoute.icon && <aboutRoute.icon className="h-4 w-4" />}
                 {t("about")}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={changelogRoute.path}
+                prefetch={false}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(changelogRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                <ScrollText className="h-4 w-4" />
+                {t("updates")}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={termsRoute.path}
+                prefetch={false}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(termsRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                <FileText className="h-4 w-4" />
+                {t("terms")}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>

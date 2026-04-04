@@ -16,6 +16,7 @@ import {
   Bug,
   ChevronDown,
   ChevronRight,
+  FileText,
   FolderOpen,
   Heart,
   HelpCircle,
@@ -27,6 +28,7 @@ import {
   Palette,
   Pencil,
   Plus,
+  ScrollText,
   User,
   Users,
 } from "lucide-react";
@@ -408,6 +410,18 @@ export function MobileNavigation({
                 href={getRoute("about").path}
                 icon={Info}
                 label={t("about")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+              <MobileNavItem
+                href={getRoute("aboutChangelog").path}
+                icon={ScrollText}
+                label={t("updates")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+              <MobileNavItem
+                href={getRoute("terms").path}
+                icon={FileText}
+                label={t("terms")}
                 onClose={() => setIsMenuOpen(false)}
               />
               <MobileNavItem

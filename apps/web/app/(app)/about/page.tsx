@@ -7,28 +7,19 @@ import { getCreatorUrl } from "@/lib/utils";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { getHomepageHeroData } from "@/lib/homepage-hero";
 import { PageLayout } from "@/components/page-layout";
-import { PageHeader } from "@/components/page-header";
 import { AboutCard } from "@/components/about-card";
 import { getRoute } from "@/lib/routes";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Briefcase,
-  FolderOpen,
-  Landmark,
-  LayoutGrid,
-  Lightbulb,
-  MessageCircle,
-  Share2,
-  Users,
-} from "lucide-react";
+import { ArrowRight, ExternalLink, Landmark, Sparkles, Target } from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
+import { AboutScrollSection } from "@/components/about-scroll-section";
+
+interface Feature {
+  key: string;
+  helpUrl: string;
+  screenshotSrc: string;
+  hasScreenshot: boolean;
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("about");
@@ -44,22 +35,85 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [tAbout, tHome, heroData, session] = await Promise.all([
+  const [tAbout, tHome, tPurpose, tFeatures, tMuseums, heroData, session] =
+    await Promise.all([
     getTranslations("about"),
     getTranslations("home"),
+    getTranslations("aboutPurpose"),
+    getTranslations("aboutFeatures"),
+    getTranslations("aboutMuseums"),
     getHomepageHeroData(),
     auth(),
-  ]);
+    ]);
 
-  const purposeRoute = getRoute("aboutPurpose");
-  const featuresRoute = getRoute("aboutFeatures");
-  const museumsRoute = getRoute("aboutMuseums");
+  const changelogRoute = getRoute("aboutChangelog");
+  const termsRoute = getRoute("terms");
 
-  const t = tAbout;
+  const features: Feature[] = [
+    {
+      key: "portfolio",
+      helpUrl: "https://help.create.spot/creators/portfolio",
+      screenshotSrc: "/images/about/dashboard.png",
+      hasScreenshot: true,
+    },
+    {
+      key: "collections",
+      helpUrl: "https://help.create.spot/creators/portfolio/collections",
+      screenshotSrc: "/images/about/feature-placeholder.svg",
+      hasScreenshot: false,
+    },
+    {
+      key: "socialSharing",
+      helpUrl: "https://help.create.spot/creators/portfolio/social-sharing",
+      screenshotSrc: "/images/about/feature-placeholder.svg",
+      hasScreenshot: false,
+    },
+    {
+      key: "protection",
+      helpUrl: "https://help.create.spot/creators/profile/setup-your-space",
+      screenshotSrc: "/images/about/profile-edit.png",
+      hasScreenshot: true,
+    },
+    {
+      key: "downloads",
+      helpUrl: "https://help.create.spot/creators/portfolio/downloading-work",
+      screenshotSrc: "/images/about/feature-placeholder.svg",
+      hasScreenshot: false,
+    },
+    {
+      key: "critiques",
+      helpUrl: "https://help.create.spot/creators/portfolio/critiques",
+      screenshotSrc: "/images/about/feature-placeholder.svg",
+      hasScreenshot: false,
+    },
+    {
+      key: "prompts",
+      helpUrl: "https://help.create.spot/inspiration/prompts",
+      screenshotSrc: "/images/about/this-week-gallery.png",
+      hasScreenshot: true,
+    },
+    {
+      key: "museums",
+      helpUrl: "https://help.create.spot/inspiration/museums",
+      screenshotSrc: "/images/about/feature-placeholder.svg",
+      hasScreenshot: false,
+    },
+    {
+      key: "exhibits",
+      helpUrl: "https://help.create.spot/browsers/exhibits",
+      screenshotSrc: "/images/about/exhibit-grid.png",
+      hasScreenshot: true,
+    },
+    {
+      key: "mapView",
+      helpUrl: "https://help.create.spot/browsers/exhibits/map-view",
+      screenshotSrc: "/images/about/exhibit-map.png",
+      hasScreenshot: true,
+    },
+  ];
 
   return (
     <>
-      {/* Hero Section - contained in content area (no overlap with sidebar) */}
       <section className="relative min-h-[360px] w-full overflow-hidden sm:min-h-[440px] lg:min-h-[540px]">
         <div className="absolute inset-0 hero-background" />
         {heroData.type === "carousel" && heroData.submissions.length > 0 ? (
@@ -113,491 +167,198 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <PageLayout maxWidth="max-w-6xl" className="sm:py-16">
-        {/* Feature Highlights */}
-        <section className="relative z-10 -mt-16 px-0">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
-                <CardHeader className="p-5 pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 ring-1 ring-emerald-500/30 dark:from-emerald-400/15 dark:to-teal-400/15 dark:ring-emerald-400/25">
-                      <Briefcase className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                        {tHome("highlights.portfolios.title")}
-                      </CardTitle>
-                      <CardDescription className="text-sm leading-relaxed text-muted-foreground">
-                        {tHome("highlights.portfolios.description")}
-                      </CardDescription>
-                    </div>
+      <PageLayout maxWidth="max-w-6xl" className="space-y-10 py-10 sm:py-16">
+        <section className="sticky top-[3.5rem] z-20 rounded-2xl border border-border/60 bg-background/95 p-3 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+          <div className="flex flex-wrap gap-2">
+            <a href="#purpose" className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80">
+              Purpose
+            </a>
+            <a href="#features" className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80">
+              Features
+            </a>
+            <a href="#museums" className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80">
+              Museums
+            </a>
+            <a href="#protecting-your-work" className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80">
+              Protection
+            </a>
+          </div>
+        </section>
+
+        <AboutScrollSection id="purpose">
+          <AboutCard className="border-border/60">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-xl bg-amber-500/15 p-2 text-amber-500 dark:bg-amber-400/15 dark:text-amber-300">
+                <Target className="h-5 w-5" />
+              </div>
+              <h2 className="text-3xl font-permanent-marker text-foreground">
+                {tAbout("purpose.title")}
+              </h2>
+            </div>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              {tPurpose("whyCreationMatters.description")}{" "}
+              <strong className="text-foreground">
+                {tPurpose("whyCreationMatters.humanMeaning")}
+              </strong>
+              {tPurpose("whyCreationMatters.ourPerspective")}{" "}
+              <strong className="text-foreground">
+                {tPurpose("whyCreationMatters.purpose")}
+              </strong>
+              . {tPurpose("aweKeepsUsAlive.description")}{" "}
+              <strong className="text-foreground">
+                {tPurpose("aweKeepsUsAlive.notice")}
+              </strong>
+              {tPurpose("aweKeepsUsAlive.thingsInspire")}{" "}
+              <strong className="text-foreground">
+                {tPurpose("aweKeepsUsAlive.creativeOutput")}
+              </strong>{" "}
+              {tPurpose("aweKeepsUsAlive.isJustAsImportant")}
+            </p>
+          </AboutCard>
+        </AboutScrollSection>
+
+        <AboutScrollSection id="features">
+          <AboutCard className="border-border/60" contentClassName="p-6 sm:p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-xl bg-violet-500/15 p-2 text-violet-500 dark:bg-violet-400/15 dark:text-violet-300">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <h2 className="text-3xl font-permanent-marker text-foreground">
+                {tAbout("features.title")}
+              </h2>
+            </div>
+            <p className="mb-6 text-base text-muted-foreground">
+              {tFeatures("mainDescription")}
+            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {features.map((feature) => (
+                <div key={feature.key} className="rounded-2xl border border-border/70 bg-card/40 p-4">
+                  <div className="mb-3 overflow-hidden rounded-xl border border-border bg-muted/40">
+                    <img
+                      src={feature.screenshotSrc}
+                      alt={`${tFeatures(`features.${feature.key}.title`)} screenshot`}
+                      className="h-44 w-full object-cover"
+                      loading="lazy"
+                    />
                   </div>
-                </CardHeader>
-                <CardContent className="px-5 pb-5 pt-0">
-                  {session?.user ? (
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                    >
-                      <Link href={`${getCreatorUrl(session.user)}/portfolio`}>
-                        {tHome("highlights.portfolios.ctaView")}
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                    >
-                      <Link href="/api/auth/signin">
-                        {tHome("highlights.portfolios.ctaSignIn")}
-                      </Link>
-                    </Button>
+                  <h3 className="mb-1 text-base font-semibold text-foreground">
+                    {tFeatures(`features.${feature.key}.title`)}
+                  </h3>
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    {tFeatures(`features.${feature.key}.description`)}
+                  </p>
+                  {!feature.hasScreenshot && (
+                    <p className="mb-3 text-xs font-medium text-muted-foreground">
+                      Screenshot coming soon
+                    </p>
                   )}
-                </CardContent>
-              </Card>
-
-              <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
-                <CardHeader className="p-5 pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 ring-1 ring-sky-500/30 dark:from-sky-400/15 dark:to-indigo-400/15 dark:ring-sky-400/25">
-                      <Users className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                        {tHome("highlights.community.title")}
-                      </CardTitle>
-                      <CardDescription className="text-sm leading-relaxed text-muted-foreground">
-                        {tHome("highlights.community.description")}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-5 pb-5 pt-0">
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
+                  <a
+                    href={feature.helpUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                   >
-                    <Link href="/inspire/community">
-                      {tHome("highlights.community.cta")}
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
-                <CardHeader className="p-5 pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 ring-1 ring-amber-500/30 dark:from-amber-400/15 dark:to-rose-400/15 dark:ring-amber-400/25">
-                      <Landmark className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                        {tHome("highlights.museums.title")}
-                      </CardTitle>
-                      <CardDescription className="text-sm leading-relaxed text-muted-foreground">
-                        {tHome("highlights.museums.description")}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-5 pb-5 pt-0">
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                  >
-                    <Link href="/inspire/museums">
-                      {tHome("highlights.museums.cta")}
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="group overflow-hidden border-border/60 bg-card/80 shadow-sm transition-shadow hover:shadow-md">
-                <CardHeader className="p-5 pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 ring-1 ring-violet-500/30 dark:from-violet-400/15 dark:to-fuchsia-400/15 dark:ring-violet-400/25">
-                      <LayoutGrid className="h-5 w-5 text-violet-600 dark:text-violet-400" />
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                        {tHome("highlights.exhibits.title")}
-                      </CardTitle>
-                      <CardDescription className="text-sm leading-relaxed text-muted-foreground">
-                        {tHome("highlights.exhibits.description")}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-5 pb-5 pt-0">
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                  >
-                    <Link href="/inspire/exhibition">
-                      {tHome("highlights.exhibits.cta")}
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                    {tFeatures("learnMore")}
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </div>
+              ))}
             </div>
-          </div>
-        </section>
+          </AboutCard>
+        </AboutScrollSection>
 
-        {/* Mission Statement Section */}
-        <section className="px-0 pb-12 pt-10 sm:pb-16">
-          <div className="mx-auto max-w-5xl text-center">
-            <p className="text-3xl font-medium leading-relaxed text-foreground/80 sm:text-4xl sm:leading-relaxed md:text-5xl md:leading-relaxed lg:text-6xl lg:leading-relaxed">
-              {tHome("missionStatement")}{" "}
-              <strong className="rainbow-sheen">
-                {tHome("missionExhibit")}
-              </strong>
-              , find inspiration to{" "}
-              <strong className="rainbow-sheen">
-                {tHome("missionCreate")}
-              </strong>
-              , and{" "}
-              <strong className="rainbow-sheen">
-                {tHome("missionSupport")}
-              </strong>
-              .
-            </p>
-          </div>
-        </section>
-
-        {/* Feature Quadrants */}
-        <section className="border-t border-border/50 bg-muted/30 px-0 py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 shadow-sm">
-                <CardHeader className="p-6 pb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 ring-1 ring-amber-500/30 dark:from-amber-400/15 dark:to-rose-400/15 dark:ring-amber-400/25">
-                      <Lightbulb className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                    </div>
-                    <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-                      {tHome("features.inspiration.title")}
-                    </CardTitle>
-                  </div>
-                  <CardDescription className="mt-4 text-base leading-relaxed text-muted-foreground">
-                    {tHome("features.inspiration.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-6 pb-6 pt-0">
-                  <div className="flex flex-wrap gap-4">
-                    <Link
-                      href="/inspire/exhibition"
-                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
-                      {tHome("features.inspiration.ctaExhibits")}
-                    </Link>
-                    <Link
-                      href={featuresRoute.path}
-                      className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                    >
-                      {tHome("features.inspiration.ctaFeatures")}
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 shadow-sm">
-                <CardHeader className="p-6 pb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500/20 to-indigo-500/20 ring-1 ring-sky-500/30 dark:from-sky-400/15 dark:to-indigo-400/15 dark:ring-sky-400/25">
-                      <MessageCircle className="h-6 w-6 text-sky-600 dark:text-sky-400" />
-                    </div>
-                    <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-                      {tHome("features.critique.title")}
-                    </CardTitle>
-                  </div>
-                  <CardDescription className="mt-4 text-base leading-relaxed text-muted-foreground">
-                    {tHome("features.critique.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-6 pb-6 pt-0">
-                  <Link
-                    href="/about/critiques"
-                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
-                    {tHome("features.critique.ctaLearnMore")}
-                  </Link>
-                </CardContent>
-              </Card>
-
-              <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 shadow-sm">
-                <CardHeader className="p-6 pb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 ring-1 ring-violet-500/30 dark:from-violet-400/15 dark:to-fuchsia-400/15 dark:ring-violet-400/25">
-                      <Share2 className="h-6 w-6 text-violet-600 dark:text-violet-400" />
-                    </div>
-                    <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-                      {tHome("features.exposure.title")}
-                    </CardTitle>
-                  </div>
-                  <CardDescription className="mt-4 text-base leading-relaxed text-muted-foreground">
-                    {tHome("features.exposure.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-6 pb-6 pt-0">
-                  <Link
-                    href="/about/features"
-                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
-                    {tHome("features.exposure.ctaLearnMore")}
-                  </Link>
-                </CardContent>
-              </Card>
-
-              <Card className="group relative h-full overflow-hidden border-border/60 bg-card/80 shadow-sm">
-                <CardHeader className="p-6 pb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-sky-500/20 ring-1 ring-emerald-500/30 dark:from-emerald-400/15 dark:to-sky-400/15 dark:ring-emerald-400/25">
-                      <FolderOpen className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-                      {tHome("features.management.title")}
-                    </CardTitle>
-                  </div>
-                  <CardDescription className="mt-4 text-base leading-relaxed text-muted-foreground">
-                    {tHome("features.management.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-6 pb-6 pt-0">
-                  <Link
-                    href="/about/portfolio"
-                    className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
-                  >
-                    {tHome("features.management.ctaLearnMore")}
-                  </Link>
-                </CardContent>
-              </Card>
+        <AboutScrollSection id="museums">
+          <AboutCard className="border-border/60">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-xl bg-emerald-500/15 p-2 text-emerald-500 dark:bg-emerald-400/15 dark:text-emerald-300">
+                <Landmark className="h-5 w-5" />
+              </div>
+              <h2 className="text-3xl font-permanent-marker text-foreground">
+                {tAbout("museums.title")}
+              </h2>
             </div>
-          </div>
-        </section>
-
-        <section className="flex justify-center px-0 py-6">
-          <a
-            href="https://www.producthunt.com/products/create-spot?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-create-spot"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block transition-opacity hover:opacity-80"
-          >
-            <img
-              alt="Create Spot - A home for creativity | Product Hunt"
-              width={250}
-              height={54}
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1083287&theme=neutral&t=1772444248450"
-              className="h-auto w-[250px]"
-            />
-          </a>
-        </section>
-      </PageLayout>
-
-      <PageLayout maxWidth="max-w-5xl" className="sm:py-16">
-        <PageHeader
-          title={
-            <>
-              {t("mainTitle")}{" "}
-              <span className="font-permanent-marker">
-                {t("mainTitleHighlight")}
-              </span>{" "}
-              {t("mainTitleSuffix")}
-            </>
-          }
-          subtitle={
-            <>
-              {t("mainDescription")}{" "}
-              <span className="font-permanent-marker">
-                {t("mainDescriptionHighlight")}
-              </span>{" "}
-              {t("mainDescriptionSuffix")}
-            </>
-          }
-        />
-
-        <div className="grid gap-8">
-          <AboutCard id="purpose" className="scroll-mt-24">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("purpose.title")}
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("purpose.description")}{" "}
-              <strong className="text-foreground">
-                {t("purpose.inspired")}
-              </strong>{" "}
-              {t("purpose.toCreateMore")}{" "}
-              <strong className="text-foreground">
-                {t("purpose.exhibit")}
-              </strong>
-              . {t("purpose.weBelieve")}{" "}
-              <strong className="text-foreground">
-                {t("purpose.sparked")}
-              </strong>
-              . {t("purpose.overTime")}{" "}
-              <strong className="text-foreground">
-                {t("purpose.building")}
-              </strong>{" "}
-              {t("purpose.fresh")}
+            <p className="mb-4 text-base leading-relaxed text-muted-foreground">
+              {tMuseums("dataSources.description")}
             </p>
-            <div className="mt-5">
-              <Link
-                href={purposeRoute.path}
-                className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
-              >
-                {t("purpose.readMore")}
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>{tMuseums("dataSources.artic")}</li>
+              <li>{tMuseums("dataSources.cleveland")}</li>
+              <li>{tMuseums("dataSources.nga")}</li>
+            </ul>
+            <div className="mt-6">
+              <Link href="/inspire/museums" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                {tHome("highlights.museums.cta")}
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </AboutCard>
+        </AboutScrollSection>
 
-          <AboutCard id="features" className="scroll-mt-24">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("features.title")}
+        <AboutScrollSection id="protecting-your-work">
+          <AboutCard className="border-border/60">
+            <h2 className="mb-4 text-3xl font-permanent-marker text-foreground">
+              {tAbout("protectingYourWork.title")}
             </h2>
             <p className="text-base leading-relaxed text-muted-foreground">
-              {t("features.description")}
-            </p>
-            <div className="mt-5">
-              <Link
-                href={featuresRoute.path}
-                className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
-              >
-                {t("features.viewAll")}
-              </Link>
-            </div>
-          </AboutCard>
-
-          <AboutCard id="profile" className="scroll-mt-24">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("profileCard.title")}
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("profileCard.description")}
-            </p>
-            <div className="mt-5">
-              <a
-                href="https://help.create.spot/creators/profile"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
-              >
-                {t("profileCard.learnMore")}
-              </a>
-            </div>
-          </AboutCard>
-
-          <AboutCard id="portfolio" className="scroll-mt-24">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("portfolioCard.title")}
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("portfolioCard.description")}
-            </p>
-            <div className="mt-5">
-              <a
-                href="https://help.create.spot/creators/portfolio"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
-              >
-                {t("portfolioCard.learnMore")}
-              </a>
-            </div>
-          </AboutCard>
-
-          <AboutCard id="museums" className="scroll-mt-24">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("museums.title")}
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("museums.description")}{" "}
+              {tAbout("protectingYourWork.description")}{" "}
               <strong className="text-foreground">
-                {t("museums.artInstitute")}
+                {tAbout("protectingYourWork.tools")}
               </strong>
-              {t("museums.theMuseum")}{" "}
+              {tAbout("protectingYourWork.continuation")}{" "}
               <strong className="text-foreground">
-                {t("museums.clevelandMuseum")}
-              </strong>
-              {t("museums.andThe")}{" "}
-              <strong className="text-foreground">
-                {t("museums.nationalGallery")}
+                {tAbout("protectingYourWork.ownership")}
               </strong>
               .
             </p>
-            <div className="mt-5">
-              <Link
-                href={museumsRoute.path}
-                className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
-              >
-                {t("museums.learnMore")}
-              </Link>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild>
+                <a
+                  href="https://help.create.spot/creators/profile/setup-your-space"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {tAbout("protectingYourWork.learnMore")}
+                </a>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={changelogRoute.path}>View updates</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={termsRoute.path}>Read terms</Link>
+              </Button>
             </div>
           </AboutCard>
+        </AboutScrollSection>
 
-          <AboutCard id="badges" className="scroll-mt-24">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("badges.title")}
+        <AboutScrollSection id="cta">
+          <AboutCard className="border-border/60 bg-gradient-to-br from-primary/10 via-card to-card">
+            <h2 className="mb-3 text-2xl font-semibold text-foreground">
+              Build momentum with every piece you share.
             </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("badges.description")}{" "}
-              <strong className="text-foreground">
-                {t("badges.celebrateMilestones")}
-              </strong>
-              . {t("badges.automaticallyAwarded")}{" "}
-              <strong className="text-foreground">
-                {t("badges.creatingAndSharing")}
-              </strong>
-              .
+            <p className="mb-6 text-muted-foreground">
+              Create a portfolio, exhibit your work, and keep your creative cycle
+              moving.
             </p>
-            <div className="mt-5">
-              <a
-                href="https://help.create.spot/creators/profile/badges"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
-              >
-                {t("badges.learnMore")}
-              </a>
+            <div className="flex flex-wrap gap-3">
+              {session?.user ? (
+                <Button asChild>
+                  <Link href={`${getCreatorUrl(session.user)}/portfolio`}>
+                    {tHome("highlights.portfolios.ctaView")}
+                  </Link>
+                </Button>
+              ) : (
+                <Button asChild>
+                  <Link href="/api/auth/signin">
+                    {tHome("highlights.portfolios.ctaSignIn")}
+                  </Link>
+                </Button>
+              )}
+              <Button asChild variant="outline">
+                <Link href="/inspire/exhibition">{tHome("highlights.exhibits.cta")}</Link>
+              </Button>
             </div>
           </AboutCard>
-
-          <AboutCard id="protecting-your-work" className="scroll-mt-24">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("protectingYourWork.title")}
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("protectingYourWork.description")}{" "}
-              <strong className="text-foreground">
-                {t("protectingYourWork.tools")}
-              </strong>
-              {t("protectingYourWork.continuation")}{" "}
-              <strong className="text-foreground">
-                {t("protectingYourWork.ownership")}
-              </strong>
-              .
-            </p>
-            <div className="mt-5">
-              <a
-                href="https://help.create.spot/creators/profile/setup-your-space"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
-              >
-                {t("protectingYourWork.learnMore")}
-              </a>
-            </div>
-          </AboutCard>
-        </div>
+        </AboutScrollSection>
       </PageLayout>
     </>
   );

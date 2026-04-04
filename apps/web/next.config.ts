@@ -39,6 +39,66 @@ const nextConfig: NextConfig = {
         destination: "/about",
         permanent: true,
       },
+      {
+        source: "/about/purpose",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/purpose/:path*",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/features",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/features/:path*",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/museums",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/museums/:path*",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/portfolio",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/portfolio/:path*",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/critiques",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/critiques/:path*",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/protecting-your-work",
+        destination: "/about#protecting-your-work",
+        permanent: true,
+      },
+      {
+        source: "/about/protecting-your-work/:path*",
+        destination: "/about#protecting-your-work",
+        permanent: true,
+      },
     ];
   },
   experimental: {

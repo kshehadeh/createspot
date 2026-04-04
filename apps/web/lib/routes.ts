@@ -230,21 +230,6 @@ const ROUTES: Record<string, RouteConfig> = {
     isLink: false,
     icon: Info,
   },
-  aboutPurpose: {
-    path: "/about/purpose",
-    label: "about.purpose.title",
-    parentPath: "/about",
-  },
-  aboutFeatures: {
-    path: "/about/features",
-    label: "navigation.features",
-    parentPath: "/about",
-  },
-  aboutMuseums: {
-    path: "/about/museums",
-    label: "about.museums.title",
-    parentPath: "/about",
-  },
   aboutChangelog: {
     path: "/about/changelog",
     label: "navigation.updates",

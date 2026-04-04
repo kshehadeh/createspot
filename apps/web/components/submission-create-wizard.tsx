@@ -1005,7 +1005,7 @@ export function SubmissionCreateWizard({
 
           <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
             {tUpload("ownershipNotice")}{" "}
-            <Link href="/about/protecting-your-work" className="underline">
+            <Link href="/about#protecting-your-work" className="underline">
               {tWizard("rightsLearnMore")}
             </Link>
           </div>
