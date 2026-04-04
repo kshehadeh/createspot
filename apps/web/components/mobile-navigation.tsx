@@ -21,6 +21,7 @@ import {
   Heart,
   HelpCircle,
   Info,
+  LayoutDashboard,
   LayoutGrid,
   Landmark,
   Lock,
@@ -319,6 +320,13 @@ export function MobileNavigation({
                   onClick={handleCreateClick}
                 />
                 <div className="mt-0.5 border-t border-border" />
+                <MobileNavItem
+                  href={getRoute("dashboard").path}
+                  icon={LayoutDashboard}
+                  label={t("dashboard")}
+                  onClose={() => setIsMenuOpen(false)}
+                  isActive={pathname.startsWith(getRoute("dashboard").path)}
+                />
                 {user.id &&
                   (() => {
                     const creatorBase = getCreatorUrl({

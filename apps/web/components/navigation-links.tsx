@@ -22,6 +22,7 @@ import {
   FileText,
   Heart,
   HelpCircle,
+  LayoutDashboard,
   LayoutGrid,
   Lock,
   Mail,
@@ -53,6 +54,7 @@ export function DashboardNavigation({
   const museumsRoute = getRoute("museums");
   const creatorsRoute = getRoute("creators");
   const profileRoute = getRoute("profile");
+  const dashboardRoute = getRoute("dashboard");
   const portfolioRoute = getRoute("portfolio");
   const communityRoute = getRoute("community");
   const favoritesRoute = getRoute("favorites");
@@ -83,9 +85,11 @@ export function DashboardNavigation({
     isCreatorsListingPath(pathname) ||
     isActive(communityRoute.path) ||
     (user ? isActive(favoritesRoute.path) : false);
-  const isMyHubActive = creatorBase
-    ? pathname.startsWith(creatorBase)
-    : isActive(profileRoute.path) || isActive(portfolioRoute.path);
+  const isMyHubActive =
+    isActive(dashboardRoute.path) ||
+    (creatorBase
+      ? pathname.startsWith(creatorBase)
+      : isActive(profileRoute.path) || isActive(portfolioRoute.path));
   const isAdminActive =
     pathname.startsWith(adminUsersRoute.path) ||
     pathname.startsWith(adminExhibitsRoute.path) ||
@@ -225,6 +229,20 @@ export function DashboardNavigation({
                 {t("create")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link
+                  href={dashboardRoute.path}
+                  prefetch={false}
+                  className={cn(
+                    "flex items-center gap-2",
+                    isActive(dashboardRoute.path) &&
+                      "bg-accent text-accent-foreground",
+                  )}
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  {t("dashboard")}
+                </Link>
+              </DropdownMenuItem>
               {user.id &&
                 (() => {
                   if (!creatorBase) return null;
