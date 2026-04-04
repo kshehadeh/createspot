@@ -64,26 +64,40 @@ function getCanonicalUrl(
   }
 }
 
+/** Dedupe concurrent fetches for the same target (e.g. many ShareButtons on the feed). */
+const shortLinkInflight = new Map<string, Promise<string | null>>();
+
 async function fetchShortUrl(
   apiType: "submission" | "collection",
   targetId: string,
 ): Promise<string | null> {
-  try {
-    const res = await fetch(
-      `/api/short-link?type=${apiType}&targetId=${encodeURIComponent(targetId)}`,
-    );
-    if (!res.ok) return null;
-    const data = (await res.json()) as { code?: string; shortUrl?: string };
-    if (data.shortUrl && typeof data.shortUrl === "string")
-      return data.shortUrl;
-    if (data.code && typeof window !== "undefined") {
-      const base = window.location.origin.replace(/\/$/, "");
-      return `${base}/s/${data.code}`;
-    }
-  } catch {
-    // ignore
+  const key = `${apiType}:${targetId}`;
+  let promise = shortLinkInflight.get(key);
+  if (!promise) {
+    promise = (async () => {
+      try {
+        const res = await fetch(
+          `/api/short-link?type=${apiType}&targetId=${encodeURIComponent(targetId)}`,
+        );
+        if (!res.ok) return null;
+        const data = (await res.json()) as { code?: string; shortUrl?: string };
+        if (data.shortUrl && typeof data.shortUrl === "string")
+          return data.shortUrl;
+        if (data.code && typeof window !== "undefined") {
+          const base = window.location.origin.replace(/\/$/, "");
+          return `${base}/s/${data.code}`;
+        }
+      } catch {
+        // ignore
+      }
+      return null;
+    })();
+    shortLinkInflight.set(key, promise);
+    void promise.finally(() => {
+      shortLinkInflight.delete(key);
+    });
   }
-  return null;
+  return promise;
 }
 
 export function ShareButton(props: ShareButtonProps) {

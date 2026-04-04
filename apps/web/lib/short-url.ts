@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { customAlphabet } from "nanoid";
 import { cacheLife, cacheTag } from "next/cache";
+import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCreatorUrl } from "@/lib/utils";
 import {
@@ -17,6 +18,15 @@ const generateCode = customAlphabet(SHORT_CODE_ALPHABET, SHORT_CODE_LENGTH);
 const BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
 export type ShortLinkTargetType = "submission" | "collection" | "exhibit";
+
+function shortLinkWhereForTarget(
+  type: ShortLinkTargetType,
+  targetId: string,
+): { submissionId: string } | { collectionId: string } | { exhibitId: string } {
+  if (type === "submission") return { submissionId: targetId };
+  if (type === "collection") return { collectionId: targetId };
+  return { exhibitId: targetId };
+}
 
 export interface ResolvedShortLink {
   canonicalPath: string;
@@ -117,13 +127,9 @@ export async function getOrCreateShortLink(
   type: ShortLinkTargetType,
   targetId: string,
 ): Promise<string | null> {
+  const targetWhere = shortLinkWhereForTarget(type, targetId);
   const existing = await prisma.shortLink.findFirst({
-    where:
-      type === "submission"
-        ? { submissionId: targetId }
-        : type === "collection"
-          ? { collectionId: targetId }
-          : { exhibitId: targetId },
+    where: targetWhere,
     select: { code: true },
   });
   if (existing) return existing.code;
@@ -149,6 +155,20 @@ export async function getOrCreateShortLink(
         ? { code, collectionId: targetId }
         : { code, exhibitId: targetId };
 
-  await prisma.shortLink.create({ data: createData });
+  try {
+    await prisma.shortLink.create({ data: createData });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002"
+    ) {
+      const afterRace = await prisma.shortLink.findFirst({
+        where: targetWhere,
+        select: { code: true },
+      });
+      if (afterRace) return afterRace.code;
+    }
+    throw e;
+  }
   return code;
 }

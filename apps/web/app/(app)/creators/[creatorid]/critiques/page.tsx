@@ -12,6 +12,7 @@ import { CreatorCritiquesSubmissionsTable } from "@/components/creator-critiques
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CreatorCritiquesPageProps {
   params: Promise<{ creatorid: string }>;
@@ -122,7 +123,11 @@ export default async function CreatorCritiquesListPage({
     <Suspense
       fallback={
         <PageLayout maxWidth="max-w-6xl">
-          <PageHeader title="..." />
+          <div className="mb-8 space-y-2">
+            <Skeleton className="h-9 w-48 max-w-full" />
+            <Skeleton className="h-5 w-72 max-w-full" />
+          </div>
+          <Skeleton className="h-48 w-full rounded-lg" />
         </PageLayout>
       }
     >
