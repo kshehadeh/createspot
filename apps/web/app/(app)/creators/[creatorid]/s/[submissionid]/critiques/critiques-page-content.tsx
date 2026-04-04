@@ -201,11 +201,7 @@ export function CritiquesPageContent({
           </div>
 
           <aside className="relative md:sticky md:top-6 md:max-h-[calc(100vh-8rem)] overflow-visible">
-            <div
-              className="absolute -left-8 top-0 z-10 hidden h-0.5 w-8 bg-primary/30 pointer-events-none lg:block"
-              aria-hidden
-            />
-            <div className="md:max-h-[calc(100vh-8rem)] md:overflow-y-auto lg:border-l-2 lg:border-primary/30 lg:pl-8">
+            <div className="md:max-h-[calc(100vh-8rem)] md:overflow-y-auto lg:border-l lg:border-dotted lg:border-border/35 lg:pl-8">
               <SubmissionPanel
                 submission={submission}
                 isOwner={isOwner}
