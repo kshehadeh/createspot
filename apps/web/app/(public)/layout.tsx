@@ -47,7 +47,7 @@ export default async function PublicLayout({
   ]);
 
   return (
-    <SessionProvider>
+    <SessionProvider session={session}>
       <NextIntlClientProvider
         locale={locale}
         messages={pickPublicMessages(messages)}

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -20,15 +21,13 @@ async function GlobalHintsWithData({ userId }: { userId: string | undefined }) {
 async function AppLayoutContent({
   children,
   breadcrumb,
+  session,
 }: {
   children: React.ReactNode;
   breadcrumb?: React.ReactNode;
+  session: Session | null;
 }) {
-  const [session, locale, messages] = await Promise.all([
-    auth(),
-    getLocale(),
-    getMessages(),
-  ]);
+  const [locale, messages] = await Promise.all([getLocale(), getMessages()]);
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
@@ -50,19 +49,22 @@ async function AppLayoutContent({
   );
 }
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
   breadcrumb,
 }: {
   children: React.ReactNode;
   breadcrumb?: React.ReactNode;
 }) {
+  const session = await auth();
   return (
-    <SessionProvider>
+    <SessionProvider session={session}>
       <Suspense
         fallback={<div className="flex min-h-screen flex-col bg-background" />}
       >
-        <AppLayoutContent breadcrumb={breadcrumb}>{children}</AppLayoutContent>
+        <AppLayoutContent session={session} breadcrumb={breadcrumb}>
+          {children}
+        </AppLayoutContent>
       </Suspense>
     </SessionProvider>
   );
