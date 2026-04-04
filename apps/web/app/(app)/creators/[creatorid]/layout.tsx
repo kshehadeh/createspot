@@ -2,8 +2,7 @@ import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { getCreator } from "@/lib/creators";
 import { getCreatorUrl } from "@/lib/utils";
-import { CreatorSidebar } from "@/components/creator-sidebar";
-import { CreatorMobileNav } from "@/components/creator-mobile-nav";
+import { CreatorOwnerShell } from "@/components/creator-owner-shell";
 
 interface CreatorLayoutProps {
   children: React.ReactNode;
@@ -24,11 +23,7 @@ async function CreatorLayoutContent({ children, params }: CreatorLayoutProps) {
   const creatorUrl = getCreatorUrl(creator);
 
   return (
-    <div className="flex flex-1">
-      <CreatorSidebar creatorUrl={creatorUrl} />
-      <div className="flex-1 min-w-0 pb-16 md:pb-0">{children}</div>
-      <CreatorMobileNav creatorUrl={creatorUrl} />
-    </div>
+    <CreatorOwnerShell creatorUrl={creatorUrl}>{children}</CreatorOwnerShell>
   );
 }
 
