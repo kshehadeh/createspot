@@ -652,10 +652,7 @@ function SortablePortfolioItem({
                     type="button"
                     variant="outline"
                     size="icon"
-                    className={cn(
-                      "h-10 w-10 shrink-0",
-                      LIGHTBOX_BUTTON_CLASS,
-                    )}
+                    className={cn("h-10 w-10 shrink-0", LIGHTBOX_BUTTON_CLASS)}
                     onClick={handleEdit}
                   >
                     <Pencil className="h-4 w-4" />

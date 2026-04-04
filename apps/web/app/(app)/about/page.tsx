@@ -10,7 +10,13 @@ import { PageLayout } from "@/components/page-layout";
 import { AboutCard } from "@/components/about-card";
 import { getRoute } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ExternalLink, Landmark, Sparkles, Target } from "lucide-react";
+import {
+  ArrowRight,
+  ExternalLink,
+  Landmark,
+  Sparkles,
+  Target,
+} from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
 import { AboutScrollSection } from "@/components/about-scroll-section";
 
@@ -37,13 +43,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AboutPage() {
   const [tAbout, tHome, tPurpose, tFeatures, tMuseums, heroData, session] =
     await Promise.all([
-    getTranslations("about"),
-    getTranslations("home"),
-    getTranslations("aboutPurpose"),
-    getTranslations("aboutFeatures"),
-    getTranslations("aboutMuseums"),
-    getHomepageHeroData(),
-    auth(),
+      getTranslations("about"),
+      getTranslations("home"),
+      getTranslations("aboutPurpose"),
+      getTranslations("aboutFeatures"),
+      getTranslations("aboutMuseums"),
+      getHomepageHeroData(),
+      auth(),
     ]);
 
   const changelogRoute = getRoute("aboutChangelog");
@@ -170,16 +176,28 @@ export default async function AboutPage() {
       <PageLayout maxWidth="max-w-6xl" className="space-y-10 py-10 sm:py-16">
         <section className="sticky top-[3.5rem] z-20 rounded-2xl border border-border/60 bg-background/95 p-3 backdrop-blur supports-[backdrop-filter]:bg-background/70">
           <div className="flex flex-wrap gap-2">
-            <a href="#purpose" className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80">
+            <a
+              href="#purpose"
+              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
+            >
               Purpose
             </a>
-            <a href="#features" className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80">
+            <a
+              href="#features"
+              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
+            >
               Features
             </a>
-            <a href="#museums" className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80">
+            <a
+              href="#museums"
+              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
+            >
               Museums
             </a>
-            <a href="#protecting-your-work" className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80">
+            <a
+              href="#protecting-your-work"
+              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
+            >
               Protection
             </a>
           </div>
@@ -232,7 +250,10 @@ export default async function AboutPage() {
             </p>
             <div className="grid gap-4 md:grid-cols-2">
               {features.map((feature) => (
-                <div key={feature.key} className="rounded-2xl border border-border/70 bg-card/40 p-4">
+                <div
+                  key={feature.key}
+                  className="rounded-2xl border border-border/70 bg-card/40 p-4"
+                >
                   <div className="mb-3 overflow-hidden rounded-xl border border-border bg-muted/40">
                     <img
                       src={feature.screenshotSrc}
@@ -286,7 +307,10 @@ export default async function AboutPage() {
               <li>{tMuseums("dataSources.nga")}</li>
             </ul>
             <div className="mt-6">
-              <Link href="/inspire/museums" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+              <Link
+                href="/inspire/museums"
+                className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+              >
                 {tHome("highlights.museums.cta")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -336,8 +360,8 @@ export default async function AboutPage() {
               Build momentum with every piece you share.
             </h2>
             <p className="mb-6 text-muted-foreground">
-              Create a portfolio, exhibit your work, and keep your creative cycle
-              moving.
+              Create a portfolio, exhibit your work, and keep your creative
+              cycle moving.
             </p>
             <div className="flex flex-wrap gap-3">
               {session?.user ? (
@@ -354,7 +378,9 @@ export default async function AboutPage() {
                 </Button>
               )}
               <Button asChild variant="outline">
-                <Link href="/inspire/exhibition">{tHome("highlights.exhibits.cta")}</Link>
+                <Link href="/inspire/exhibition">
+                  {tHome("highlights.exhibits.cta")}
+                </Link>
               </Button>
             </div>
           </AboutCard>

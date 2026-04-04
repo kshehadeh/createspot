@@ -3,12 +3,7 @@
 import Link from "@/components/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  User,
-  Briefcase,
-  FolderOpen,
-  MessageSquare,
-} from "lucide-react";
+import { User, Briefcase, FolderOpen, MessageSquare } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,8 +31,7 @@ export function CreatorSidebar({ creatorUrl }: CreatorSidebarProps) {
       href: creatorUrl,
       label: t("profile"),
       icon: User,
-      isActive:
-        pathname === creatorUrl || pathname === `${creatorUrl}/edit`,
+      isActive: pathname === creatorUrl || pathname === `${creatorUrl}/edit`,
     },
     {
       href: `${creatorUrl}/portfolio`,

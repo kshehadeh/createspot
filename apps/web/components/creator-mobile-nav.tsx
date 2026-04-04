@@ -24,8 +24,7 @@ export function CreatorMobileNav({ creatorUrl }: CreatorMobileNavProps) {
       href: creatorUrl,
       label: t("profile"),
       icon: User,
-      isActive:
-        pathname === creatorUrl || pathname === `${creatorUrl}/edit`,
+      isActive: pathname === creatorUrl || pathname === `${creatorUrl}/edit`,
     },
     {
       href: `${creatorUrl}/portfolio`,

@@ -125,32 +125,29 @@ export function SubmissionCreateWizard({
     useState(false);
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
 
-  const showFormError = useCallback(
-    (message: string, flash: FieldFlash) => {
-      toast.error(message);
-      if (!flash) return;
-      if (fieldFlashClearRef.current) {
-        clearTimeout(fieldFlashClearRef.current);
+  const showFormError = useCallback((message: string, flash: FieldFlash) => {
+    toast.error(message);
+    if (!flash) return;
+    if (fieldFlashClearRef.current) {
+      clearTimeout(fieldFlashClearRef.current);
+    }
+    setFieldFlash(flash);
+    requestAnimationFrame(() => {
+      let el: HTMLElement | null = null;
+      if (flash === "step1Content") el = step1ContentRef.current;
+      else if (flash === "category") el = categoryRef.current;
+      else if (flash === "submissionImage") {
+        el = submissionImageStep1Ref.current;
+      } else if (flash === "referenceImage") {
+        el = referenceImageStep2Ref.current;
       }
-      setFieldFlash(flash);
-      requestAnimationFrame(() => {
-        let el: HTMLElement | null = null;
-        if (flash === "step1Content") el = step1ContentRef.current;
-        else if (flash === "category") el = categoryRef.current;
-        else if (flash === "submissionImage") {
-          el = submissionImageStep1Ref.current;
-        } else if (flash === "referenceImage") {
-          el = referenceImageStep2Ref.current;
-        }
-        el?.scrollIntoView({ behavior: "smooth", block: "center" });
-      });
-      fieldFlashClearRef.current = setTimeout(() => {
-        setFieldFlash(null);
-        fieldFlashClearRef.current = null;
-      }, FIELD_FLASH_MS);
-    },
-    [],
-  );
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    fieldFlashClearRef.current = setTimeout(() => {
+      setFieldFlash(null);
+      fieldFlashClearRef.current = null;
+    }, FIELD_FLASH_MS);
+  }, []);
 
   useEffect(
     () => () => {
@@ -561,103 +558,108 @@ export function SubmissionCreateWizard({
 
           <div
             ref={step1ContentRef}
-            className={cn("space-y-6 rounded-md p-1 -m-1", flashRingClass("step1Content"))}
-          >
-          <div
-            ref={submissionImageStep1Ref}
-            className={cn("space-y-2", flashRingClass("submissionImage"))}
-          >
-            <Label>{t("image")}</Label>
-            {imageUrl ? (
-              <div className="relative">
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
-                  <Image
-                    src={imageUrl}
-                    alt="Preview"
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 640px) 100vw, 512px"
-                  />
-                </div>
-                <div className="absolute top-2 right-2 flex gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setIsFocalPointModalOpen(true)}
-                    className="bg-black/50 text-white hover:bg-black/70"
-                  >
-                    {t("setFocalPoint")}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => setShowRemoveImageConfirm(true)}
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="cursor-pointer rounded-lg border-2 border-dashed border-border p-8 text-center transition-colors hover:border-primary/50"
-              >
-                {uploading ? (
-                  <span className="text-sm text-muted-foreground">
-                    {t("uploading")}
-                  </span>
-                ) : (
-                  <>
-                    <p className="text-sm text-muted-foreground">
-                      {t("clickToUpload")}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground/70">
-                      {t("uploadFormat")}
-                    </p>
-                  </>
-                )}
-              </div>
+            className={cn(
+              "space-y-6 rounded-md p-1 -m-1",
+              flashRingClass("step1Content"),
             )}
-          </div>
+          >
+            <div
+              ref={submissionImageStep1Ref}
+              className={cn("space-y-2", flashRingClass("submissionImage"))}
+            >
+              <Label>{t("image")}</Label>
+              {imageUrl ? (
+                <div className="relative">
+                  <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
+                    <Image
+                      src={imageUrl}
+                      alt="Preview"
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 640px) 100vw, 512px"
+                    />
+                  </div>
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setIsFocalPointModalOpen(true)}
+                      className="bg-black/50 text-white hover:bg-black/70"
+                    >
+                      {t("setFocalPoint")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => setShowRemoveImageConfirm(true)}
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="cursor-pointer rounded-lg border-2 border-dashed border-border p-8 text-center transition-colors hover:border-primary/50"
+                >
+                  {uploading ? (
+                    <span className="text-sm text-muted-foreground">
+                      {t("uploading")}
+                    </span>
+                  ) : (
+                    <>
+                      <p className="text-sm text-muted-foreground">
+                        {t("clickToUpload")}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground/70">
+                        {t("uploadFormat")}
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label>{t("textDescription")}</Label>
-            <RichTextEditor
-              value={text}
-              onChange={setText}
-              placeholder={t("textPlaceholder")}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="isWorkInProgress">{t("workInProgress")}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t("workInProgressDescription")}
-                </p>
-              </div>
-              <Switch
-                id="isWorkInProgress"
-                checked={isWorkInProgress}
-                onCheckedChange={setIsWorkInProgress}
+            <div className="space-y-2">
+              <Label>{t("textDescription")}</Label>
+              <RichTextEditor
+                value={text}
+                onChange={setText}
+                placeholder={t("textPlaceholder")}
               />
             </div>
-          </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="isWorkInProgress">
+                    {t("workInProgress")}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t("workInProgressDescription")}
+                  </p>
+                </div>
+                <Switch
+                  id="isWorkInProgress"
+                  checked={isWorkInProgress}
+                  onCheckedChange={setIsWorkInProgress}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="mt-8 flex justify-between gap-3 border-t border-border/60 pt-6">
@@ -1014,11 +1016,7 @@ export function SubmissionCreateWizard({
             <Button type="button" variant="outline" onClick={() => setStep(3)}>
               {tCommon("back")}
             </Button>
-            <Button
-              type="button"
-              onClick={handleFinalSave}
-              disabled={saving}
-            >
+            <Button type="button" onClick={handleFinalSave} disabled={saving}>
               {saving ? t("saving") : tWizard("finalSave")}
             </Button>
           </div>
