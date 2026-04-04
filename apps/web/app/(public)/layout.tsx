@@ -48,7 +48,10 @@ export default async function PublicLayout({
 
   return (
     <SessionProvider>
-      <NextIntlClientProvider messages={pickPublicMessages(messages)}>
+      <NextIntlClientProvider
+        locale={locale}
+        messages={pickPublicMessages(messages)}
+      >
         <HtmlLangSetter locale={locale} />
         <div className="flex min-h-screen flex-col bg-background">
           <PublicHeader user={session?.user} />

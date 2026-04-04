@@ -31,7 +31,7 @@ async function AppLayoutContent({
   ]);
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <HtmlLangSetter locale={locale} />
       <div className="flex min-h-screen flex-col bg-background">
         <Header user={session?.user} />
