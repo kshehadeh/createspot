@@ -47,9 +47,11 @@ export function Dashboard({
       <OnboardingSection />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <Suspense fallback={<SectionSkeleton title="My Portfolio" />}>
-          <PortfolioSection portfolioUrl={portfolioUrl} />
-        </Suspense>
+        <div className="min-w-0 md:row-span-2 xl:row-span-1">
+          <Suspense fallback={<SectionSkeleton title="My Portfolio" />}>
+            <PortfolioSection portfolioUrl={portfolioUrl} />
+          </Suspense>
+        </div>
 
         <Suspense fallback={<SectionSkeleton title="Recent Critiques" />}>
           <CritiquesSection critiquesUrl={critiquesUrl} />
