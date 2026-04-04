@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Feature screenshot placeholder</title>
+  <desc id="desc">Placeholder image used until a feature screenshot is provided.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4f4f5" />
+      <stop offset="100%" stop-color="#e4e4e7" />
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)" />
+  <rect x="180" y="130" width="920" height="460" rx="20" fill="#ffffff" stroke="#d4d4d8" stroke-width="4" />
+  <rect x="220" y="180" width="320" height="20" rx="10" fill="#d4d4d8" />
+  <rect x="220" y="220" width="740" height="16" rx="8" fill="#e4e4e7" />
+  <rect x="220" y="250" width="680" height="16" rx="8" fill="#e4e4e7" />
+  <rect x="220" y="280" width="520" height="16" rx="8" fill="#e4e4e7" />
+  <rect x="220" y="340" width="840" height="180" rx="12" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="2" />
+  <text x="640" y="628" text-anchor="middle" fill="#71717a" font-size="28" font-family="Inter, Arial, sans-serif">
+    Screenshot coming soon
+  </text>
+</svg>
