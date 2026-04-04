@@ -1354,6 +1354,32 @@
       "editTitle": "Editar Publicación",
       "editDescription": "Actualiza los detalles de tu publicación a continuación."
     },
+    "submissionWizard": {
+      "stepCounter": "Paso {current} de {total}",
+      "skip": "Omitir",
+      "finalSave": "Guardar publicación",
+      "changeImage": "Cambiar imagen",
+      "changeReference": "Cambiar referencia",
+      "rightsLearnMore": "Más información sobre derechos",
+      "steps": {
+        "step1": {
+          "title": "Añade imagen o texto",
+          "description": "Comienza tu publicación con el contenido principal."
+        },
+        "step2": {
+          "title": "Añadir imagen de referencia (opcional)",
+          "description": "Agrega una imagen de inspiración o fuente."
+        },
+        "step3": {
+          "title": "Añadir progresiones (opcional)",
+          "description": "Muestra tu proceso creativo por etapas."
+        },
+        "step4": {
+          "title": "Finalizar configuración",
+          "description": "Revisa título, contenido, visibilidad, críticas y detalles de publicación."
+        }
+      }
+    },
     "confirm": {
       "defaultDelete": "Eliminar",
       "defaultDeleting": "Eliminando..."

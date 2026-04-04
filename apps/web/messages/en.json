@@ -1354,6 +1354,32 @@
       "editTitle": "Edit Submission",
       "editDescription": "Update your submission details below."
     },
+    "submissionWizard": {
+      "stepCounter": "Step {current} of {total}",
+      "skip": "Skip",
+      "finalSave": "Save submission",
+      "changeImage": "Change image",
+      "changeReference": "Change reference",
+      "rightsLearnMore": "Learn more about rights",
+      "steps": {
+        "step1": {
+          "title": "Add image or text",
+          "description": "Start your submission with the core content."
+        },
+        "step2": {
+          "title": "Add reference image (optional)",
+          "description": "Add an inspiration or source image."
+        },
+        "step3": {
+          "title": "Add progressions (optional)",
+          "description": "Show your creative process in steps."
+        },
+        "step4": {
+          "title": "Finalize settings",
+          "description": "Review title, content, visibility, critiques, and publishing details."
+        }
+      }
+    },
     "confirm": {
       "defaultDelete": "Delete",
       "defaultDeleting": "Deleting..."

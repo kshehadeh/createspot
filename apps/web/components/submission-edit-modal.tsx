@@ -11,6 +11,7 @@ import {
   FullScreenModalBody,
 } from "@/components/ui/full-screen-modal";
 import { PortfolioItemForm } from "@/components/portfolio-item-form";
+import { SubmissionCreateWizard } from "@/components/submission-create-wizard";
 
 interface SubmissionData {
   id: string;
@@ -71,13 +72,20 @@ export function SubmissionEditModal({
         </FullScreenModalHeader>
         <FullScreenModalBody>
           <div className="mx-auto w-full max-w-3xl">
-            <PortfolioItemForm
-              mode={mode === "create" ? "create" : "edit"}
-              initialData={initialData}
-              onSuccess={handleSuccess}
-              onCancel={onClose}
-              setIsPortfolio={mode === "add-to-portfolio"}
-            />
+            {mode === "create" ? (
+              <SubmissionCreateWizard
+                onSuccess={handleSuccess}
+                onCancel={onClose}
+              />
+            ) : (
+              <PortfolioItemForm
+                mode="edit"
+                initialData={initialData}
+                onSuccess={handleSuccess}
+                onCancel={onClose}
+                setIsPortfolio={mode === "add-to-portfolio"}
+              />
+            )}
           </div>
         </FullScreenModalBody>
       </FullScreenModalContent>
