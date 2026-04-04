@@ -15,7 +15,7 @@ export async function GET() {
       isPortfolio: true,
     },
     orderBy: { createdAt: "desc" },
-    take: 6,
+    take: 36,
     select: {
       id: true,
       title: true,

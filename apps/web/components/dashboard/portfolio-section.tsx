@@ -61,10 +61,12 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
   return (
     <DashboardSection title={t("title")} action={action}>
       {loading ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square w-full rounded-md" />
-          ))}
+        <div className="max-h-[400px] min-h-0 overflow-y-auto overflow-x-hidden">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(5rem,1fr))] gap-3">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <Skeleton key={i} className="aspect-square w-full rounded-md" />
+            ))}
+          </div>
         </div>
       ) : submissions.length === 0 ? (
         <>
@@ -81,53 +83,55 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
           />
         </>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {submissions.map((s) => {
-            const displayImageUrl =
-              s.imageUrl ||
-              (s.isWorkInProgress ? s.latestProgressionImageUrl : null);
-            const creatorBase = portfolioUrl.replace(/\/portfolio\/?$/, "");
-            const submissionViewUrl = `${creatorBase}/s/${s.id}`;
-            return (
-              <Link
-                key={s.id}
-                href={submissionViewUrl}
-                className={`group relative aspect-square overflow-hidden bg-muted ${
-                  s.isWorkInProgress
-                    ? "rounded-sm border-2 border-dashed border-muted-foreground/40"
-                    : "rounded-md"
-                }`}
-              >
-                {displayImageUrl ? (
-                  <Image
-                    src={displayImageUrl}
-                    alt={s.title ?? ""}
-                    fill
-                    className={`object-cover transition-transform duration-200 group-hover:scale-105 ${
-                      !s.imageUrl && s.isWorkInProgress ? "opacity-70" : ""
-                    }`}
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 28vw, 180px"
-                    style={{
-                      objectPosition: s.imageUrl
-                        ? getObjectPositionStyle(s.imageFocalPoint)
-                        : undefined,
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center p-2">
-                    <p className="line-clamp-3 text-xs text-muted-foreground">
-                      {s.title ?? ""}
-                    </p>
-                  </div>
-                )}
-                {s.isWorkInProgress && (
-                  <span className="absolute top-1 right-1 rounded bg-amber-500/80 px-1.5 py-0.5 text-[10px] font-medium text-white z-10">
-                    {t("wipBadge")}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
+        <div className="max-h-[400px] min-h-0 overflow-y-auto overflow-x-hidden">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(5rem,1fr))] gap-3">
+            {submissions.map((s) => {
+              const displayImageUrl =
+                s.imageUrl ||
+                (s.isWorkInProgress ? s.latestProgressionImageUrl : null);
+              const creatorBase = portfolioUrl.replace(/\/portfolio\/?$/, "");
+              const submissionViewUrl = `${creatorBase}/s/${s.id}`;
+              return (
+                <Link
+                  key={s.id}
+                  href={submissionViewUrl}
+                  className={`group relative aspect-square overflow-hidden bg-muted ${
+                    s.isWorkInProgress
+                      ? "rounded-sm border-2 border-dashed border-muted-foreground/40"
+                      : "rounded-md"
+                  }`}
+                >
+                  {displayImageUrl ? (
+                    <Image
+                      src={displayImageUrl}
+                      alt={s.title ?? ""}
+                      fill
+                      className={`object-cover transition-transform duration-200 group-hover:scale-105 ${
+                        !s.imageUrl && s.isWorkInProgress ? "opacity-70" : ""
+                      }`}
+                      sizes="(max-width: 640px) 40vw, (max-width: 1024px) 20vw, 160px"
+                      style={{
+                        objectPosition: s.imageUrl
+                          ? getObjectPositionStyle(s.imageFocalPoint)
+                          : undefined,
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center p-2">
+                      <p className="line-clamp-3 text-xs text-muted-foreground">
+                        {s.title ?? ""}
+                      </p>
+                    </div>
+                  )}
+                  {s.isWorkInProgress && (
+                    <span className="absolute top-1 right-1 rounded bg-amber-500/80 px-1.5 py-0.5 text-[10px] font-medium text-white z-10">
+                      {t("wipBadge")}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
     </DashboardSection>
