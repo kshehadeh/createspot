@@ -352,8 +352,8 @@
   "portfolio": {
     "addNewItem": "Add New Portfolio Item",
     "yourPortfolioItems": "Your Portfolio Items ({count})",
-    "addPromptSubmissions": "Add Prompt Submissions to Portfolio",
-    "addPromptSubmissionsDescription": "Your prompt submissions can also be added to your portfolio",
+    "addPromptSubmissions": "Add other work to portfolio",
+    "addPromptSubmissionsDescription": "Pieces that are not on your portfolio yet can be added here",
     "addToPortfolio": "Add to Portfolio",
     "emptyState": "No portfolio items yet. Click the button above to add your first portfolio item.",
     "deleteError": "Failed to delete portfolio item. Please try again.",
@@ -828,7 +828,7 @@
         "description": "Explore the permanent gallery and curated exhibits to see how others interpret prompts, discover creators you admire, and spark your next idea.",
         "ctaGallery": "Browse the Permanent Gallery",
         "ctaExhibits": "Explore Exhibits",
-        "ctaAboutPrompts": "Learn how prompts work"
+        "ctaFeatures": "Explore all features"
       },
       "critique": {
         "title": "Critique",
@@ -1541,7 +1541,7 @@
       "permanentCollection": "Explore the permanent collection on the gallery grid or discover artists on the global map.",
       "exhibits": "Discover curated exhibits that showcase themed collections and highlight exceptional work from the community.",
       "portfolio": "Build and manage your portfolio over time. Curate the pieces that represent you best and share them when you want to be seen.",
-      "promptGame": "Finally, join the weekly prompt inspiration game. Each week we share a new three-word brief to spark creativity—use it to create something new or connect an existing portfolio piece that fits the theme.",
+      "feed": "Follow creators you care about and browse the home feed to see new public portfolio work as it’s shared.",
       "ctaButton": "Explore the collection",
       "subject": "Welcome to {appName}",
       "friend": "friend"

@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
     uniqueVisitors,
     totalFavorites,
     totalViews,
-    submissionCount,
     portfolioCount,
     totalWorkCount,
     followersCount,
@@ -46,13 +45,6 @@ export async function GET(request: NextRequest) {
         submission: {
           userId: userId,
         },
-      },
-    }),
-    // Get submission count (prompt submissions only)
-    prisma.submission.count({
-      where: {
-        userId: userId,
-        promptId: { not: null },
       },
     }),
     // Get portfolio count (items marked as portfolio)
@@ -79,7 +71,6 @@ export async function GET(request: NextRequest) {
       uniqueVisitors,
       totalFavorites,
       totalViews,
-      submissionCount,
       portfolioCount,
       totalWorkCount,
       followersCount,

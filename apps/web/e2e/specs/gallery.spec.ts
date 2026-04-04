@@ -1,9 +1,9 @@
 import { test, expect } from "../fixtures/test.fixture";
 
 test.describe("Gallery", () => {
-  test("can view this week gallery", async ({ page }) => {
-    await page.goto("/inspire/prompt/this-week");
-    await expect(page).toHaveURL("/inspire/prompt/this-week");
+  test("can view exhibition gallery", async ({ page }) => {
+    await page.goto("/inspire/exhibition");
+    await expect(page).toHaveURL("/inspire/exhibition");
   });
 
   test("can view community page", async ({ page }) => {
@@ -22,7 +22,7 @@ test.describe("Gallery", () => {
   });
 
   test("can click on a submission to view details", async ({ page }) => {
-    await page.goto("/inspire/prompt/this-week");
+    await page.goto("/inspire/exhibition");
 
     const submission = page
       .locator('[data-testid="submission-card"], article, .submission-card')

@@ -61,7 +61,6 @@ export interface FeedCardSubmission {
   imageFocalPoint: { x: number; y: number } | null;
   text: string | null;
   referenceImageUrl: string | null;
-  wordIndex: number | null;
   category: string | null;
   tags: string[];
   critiquesEnabled: boolean;
@@ -73,11 +72,6 @@ export interface FeedCardSubmission {
     profileImageUrl: string | null;
     slug: string | null;
   };
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   progressions: Progression[];
   _count: {
     favorites: number;
@@ -241,6 +235,7 @@ export function FeedCard({
   onOpenLightbox,
 }: FeedCardProps) {
   const t = useTranslations("feed");
+  const tCategories = useTranslations("categories");
   const slides = buildSlides(submission, t);
 
   const openLightbox = useCallback(() => {
@@ -297,13 +292,9 @@ export function FeedCard({
         .slice(0, 2)
     : "?";
 
-  const promptWord =
-    submission.prompt && submission.wordIndex
-      ? [
-          submission.prompt.word1,
-          submission.prompt.word2,
-          submission.prompt.word3,
-        ][submission.wordIndex - 1]
+  const categorySubtitle =
+    submission.category != null && submission.category !== ""
+      ? tCategories(submission.category as never)
       : null;
 
   return (
@@ -330,8 +321,10 @@ export function FeedCard({
           >
             {submission.user.name || t("anonymous")}
           </Link>
-          {promptWord && (
-            <span className="text-xs text-muted-foreground">{promptWord}</span>
+          {categorySubtitle && (
+            <span className="text-xs text-muted-foreground">
+              {categorySubtitle}
+            </span>
           )}
         </div>
         <time

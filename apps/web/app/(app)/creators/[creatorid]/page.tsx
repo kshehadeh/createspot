@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "@/components/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { HistoryList } from "@/app/(app)/inspire/prompt/history/history-list";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { FollowButton } from "@/components/follow-button";
 import { HintPopover } from "@/components/hint-popover";
@@ -60,7 +59,7 @@ export async function generateMetadata({
     description = user.bio.replace(/<[^>]*>/g, "").trim();
   } else {
     description =
-      "A creative community for artists and writers to share their work, build portfolios, and participate in weekly creative prompts. Profile for a creator on Create Spot.";
+      "A creative community for artists and writers to share their work and build portfolios. Profile for a creator on Create Spot.";
   }
 
   // Generate absolute OG image URL - Next.js will automatically use opengraph-image.tsx
@@ -124,8 +123,6 @@ export default async function ProfilePage({
     user,
     portfolioItems,
     allPortfolioItems,
-    initialItems,
-    hasMore,
     submissionCount,
     featuredSubmission,
     hasSocialLinks,
@@ -418,26 +415,7 @@ export default async function ProfilePage({
 
       {/* Gallery Section - Main Content Area */}
       <div className="w-full min-w-0">
-        {/* Prompt Submissions Section */}
-        {initialItems.length > 0 && (
-          <div>
-            <h2 className="mb-6 text-2xl font-semibold text-foreground">
-              {t("promptSubmissions")}
-            </h2>
-            <HistoryList
-              initialItems={initialItems.map((p) => ({
-                ...p,
-                weekStart: p.weekStart.toISOString(),
-                weekEnd: p.weekEnd.toISOString(),
-              }))}
-              initialHasMore={hasMore}
-              userId={user.id}
-            />
-          </div>
-        )}
-
-        {/* Empty state */}
-        {allPortfolioItems.length === 0 && initialItems.length === 0 && (
+        {allPortfolioItems.length === 0 && (
           <div className="rounded-lg border border-dashed border-border py-12 text-center">
             <p className="text-muted-foreground">
               {effectiveIsOwnProfile ? t("noWorkYet") : t("noWorkToDisplay")}
@@ -449,12 +427,6 @@ export default async function ProfilePage({
                   className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   {t("addPortfolioItem")}
-                </Link>
-                <Link
-                  href="/inspire/prompt/play"
-                  className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-                >
-                  {t("submitToPrompt")}
                 </Link>
               </div>
             )}

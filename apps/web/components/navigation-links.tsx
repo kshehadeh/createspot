@@ -27,7 +27,6 @@ import {
   Palette,
   Plus,
   FolderOpen,
-  Sparkles,
 } from "lucide-react";
 
 interface DashboardNavigationProps {
@@ -51,14 +50,12 @@ export function DashboardNavigation({
   const exhibitionRoute = getRoute("exhibition");
   const museumsRoute = getRoute("museums");
   const creatorsRoute = getRoute("creators");
-  const promptRoute = getRoute("prompt");
   const profileRoute = getRoute("profile");
   const portfolioRoute = getRoute("portfolio");
   const communityRoute = getRoute("community");
   const favoritesRoute = getRoute("favorites");
   const aboutRoute = getRoute("about");
   const adminUsersRoute = getRoute("adminUsers");
-  const adminPromptsRoute = getRoute("adminPrompts");
   const adminExhibitsRoute = getRoute("adminExhibits");
   const adminNotificationsRoute = getRoute("adminNotifications");
   const adminSettingsRoute = getRoute("adminSettings");
@@ -80,7 +77,6 @@ export function DashboardNavigation({
     isActive(exhibitionRoute.path) ||
     isActive(museumsRoute.path) ||
     isCreatorsListingPath(pathname) ||
-    isActive(promptRoute.path) ||
     isActive(communityRoute.path) ||
     (user ? isActive(favoritesRoute.path) : false);
   const isMyHubActive = creatorBase
@@ -88,7 +84,6 @@ export function DashboardNavigation({
     : isActive(profileRoute.path) || isActive(portfolioRoute.path);
   const isAdminActive =
     pathname.startsWith(adminUsersRoute.path) ||
-    pathname.startsWith(adminPromptsRoute.path) ||
     pathname.startsWith(adminExhibitsRoute.path) ||
     pathname.startsWith(adminNotificationsRoute.path) ||
     pathname.startsWith(adminSettingsRoute.path);
@@ -165,20 +160,6 @@ export function DashboardNavigation({
                   <creatorsRoute.icon className="h-4 w-4" />
                 )}
                 {t("creators")}
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href={promptRoute.path}
-                prefetch={false}
-                className={cn(
-                  "flex items-center gap-2",
-                  isActive(promptRoute.path) &&
-                    "bg-accent text-accent-foreground",
-                )}
-              >
-                {promptRoute.icon && <promptRoute.icon className="h-4 w-4" />}
-                {t("prompts")}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
@@ -336,20 +317,6 @@ export function DashboardNavigation({
                     <creatorsRoute.icon className="h-4 w-4" />
                   )}
                   {t("manageUsers")}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link
-                  href={adminPromptsRoute.path}
-                  prefetch={false}
-                  className={cn(
-                    "flex items-center gap-2",
-                    pathname.startsWith(adminPromptsRoute.path) &&
-                      "bg-accent text-accent-foreground",
-                  )}
-                >
-                  <Sparkles className="h-4 w-4" />
-                  {t("managePrompts")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

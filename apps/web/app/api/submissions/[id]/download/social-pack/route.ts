@@ -29,13 +29,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       user: {
         select: { id: true, name: true, slug: true },
       },
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
       progressions: {
         orderBy: { order: "asc" },
       },
@@ -98,7 +91,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     {
       title: submission.title,
       text: submission.text,
-      prompt: submission.prompt ?? undefined,
     },
     creator,
     submission.id,

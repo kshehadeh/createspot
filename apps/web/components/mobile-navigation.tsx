@@ -27,7 +27,6 @@ import {
   Palette,
   Pencil,
   Plus,
-  Sparkles,
   User,
   Users,
 } from "lucide-react";
@@ -126,13 +125,11 @@ export function MobileNavigation({
   useEffect(() => {
     const exhibitionRoute = getRoute("exhibition");
     const creatorsRoute = getRoute("creators");
-    const promptRoute = getRoute("prompt");
     const profileRoute = getRoute("profile");
     const portfolioRoute = getRoute("portfolio");
     const favoritesRoute = getRoute("favorites");
     const adminRoute = getRoute("admin");
     const adminUsersRoute = getRoute("adminUsers");
-    const adminPromptsRoute = getRoute("adminPrompts");
     const adminExhibitsRoute = getRoute("adminExhibits");
     const adminNotificationsRoute = getRoute("adminNotifications");
     const adminSettingsRoute = getRoute("adminSettings");
@@ -141,7 +138,6 @@ export function MobileNavigation({
     setInspireExpanded(
       pathname === exhibitionRoute.path ||
         pathname === creatorsRoute.path ||
-        pathname === promptRoute.path ||
         pathname === getRoute("museums").path ||
         pathname === getRoute("community").path ||
         pathname === favoritesRoute.path,
@@ -155,7 +151,6 @@ export function MobileNavigation({
     setAdminExpanded(
       pathname.startsWith(adminRoute.path) ||
         pathname.startsWith(adminUsersRoute.path) ||
-        pathname.startsWith(adminPromptsRoute.path) ||
         pathname.startsWith(adminExhibitsRoute.path) ||
         pathname.startsWith(adminNotificationsRoute.path) ||
         pathname.startsWith(adminSettingsRoute.path),
@@ -293,12 +288,6 @@ export function MobileNavigation({
                 isActive={isCreatorsListingPath(pathname)}
               />
               <MobileNavItem
-                href={getRoute("prompt").path}
-                icon={Sparkles}
-                label={t("prompts")}
-                onClose={() => setIsMenuOpen(false)}
-              />
-              <MobileNavItem
                 href={getRoute("community").path}
                 icon={Users}
                 label={t("community")}
@@ -385,12 +374,6 @@ export function MobileNavigation({
                   href={getRoute("adminUsers").path}
                   icon={Users}
                   label={t("manageUsers")}
-                  onClose={() => setIsMenuOpen(false)}
-                />
-                <MobileNavItem
-                  href={getRoute("adminPrompts").path}
-                  icon={Sparkles}
-                  label={t("managePrompts")}
                   onClose={() => setIsMenuOpen(false)}
                 />
                 <MobileNavItem

@@ -19,12 +19,6 @@ interface Submission {
     name: string | null;
     image: string | null;
   };
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
-  wordIndex: number | null;
 }
 
 interface ExhibitContentManagerProps {
@@ -115,9 +109,6 @@ export function ExhibitContentManager({
     portfolioOrder: null,
     tags: submission.tags,
     category: submission.category,
-    promptId: null,
-    wordIndex: submission.wordIndex,
-    prompt: submission.prompt,
     _count: {
       favorites: 0,
     },

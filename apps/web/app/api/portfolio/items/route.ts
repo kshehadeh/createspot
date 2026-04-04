@@ -47,13 +47,6 @@ export async function GET(request: NextRequest) {
       skip,
       take,
       include: {
-        prompt: {
-          select: {
-            word1: true,
-            word2: true,
-            word3: true,
-          },
-        },
         _count: {
           select: {
             favorites: true,
@@ -76,9 +69,6 @@ export async function GET(request: NextRequest) {
       portfolioOrder: item.portfolioOrder,
       tags: item.tags,
       category: item.category,
-      promptId: item.promptId,
-      wordIndex: item.wordIndex,
-      prompt: item.prompt,
       shareStatus: item.shareStatus,
       critiquesEnabled: item.critiquesEnabled,
       _count: item._count,

@@ -45,13 +45,6 @@ export async function GET(
                   slug: true,
                 },
               },
-              prompt: {
-                select: {
-                  word1: true,
-                  word2: true,
-                  word3: true,
-                },
-              },
               _count: {
                 select: {
                   favorites: true,

@@ -46,8 +46,6 @@ export function ProfileBadges({ badgeAwards, className }: ProfileBadgesProps) {
     switch (badgeKey) {
       case "first_portfolio_submission":
         return "aspiringCreator";
-      case "first_prompt_submission":
-        return "promptPioneer";
       case "first_critique_received":
         return "featuredVoice";
       case "first_critique_given":

@@ -45,17 +45,9 @@ export default async function EditExhibitPage({
           title: true,
           imageUrl: true,
           text: true,
-          wordIndex: true,
           isPortfolio: true,
           tags: true,
           category: true,
-          prompt: {
-            select: {
-              word1: true,
-              word2: true,
-              word3: true,
-            },
-          },
         },
       },
       _count: {
@@ -89,15 +81,6 @@ export default async function EditExhibitPage({
       exhibitSubmissions: {
         some: {
           exhibitId: exhibit.id,
-        },
-      },
-    },
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
         },
       },
     },
@@ -143,17 +126,9 @@ export default async function EditExhibitPage({
           title: s.title,
           imageUrl: s.imageUrl,
           text: s.text,
-          wordIndex: s.wordIndex,
           isPortfolio: s.isPortfolio,
           tags: s.tags,
           category: s.category,
-          prompt: s.prompt
-            ? {
-                word1: s.prompt.word1,
-                word2: s.prompt.word2,
-                word3: s.prompt.word3,
-              }
-            : null,
         }))}
         mode="edit"
         exhibitId={exhibit.id}

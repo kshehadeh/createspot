@@ -66,13 +66,6 @@ interface PortfolioItem {
   portfolioOrder: number | null;
   tags: string[];
   category: string | null;
-  promptId: string | null;
-  wordIndex: number | null;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   _count: {
     favorites: number;
     views: number;
@@ -443,15 +436,6 @@ export function PortfolioListEditor({
   });
 
   const hasFilters = categoryFilter !== "__all__" || tagFilter !== "__all__";
-
-  // Get word from prompt for lightbox
-  const getWord = (item: PortfolioItem): string => {
-    if (!item.prompt || !item.wordIndex) {
-      return item.category || "";
-    }
-    const words = [item.prompt.word1, item.prompt.word2, item.prompt.word3];
-    return words[item.wordIndex - 1] || "";
-  };
 
   // Selection handlers
   const handleSelectAll = (checked: boolean) => {
@@ -882,7 +866,6 @@ export function PortfolioListEditor({
                     : undefined,
                   _count: selectedSubmission._count,
                 }}
-                word={getWord(selectedSubmission)}
                 onClose={() => setSelectedSubmission(null)}
                 isOpen={!!selectedSubmission}
                 hideGoToSubmission={false}

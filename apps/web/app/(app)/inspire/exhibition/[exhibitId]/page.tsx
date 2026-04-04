@@ -70,13 +70,6 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
             slug: true,
           },
         },
-        prompt: {
-          select: {
-            word1: true,
-            word2: true,
-            word3: true,
-          },
-        },
         _count: {
           select: {
             favorites: true,
@@ -90,8 +83,6 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
         title: submission.title,
         imageUrl: submission.imageUrl,
         text: submission.text,
-        wordIndex: submission.wordIndex,
-        prompt: submission.prompt,
         shareStatus: submission.shareStatus,
         critiquesEnabled: submission.critiquesEnabled,
         user: submission.user,

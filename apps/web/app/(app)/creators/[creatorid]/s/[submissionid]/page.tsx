@@ -19,7 +19,6 @@ async function getSubmission(id: string) {
       imageUrl: true,
       imageFocalPoint: true,
       text: true,
-      wordIndex: true,
       category: true,
       tags: true,
       shareStatus: true,
@@ -38,16 +37,6 @@ async function getSubmission(id: string) {
           twitter: true,
           linkedin: true,
           website: true,
-        },
-      },
-      prompt: {
-        select: {
-          id: true,
-          word1: true,
-          word2: true,
-          word3: true,
-          weekStart: true,
-          weekEnd: true,
         },
       },
       _count: {
@@ -90,7 +79,6 @@ export async function generateMetadata({
       tags: submission.tags,
       category: submission.category,
       user: submission.user,
-      prompt: submission.prompt,
     },
     baseUrl,
   );

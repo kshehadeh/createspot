@@ -36,13 +36,6 @@ export async function GET(
       orderBy: { createdAt: "desc" },
       take: 6,
       include: {
-        prompt: {
-          select: {
-            word1: true,
-            word2: true,
-            word3: true,
-          },
-        },
         _count: {
           select: {
             favorites: true,
@@ -67,7 +60,6 @@ export async function GET(
         imageUrl: submission.imageUrl,
         text: submission.text,
         createdAt: submission.createdAt.toISOString(),
-        prompt: submission.prompt,
         _count: submission._count,
       })),
     });

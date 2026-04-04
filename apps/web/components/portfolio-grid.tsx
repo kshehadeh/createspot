@@ -66,13 +66,6 @@ export interface PortfolioItem {
   portfolioOrder: number | null;
   tags: string[];
   category: string | null;
-  promptId: string | null;
-  wordIndex: number | null;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   _count: {
     favorites: number;
   };
@@ -120,7 +113,6 @@ interface PortfolioGridProfileProps {
     name: string | null;
     image: string | null;
   };
-  showPromptBadge?: boolean;
   featuredSubmissionId?: string | null;
   onSetFeatured?: (item: PortfolioItem) => void;
 }
@@ -130,7 +122,6 @@ export function PortfolioGridProfile({
   isLoggedIn,
   isOwnProfile,
   user,
-  showPromptBadge = true,
   featuredSubmissionId,
   onSetFeatured,
 }: PortfolioGridProfileProps) {
@@ -168,7 +159,6 @@ export function PortfolioGridProfile({
         allItems={orderedItems}
         isLoggedIn={isLoggedIn}
         isOwnProfile={isOwnProfile}
-        showPromptBadge={showPromptBadge}
         allowEdit={false}
         onReorder={handleReorder}
         isSaving={false}
@@ -263,7 +253,6 @@ export function PortfolioGridCollection({
         allItems={orderedItems}
         isLoggedIn={isLoggedIn}
         isOwnProfile={true}
-        showPromptBadge={true}
         allowEdit={true}
         onReorder={handleReorder}
         isSaving={isSaving}
@@ -348,7 +337,6 @@ export function PortfolioGridExhibit({
         allItems={orderedItems}
         isLoggedIn={true}
         isOwnProfile={false}
-        showPromptBadge={true}
         allowEdit={true}
         onReorder={handleReorder}
         isSaving={isSaving}
@@ -363,7 +351,6 @@ export function PortfolioGridExhibit({
 interface SortablePortfolioItemProps {
   item: PortfolioItem;
   isLoggedIn: boolean;
-  showPromptBadge: boolean;
   allowEdit: boolean;
   isDragging?: boolean;
   isOwnProfile?: boolean;
@@ -659,7 +646,6 @@ function PortfolioGridContent({
   allItems,
   isLoggedIn,
   isOwnProfile,
-  showPromptBadge,
   allowEdit,
   onEdit,
   onDelete,
@@ -676,7 +662,6 @@ function PortfolioGridContent({
   allItems: PortfolioItem[];
   isLoggedIn: boolean;
   isOwnProfile: boolean;
-  showPromptBadge: boolean;
   allowEdit: boolean;
   onEdit?: (item: PortfolioItem) => void;
   onDelete?: (item: PortfolioItem) => Promise<void>;
@@ -703,12 +688,6 @@ function PortfolioGridContent({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedSubmission, setSelectedSubmission] =
     useState<PortfolioItem | null>(null);
-
-  const getWord = (item: PortfolioItem) => {
-    if (!item.prompt || !item.wordIndex) return "";
-    const words = [item.prompt.word1, item.prompt.word2, item.prompt.word3];
-    return words[item.wordIndex - 1];
-  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -806,7 +785,6 @@ function PortfolioGridContent({
                 <SortablePortfolioItem
                   item={item}
                   isLoggedIn={isLoggedIn}
-                  showPromptBadge={showPromptBadge}
                   allowEdit={allowEdit}
                   isDragging={activeId === item.id}
                   isOwnProfile={isOwnProfile}
@@ -1110,7 +1088,6 @@ function PortfolioGridContent({
                       : user,
                   _count: selectedSubmission._count,
                 }}
-                word={getWord(selectedSubmission)}
                 onClose={() => setSelectedSubmission(null)}
                 isOpen={!!selectedSubmission}
                 navigation={{

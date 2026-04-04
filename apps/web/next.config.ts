@@ -7,6 +7,40 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  async redirects() {
+    return [
+      {
+        source: "/inspire/prompt",
+        destination: "/inspire/exhibition",
+        permanent: true,
+      },
+      {
+        source: "/inspire/prompt/:path*",
+        destination: "/inspire/exhibition",
+        permanent: true,
+      },
+      {
+        source: "/admin/prompts",
+        destination: "/admin",
+        permanent: true,
+      },
+      {
+        source: "/admin/prompts/:path*",
+        destination: "/admin",
+        permanent: true,
+      },
+      {
+        source: "/about/prompt-submissions",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/prompt-submissions/:path*",
+        destination: "/about",
+        permanent: true,
+      },
+    ];
+  },
   experimental: {
     optimizePackageImports: [
       "lucide-react",

@@ -83,7 +83,6 @@ export async function generateSocialVariants(
 export interface CaptionInput {
   title: string | null;
   text: string | null;
-  prompt?: { word1: string; word2: string; word3: string } | null;
 }
 
 export interface CaptionCreator {
@@ -94,7 +93,7 @@ export interface CaptionCreator {
 
 /**
  * Build caption text for a submission: title, plain-text description,
- * credit line (creator name + link to submission on Create Spot), optional prompt words.
+ * credit line (creator name + link to submission on Create Spot).
  */
 export function buildCaptionText(
   submission: CaptionInput,
@@ -119,17 +118,6 @@ export function buildCaptionText(
   const submissionPath = `${creatorPath}/s/${submissionId}`;
   const viewUrl = `${baseUrl.replace(/\/$/, "")}${submissionPath}`;
   lines.push(`${creatorSegment} — View on Create Spot: ${viewUrl}`);
-  lines.push("");
-
-  if (
-    submission.prompt?.word1 &&
-    submission.prompt?.word2 &&
-    submission.prompt?.word3
-  ) {
-    lines.push(
-      `Prompt: ${submission.prompt.word1}, ${submission.prompt.word2}, ${submission.prompt.word3}`,
-    );
-  }
 
   return lines.join("\n").trim();
 }

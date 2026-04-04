@@ -51,15 +51,6 @@ export default async function PortfolioEditPage({
   // Fetch all user submissions for adding to portfolio (up to 100)
   const submissions = await prisma.submission.findMany({
     where: { userId: user.id },
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
-    },
     orderBy: { createdAt: "desc" },
     take: 100,
   });
@@ -75,13 +66,6 @@ export default async function PortfolioEditPage({
       orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
       take: PAGE_SIZE,
       include: {
-        prompt: {
-          select: {
-            word1: true,
-            word2: true,
-            word3: true,
-          },
-        },
         _count: {
           select: {
             favorites: true,
@@ -135,17 +119,9 @@ export default async function PortfolioEditPage({
           imageUrl: s.imageUrl,
           imageFocalPoint: s.imageFocalPoint as { x: number; y: number } | null,
           text: s.text,
-          wordIndex: s.wordIndex,
           isPortfolio: s.isPortfolio,
           tags: s.tags,
           category: s.category,
-          prompt: s.prompt
-            ? {
-                word1: s.prompt.word1,
-                word2: s.prompt.word2,
-                word3: s.prompt.word3,
-              }
-            : null,
           shareStatus: s.shareStatus,
         }))}
         portfolioItems={portfolioItems.map((p) => ({
@@ -158,15 +134,6 @@ export default async function PortfolioEditPage({
           portfolioOrder: p.portfolioOrder,
           tags: p.tags,
           category: p.category,
-          promptId: p.promptId,
-          wordIndex: p.wordIndex,
-          prompt: p.prompt
-            ? {
-                word1: p.prompt.word1,
-                word2: p.prompt.word2,
-                word3: p.prompt.word3,
-              }
-            : null,
           _count: {
             favorites: p._count.favorites,
             views: p._count.views,

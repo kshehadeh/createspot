@@ -10,7 +10,7 @@ test.describe("Favorites", () => {
     page,
     cleanup,
   }) => {
-    await page.goto("/inspire/prompt/this-week");
+    await page.goto("/inspire/exhibition");
 
     const submission = page.locator('[data-testid="submission-card"]').first();
     if (!(await submission.isVisible())) {

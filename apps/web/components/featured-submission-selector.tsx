@@ -11,15 +11,9 @@ interface SubmissionOption {
   title: string | null;
   imageUrl: string | null;
   text: string | null;
-  wordIndex: number | null;
   isPortfolio: boolean;
   tags: string[];
   category: string | null;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
 }
 
 interface FeaturedSubmissionSelectorProps {
@@ -45,13 +39,6 @@ export function FeaturedSubmissionSelector({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getSubmissionLabel = (submission: SubmissionOption): string => {
-    if (submission.prompt && submission.wordIndex) {
-      return [
-        submission.prompt.word1,
-        submission.prompt.word2,
-        submission.prompt.word3,
-      ][submission.wordIndex - 1];
-    }
     return submission.category
       ? tCategories(submission.category)
       : tProfile("portfolio");

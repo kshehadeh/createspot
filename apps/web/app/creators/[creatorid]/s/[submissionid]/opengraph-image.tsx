@@ -23,13 +23,6 @@ export default async function OpenGraphImage({ params }: RouteParams) {
     prisma.submission.findUnique({
       where: { id: submissionid },
       include: {
-        prompt: {
-          select: {
-            word1: true,
-            word2: true,
-            word3: true,
-          },
-        },
         user: {
           select: {
             id: true,
@@ -55,11 +48,7 @@ export default async function OpenGraphImage({ params }: RouteParams) {
   }
 
   const hasImage = !!submission.imageUrl;
-  const title =
-    submission.title ||
-    (submission.prompt && submission.wordIndex
-      ? `Submission for "${[submission.prompt.word1, submission.prompt.word2, submission.prompt.word3][submission.wordIndex - 1]}"`
-      : "Portfolio Piece");
+  const title = submission.title || "Portfolio Piece";
 
   if (hasImage && submission.imageUrl) {
     const focalPoint = submission.imageFocalPoint as {

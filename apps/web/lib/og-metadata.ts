@@ -10,7 +10,6 @@ export interface SubmissionForMetadata {
   tags: string[];
   category: string | null;
   user: { id: string; name: string | null; slug: string | null };
-  prompt: { word1: string; word2: string; word3: string } | null;
 }
 
 export interface CollectionForMetadata {
@@ -43,9 +42,7 @@ export function getSubmissionMetadata(
   const creatorName = submission.user.name || "Anonymous";
   const description = submission.text
     ? submission.text.replace(/<[^>]*>/g, "").trim()
-    : submission.prompt
-      ? `View this submission for the prompt: ${submission.prompt.word1}, ${submission.prompt.word2}, ${submission.prompt.word3}`
-      : "View this portfolio piece";
+    : "View this portfolio piece";
 
   const keywords: string[] = [];
   if (submission.tags?.length) keywords.push(...submission.tags);

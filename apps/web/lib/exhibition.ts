@@ -86,9 +86,6 @@ const submissionInclude = {
   user: {
     select: { id: true, name: true, image: true },
   },
-  prompt: {
-    select: { word1: true, word2: true, word3: true },
-  },
   _count: {
     select: { favorites: true },
   },

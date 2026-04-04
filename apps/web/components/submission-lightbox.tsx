@@ -62,7 +62,6 @@ export interface SubmissionLightboxNavigation {
 
 interface SubmissionLightboxProps {
   submission: LightboxSubmission;
-  word: string;
   onClose: () => void;
   isOpen: boolean;
   /** Current logged-in user ID. If provided, edit button will show for owned submissions. */

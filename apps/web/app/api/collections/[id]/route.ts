@@ -25,13 +25,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         include: {
           submission: {
             include: {
-              prompt: {
-                select: {
-                  word1: true,
-                  word2: true,
-                  word3: true,
-                },
-              },
               _count: {
                 select: { favorites: true },
               },

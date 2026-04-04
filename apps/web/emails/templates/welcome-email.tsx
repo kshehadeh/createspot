@@ -46,9 +46,9 @@ export const WelcomeEmail = ({
     ? t("welcome.portfolio")
     : "Build and manage your portfolio over time. Curate the pieces that represent you best and share them when you want to be seen.";
 
-  const promptGame = t
-    ? t("welcome.promptGame")
-    : "Finally, join the weekly prompt inspiration game. Each week we share a new three-word brief to spark creativity—use it to create something new or connect an existing portfolio piece that fits the theme.";
+  const feedLine = t
+    ? t("welcome.feed")
+    : "Follow creators you care about and browse the home feed to see new public portfolio work as it’s shared.";
 
   const ctaButtonText = t ? t("welcome.ctaButton") : "Explore the collection";
 
@@ -69,7 +69,7 @@ export const WelcomeEmail = ({
         <EmailText>{permanentCollection}</EmailText>
         <EmailText>{exhibits}</EmailText>
         <EmailText>{portfolio}</EmailText>
-        <EmailText>{promptGame}</EmailText>
+        <EmailText>{feedLine}</EmailText>
         <Section style={{ marginTop: "28px", textAlign: "center" }}>
           <EmailButton href={ctaUrl}>{ctaButtonText}</EmailButton>
         </Section>

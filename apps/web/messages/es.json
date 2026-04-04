@@ -352,8 +352,8 @@
   "portfolio": {
     "addNewItem": "Añadir Nuevo Elemento al Portafolio",
     "yourPortfolioItems": "Tus Elementos del Portafolio ({count})",
-    "addPromptSubmissions": "Añadir Publicaciones de Indicaciones al Portafolio",
-    "addPromptSubmissionsDescription": "Tus publicaciones de indicaciones también pueden añadirse a tu portafolio",
+    "addPromptSubmissions": "Añadir otro trabajo al portafolio",
+    "addPromptSubmissionsDescription": "Las piezas que aún no están en tu portafolio se pueden añadir aquí",
     "addToPortfolio": "Añadir al Portafolio",
     "emptyState": "Aún no hay elementos en el portafolio. Haz clic en el botón de arriba para añadir tu primer elemento al portafolio.",
     "deleteError": "Error al eliminar el elemento del portafolio. Por favor, inténtalo de nuevo.",
@@ -828,7 +828,7 @@
         "description": "Explora la galería permanente y las exposiciones curadas para ver cómo otros interpretan las indicaciones, descubrir creadores que admiras e impulsar tu próxima idea.",
         "ctaGallery": "Explora la Galería Permanente",
         "ctaExhibits": "Explora Exposiciones",
-        "ctaAboutPrompts": "Aprende cómo funcionan las indicaciones"
+        "ctaFeatures": "Explora todas las funciones"
       },
       "critique": {
         "title": "Crítica",
@@ -1541,7 +1541,7 @@
       "permanentCollection": "Explora la colección permanente en la cuadrícula de la galería o descubre artistas en el mapa global.",
       "exhibits": "Descubre exposiciones curadas que muestran colecciones temáticas y destacan trabajos excepcionales de la comunidad.",
       "portfolio": "Construye y gestiona tu portafolio con el tiempo. Cura las piezas que mejor te representan y compártelas cuando quieras ser visto.",
-      "promptGame": "Finalmente, únete al juego de inspiración de indicaciones semanales. Cada semana compartimos un nuevo brief de tres palabras para despertar la creatividad—úsalo para crear algo nuevo o conectar una pieza de portafolio existente que encaje con el tema.",
+      "feed": "Sigue a los creadores que te importan y navega el feed de inicio para ver nuevo trabajo público del portafolio a medida que se comparte.",
       "ctaButton": "Explorar la colección",
       "subject": "Bienvenido a {appName}",
       "friend": "amigo"

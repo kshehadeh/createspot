@@ -39,7 +39,6 @@ export interface ExhibitionSubmission {
   text: string | null;
   tags: string[];
   category: string | null;
-  wordIndex: number | null;
   createdAt: string | Date;
   shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled: boolean;
@@ -48,18 +47,12 @@ export interface ExhibitionSubmission {
     name: string | null;
     image: string | null;
   };
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
 }
 
 interface ExhibitionGridProps {
   submissions: ExhibitionSubmission[];
   isLoggedIn: boolean;
   initialHasMore: boolean;
-  showWordInsteadOfTitle?: boolean;
   /** When true, title/author are always visible on desktop. On mobile they are always visible regardless. */
   alwaysShowTitleAuthor?: boolean;
   loadMoreEndpoint?: string;
@@ -72,7 +65,6 @@ export function ExhibitionGrid({
   submissions,
   isLoggedIn,
   initialHasMore,
-  showWordInsteadOfTitle = false,
   alwaysShowTitleAuthor = false,
   loadMoreEndpoint,
   loadMoreParams,
@@ -151,7 +143,6 @@ export function ExhibitionGrid({
         isLoading={isLoading}
         onLoadMore={loadMore}
         loadError={loadError}
-        showWordInsteadOfTitle={showWordInsteadOfTitle}
         alwaysShowTitleAuthor={alwaysShowTitleAuthor}
         priorityCount={priorityCount}
         lightboxUsesSessionProvider={lightboxUsesSessionProvider}
@@ -167,7 +158,6 @@ function GridContent({
   isLoading,
   onLoadMore,
   loadError,
-  showWordInsteadOfTitle = false,
   alwaysShowTitleAuthor = false,
   priorityCount = 0,
   lightboxUsesSessionProvider = false,
@@ -182,16 +172,6 @@ function GridContent({
   const [selectedSubmission, setSelectedSubmission] =
     useState<ExhibitionSubmission | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  const getWord = (submission: ExhibitionSubmission): string => {
-    if (!submission.prompt || !submission.wordIndex) return "";
-    const words = [
-      submission.prompt.word1,
-      submission.prompt.word2,
-      submission.prompt.word3,
-    ];
-    return words[submission.wordIndex - 1];
-  };
 
   useEffect(() => {
     if (!hasMore) return;
@@ -304,9 +284,7 @@ function GridContent({
                       }
                     >
                       <h3 className="text-lg font-semibold text-white drop-shadow-lg">
-                        {showWordInsteadOfTitle
-                          ? getWord(submission) || t("untitled")
-                          : submission.title || t("untitled")}
+                        {submission.title || t("untitled")}
                       </h3>
                       <p className="text-sm font-medium text-white/90 drop-shadow-md">
                         {submission.user.name || tProfile("anonymous")}
@@ -339,9 +317,7 @@ function GridContent({
                       }
                     >
                       <h3 className="text-lg font-semibold text-white drop-shadow-lg">
-                        {showWordInsteadOfTitle
-                          ? getWord(submission) || t("untitled")
-                          : submission.title || t("untitled")}
+                        {submission.title || t("untitled")}
                       </h3>
                       <p className="text-sm font-medium text-white/90 drop-shadow-md">
                         {submission.user.name || tProfile("anonymous")}
@@ -392,7 +368,6 @@ function GridContent({
                 shareStatus: selectedSubmission.shareStatus ?? "PUBLIC",
                 critiquesEnabled: selectedSubmission.critiquesEnabled ?? false,
               }}
-              word={getWord(selectedSubmission)}
               onClose={() => setSelectedSubmission(null)}
               isOpen={!!selectedSubmission}
               navigation={{

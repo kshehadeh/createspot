@@ -24,13 +24,6 @@ interface PortfolioItem {
   portfolioOrder: number | null;
   tags: string[];
   category: string | null;
-  promptId: string | null;
-  wordIndex: number | null;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   _count: {
     favorites: number;
   };
@@ -174,9 +167,6 @@ export function CollectionEditForm({
             portfolioOrder: items.length,
             tags: data.submission.tags,
             category: data.submission.category,
-            promptId: data.submission.promptId,
-            wordIndex: data.submission.wordIndex,
-            prompt: data.submission.prompt,
             _count: data.submission._count,
             shareStatus: data.submission.shareStatus,
           };

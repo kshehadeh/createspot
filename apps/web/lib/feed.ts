@@ -9,7 +9,6 @@ export interface FeedSubmission {
   imageFocalPoint: { x: number; y: number } | null;
   text: string | null;
   referenceImageUrl: string | null;
-  wordIndex: number | null;
   category: string | null;
   tags: string[];
   critiquesEnabled: boolean;
@@ -21,11 +20,6 @@ export interface FeedSubmission {
     profileImageUrl: string | null;
     slug: string | null;
   };
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   progressions: {
     id: string;
     imageUrl: string | null;
@@ -155,13 +149,6 @@ const submissionInclude = {
       image: true,
       profileImageUrl: true,
       slug: true,
-    },
-  },
-  prompt: {
-    select: {
-      word1: true,
-      word2: true,
-      word3: true,
     },
   },
   progressions: {

@@ -2,12 +2,7 @@ import { chromium, type FullConfig } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
 import { resolve } from "node:path";
 import { writeRunTimestamp } from "./helpers/run-timestamp";
-import {
-  getTestUser,
-  getCurrentPrompt,
-  createTestPrompt,
-  disconnectPrisma,
-} from "./helpers/db";
+import { disconnectPrisma } from "./helpers/db";
 
 const AUTH_STATE_PATH = "./e2e/.auth/user.json";
 
@@ -116,29 +111,6 @@ async function globalSetup(config: FullConfig) {
     throw error;
   } finally {
     await browser.close();
-  }
-
-  console.log("[E2E Setup] Ensuring test prompt exists...");
-  let testUser = await getTestUser();
-
-  if (!testUser) {
-    console.log("[E2E Setup] Waiting for user to be created in database...");
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    testUser = await getTestUser();
-  }
-
-  if (!testUser) {
-    throw new Error(
-      `Test user with email ${normalizedEmail} not found in database`,
-    );
-  }
-
-  const existingPrompt = await getCurrentPrompt();
-  if (!existingPrompt) {
-    console.log("[E2E Setup] Creating test prompt...");
-    await createTestPrompt(testUser.id);
-  } else {
-    console.log("[E2E Setup] Active prompt already exists:", existingPrompt.id);
   }
 
   await disconnectPrisma();

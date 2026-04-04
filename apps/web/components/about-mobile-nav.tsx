@@ -6,7 +6,6 @@ import {
   Info,
   Target,
   Sparkles,
-  Lightbulb,
   Landmark,
   FileText,
   ScrollText,
@@ -31,7 +30,6 @@ export function AboutMobileNav() {
   const aboutRoute = getRoute("about");
   const purposeRoute = getRoute("aboutPurpose");
   const featuresRoute = getRoute("aboutFeatures");
-  const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
   const museumsRoute = getRoute("aboutMuseums");
   const changelogRoute = getRoute("aboutChangelog");
   const termsRoute = getRoute("terms");
@@ -57,13 +55,6 @@ export function AboutMobileNav() {
       translationNamespace: "about",
       icon: Sparkles,
       isActive: pathname === featuresRoute.path,
-    },
-    {
-      href: promptSubmissionsRoute.path,
-      labelKey: "promptInspiration.title",
-      translationNamespace: "about",
-      icon: Lightbulb,
-      isActive: pathname === promptSubmissionsRoute.path,
     },
     {
       href: museumsRoute.path,

@@ -91,13 +91,6 @@ export default async function CollectionViewPage({
           include: {
             submission: {
               include: {
-                prompt: {
-                  select: {
-                    word1: true,
-                    word2: true,
-                    word3: true,
-                  },
-                },
                 _count: {
                   select: { favorites: true },
                 },
@@ -157,9 +150,6 @@ export default async function CollectionViewPage({
       portfolioOrder: cs.order,
       tags: cs.submission.tags,
       category: cs.submission.category,
-      promptId: cs.submission.promptId,
-      wordIndex: cs.submission.wordIndex,
-      prompt: cs.submission.prompt,
       _count: cs.submission._count,
       shareStatus: cs.submission.shareStatus,
       latestProgressionImageUrl: latest?.imageUrl ?? null,

@@ -11,7 +11,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Users, LayoutGrid, Bell, Settings } from "lucide-react";
+import { Users, LayoutGrid, Bell, Settings } from "lucide-react";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -27,13 +27,6 @@ export default async function AdminPage() {
   const t = await getTranslations("admin.dashboard");
 
   const adminCards = [
-    {
-      id: "prompts",
-      title: t("managePrompts"),
-      description: t("managePromptsDescription"),
-      href: "/admin/prompts",
-      icon: Sparkles,
-    },
     {
       id: "users",
       title: t("manageUsers"),

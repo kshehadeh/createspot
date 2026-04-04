@@ -49,21 +49,11 @@ export default async function PathExhibitionPage({
 
   // Transform submissions to constellation format
   const constellationWork = submissions.map((submission) => {
-    const promptWord =
-      submission.prompt && typeof submission.wordIndex === "number"
-        ? ([
-            submission.prompt.word1,
-            submission.prompt.word2,
-            submission.prompt.word3,
-          ][submission.wordIndex - 1] ?? null)
-        : null;
-
     return {
       id: submission.id,
       imageUrl: submission.imageUrl,
       text: submission.text,
       title: submission.title,
-      promptWord,
       shareStatus: submission.shareStatus,
       critiquesEnabled: submission.critiquesEnabled,
       user: submission.user,

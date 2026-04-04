@@ -35,15 +35,6 @@ export default async function NewExhibitPage() {
     where: {
       shareStatus: "PUBLIC",
     },
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
-    },
     take: 50,
     orderBy: {
       createdAt: "desc",
@@ -90,17 +81,9 @@ export default async function NewExhibitPage() {
           title: s.title,
           imageUrl: s.imageUrl,
           text: s.text,
-          wordIndex: s.wordIndex,
           isPortfolio: s.isPortfolio,
           tags: s.tags,
           category: s.category,
-          prompt: s.prompt
-            ? {
-                word1: s.prompt.word1,
-                word2: s.prompt.word2,
-                word3: s.prompt.word3,
-              }
-            : null,
         }))}
         mode="create"
       />

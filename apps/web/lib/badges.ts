@@ -10,7 +10,6 @@ export interface BadgeDefinition {
 
 export type BadgeKey =
   | "first_portfolio_submission"
-  | "first_prompt_submission"
   | "first_critique_received"
   | "first_critique_given";
 
@@ -20,17 +19,6 @@ const hasPortfolioSubmission = async (
 ): Promise<boolean> => {
   const count = await prisma.submission.count({
     where: { userId, isPortfolio: true },
-    take: 1,
-  });
-  return count > 0;
-};
-
-const hasPromptSubmission = async (
-  userId: string,
-  prisma: PrismaClient,
-): Promise<boolean> => {
-  const count = await prisma.submission.count({
-    where: { userId, promptId: { not: null } },
     take: 1,
   });
   return count > 0;
@@ -65,13 +53,6 @@ export const badgeDefinitions: BadgeDefinition[] = [
     description: "First Portfolio Submission",
     image: "/badges/first_portfolio_submission.png",
     isEligible: hasPortfolioSubmission,
-  },
-  {
-    key: "first_prompt_submission",
-    name: "Prompt Pioneer",
-    description: "First Prompt Submission",
-    image: "/badges/first_prompt_submission.png",
-    isEligible: hasPromptSubmission,
   },
   {
     key: "first_critique_received",

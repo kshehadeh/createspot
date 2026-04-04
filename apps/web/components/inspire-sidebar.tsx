@@ -4,7 +4,7 @@ import Link from "@/components/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
-import { Heart, LayoutGrid, Landmark, Sparkles, Users } from "lucide-react";
+import { Heart, LayoutGrid, Landmark, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
@@ -23,7 +23,6 @@ export function InspireSidebar() {
 
   const exhibitionRoute = getRoute("exhibition");
   const museumsRoute = getRoute("museums");
-  const promptRoute = getRoute("prompt");
   const communityRoute = getRoute("community");
   const favoritesRoute = getRoute("favorites");
 
@@ -41,14 +40,6 @@ export function InspireSidebar() {
       labelKey: "museums",
       icon: Landmark,
       isActive: pathname === museumsRoute.path,
-    },
-    {
-      href: promptRoute.path,
-      labelKey: "prompts",
-      icon: Sparkles,
-      isActive:
-        pathname === promptRoute.path ||
-        pathname.startsWith(`${promptRoute.path}/`),
     },
     {
       href: communityRoute.path,

@@ -59,7 +59,7 @@ const ROUTES: Record<string, RouteConfig> = {
     icon: Rss,
   },
 
-  // Inspire section (community, exhibition, museums, prompt)
+  // Inspire section (community, exhibition, museums)
   inspire: {
     path: "/inspire",
     label: "navigation.inspire",
@@ -107,41 +107,12 @@ const ROUTES: Record<string, RouteConfig> = {
     parentPath: "/inspire",
   },
 
-  // Prompt routes (under /inspire)
-  prompt: {
-    path: "/inspire/prompt",
-    label: "navigation.prompts",
-    isLink: false, // Root prompt page is not a link in breadcrumbs
-    icon: Sparkles,
-    parentPath: "/inspire",
-  },
-  promptPlay: {
-    path: "/inspire/prompt/play",
-    label: "navigation.play",
-    parentPath: "/inspire/prompt",
-  },
-  promptHistory: {
-    path: "/inspire/prompt/history",
-    label: "navigation.history",
-    parentPath: "/inspire/prompt",
-  },
-  promptThisWeek: {
-    path: "/inspire/prompt/this-week",
-    label: "navigation.thisWeek",
-    parentPath: "/inspire/prompt",
-  },
-
   // Admin routes
   admin: {
     path: "/admin",
     label: "navigation.admin",
     isLink: false, // Root admin page is not a link in breadcrumbs
     icon: Lock,
-  },
-  adminPrompts: {
-    path: "/admin/prompts",
-    label: "navigation.prompts",
-    parentPath: "/admin",
   },
   adminUsers: {
     path: "/admin/users",
@@ -267,11 +238,6 @@ const ROUTES: Record<string, RouteConfig> = {
   aboutFeatures: {
     path: "/about/features",
     label: "navigation.features",
-    parentPath: "/about",
-  },
-  aboutPromptSubmissions: {
-    path: "/about/prompt-submissions",
-    label: "about.promptInspiration.title",
     parentPath: "/about",
   },
   aboutMuseums: {

@@ -7,7 +7,6 @@ interface Analytics {
   uniqueVisitors: number;
   totalFavorites: number;
   totalViews: number;
-  submissionCount: number;
   portfolioCount: number;
   totalWorkCount: number;
   followersCount: number;

@@ -20,19 +20,9 @@ export async function formatNotificationMetadata(
 
     case "NEW_PROMPT": {
       const promptId = meta.promptId as string;
-      if (!promptId) return "Unknown prompt";
-      try {
-        const prompt = await prisma.prompt.findUnique({
-          where: { id: promptId },
-          select: { word1: true, word2: true, word3: true },
-        });
-        if (prompt) {
-          return `${prompt.word1}, ${prompt.word2}, ${prompt.word3}`;
-        }
-        return `Prompt: ${promptId}`;
-      } catch {
-        return `Prompt: ${promptId}`;
-      }
+      return promptId
+        ? `Legacy new-prompt notification (${promptId.slice(0, 8)}…)`
+        : "Legacy new-prompt notification";
     }
 
     case "FAVORITE_ADDED": {

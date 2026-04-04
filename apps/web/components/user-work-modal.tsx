@@ -24,11 +24,6 @@ interface Submission {
   imageUrl: string | null;
   text: string | null;
   createdAt: string;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   _count: {
     favorites: number;
   };

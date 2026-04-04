@@ -6,36 +6,21 @@ test.describe("Dashboard", () => {
     await expect(page).toHaveURL("/dashboard");
   });
 
-  test("shows prompt words when active prompt exists", async ({ page }) => {
-    await page.goto("/dashboard");
-    const promptSection = page.locator('[data-testid="current-prompt"]');
-    if (await promptSection.isVisible()) {
-      await expect(promptSection).toContainText(/\w+/);
-    }
-  });
-
-  test("can navigate to play page", async ({ page }) => {
+  test("can navigate to portfolio edit from onboarding", async ({ page }) => {
     await page.goto("/dashboard");
 
-    // Play link may be on dashboard (onboarding section) or we go via Inspire → Prompts
-    const playLinkOnDashboard = page
-      .locator('a[href*="/inspire/prompt/play"]')
-      .first();
-    const visible = await playLinkOnDashboard
+    const portfolioLink = page.locator('a[href*="/portfolio/edit"]').first();
+    const visible = await portfolioLink
       .waitFor({ state: "visible", timeout: 8000 })
       .then(() => true)
       .catch(() => false);
 
-    if (visible) {
-      await playLinkOnDashboard.click();
-    } else {
-      // Onboarding hidden (dismissed or complete): use nav Inspire → Prompts, then Play
-      await page.getByRole("button", { name: /inspire/i }).click();
-      await page.getByRole("menuitem", { name: /prompts/i }).click();
-      await expect(page).toHaveURL(/\/inspire\/prompt/);
-      await page.locator('a[href*="/inspire/prompt/play"]').first().click();
+    if (!visible) {
+      test.skip();
+      return;
     }
 
-    await expect(page).toHaveURL(/\/inspire\/prompt\/play/);
+    await portfolioLink.click();
+    await expect(page).toHaveURL(/\/creators\/[^/]+\/portfolio\/edit/);
   });
 });

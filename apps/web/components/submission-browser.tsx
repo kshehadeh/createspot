@@ -39,12 +39,6 @@ interface Submission {
     name: string | null;
     image: string | null;
   };
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
-  wordIndex: number | null;
 }
 
 const EMPTY_IDS: string[] = [];
@@ -197,16 +191,11 @@ export function SubmissionBrowser({
   const someSelected =
     selectedIds.size > 0 && selectedIds.size < submissions.length;
 
-  const getWord = (submission: Submission) => {
-    if (submission.prompt && submission.wordIndex) {
-      const words = [
-        submission.prompt.word1,
-        submission.prompt.word2,
-        submission.prompt.word3,
-      ];
-      return words[submission.wordIndex - 1];
+  const getSubmissionSubtitle = (submission: Submission) => {
+    if (submission.category) {
+      return tCategories(submission.category as never);
     }
-    return submission.category || tProfile("portfolio");
+    return tProfile("portfolio");
   };
 
   return (
@@ -457,7 +446,7 @@ export function SubmissionBrowser({
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {submissions.map((submission) => {
                   const isSelected = selectedIds.has(submission.id);
-                  const word = getWord(submission);
+                  const word = getSubmissionSubtitle(submission);
                   return (
                     <div
                       key={submission.id}

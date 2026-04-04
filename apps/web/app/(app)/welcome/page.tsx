@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth, signIn } from "@/lib/auth";
-import { getCurrentPrompt, getPromptSubmissions } from "@/lib/prompts";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,34 +52,13 @@ async function getRandomPublicSubmissions(limit: number = 12) {
 }
 
 export default async function WelcomePage() {
-  const [session, t, prompt] = await Promise.all([
-    auth(),
-    getTranslations("welcome"),
-    getCurrentPrompt(),
-  ]);
+  const [session, t] = await Promise.all([auth(), getTranslations("welcome")]);
 
   if (session?.user) {
     redirect("/");
   }
 
-  // Get prompt submissions if there's an active prompt, otherwise get random public submissions
-  let imageSubmissions: {
-    id: string;
-    imageUrl: string | null;
-    title: string | null;
-  }[] = [];
-
-  if (prompt) {
-    const { submissions } = await getPromptSubmissions(prompt.id, 0, 12);
-    imageSubmissions = submissions
-      .filter((s) => s.imageUrl)
-      .map((s) => ({ id: s.id, imageUrl: s.imageUrl, title: s.title }));
-  }
-
-  // If no prompt submissions or no active prompt, get random public submissions
-  if (imageSubmissions.length === 0) {
-    imageSubmissions = await getRandomPublicSubmissions(12);
-  }
+  const imageSubmissions = await getRandomPublicSubmissions(12);
 
   return (
     <main className="flex h-[calc(100vh-var(--navbar-height))] flex-col overflow-hidden lg:flex-row">
@@ -151,29 +129,6 @@ export default async function WelcomePage() {
             />
           </div>
         </div>
-
-        {/* Prompt words overlay */}
-        {prompt && (
-          <div className="absolute bottom-4 left-4 right-4 z-10 lg:bottom-8 lg:left-8 lg:right-8">
-            <div className="rounded-xl bg-background/80 p-4 backdrop-blur-sm lg:hidden">
-              <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">
-                {t("thisWeekPrompt")}
-              </p>
-              <div className="flex flex-wrap gap-2 sm:gap-4">
-                {[prompt.word1, prompt.word2, prompt.word3].map(
-                  (word, index) => (
-                    <span
-                      key={index}
-                      className={`text-lg font-bold sm:text-2xl rainbow-shimmer-${index + 1}`}
-                    >
-                      {word}
-                    </span>
-                  ),
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Right side - Auth cards */}

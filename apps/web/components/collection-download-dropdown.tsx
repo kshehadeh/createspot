@@ -218,13 +218,19 @@ export function CollectionDownloadDropdown(
           variant={compactTrigger ? "ghost" : "outline"}
           size="sm"
           disabled={isDownloading}
-          className={cn(compactTrigger && "h-12 w-12 shrink-0 rounded-full p-0", triggerClassName)}
+          className={cn(
+            compactTrigger && "h-12 w-12 shrink-0 rounded-full p-0",
+            triggerClassName,
+          )}
           aria-label={compactTrigger ? t("downloadAs") : undefined}
           title={compactTrigger ? t("downloadAs") : undefined}
         >
           {isDownloading ? (
             <Loader2
-              className={cn("animate-spin", compactTrigger ? "h-5 w-5" : "h-4 w-4")}
+              className={cn(
+                "animate-spin",
+                compactTrigger ? "h-5 w-5" : "h-4 w-4",
+              )}
             />
           ) : (
             <Download className={cn(compactTrigger ? "h-5 w-5" : "h-4 w-4")} />

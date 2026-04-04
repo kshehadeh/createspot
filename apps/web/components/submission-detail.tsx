@@ -44,7 +44,6 @@ interface SubmissionDetailProps {
     imageUrl: string | null;
     imageFocalPoint?: { x: number; y: number } | null;
     text: string | null;
-    wordIndex: number | null;
     category: string | null;
     tags: string[];
     shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
@@ -62,12 +61,6 @@ interface SubmissionDetailProps {
       linkedin: string | null;
       website: string | null;
     };
-    prompt: {
-      id: string;
-      word1: string;
-      word2: string;
-      word3: string;
-    } | null;
     _count: {
       favorites: number;
     };
@@ -122,16 +115,6 @@ export function SubmissionDetail({
   const hasReference = !!submission.referenceImageUrl;
   const hasProgressionsGif =
     (submission.progressions?.filter((p) => p.imageUrl).length ?? 0) >= 2;
-
-  const getWord = (): string => {
-    if (!submission.prompt || !submission.wordIndex) return "";
-    const words = [
-      submission.prompt.word1,
-      submission.prompt.word2,
-      submission.prompt.word3,
-    ];
-    return words[submission.wordIndex - 1];
-  };
 
   const isWip = submission.isWorkInProgress;
 
@@ -479,7 +462,6 @@ export function SubmissionDetail({
             user: submission.user,
             _count: submission._count,
           }}
-          word={getWord()}
           onClose={() => setIsLightboxOpen(false)}
           isOpen={isLightboxOpen}
           hideGoToSubmission={true}

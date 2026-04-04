@@ -24,15 +24,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
   const submission = await prisma.submission.findUnique({
     where: { id },
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
-    },
+    include: {},
   });
 
   if (!submission) {

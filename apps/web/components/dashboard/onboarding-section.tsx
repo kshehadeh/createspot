@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "@/components/link";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { buildRoutePath } from "@/lib/routes";
 import {
   CheckCircle2,
   X,
@@ -24,6 +26,7 @@ interface OnboardingStatus {
 
 export function OnboardingSection() {
   const t = useTranslations("dashboard.onboarding");
+  const { data: session } = useSession();
   const [status, setStatus] = useState<OnboardingStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [dismissing, setDismissing] = useState(false);
@@ -46,6 +49,10 @@ export function OnboardingSection() {
     return null;
   }
 
+  const portfolioEditHref = session?.user?.id
+    ? buildRoutePath("portfolioEdit", { creatorid: session.user.id })
+    : "/welcome";
+
   const items = [
     {
       key: "favorite" as const,
@@ -56,7 +63,7 @@ export function OnboardingSection() {
     {
       key: "submission" as const,
       completed: status.hasSubmission,
-      href: "/inspire/prompt/play",
+      href: portfolioEditHref,
       icon: Sparkles,
     },
     {

@@ -19,16 +19,6 @@ const SubmissionLightbox = dynamic(
   { ssr: false },
 );
 
-function getFeedSubmissionWord(submission: FeedCardSubmission): string {
-  if (!submission.prompt || !submission.wordIndex) return "";
-  const words = [
-    submission.prompt.word1,
-    submission.prompt.word2,
-    submission.prompt.word3,
-  ];
-  return words[submission.wordIndex - 1];
-}
-
 function mapFeedSubmissionForLightbox(submission: FeedCardSubmission) {
   return {
     id: submission.id,
@@ -155,7 +145,10 @@ function FeedListContent({
   }, [hasMore, isLoading, loadMore]);
 
   const fab = showActionBar && isLoggedIn && (
-    <div className="fixed right-4 z-50 flex flex-col items-center gap-2.5 sm:right-6" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}>
+    <div
+      className="fixed right-4 z-50 flex flex-col items-center gap-2.5 sm:right-6"
+      style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
+    >
       <button
         type="button"
         onClick={() => setIsCreateModalOpen(true)}
@@ -245,7 +238,6 @@ function FeedListContent({
           return (
             <SubmissionLightbox
               submission={mapFeedSubmissionForLightbox(selected)}
-              word={getFeedSubmissionWord(selected)}
               onClose={() => setLightboxSubmissionId(null)}
               isOpen
               currentUserId={currentUserId}

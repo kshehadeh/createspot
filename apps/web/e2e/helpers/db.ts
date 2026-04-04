@@ -29,38 +29,6 @@ export async function getTestUser() {
   });
 }
 
-export async function getCurrentPrompt() {
-  const now = new Date();
-  return getPrisma().prompt.findFirst({
-    where: {
-      weekStart: { lte: now },
-      weekEnd: { gte: now },
-    },
-  });
-}
-
-export async function createTestPrompt(userId: string) {
-  const now = new Date();
-  const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - now.getDay());
-  weekStart.setHours(0, 0, 0, 0);
-
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-  weekEnd.setHours(23, 59, 59, 999);
-
-  return getPrisma().prompt.create({
-    data: {
-      word1: "test",
-      word2: "e2e",
-      word3: "run",
-      weekStart,
-      weekEnd,
-      createdByUserId: userId,
-    },
-  });
-}
-
 export async function cleanupTestData(userId: string, since: Date) {
   const p = getPrisma();
   // 1s buffer for clock skew between test runner and DB
@@ -106,10 +74,6 @@ export async function cleanupTestData(userId: string, since: Date) {
 
   await p.submission.deleteMany({
     where: { userId, createdAt: { gte: sinceWithBuffer } },
-  });
-
-  await p.prompt.deleteMany({
-    where: { createdByUserId: userId, createdAt: { gte: sinceWithBuffer } },
   });
 }
 

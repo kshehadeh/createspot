@@ -191,13 +191,6 @@ export default async function PortfolioPage({
           },
           orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
           include: {
-            prompt: {
-              select: {
-                word1: true,
-                word2: true,
-                word3: true,
-              },
-            },
             _count: {
               select: { favorites: true },
             },

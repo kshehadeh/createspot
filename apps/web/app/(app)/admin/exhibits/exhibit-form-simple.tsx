@@ -30,15 +30,9 @@ interface SubmissionOption {
   title: string | null;
   imageUrl: string | null;
   text: string | null;
-  wordIndex: number | null;
   isPortfolio: boolean;
   tags: string[];
   category: string | null;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
 }
 
 interface UserOption {

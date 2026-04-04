@@ -16,15 +16,9 @@ interface SubmissionOption {
   imageUrl: string | null;
   imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
-  wordIndex: number | null;
   isPortfolio: boolean;
   tags: string[];
   category: string | null;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
 }
 
@@ -38,13 +32,6 @@ interface PortfolioItem {
   portfolioOrder: number | null;
   tags: string[];
   category: string | null;
-  promptId: string | null;
-  wordIndex: number | null;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   _count: {
     favorites: number;
     views: number;
@@ -197,13 +184,6 @@ export function PortfolioEditForm({
   };
 
   const getSubmissionLabel = (submission: SubmissionOption): string => {
-    if (submission.prompt && submission.wordIndex) {
-      return [
-        submission.prompt.word1,
-        submission.prompt.word2,
-        submission.prompt.word3,
-      ][submission.wordIndex - 1];
-    }
     return submission.category || tProfile("portfolio");
   };
 
@@ -256,8 +236,8 @@ export function PortfolioEditForm({
           />
         )}
 
-        {/* Add from Prompt Submissions */}
-        {submissions.filter((s) => !s.isPortfolio && s.prompt).length > 0 && (
+        {/* Add existing work not yet on portfolio */}
+        {submissions.filter((s) => !s.isPortfolio).length > 0 && (
           <div>
             <h3 className="mb-4 text-sm font-medium text-foreground">
               {t("addPromptSubmissions")}
@@ -267,7 +247,7 @@ export function PortfolioEditForm({
             </p>
             <div className="space-y-2">
               {submissions
-                .filter((s) => !s.isPortfolio && s.prompt)
+                .filter((s) => !s.isPortfolio)
                 .slice(0, 5)
                 .map((submission) => {
                   const word = getSubmissionLabel(submission);
@@ -325,8 +305,7 @@ export function PortfolioEditForm({
 
         {/* Empty state */}
         {portfolioItems.length === 0 &&
-          submissions.filter((s) => !s.isPortfolio && s.prompt).length ===
-            0 && (
+          submissions.filter((s) => !s.isPortfolio).length === 0 && (
             <div className="rounded-lg border border-dashed border-border py-12 text-center">
               <p className="text-muted-foreground">{t("emptyState")}</p>
             </div>
@@ -416,9 +395,6 @@ export function PortfolioEditForm({
                   portfolioOrder: null,
                   tags: updatedData.tags,
                   category: updatedData.category,
-                  promptId: null,
-                  wordIndex: addingToPortfolio.wordIndex,
-                  prompt: addingToPortfolio.prompt,
                   _count: { favorites: 0, views: 0 },
                   shareStatus: updatedData.shareStatus,
                 },

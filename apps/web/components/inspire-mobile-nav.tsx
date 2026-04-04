@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
-import { Heart, LayoutGrid, Landmark, Sparkles, Users } from "lucide-react";
+import { Heart, LayoutGrid, Landmark, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getRoute } from "@/lib/routes";
 import { MobileNavBar } from "@/components/mobile-nav-bar";
@@ -22,7 +22,6 @@ export function InspireMobileNav() {
 
   const exhibitionRoute = getRoute("exhibition");
   const museumsRoute = getRoute("museums");
-  const promptRoute = getRoute("prompt");
   const communityRoute = getRoute("community");
   const favoritesRoute = getRoute("favorites");
 
@@ -40,14 +39,6 @@ export function InspireMobileNav() {
       labelKey: "museums",
       icon: Landmark,
       isActive: pathname === museumsRoute.path,
-    },
-    {
-      href: promptRoute.path,
-      labelKey: "prompts",
-      icon: Sparkles,
-      isActive:
-        pathname === promptRoute.path ||
-        pathname.startsWith(`${promptRoute.path}/`),
     },
     {
       href: communityRoute.path,

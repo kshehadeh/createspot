@@ -53,7 +53,6 @@ export default async function AboutPage() {
 
   const purposeRoute = getRoute("aboutPurpose");
   const featuresRoute = getRoute("aboutFeatures");
-  const promptSubmissionsRoute = getRoute("aboutPromptSubmissions");
   const museumsRoute = getRoute("aboutMuseums");
 
   const t = tAbout;
@@ -303,10 +302,10 @@ export default async function AboutPage() {
                       {tHome("features.inspiration.ctaExhibits")}
                     </Link>
                     <Link
-                      href="/about/prompt-submissions"
+                      href={featuresRoute.path}
                       className="text-sm font-medium text-foreground underline underline-offset-4 decoration-foreground/30 transition-colors hover:decoration-foreground"
                     >
-                      {tHome("features.inspiration.ctaAboutPrompts")}
+                      {tHome("features.inspiration.ctaFeatures")}
                     </Link>
                   </div>
                 </CardContent>
@@ -513,35 +512,6 @@ export default async function AboutPage() {
               >
                 {t("portfolioCard.learnMore")}
               </a>
-            </div>
-          </AboutCard>
-
-          <AboutCard id="prompt-inspiration" className="scroll-mt-24">
-            <h2 className="mb-3 text-2xl text-foreground font-permanent-marker">
-              {t("promptInspiration.title")}
-            </h2>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {t("promptInspiration.weeklyPrompts")}{" "}
-              <strong className="text-foreground">
-                {t("promptInspiration.sparkMomentum")}
-              </strong>
-              {t("promptInspiration.usePrompt")}{" "}
-              <strong className="text-foreground">
-                {t("promptInspiration.yourPortfolio")}
-              </strong>
-              {t("promptInspiration.soInspiration")}{" "}
-              <strong className="text-foreground">
-                {t("promptInspiration.stayConnected")}
-              </strong>
-              .
-            </p>
-            <div className="mt-5">
-              <Link
-                href={promptSubmissionsRoute.path}
-                className="inline-flex items-center text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:opacity-90"
-              >
-                {t("promptInspiration.learnMore")}
-              </Link>
             </div>
           </AboutCard>
 

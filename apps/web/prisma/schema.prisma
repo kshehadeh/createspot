@@ -96,7 +96,6 @@ model User {
 
   accounts           Account[]
   sessions           Session[]
-  prompts            Prompt[]         @relation("CreatedPrompts")
   submissions        Submission[]
   favorites          Favorite[]
   featuredSubmission Submission?      @relation("FeaturedSubmission", fields: [featuredSubmissionId], references: [id], onDelete: SetNull)
@@ -143,28 +142,9 @@ model Block {
   @@index([blockedId])
 }
 
-model Prompt {
-  id              String   @id @default(cuid())
-  weekStart       DateTime
-  weekEnd         DateTime
-  word1           String
-  word2           String
-  word3           String
-  createdByUserId String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  createdBy   User         @relation("CreatedPrompts", fields: [createdByUserId], references: [id])
-  submissions Submission[]
-
-  @@index([weekStart, weekEnd])
-}
-
 model Submission {
   id             String      @id @default(cuid())
   userId         String
-  promptId       String?     // Nullable for portfolio-only items
-  wordIndex      Int?        // Nullable for portfolio-only items (1, 2, or 3 when set)
   title          String?
   imageUrl                 String?
   imageFocalPoint           Json?      // {"x": 50, "y": 30} where x,y are 0-100 percentages
@@ -183,7 +163,6 @@ model Submission {
   updatedAt      DateTime    @updatedAt
 
   user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  prompt     Prompt?          @relation(fields: [promptId], references: [id], onDelete: Cascade)
   favorites  Favorite[]
   views      SubmissionView[]
   featuredBy User?            @relation("FeaturedSubmission")
@@ -194,8 +173,6 @@ model Submission {
   shortLinks ShortLink[]
   progressions Progression[]
 
-  @@unique([userId, promptId, wordIndex])
-  @@index([promptId])
   @@index([userId, isPortfolio])
   @@index([userId, isPortfolio, portfolioOrder])
   @@index([shareStatus])

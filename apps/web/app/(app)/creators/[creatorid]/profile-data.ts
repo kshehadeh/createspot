@@ -1,9 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
-const MAX_PROMPT_GROUPS = 6;
-const INITIAL_PROMPT_GROUPS = 5;
-
 interface ProfileDataParams {
   creatorid: string;
   includePrivate: boolean;
@@ -64,7 +61,7 @@ async function getProfileData({
     ? {}
     : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } };
 
-  const [portfolioItemsRaw, prompts, submissionCount, featuredSubmissionRaw] =
+  const [portfolioItemsRaw, submissionCount, featuredSubmissionRaw] =
     await Promise.all([
       prisma.submission.findMany({
         where: {
@@ -74,13 +71,6 @@ async function getProfileData({
         },
         orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
         include: {
-          prompt: {
-            select: {
-              word1: true,
-              word2: true,
-              word3: true,
-            },
-          },
           _count: {
             select: { favorites: true },
           },
@@ -91,27 +81,6 @@ async function getProfileData({
               imageUrl: true,
               text: true,
             },
-          },
-        },
-      }),
-      prisma.prompt.findMany({
-        where: {
-          submissions: {
-            some: {
-              userId: user.id,
-              ...shareStatusFilter,
-            },
-          },
-        },
-        orderBy: { weekStart: "desc" },
-        take: MAX_PROMPT_GROUPS,
-        include: {
-          submissions: {
-            where: {
-              userId: user.id,
-              ...shareStatusFilter,
-            },
-            orderBy: { wordIndex: "asc" },
           },
         },
       }),
@@ -129,13 +98,6 @@ async function getProfileData({
         ? prisma.submission.findUnique({
             where: { id: user.featuredSubmissionId },
             include: {
-              prompt: {
-                select: {
-                  word1: true,
-                  word2: true,
-                  word3: true,
-                },
-              },
               user: {
                 select: {
                   id: true,
@@ -189,24 +151,14 @@ async function getProfileData({
       portfolioOrder: featuredSubmission.portfolioOrder,
       tags: featuredSubmission.tags,
       category: featuredSubmission.category,
-      promptId: featuredSubmission.promptId,
-      wordIndex: featuredSubmission.wordIndex,
-      prompt: featuredSubmission.prompt,
       _count: featuredSubmission._count,
     } as (typeof portfolioItems)[0]);
   }
-
-  const hasMore = prompts.length > INITIAL_PROMPT_GROUPS;
-  const initialItems = hasMore
-    ? prompts.slice(0, INITIAL_PROMPT_GROUPS)
-    : prompts;
 
   return {
     user,
     portfolioItems,
     allPortfolioItems,
-    initialItems,
-    hasMore,
     submissionCount,
     featuredSubmission,
     hasSocialLinks:

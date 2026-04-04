@@ -41,13 +41,6 @@ export async function resolveShortCode(
       submission: {
         include: {
           user: { select: { id: true, name: true, slug: true } },
-          prompt: {
-            select: {
-              word1: true,
-              word2: true,
-              word3: true,
-            },
-          },
         },
       },
       collection: {
@@ -76,7 +69,6 @@ export async function resolveShortCode(
         tags: s.tags ?? [],
         category: s.category,
         user: s.user,
-        prompt: s.prompt,
       },
       BASE_URL,
     );

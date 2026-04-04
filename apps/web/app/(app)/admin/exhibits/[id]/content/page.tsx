@@ -44,13 +44,6 @@ export default async function ExhibitContentPage({
               image: true,
             },
           },
-          prompt: {
-            select: {
-              word1: true,
-              word2: true,
-              word3: true,
-            },
-          },
         },
       },
     },

@@ -55,16 +55,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             website: true,
           },
         },
-        prompt: {
-          select: {
-            id: true,
-            word1: true,
-            word2: true,
-            word3: true,
-            weekStart: true,
-            weekEnd: true,
-          },
-        },
         _count: {
           select: {
             favorites: true,
@@ -130,8 +120,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     isPortfolio,
     tags,
     category,
-    promptId,
-    wordIndex,
     shareStatus,
     critiquesEnabled,
     referenceImageUrl,
@@ -157,37 +145,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         { error: "Focal point coordinates must be between 0 and 100" },
         { status: 400 },
       );
-    }
-  }
-
-  // If linking to a prompt, validate it
-  if (promptId !== undefined && promptId !== null) {
-    const prompt = await prisma.prompt.findUnique({
-      where: { id: promptId },
-    });
-
-    if (!prompt) {
-      return NextResponse.json({ error: "Prompt not found" }, { status: 404 });
-    }
-
-    // Check if this prompt slot is already taken by another submission
-    if (wordIndex) {
-      const existingSlot = await prisma.submission.findUnique({
-        where: {
-          userId_promptId_wordIndex: {
-            userId: session.user.id,
-            promptId,
-            wordIndex,
-          },
-        },
-      });
-
-      if (existingSlot && existingSlot.id !== id) {
-        return NextResponse.json(
-          { error: "This prompt slot is already filled" },
-          { status: 400 },
-        );
-      }
     }
   }
 
@@ -225,8 +182,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   if (isPortfolio !== undefined) updateData.isPortfolio = isPortfolio;
   if (tags !== undefined) updateData.tags = tags;
   if (category !== undefined) updateData.category = category;
-  if (promptId !== undefined) updateData.promptId = promptId;
-  if (wordIndex !== undefined) updateData.wordIndex = wordIndex;
   if (critiquesEnabled !== undefined)
     updateData.critiquesEnabled = critiquesEnabled;
   if (referenceImageUrl !== undefined)
@@ -234,12 +189,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   if (isWorkInProgress !== undefined)
     updateData.isWorkInProgress = isWorkInProgress;
 
-  // Handle shareStatus - if linking to a prompt, force PUBLIC
-  if (promptId !== undefined && promptId !== null) {
-    // Linking to a prompt makes it PUBLIC
-    updateData.shareStatus = "PUBLIC";
-  } else if (shareStatus !== undefined) {
-    // Validate shareStatus if provided
+  if (shareStatus !== undefined) {
     const validShareStatuses = ["PRIVATE", "PROFILE", "PUBLIC"];
     if (validShareStatuses.includes(shareStatus)) {
       updateData.shareStatus = shareStatus;
@@ -249,15 +199,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const submission = await prisma.submission.update({
     where: { id },
     data: updateData,
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
-    },
   });
 
   // Trigger post-processing (compression/watermark) after response is sent
@@ -285,7 +226,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
   }
 
-  revalidateTag("prompt-submissions", "max");
   revalidateTag("exhibition-facets", "max");
   revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ submission });
@@ -325,7 +265,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     where: { id },
   });
 
-  revalidateTag("prompt-submissions", "max");
   revalidateTag("exhibition-facets", "max");
   revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ success: true });

@@ -10,7 +10,6 @@ export interface ConstellationItem {
   imageUrl: string | null;
   text: string | null;
   title: string | null;
-  promptWord: string | null;
   shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled: boolean;
   user?: {
@@ -558,7 +557,6 @@ export function ConstellationPath({
                 user: selectedItem.user,
                 _count: undefined,
               }}
-              word={selectedItem.promptWord || ""}
               isOpen={!!selectedItem}
               onClose={() => setSelectedItem(null)}
               onGoToPrevious={() => {

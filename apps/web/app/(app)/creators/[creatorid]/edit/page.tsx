@@ -65,15 +65,6 @@ export default async function ProfileEditPage({
   // Fetch all user submissions for the featured piece selector (up to 100)
   const submissions = await prisma.submission.findMany({
     where: { userId: user.id },
-    include: {
-      prompt: {
-        select: {
-          word1: true,
-          word2: true,
-          word3: true,
-        },
-      },
-    },
     orderBy: { createdAt: "desc" },
     take: 100,
   });
@@ -152,17 +143,9 @@ export default async function ProfileEditPage({
           title: s.title,
           imageUrl: s.imageUrl,
           text: s.text,
-          wordIndex: s.wordIndex,
           isPortfolio: s.isPortfolio,
           tags: s.tags,
           category: s.category,
-          prompt: s.prompt
-            ? {
-                word1: s.prompt.word1,
-                word2: s.prompt.word2,
-                word3: s.prompt.word3,
-              }
-            : null,
           shareStatus: s.shareStatus,
         }))}
         portfolioItemCount={portfolioItemCount}

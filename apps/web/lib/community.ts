@@ -22,9 +22,6 @@ const submissionInclude = {
   user: {
     select: { id: true, name: true, image: true },
   },
-  prompt: {
-    select: { word1: true, word2: true, word3: true },
-  },
   _count: {
     select: { favorites: true },
   },
@@ -93,7 +90,6 @@ export async function getFollowingFeedSubmissions({
     text: s.text,
     tags: s.tags,
     category: s.category,
-    wordIndex: s.wordIndex,
     createdAt: s.createdAt,
     shareStatus: s.shareStatus,
     critiquesEnabled: s.critiquesEnabled,
@@ -102,7 +98,6 @@ export async function getFollowingFeedSubmissions({
       name: s.user.name,
       image: s.user.image,
     },
-    prompt: s.prompt,
   }));
 
   return {

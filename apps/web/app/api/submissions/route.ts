@@ -40,79 +40,56 @@ export async function GET(request: NextRequest) {
   }
 
   const searchParams = request.nextUrl.searchParams;
-  const promptId = searchParams.get("promptId");
   const portfolio = searchParams.get("portfolio");
   const userId = searchParams.get("userId");
 
-  // Portfolio items query
-  if (portfolio === "true") {
-    const targetUserId = userId || session.user.id;
-    const isOwnProfile = targetUserId === session.user.id;
-
-    // Build share status filter based on ownership
-    const shareStatusFilter = isOwnProfile
-      ? {} // Owner sees all their items
-      : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } }; // Others see PROFILE and PUBLIC only
-
-    const submissions = await prisma.submission.findMany({
-      where: {
-        userId: targetUserId,
-        isPortfolio: true,
-        ...shareStatusFilter,
-      },
-      orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
-      include: {
-        prompt: {
-          select: {
-            word1: true,
-            word2: true,
-            word3: true,
-          },
-        },
-        _count: {
-          select: { favorites: true },
-        },
-        progressions: {
-          orderBy: { order: "desc" },
-          take: 1,
-          select: {
-            imageUrl: true,
-            text: true,
-          },
-        },
-      },
-    });
-
-    // Map latest progression data for WIP thumbnails
-    const mapped = submissions.map((s) => {
-      const latest = s.progressions?.[0];
-      return {
-        ...s,
-        latestProgressionImageUrl: latest?.imageUrl ?? null,
-        latestProgressionText: latest?.text ?? null,
-        progressions: undefined,
-      };
-    });
-
-    return NextResponse.json({ submissions: mapped });
-  }
-
-  // Prompt-specific query (original behavior)
-  if (!promptId) {
+  if (portfolio !== "true") {
     return NextResponse.json(
-      { error: "Prompt ID is required" },
+      { error: "portfolio=true is required" },
       { status: 400 },
     );
   }
 
+  const targetUserId = userId || session.user.id;
+  const isOwnProfile = targetUserId === session.user.id;
+
+  const shareStatusFilter = isOwnProfile
+    ? {}
+    : { shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] } };
+
   const submissions = await prisma.submission.findMany({
     where: {
-      userId: session.user.id,
-      promptId,
+      userId: targetUserId,
+      isPortfolio: true,
+      ...shareStatusFilter,
+    },
+    orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
+    include: {
+      _count: {
+        select: { favorites: true },
+      },
+      progressions: {
+        orderBy: { order: "desc" },
+        take: 1,
+        select: {
+          imageUrl: true,
+          text: true,
+        },
+      },
     },
   });
 
-  return NextResponse.json({ submissions });
+  const mapped = submissions.map((s) => {
+    const latest = s.progressions?.[0];
+    return {
+      ...s,
+      latestProgressionImageUrl: latest?.imageUrl ?? null,
+      latestProgressionText: latest?.text ?? null,
+      progressions: undefined,
+    };
+  });
+
+  return NextResponse.json({ submissions: mapped });
 }
 
 export async function POST(request: NextRequest) {
@@ -124,8 +101,6 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json();
   const {
-    promptId,
-    wordIndex,
     title,
     imageUrl,
     imageFocalPoint,
@@ -138,7 +113,13 @@ export async function POST(request: NextRequest) {
     isWorkInProgress,
   } = body;
 
-  // Validate focal point if provided
+  if (!isPortfolio) {
+    return NextResponse.json(
+      { error: "Only portfolio submissions are supported" },
+      { status: 400 },
+    );
+  }
+
   if (imageFocalPoint !== undefined && imageFocalPoint !== null) {
     if (
       typeof imageFocalPoint !== "object" ||
@@ -160,167 +141,35 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Portfolio-only item (no prompt association)
-  if (!promptId && isPortfolio) {
-    // Validate that we have at least some content (unless WIP)
-    if (!imageUrl && !text && !isWorkInProgress) {
-      return NextResponse.json(
-        { error: "Portfolio item must have an image or text" },
-        { status: 400 },
-      );
-    }
-
-    // Validate shareStatus if provided
-    const validShareStatuses = ["PRIVATE", "PROFILE", "PUBLIC"];
-    const finalShareStatus =
-      shareStatus && validShareStatuses.includes(shareStatus)
-        ? shareStatus
-        : "PRIVATE";
-
-    const submission = await prisma.submission.create({
-      data: {
-        userId: session.user.id,
-        promptId: null,
-        wordIndex: null,
-        title: title || null,
-        imageUrl: imageUrl || null,
-        imageFocalPoint: imageFocalPoint !== undefined ? imageFocalPoint : null,
-        text: text || null,
-        isPortfolio: true,
-        tags: tags || [],
-        category: category || null,
-        shareStatus: finalShareStatus,
-        critiquesEnabled: critiquesEnabled ?? false,
-        isWorkInProgress: isWorkInProgress ?? false,
-      },
-    });
-
-    // Trigger image processing after response is sent
-    const r2Base = process.env.R2_PUBLIC_URL;
-    if (
-      submission.imageUrl &&
-      r2Base &&
-      submission.imageUrl.startsWith(r2Base)
-    ) {
-      after(async () => {
-        try {
-          await processUploadedImage({
-            publicUrl: submission.imageUrl!,
-            type: "submission",
-            userId: session.user.id,
-            submissionId: submission.id,
-          });
-        } catch (err) {
-          console.error("[process-uploaded-image]", err);
-        }
-      });
-    }
-
-    if (finalShareStatus === "PROFILE" || finalShareStatus === "PUBLIC") {
-      after(async () => {
-        try {
-          await sendNewFollowerPostNotification({
-            submissionId: submission.id,
-            creatorId: session.user.id,
-          });
-        } catch (err) {
-          console.error("[send-new-follower-post-notification]", err);
-        }
-      });
-    }
-
-    revalidateTag("prompt-submissions", "max");
-    revalidateTag("exhibition-facets", "max");
-    revalidateTag("exhibition-submissions", "max");
-    return NextResponse.json({ submission });
-  }
-
-  // Prompt submission (original behavior with optional portfolio flag)
-  if (!promptId || !wordIndex || wordIndex < 1 || wordIndex > 3) {
+  if (!imageUrl && !text && !isWorkInProgress) {
     return NextResponse.json(
-      { error: "Invalid prompt ID or word index" },
+      { error: "Portfolio item must have an image or text" },
       { status: 400 },
     );
   }
 
-  // Check if prompt exists and is active
-  const prompt = await prisma.prompt.findUnique({
-    where: { id: promptId },
-  });
+  const validShareStatuses = ["PRIVATE", "PROFILE", "PUBLIC"];
+  const finalShareStatus =
+    shareStatus && validShareStatuses.includes(shareStatus)
+      ? shareStatus
+      : "PRIVATE";
 
-  if (!prompt) {
-    return NextResponse.json({ error: "Prompt not found" }, { status: 404 });
-  }
-
-  const now = new Date();
-  if (now < prompt.weekStart || now > prompt.weekEnd) {
-    return NextResponse.json(
-      { error: "This prompt is no longer active" },
-      { status: 400 },
-    );
-  }
-
-  // Check for existing submission to handle image deletion
-  const existingSubmission = await prisma.submission.findUnique({
-    where: {
-      userId_promptId_wordIndex: {
-        userId: session.user.id,
-        promptId,
-        wordIndex,
-      },
-    },
-  });
-
-  // Delete old image from R2 if it's being replaced or removed
-  if (
-    existingSubmission?.imageUrl &&
-    existingSubmission.imageUrl !== imageUrl
-  ) {
-    await deleteImageFromR2(existingSubmission.imageUrl);
-  }
-
-  // Upsert submission (create or update)
-  // Prompt submissions are always PUBLIC
-  const submission = await prisma.submission.upsert({
-    where: {
-      userId_promptId_wordIndex: {
-        userId: session.user.id,
-        promptId,
-        wordIndex,
-      },
-    },
-    update: {
-      title,
-      imageUrl,
-      imageFocalPoint:
-        imageFocalPoint !== undefined
-          ? imageFocalPoint
-          : (existingSubmission?.imageFocalPoint ?? null),
-      text,
-      isPortfolio: isPortfolio ?? existingSubmission?.isPortfolio ?? false,
-      tags: tags ?? existingSubmission?.tags ?? [],
-      category: category ?? existingSubmission?.category ?? null,
-      shareStatus: "PUBLIC", // Prompt submissions are always public
-      critiquesEnabled:
-        critiquesEnabled ?? existingSubmission?.critiquesEnabled ?? false,
-    },
-    create: {
+  const submission = await prisma.submission.create({
+    data: {
       userId: session.user.id,
-      promptId,
-      wordIndex,
-      title,
-      imageUrl,
-      imageFocalPoint: imageFocalPoint ?? null,
-      text,
-      isPortfolio: isPortfolio ?? false,
-      tags: tags ?? [],
-      category: category ?? null,
-      shareStatus: "PUBLIC", // Prompt submissions are always public
+      title: title || null,
+      imageUrl: imageUrl || null,
+      imageFocalPoint: imageFocalPoint !== undefined ? imageFocalPoint : null,
+      text: text || null,
+      isPortfolio: true,
+      tags: tags || [],
+      category: category || null,
+      shareStatus: finalShareStatus,
       critiquesEnabled: critiquesEnabled ?? false,
+      isWorkInProgress: isWorkInProgress ?? false,
     },
   });
 
-  // Trigger image processing after response is sent
   const r2Base = process.env.R2_PUBLIC_URL;
   if (submission.imageUrl && r2Base && submission.imageUrl.startsWith(r2Base)) {
     after(async () => {
@@ -337,7 +186,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  if (!existingSubmission) {
+  if (finalShareStatus === "PROFILE" || finalShareStatus === "PUBLIC") {
     after(async () => {
       try {
         await sendNewFollowerPostNotification({
@@ -350,7 +199,6 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  revalidateTag("prompt-submissions", "max");
   revalidateTag("exhibition-facets", "max");
   revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ submission });
@@ -365,48 +213,14 @@ export async function DELETE(request: NextRequest) {
 
   const searchParams = request.nextUrl.searchParams;
   const submissionId = searchParams.get("id");
-  const promptId = searchParams.get("promptId");
 
-  // If promptId is provided, clear all submissions for that prompt
-  if (promptId) {
-    // Get all submissions for this user and prompt
-    const submissions = await prisma.submission.findMany({
-      where: {
-        userId: session.user.id,
-        promptId,
-      },
-    });
-
-    // Delete all images from R2
-    for (const submission of submissions) {
-      if (submission.imageUrl) {
-        await deleteImageFromR2(submission.imageUrl);
-      }
-    }
-
-    // Delete all submissions
-    await prisma.submission.deleteMany({
-      where: {
-        userId: session.user.id,
-        promptId,
-      },
-    });
-
-    revalidateTag("prompt-submissions", "max");
-    revalidateTag("exhibition-facets", "max");
-    revalidateTag("exhibition-submissions", "max");
-    return NextResponse.json({ success: true });
-  }
-
-  // Otherwise, delete a single submission by ID
   if (!submissionId) {
     return NextResponse.json(
-      { error: "Submission ID or Prompt ID is required" },
+      { error: "Submission ID is required" },
       { status: 400 },
     );
   }
 
-  // Verify ownership
   const submission = await prisma.submission.findUnique({
     where: { id: submissionId },
   });
@@ -418,7 +232,6 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  // Delete image from R2 if it exists
   if (submission.imageUrl) {
     await deleteImageFromR2(submission.imageUrl);
   }
@@ -427,7 +240,6 @@ export async function DELETE(request: NextRequest) {
     where: { id: submissionId },
   });
 
-  revalidateTag("prompt-submissions", "max");
   revalidateTag("exhibition-facets", "max");
   revalidateTag("exhibition-submissions", "max");
   return NextResponse.json({ success: true });

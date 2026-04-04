@@ -26,15 +26,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         orderBy: { order: "asc" },
         include: {
           submission: {
-            include: {
-              prompt: {
-                select: {
-                  word1: true,
-                  word2: true,
-                  word3: true,
-                },
-              },
-            },
+            include: {},
           },
         },
       },

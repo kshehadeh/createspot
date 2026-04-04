@@ -13,12 +13,6 @@ interface FeaturedSubmissionProps {
     imageUrl: string | null;
     imageFocalPoint?: { x: number; y: number } | null;
     text: string | null;
-    wordIndex: number | null;
-    prompt: {
-      word1: string;
-      word2: string;
-      word3: string;
-    } | null;
     shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
     critiquesEnabled: boolean;
     user: {
@@ -38,14 +32,6 @@ export function FeaturedSubmission({ submission }: FeaturedSubmissionProps) {
 
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
-  const word =
-    submission.prompt && submission.wordIndex
-      ? [
-          submission.prompt.word1,
-          submission.prompt.word2,
-          submission.prompt.word3,
-        ][submission.wordIndex - 1]
-      : "";
 
   return (
     <>
@@ -57,7 +43,7 @@ export function FeaturedSubmission({ submission }: FeaturedSubmissionProps) {
         >
           <Image
             src={submission.imageUrl!}
-            alt={submission.title || word || "Featured"}
+            alt={submission.title || "Featured"}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 1024px) 100vw, 33vw"
@@ -136,7 +122,6 @@ export function FeaturedSubmission({ submission }: FeaturedSubmissionProps) {
             user: submission.user,
             _count: submission._count,
           }}
-          word={word}
           onClose={() => setIsLightboxOpen(false)}
           isOpen={isLightboxOpen}
         />

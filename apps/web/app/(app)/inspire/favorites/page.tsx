@@ -16,9 +16,6 @@ async function getFavorites(userId: string) {
           user: {
             select: { id: true, name: true, image: true },
           },
-          prompt: {
-            select: { word1: true, word2: true, word3: true },
-          },
         },
       },
     },
@@ -45,12 +42,10 @@ export default async function FavoritesPage() {
     text: favorite.submission.text,
     tags: favorite.submission.tags,
     category: favorite.submission.category,
-    wordIndex: favorite.submission.wordIndex,
     createdAt: favorite.submission.createdAt,
     shareStatus: favorite.submission.shareStatus,
     critiquesEnabled: favorite.submission.critiquesEnabled,
     user: favorite.submission.user,
-    prompt: favorite.submission.prompt,
   }));
 
   return (

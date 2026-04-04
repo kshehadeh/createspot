@@ -75,15 +75,9 @@ interface SubmissionOption {
   title: string | null;
   imageUrl: string | null;
   text: string | null;
-  wordIndex: number | null;
   isPortfolio: boolean;
   tags: string[];
   category: string | null;
-  prompt: {
-    word1: string;
-    word2: string;
-    word3: string;
-  } | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
 }
 
@@ -147,6 +141,7 @@ export function ProfileEditForm({
   const router = useRouter();
   const t = useTranslations("profile");
   const tCommon = useTranslations("common");
+  const tCategories = useTranslations("categories");
   const [name, setName] = useState(initialName || initialGoogleName || "");
   const [bio, setBio] = useState(initialBio);
   const [bioHasFocus, setBioHasFocus] = useState(false);
@@ -989,14 +984,10 @@ export function ProfileEditForm({
   );
 
   const getSubmissionLabel = (submission: SubmissionOption): string => {
-    if (submission.prompt && submission.wordIndex) {
-      return [
-        submission.prompt.word1,
-        submission.prompt.word2,
-        submission.prompt.word3,
-      ][submission.wordIndex - 1];
+    if (submission.category) {
+      return tCategories(submission.category as never);
     }
-    return submission.category || t("portfolioBadge");
+    return t("portfolioBadge");
   };
 
   return (
