@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+import { getSentryEnvironment } from "@/lib/sentry-environment";
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 const hasValidDsn = dsn && !dsn.startsWith("___");
@@ -6,6 +7,8 @@ const hasValidDsn = dsn && !dsn.startsWith("___");
 if (hasValidDsn) {
   Sentry.init({
     dsn,
+
+    environment: getSentryEnvironment(),
 
     sendDefaultPii: true,
 
