@@ -6,10 +6,14 @@ test.describe("Dashboard", () => {
     await expect(page).toHaveURL("/dashboard");
   });
 
-  test("can navigate to portfolio edit from onboarding", async ({ page }) => {
+  test("can navigate to portfolio from onboarding", async ({ page }) => {
     await page.goto("/dashboard");
 
-    const portfolioLink = page.locator('a[href*="/portfolio/edit"]').first();
+    const portfolioLink = page
+      .locator(
+        'a[href*="/creators/"][href*="/portfolio"]:not([href*="/portfolio/edit"])',
+      )
+      .first();
     const visible = await portfolioLink
       .waitFor({ state: "visible", timeout: 8000 })
       .then(() => true)
@@ -21,6 +25,6 @@ test.describe("Dashboard", () => {
     }
 
     await portfolioLink.click();
-    await expect(page).toHaveURL(/\/creators\/[^/]+\/portfolio\/edit/);
+    await expect(page).toHaveURL(/\/creators\/[^/]+\/portfolio(\?.*)?$/);
   });
 });

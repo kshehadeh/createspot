@@ -388,7 +388,20 @@
     "clearFilters": "Clear",
     "loadMoreError": "Failed to load more items. Please try again.",
     "bulkDeletePartialError": "Failed to delete {count} item(s). Please try again.",
-    "wipBadge": "WIP"
+    "wipBadge": "WIP",
+    "searchPortfolioPlaceholder": "Search title, text, or category…",
+    "sortBy": "Sort by",
+    "sortOrder": "Portfolio order",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortTitle": "Title (A–Z)",
+    "sortFavorites": "Most favorited",
+    "filterByCategory": "Filter by category…",
+    "selectionMode": "Select items",
+    "exitSelectionMode": "Done selecting",
+    "reorderHint": "Switch sort to \"Portfolio order\" to drag and reorder items.",
+    "selectItem": "Select item",
+    "openPortfolioFilters": "Filters and search"
   },
   "portfolioEditor": {
     "selectItem": "Select item",

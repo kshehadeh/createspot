@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { User, Briefcase, MessageSquare } from "lucide-react";
+import { User, Briefcase, FolderOpen, MessageSquare } from "lucide-react";
 import { MobileNavBar } from "@/components/mobile-nav-bar";
 
 interface CreatorMobileNavProps {
@@ -25,24 +25,27 @@ export function CreatorMobileNav({ creatorUrl }: CreatorMobileNavProps) {
       label: t("profile"),
       icon: User,
       isActive:
-        (pathname === creatorUrl || pathname === `${creatorUrl}/edit`) &&
-        pathname !== `${creatorUrl}/critiques`,
-    },
-    {
-      href: `${creatorUrl}/critiques`,
-      label: t("critiques"),
-      icon: MessageSquare,
-      isActive: pathname === `${creatorUrl}/critiques`,
+        pathname === creatorUrl || pathname === `${creatorUrl}/edit`,
     },
     {
       href: `${creatorUrl}/portfolio`,
       label: t("portfolio"),
       icon: Briefcase,
-      isActive:
-        pathname.startsWith(`${creatorUrl}/portfolio`) ||
-        pathname.startsWith(`${creatorUrl}/collections`),
+      isActive: pathname.startsWith(`${creatorUrl}/portfolio`),
+    },
+    {
+      href: `${creatorUrl}/critiques`,
+      label: t("critiques"),
+      icon: MessageSquare,
+      isActive: pathname.startsWith(`${creatorUrl}/critiques`),
+    },
+    {
+      href: `${creatorUrl}/collections`,
+      label: t("collections"),
+      icon: FolderOpen,
+      isActive: pathname.startsWith(`${creatorUrl}/collections`),
     },
   ];
 
-  return <MobileNavBar items={items} layout="flex" alwaysExpanded />;
+  return <MobileNavBar items={items} layout="grid" alwaysExpanded />;
 }

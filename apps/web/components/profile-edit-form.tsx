@@ -1002,7 +1002,7 @@ export function ProfileEditForm({
         {/* Portfolio Link Card */}
         {session?.user?.id && (
           <Link
-            href={buildRoutePath("portfolioEdit", {
+            href={buildRoutePath("portfolio", {
               creatorid: session.user.id,
             })}
             className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent"

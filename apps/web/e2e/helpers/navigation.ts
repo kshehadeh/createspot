@@ -71,14 +71,9 @@ export async function goToOwnProfileEdit(page: Page): Promise<void> {
 }
 
 /**
- * Navigates to the logged-in user's portfolio edit page by going to portfolio
- * then clicking the "Add portfolio item" (or manage) link.
+ * Navigates to the logged-in user's portfolio page (create/manage merged here).
  */
 export async function goToOwnPortfolioEdit(page: Page): Promise<void> {
   await goToOwnPortfolio(page);
-  await page
-    .getByRole("link", { name: /add portfolio item|manage portfolio/i })
-    .first()
-    .click();
-  await page.waitForURL(/\/portfolio\/edit/);
+  await page.waitForURL(/\/portfolio(\?.*)?$/);
 }

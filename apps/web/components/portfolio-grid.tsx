@@ -18,20 +18,13 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Construction,
-  Eye,
-  Globe,
-  Lock,
-  Pencil,
-  Star,
-  Trash2,
-} from "lucide-react";
+import { Construction, Pencil, Star, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { LIGHTBOX_BUTTON_CLASS } from "@/components/base-lightbox";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
@@ -39,22 +32,48 @@ import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getCategoryIcon } from "@/lib/categories";
 import { getObjectPositionStyle } from "@/lib/image-utils";
-import { getCreatorUrl } from "@/lib/utils";
+import { cn, getCreatorUrl } from "@/lib/utils";
 
 // Prevent right-click context menu on images for download protection
 const handleImageContextMenu = (e: React.MouseEvent) => {
   e.preventDefault();
   return false;
 };
+
+/** Folded top-right corner with star for profile featured portfolio piece */
+function PortfolioFeaturedDogear() {
+  const t = useTranslations("portfolio");
+  return (
+    <>
+      <span className="sr-only">{t("featured")}</span>
+      <div
+        className="pointer-events-none absolute top-0 right-0 z-[11]"
+        aria-hidden
+      >
+        <div className="relative h-12 w-12">
+          <div
+            className="absolute top-0 right-0 size-12 bg-gradient-to-br from-amber-300 via-amber-500 to-amber-600 shadow-[2px_2px_6px_rgba(0,0,0,0.18)] dark:from-amber-500 dark:via-amber-600 dark:to-amber-800"
+            style={{ clipPath: "polygon(100% 0, 0 0, 100% 100%)" }}
+          />
+          <Star
+            className="absolute top-1 right-1 size-3.5 fill-amber-950 text-amber-950 drop-shadow-sm dark:fill-amber-50 dark:text-amber-50"
+            strokeWidth={1.5}
+            aria-hidden
+          />
+        </div>
+      </div>
+    </>
+  );
+}
 
 export interface PortfolioItem {
   id: string;
@@ -114,7 +133,13 @@ interface PortfolioGridProfileProps {
     image: string | null;
   };
   featuredSubmissionId?: string | null;
-  onSetFeatured?: (item: PortfolioItem) => void;
+  onSetFeatured?: (item: PortfolioItem) => void | Promise<void>;
+  /** When true and `isOwnProfile`, drag-and-drop updates `/api/submissions/reorder`. */
+  sortAllowsReorder?: boolean;
+  onEditItem?: (item: PortfolioItem) => void;
+  selectionMode?: boolean;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string, selected: boolean) => void;
 }
 
 export function PortfolioGridProfile({
@@ -124,8 +149,16 @@ export function PortfolioGridProfile({
   user,
   featuredSubmissionId,
   onSetFeatured,
+  sortAllowsReorder = false,
+  onEditItem,
+  selectionMode = false,
+  selectedIds,
+  onToggleSelect,
 }: PortfolioGridProfileProps) {
+  const router = useRouter();
   const [orderedItems, setOrderedItems] = useState<PortfolioItem[]>(items);
+  const [isSaving, setIsSaving] = useState(false);
+  const isReorderingRef = useRef(false);
   const lastItemsRef = useRef<PortfolioItem[]>(items);
   useEffect(() => {
     const itemsChanged =
@@ -141,13 +174,52 @@ export function PortfolioGridProfile({
           item.category !== lastItem.category
         );
       });
-    if (itemsChanged) {
+    if (itemsChanged && !isReorderingRef.current && !isSaving) {
       setOrderedItems(items);
       lastItemsRef.current = items;
     }
-  }, [items]);
+  }, [items, isSaving]);
+
+  const handleReorder = useCallback(
+    async (newItems: PortfolioItem[]) => {
+      if (!isOwnProfile || !sortAllowsReorder) return;
+      isReorderingRef.current = true;
+      setOrderedItems(newItems);
+      setIsSaving(true);
+      try {
+        const response = await fetch("/api/submissions/reorder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            submissionIds: newItems.map((item) => item.id),
+          }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to save order");
+        }
+        lastItemsRef.current = newItems;
+        setTimeout(() => {
+          router.refresh();
+          setTimeout(() => {
+            isReorderingRef.current = false;
+          }, 500);
+        }, 200);
+      } catch (error) {
+        console.error("Failed to save order:", error);
+        setOrderedItems(items);
+        lastItemsRef.current = items;
+        isReorderingRef.current = false;
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [isOwnProfile, sortAllowsReorder, items, router],
+  );
+
   const submissionIds = orderedItems.map((s) => s.id);
-  const handleReorder = useCallback(() => {}, []);
+  const manageToolbar = isOwnProfile;
+  const enableDragReorder = isOwnProfile && sortAllowsReorder;
+
   return (
     <PortfolioGridFrame
       items={orderedItems}
@@ -159,14 +231,19 @@ export function PortfolioGridProfile({
         allItems={orderedItems}
         isLoggedIn={isLoggedIn}
         isOwnProfile={isOwnProfile}
-        allowEdit={false}
+        manageToolbar={manageToolbar}
+        enableDragReorder={enableDragReorder}
+        onEdit={onEditItem}
         onReorder={handleReorder}
-        isSaving={false}
+        isSaving={isSaving}
         mode="portfolio"
         context="exhibit"
         user={user}
         featuredSubmissionId={featuredSubmissionId}
         onSetFeatured={onSetFeatured}
+        selectionMode={selectionMode}
+        selectedIds={selectedIds}
+        onToggleSelect={onToggleSelect}
       />
     </PortfolioGridFrame>
   );
@@ -253,7 +330,8 @@ export function PortfolioGridCollection({
         allItems={orderedItems}
         isLoggedIn={isLoggedIn}
         isOwnProfile={true}
-        allowEdit={true}
+        manageToolbar={true}
+        enableDragReorder={true}
         onReorder={handleReorder}
         isSaving={isSaving}
         mode="exhibit"
@@ -337,7 +415,8 @@ export function PortfolioGridExhibit({
         allItems={orderedItems}
         isLoggedIn={true}
         isOwnProfile={false}
-        allowEdit={true}
+        manageToolbar={true}
+        enableDragReorder={true}
         onReorder={handleReorder}
         isSaving={isSaving}
         mode="exhibit"
@@ -351,7 +430,8 @@ export function PortfolioGridExhibit({
 interface SortablePortfolioItemProps {
   item: PortfolioItem;
   isLoggedIn: boolean;
-  allowEdit: boolean;
+  manageToolbar: boolean;
+  allowDragHandle: boolean;
   isDragging?: boolean;
   isOwnProfile?: boolean;
   mode?: "portfolio" | "exhibit";
@@ -359,13 +439,17 @@ interface SortablePortfolioItemProps {
   onDeleteClick: (e: React.MouseEvent, item: PortfolioItem) => void;
   onClick: () => void;
   featuredSubmissionId?: string | null;
-  onSetFeatured?: (item: PortfolioItem) => void;
+  onSetFeatured?: (item: PortfolioItem) => void | Promise<void>;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string, selected: boolean) => void;
 }
 
 function SortablePortfolioItem({
   item,
   isLoggedIn,
-  allowEdit,
+  manageToolbar,
+  allowDragHandle,
   isDragging,
   isOwnProfile = false,
   mode = "portfolio",
@@ -374,6 +458,9 @@ function SortablePortfolioItem({
   onClick,
   featuredSubmissionId,
   onSetFeatured,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelect,
 }: SortablePortfolioItemProps) {
   const t = useTranslations("portfolio");
   const tProfile = useTranslations("profile");
@@ -384,7 +471,7 @@ function SortablePortfolioItem({
     transform,
     transition,
     isDragging: isSortableDragging,
-  } = useSortable({ id: item.id });
+  } = useSortable({ id: item.id, disabled: !allowDragHandle });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -399,6 +486,8 @@ function SortablePortfolioItem({
   };
 
   const isWip = item.isWorkInProgress;
+  const isFeatured =
+    featuredSubmissionId != null && featuredSubmissionId === item.id;
 
   return (
     <Card
@@ -453,13 +542,37 @@ function SortablePortfolioItem({
 
         {/* WIP badge */}
         {isWip && (
-          <Badge className="absolute top-2 right-2 bg-amber-500/80 text-white hover:bg-amber-500/80 text-xs z-10">
+          <Badge
+            className={cn(
+              "absolute top-2 right-2 z-10 bg-amber-500/80 text-xs text-white hover:bg-amber-500/80",
+              isFeatured && "right-12",
+            )}
+          >
             {t("wipBadge")}
           </Badge>
         )}
 
+        {selectionMode && onToggleSelect && isOwnProfile && (
+          <div
+            className={cn(
+              "absolute top-2 right-2 z-20",
+              isFeatured && "right-12",
+            )}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(checked) =>
+                onToggleSelect(item.id, checked === true)
+              }
+              aria-label={t("selectItem")}
+            />
+          </div>
+        )}
+
         {/* Drag handle indicator in top left (only in edit mode) */}
-        {allowEdit && (
+        {allowDragHandle && (
           <div
             {...attributes}
             {...listeners}
@@ -482,37 +595,6 @@ function SortablePortfolioItem({
           </div>
         )}
 
-        {/* Share status indicator - only show when owner is viewing */}
-        {item.shareStatus && isOwnProfile && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div
-                className={`absolute ${
-                  allowEdit ? "top-11 left-2" : "top-2 left-2"
-                } flex h-6 w-6 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {item.shareStatus === "PRIVATE" && (
-                  <Lock className="h-3.5 w-3.5 text-red-400" />
-                )}
-                {item.shareStatus === "PROFILE" && (
-                  <Eye className="h-3.5 w-3.5 text-amber-400" />
-                )}
-                {item.shareStatus === "PUBLIC" && (
-                  <Globe className="h-3.5 w-3.5 text-green-400" />
-                )}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                {item.shareStatus === "PRIVATE" && t("shareStatus.private")}
-                {item.shareStatus === "PROFILE" && t("shareStatus.profile")}
-                {item.shareStatus === "PUBLIC" && t("shareStatus.public")}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-
         {/* Overlay information in lower left */}
         <div className="absolute bottom-0 left-0 max-w-[85%] bg-black/70 p-2.5 pr-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
@@ -524,16 +606,6 @@ function SortablePortfolioItem({
             </p>
           )}
         </div>
-
-        {/* Category icon in lower right */}
-        {(() => {
-          const CategoryIcon = getCategoryIcon(item.category);
-          return CategoryIcon ? (
-            <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/40 backdrop-blur-sm">
-              <CategoryIcon className="h-4 w-4 text-white/60" />
-            </div>
-          ) : null;
-        })()}
 
         {/* Favorite button in top right */}
         {isLoggedIn && !isOwnProfile && (
@@ -563,80 +635,102 @@ function SortablePortfolioItem({
             </svg>
           </div>
         )}
-      </div>
 
-      {/* Edit, Featured, and Delete/Remove buttons below thumbnail (only when editing is allowed) */}
-      {allowEdit && (
-        <CardContent className="flex gap-2 border-t border-border p-2">
-          {mode === "portfolio" && onEdit && (
+        {manageToolbar && (
+          <div
+            className={cn(
+              "absolute bottom-2 right-2 z-[25] flex flex-col gap-2 transition-opacity duration-200",
+              "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
+            )}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            {mode === "portfolio" && onEdit && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className={cn(
+                      "h-10 w-10 shrink-0",
+                      LIGHTBOX_BUTTON_CLASS,
+                    )}
+                    onClick={handleEdit}
+                  >
+                    <Pencil className="h-4 w-4" />
+                    <span className="sr-only">{t("edit")}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t("edit")}</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            {mode === "portfolio" && onSetFeatured && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className={cn(
+                      "h-10 w-10 shrink-0",
+                      LIGHTBOX_BUTTON_CLASS,
+                      featuredSubmissionId === item.id &&
+                        "!border-amber-300/50 !bg-amber-500/35 !text-white hover:!bg-amber-500/50",
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSetFeatured(item);
+                    }}
+                  >
+                    <Star
+                      className={cn(
+                        "h-4 w-4",
+                        featuredSubmissionId === item.id && "fill-current",
+                      )}
+                    />
+                    <span className="sr-only">{t("setAsFeatured")}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {featuredSubmissionId === item.id
+                      ? t("removeFromFeatured")
+                      : t("setAsFeatured")}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                  type="button"
                   variant="outline"
-                  size="sm"
-                  className="h-9 w-9 p-0"
-                  onClick={handleEdit}
+                  size="icon"
+                  className={cn(
+                    "h-10 w-10 shrink-0",
+                    LIGHTBOX_BUTTON_CLASS,
+                    "hover:!border-red-300/50 hover:!bg-red-500/30 hover:!text-white",
+                  )}
+                  onClick={(e) => onDeleteClick(e, item)}
                 >
-                  <Pencil className="h-4 w-4" />
-                  <span className="sr-only">{t("edit")}</span>
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">
+                    {mode === "exhibit" ? t("remove") : t("delete")}
+                  </span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{t("edit")}</p>
+                <p>{mode === "exhibit" ? t("remove") : t("delete")}</p>
               </TooltipContent>
             </Tooltip>
-          )}
-          {mode === "portfolio" && onSetFeatured && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`h-9 w-9 p-0 ${
-                    featuredSubmissionId === item.id
-                      ? "bg-primary text-primary-foreground"
-                      : ""
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSetFeatured(item);
-                  }}
-                >
-                  <Star
-                    className={`h-4 w-4 ${featuredSubmissionId === item.id ? "fill-current" : ""}`}
-                  />
-                  <span className="sr-only">{t("setAsFeatured")}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>
-                  {featuredSubmissionId === item.id
-                    ? t("removeFromFeatured")
-                    : t("setAsFeatured")}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          )}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 w-9 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={(e) => onDeleteClick(e, item)}
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">
-                  {mode === "exhibit" ? t("remove") : t("delete")}
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{mode === "exhibit" ? t("remove") : t("delete")}</p>
-            </TooltipContent>
-          </Tooltip>
-        </CardContent>
-      )}
+          </div>
+        )}
+
+        {isFeatured && <PortfolioFeaturedDogear />}
+      </div>
     </Card>
   );
 }
@@ -646,7 +740,8 @@ function PortfolioGridContent({
   allItems,
   isLoggedIn,
   isOwnProfile,
-  allowEdit,
+  manageToolbar,
+  enableDragReorder,
   onEdit,
   onDelete,
   onReorder,
@@ -657,12 +752,16 @@ function PortfolioGridContent({
   user,
   featuredSubmissionId,
   onSetFeatured,
+  selectionMode = false,
+  selectedIds,
+  onToggleSelect,
 }: {
   items: PortfolioItem[];
   allItems: PortfolioItem[];
   isLoggedIn: boolean;
   isOwnProfile: boolean;
-  allowEdit: boolean;
+  manageToolbar: boolean;
+  enableDragReorder: boolean;
   onEdit?: (item: PortfolioItem) => void;
   onDelete?: (item: PortfolioItem) => Promise<void>;
   onReorder: (items: PortfolioItem[]) => void;
@@ -677,7 +776,10 @@ function PortfolioGridContent({
     image: string | null;
   };
   featuredSubmissionId?: string | null;
-  onSetFeatured?: (item: PortfolioItem) => void;
+  onSetFeatured?: (item: PortfolioItem) => void | Promise<void>;
+  selectionMode?: boolean;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string, selected: boolean) => void;
 }) {
   const router = useRouter();
   const t = useTranslations("portfolio");
@@ -763,8 +865,9 @@ function PortfolioGridContent({
     }
   };
 
-  // Only use DnD when editing is allowed
-  const isDndEnabled = allowEdit;
+  const isDndEnabled =
+    enableDragReorder ||
+    (mode === "portfolio" && isOwnProfile && manageToolbar);
 
   const gridContent = (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full min-w-0">
@@ -785,12 +888,16 @@ function PortfolioGridContent({
                 <SortablePortfolioItem
                   item={item}
                   isLoggedIn={isLoggedIn}
-                  allowEdit={allowEdit}
+                  manageToolbar={manageToolbar}
+                  allowDragHandle={enableDragReorder}
                   isDragging={activeId === item.id}
                   isOwnProfile={isOwnProfile}
                   mode={mode}
                   onEdit={onEdit}
                   onDeleteClick={handleDeleteClick}
+                  selectionMode={selectionMode}
+                  isSelected={selectedIds?.has(item.id)}
+                  onToggleSelect={onToggleSelect}
                   onClick={() => {
                     if (item.imageUrl) {
                       setSelectedSubmission(item);
@@ -806,16 +913,13 @@ function PortfolioGridContent({
                   onSetFeatured={onSetFeatured}
                 />
               ) : (
-                <div className={isFeatured ? "relative" : ""}>
-                  {isFeatured && (
-                    <div className="absolute -inset-1 rounded-sm bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 opacity-60 blur-sm" />
-                  )}
+                <div>
                   <Card
                     className={`group relative overflow-hidden transition-shadow duration-300 hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)] ${
                       item.isWorkInProgress
                         ? "border-2 border-dashed border-muted-foreground/40 rounded-sm"
                         : "border-0 rounded-none"
-                    } ${isFeatured ? "ring-2 ring-amber-400/50" : ""}`}
+                    }`}
                   >
                     <div
                       className="protected-image-wrapper relative aspect-square cursor-pointer overflow-hidden bg-muted"
@@ -876,41 +980,14 @@ function PortfolioGridContent({
 
                       {/* WIP badge */}
                       {item.isWorkInProgress && (
-                        <Badge className="absolute top-2 right-2 bg-amber-500/80 text-white hover:bg-amber-500/80 text-xs z-10">
+                        <Badge
+                          className={cn(
+                            "absolute top-2 right-2 z-10 bg-amber-500/80 text-xs text-white hover:bg-amber-500/80",
+                            isFeatured && "right-12",
+                          )}
+                        >
                           {t("wipBadge")}
                         </Badge>
-                      )}
-
-                      {/* Share status indicator - only show when owner is viewing */}
-                      {item.shareStatus && isOwnProfile && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div
-                              className="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {item.shareStatus === "PRIVATE" && (
-                                <Lock className="h-3.5 w-3.5 text-red-400" />
-                              )}
-                              {item.shareStatus === "PROFILE" && (
-                                <Eye className="h-3.5 w-3.5 text-amber-400" />
-                              )}
-                              {item.shareStatus === "PUBLIC" && (
-                                <Globe className="h-3.5 w-3.5 text-green-400" />
-                              )}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>
-                              {item.shareStatus === "PRIVATE" &&
-                                t("shareStatus.private")}
-                              {item.shareStatus === "PROFILE" &&
-                                t("shareStatus.profile")}
-                              {item.shareStatus === "PUBLIC" &&
-                                t("shareStatus.public")}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
                       )}
 
                       {/* Overlay information in lower left */}
@@ -919,16 +996,6 @@ function PortfolioGridContent({
                           {item.title || t("untitled")}
                         </h3>
                       </div>
-
-                      {/* Category icon in lower right */}
-                      {(() => {
-                        const CategoryIcon = getCategoryIcon(item.category);
-                        return CategoryIcon ? (
-                          <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/40 backdrop-blur-sm">
-                            <CategoryIcon className="h-4 w-4 text-white/60" />
-                          </div>
-                        ) : null;
-                      })()}
 
                       {/* Favorite button in top right */}
                       {isLoggedIn && !isOwnProfile && (
@@ -958,14 +1025,11 @@ function PortfolioGridContent({
                           </svg>
                         </div>
                       )}
+
+                      {isFeatured && <PortfolioFeaturedDogear />}
                     </div>
                   </Card>
                 </div>
-              )}
-              {isFeatured && (
-                <p className="mt-2 text-center text-xs font-medium text-muted-foreground">
-                  {t("featured")}
-                </p>
               )}
             </motion.div>
           );
@@ -978,7 +1042,7 @@ function PortfolioGridContent({
     <TooltipProvider>
       <div>
         {/* Drag/Saving hint when in edit mode */}
-        {allowEdit && items.length > 1 && (
+        {enableDragReorder && items.length > 1 && (
           <p className="mb-4 text-xs text-muted-foreground">
             {isSaving ? t("savingOrder") : t("dragToReorder")}
           </p>
@@ -1014,7 +1078,7 @@ function PortfolioGridContent({
             </p>
             {isOwnProfile && user && (
               <Link
-                href={`${getCreatorUrl(user)}/portfolio/edit`}
+                href={`${getCreatorUrl(user)}/portfolio`}
                 className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 {t("addPortfolioItem")}

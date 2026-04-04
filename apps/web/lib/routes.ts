@@ -161,11 +161,6 @@ const ROUTES: Record<string, RouteConfig> = {
     icon: Briefcase,
     isLink: false,
   },
-  portfolioEdit: {
-    path: "/creators/[creatorid]/portfolio/edit",
-    label: "navigation.edit",
-    parentPath: "/creators/[creatorid]/portfolio",
-  },
   submission: {
     path: "/creators/[creatorid]/s/[submissionid]",
     label: "navigation.submission",

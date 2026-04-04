@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
-import Link from "@/components/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { HintPopover } from "@/components/hint-popover";
@@ -9,19 +8,26 @@ import { PageLayout } from "@/components/page-layout";
 import { PortfolioFilters } from "@/components/portfolio-filters";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { PortfolioMobileMenu } from "@/components/portfolio-mobile-menu";
+import { PortfolioPageBody } from "@/components/portfolio-page-body";
 import { ShareButton } from "@/components/share-button";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getNextPageHint } from "@/lib/hints-helper";
+import {
+  buildPortfolioOrderBy,
+  buildPortfolioSearchWhere,
+  parsePortfolioSortParam,
+  portfolioSortAllowsReorder,
+} from "@/lib/portfolio-page-query";
 import { prisma } from "@/lib/prisma";
-import { getCreatorUrl } from "@/lib/utils";
-
 interface PortfolioPageProps {
   params: Promise<{ creatorid: string }>;
   searchParams: Promise<{
     shareStatus?: string | string[];
     tag?: string | string[];
     category?: string | string[];
+    q?: string | string[];
+    sort?: string | string[];
   }>;
 }
 
@@ -98,6 +104,8 @@ export default async function PortfolioPage({
         id: true,
         name: true,
         image: true,
+        slug: true,
+        featuredSubmissionId: true,
       },
     }),
   ]);
@@ -109,7 +117,6 @@ export default async function PortfolioPage({
   const isOwnPortfolio = session?.user?.id === user.id;
   const isLoggedIn = !!session?.user;
 
-  // Parse shareStatus from search params (can be string or array)
   const shareStatusParam = resolvedSearchParams.shareStatus;
   const selectedShareStatuses = Array.isArray(shareStatusParam)
     ? shareStatusParam
@@ -117,13 +124,11 @@ export default async function PortfolioPage({
       ? [shareStatusParam]
       : [];
 
-  // Validate share status values
   const validShareStatuses = ["PRIVATE", "PROFILE", "PUBLIC"];
   const filteredShareStatuses = selectedShareStatuses.filter((status) =>
     validShareStatuses.includes(status),
   ) as ("PRIVATE" | "PROFILE" | "PUBLIC")[];
 
-  // Parse tags from search params (can be string or array)
   const tagParam = resolvedSearchParams.tag;
   const selectedTags = Array.isArray(tagParam)
     ? tagParam
@@ -131,7 +136,6 @@ export default async function PortfolioPage({
       ? [tagParam]
       : [];
 
-  // Parse categories from search params (can be string or array)
   const categoryParam = resolvedSearchParams.category;
   const selectedCategories = Array.isArray(categoryParam)
     ? categoryParam
@@ -139,84 +143,112 @@ export default async function PortfolioPage({
       ? [categoryParam]
       : [];
 
-  // Build share status filter based on ownership and search params
+  const qParam = resolvedSearchParams.q;
+  const qRaw = Array.isArray(qParam) ? qParam[0] : qParam;
+  const qTrimmed = qRaw?.trim() ?? "";
+
+  const sort = parsePortfolioSortParam(resolvedSearchParams.sort);
+  const sortAllowsReorder = portfolioSortAllowsReorder(sort);
+  const orderBy = buildPortfolioOrderBy(sort);
+  const searchWhere = buildPortfolioSearchWhere(qTrimmed || undefined);
+
   let shareStatusFilter: {
     shareStatus?: { in: ("PRIVATE" | "PROFILE" | "PUBLIC")[] };
   } = {};
 
   if (isOwnPortfolio) {
-    // Owner can filter by share status if provided, otherwise sees all
     if (filteredShareStatuses.length > 0) {
       shareStatusFilter = { shareStatus: { in: filteredShareStatuses } };
     }
   } else {
-    // Others see PROFILE and PUBLIC only
     shareStatusFilter = {
       shareStatus: { in: ["PROFILE" as const, "PUBLIC" as const] },
     };
   }
 
-  // Build tag filter
   let tagFilter: { tags?: { hasSome: string[] } } = {};
   if (selectedTags.length > 0) {
     tagFilter = { tags: { hasSome: selectedTags } };
   }
 
-  // Build category filter
   let categoryFilter: { category?: { in: string[] } } = {};
   if (selectedCategories.length > 0) {
     categoryFilter = { category: { in: selectedCategories } };
   }
 
-  // Get available categories, portfolio items, and tutorial data in parallel
-  const [portfolioItemsForCategories, portfolioItems, tutorialData] =
-    await Promise.all([
-      prisma.submission.findMany({
-        where: {
-          userId: user.id,
-          isPortfolio: true,
-          ...shareStatusFilter,
-        },
-        select: { category: true },
-        distinct: ["category"],
-      }),
-      prisma.submission
-        .findMany({
-          where: {
-            userId: user.id,
-            isPortfolio: true,
-            ...shareStatusFilter,
-            ...tagFilter,
-            ...categoryFilter,
+  const portfolioWhereBase = {
+    userId: user.id,
+    isPortfolio: true,
+    ...shareStatusFilter,
+    ...tagFilter,
+    ...categoryFilter,
+    ...searchWhere,
+  };
+
+  const [
+    portfolioItemsForCategories,
+    portfolioItems,
+    tutorialData,
+    submissionsForAddWork,
+  ] = await Promise.all([
+    prisma.submission.findMany({
+      where: {
+        userId: user.id,
+        isPortfolio: true,
+        ...shareStatusFilter,
+      },
+      select: { category: true },
+      distinct: ["category"],
+    }),
+    prisma.submission
+      .findMany({
+        where: portfolioWhereBase,
+        orderBy,
+        include: {
+          _count: {
+            select: { favorites: true },
           },
-          orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
-          include: {
-            _count: {
-              select: { favorites: true },
+          progressions: {
+            orderBy: { order: "desc" },
+            take: 1,
+            select: {
+              imageUrl: true,
+              text: true,
             },
-            progressions: {
-              orderBy: { order: "desc" },
-              take: 1,
-              select: {
-                imageUrl: true,
-                text: true,
-              },
-            },
+          },
+        },
+      })
+      .then((items) =>
+        items.map((item) => {
+          const latest = item.progressions?.[0];
+          return {
+            ...item,
+            latestProgressionImageUrl: latest?.imageUrl ?? null,
+            latestProgressionText: latest?.text ?? null,
+            progressions: undefined,
+          };
+        }),
+      ),
+    getTutorialData(session?.user?.id),
+    isOwnPortfolio
+      ? prisma.submission.findMany({
+          where: { userId: user.id },
+          orderBy: { createdAt: "desc" },
+          take: 100,
+          select: {
+            id: true,
+            title: true,
+            imageUrl: true,
+            imageFocalPoint: true,
+            text: true,
+            isPortfolio: true,
+            tags: true,
+            category: true,
+            shareStatus: true,
           },
         })
-        .then((items) =>
-          items.map((item) => {
-            const latest = item.progressions?.[0];
-            return {
-              ...item,
-              latestProgressionImageUrl: latest?.imageUrl ?? null,
-              latestProgressionText: latest?.text ?? null,
-              progressions: undefined,
-            };
-          }),
-        ),
-      getTutorialData(session?.user?.id),
-    ]);
+      : Promise.resolve(null),
+  ]);
 
   const availableCategories = portfolioItemsForCategories
     .map((item) => item.category)
@@ -227,26 +259,45 @@ export default async function PortfolioPage({
     ? t("portfolioTitle", { name: user.name })
     : t("portfolio");
 
+  const filterProps = {
+    initialShareStatus: filteredShareStatuses,
+    initialTags: selectedTags,
+    initialCategories: selectedCategories,
+    initialQ: qTrimmed,
+    initialSort: sort,
+    categories: availableCategories,
+    userId: user.id,
+    showShareStatusFilter: isOwnPortfolio,
+  };
+
+  const gridItems = portfolioItems.map((item) => ({
+    ...item,
+    imageFocalPoint: item.imageFocalPoint as {
+      x: number;
+      y: number;
+    } | null,
+    shareStatus: item.shareStatus,
+  }));
+
+  const userForGrid = {
+    id: user.id,
+    slug: user.slug,
+    name: user.name,
+    image: user.image,
+  };
+
   return (
     <PageLayout maxWidth="max-w-6xl">
-      {/* Mobile Header - dropdown with share/edit/filters */}
-      <div className="md:hidden mb-4 w-full">
-        <PortfolioMobileMenu
-          title={portfolioTitle}
-          userId={user.id}
-          isOwnPortfolio={isOwnPortfolio}
-          user={user}
-          filterProps={{
-            initialShareStatus: filteredShareStatuses,
-            initialTags: selectedTags,
-            initialCategories: selectedCategories,
-            categories: availableCategories,
-            userId: user.id,
-          }}
-        />
-      </div>
+      {!isOwnPortfolio && (
+        <div className="md:hidden mb-4 w-full">
+          <PortfolioMobileMenu
+            title={portfolioTitle}
+            userId={user.id}
+            filterProps={filterProps}
+          />
+        </div>
+      )}
 
-      {/* Desktop Header */}
       <div className="hidden md:block mb-8 w-full">
         <div className="flex items-start gap-4">
           {user.image ? (
@@ -282,60 +333,46 @@ export default async function PortfolioPage({
         </div>
       </div>
 
-      {/* Desktop Filters (only for own portfolio) */}
-      {isOwnPortfolio && (
-        <div className="hidden md:block">
-          <PortfolioFilters
-            initialShareStatus={filteredShareStatuses}
-            initialTags={selectedTags}
-            initialCategories={selectedCategories}
-            categories={availableCategories}
-            userId={user.id}
-          />
-        </div>
-      )}
+      <div className="hidden md:block">
+        <PortfolioFilters {...filterProps} />
+      </div>
 
-      {/* Portfolio Grid */}
-      {portfolioItems.length > 0 ? (
-        <PortfolioGridProfile
-          items={portfolioItems.map((item) => ({
-            ...item,
-            imageFocalPoint: item.imageFocalPoint as {
-              x: number;
-              y: number;
-            } | null,
-            shareStatus: item.shareStatus,
-          }))}
+      {isOwnPortfolio ? (
+        <PortfolioPageBody
+          items={gridItems}
           isLoggedIn={isLoggedIn}
-          isOwnProfile={isOwnPortfolio}
-          user={{
-            id: user.id,
-            name: user.name,
-            image: user.image,
-          }}
+          isOwnPortfolio={true}
+          user={userForGrid}
+          featuredSubmissionId={user.featuredSubmissionId}
+          sortAllowsReorder={sortAllowsReorder}
+          portfolioTitle={portfolioTitle}
+          filterProps={filterProps}
+          submissionsForAddWork={
+            submissionsForAddWork?.map((s) => ({
+              ...s,
+              imageFocalPoint: s.imageFocalPoint as {
+                x: number;
+                y: number;
+              } | null,
+            })) ?? []
+          }
+        />
+      ) : portfolioItems.length > 0 ? (
+        <PortfolioGridProfile
+          items={gridItems}
+          isLoggedIn={isLoggedIn}
+          isOwnProfile={false}
+          user={userForGrid}
         />
       ) : (
         <div className="rounded-lg border border-dashed border-border py-16 text-center">
-          <p className="text-muted-foreground">
-            {isOwnPortfolio ? t("portfolioEmpty") : t("noPortfolioItems")}
-          </p>
-          {isOwnPortfolio && (
-            <Link
-              href={`${getCreatorUrl(user)}/portfolio/edit`}
-              className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              {t("addPortfolioItem")}
-            </Link>
-          )}
+          <p className="text-muted-foreground">{t("noPortfolioItems")}</p>
         </div>
       )}
 
-      {/* Page Hints */}
       {session?.user &&
         tutorialData &&
         (() => {
-          // Get the next hint to show using the helper
-          // The helper looks up hints from centralized config and handles all logic
           const nextHint = getNextPageHint(
             tutorialData,
             "portfolio-view",

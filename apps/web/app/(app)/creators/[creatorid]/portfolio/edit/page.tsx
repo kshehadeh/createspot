@@ -1,41 +1,29 @@
 import { redirect } from "next/navigation";
-import Link from "@/components/link";
-import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageLayout } from "@/components/page-layout";
-import { PageHeader } from "@/components/page-header";
-import { PortfolioEditForm } from "@/components/portfolio-edit-form";
 import { getCreatorUrl } from "@/lib/utils";
-import { Briefcase, Eye, FolderOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-interface PortfolioEditPageProps {
+interface PortfolioEditRedirectProps {
   params: Promise<{ creatorid: string }>;
 }
 
-export default async function PortfolioEditPage({
+export default async function PortfolioEditRedirect({
   params,
-}: PortfolioEditPageProps) {
+}: PortfolioEditRedirectProps) {
   const { creatorid } = await params;
   const session = await auth();
-  const t = await getTranslations("profile");
 
   if (!session?.user?.id) {
     redirect("/");
   }
 
-  // Find user by slug or ID
   const user = await prisma.user.findFirst({
     where: {
       OR: [{ slug: creatorid }, { id: creatorid }],
     },
     select: {
       id: true,
-      name: true,
-      image: true,
       slug: true,
-      featuredSubmissionId: true,
     },
   });
 
@@ -43,105 +31,9 @@ export default async function PortfolioEditPage({
     redirect("/");
   }
 
-  // Ensure user can only edit their own portfolio
   if (session.user.id !== user.id) {
-    redirect(`/creators/${session.user.id}/portfolio/edit`);
+    redirect(`/creators/${session.user.id}/portfolio`);
   }
 
-  // Fetch all user submissions for adding to portfolio (up to 100)
-  const submissions = await prisma.submission.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
-
-  // Fetch portfolio items with pagination (initial 50 items)
-  const PAGE_SIZE = 50;
-  const [portfolioItems, totalPortfolioCount] = await Promise.all([
-    prisma.submission.findMany({
-      where: {
-        userId: user.id,
-        isPortfolio: true,
-      },
-      orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
-      take: PAGE_SIZE,
-      include: {
-        _count: {
-          select: {
-            favorites: true,
-            views: true,
-          },
-        },
-      },
-    }),
-    prisma.submission.count({
-      where: {
-        userId: user.id,
-        isPortfolio: true,
-      },
-    }),
-  ]);
-
-  return (
-    <PageLayout maxWidth="max-w-5xl" className="w-full">
-      <PageHeader
-        title={t("managePortfolio")}
-        subtitle={t("managePortfolioDescription")}
-        rightContent={
-          <div className="flex flex-row flex-wrap items-end justify-end gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href={`${getCreatorUrl(user)}/collections`}>
-                <FolderOpen className="h-4 w-4" />
-                <span className="hidden md:inline">{t("collections")}</span>
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href={`${getCreatorUrl(user)}/portfolio`}>
-                <Briefcase className="h-4 w-4" />
-                <span className="hidden md:inline">{t("browsePortfolio")}</span>
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href={getCreatorUrl(user)}>
-                <Eye className="h-4 w-4" />
-                <span className="hidden md:inline">{t("viewProfile")}</span>
-              </Link>
-            </Button>
-          </div>
-        }
-      />
-
-      <PortfolioEditForm
-        featuredSubmissionId={user.featuredSubmissionId}
-        submissions={submissions.map((s) => ({
-          id: s.id,
-          title: s.title,
-          imageUrl: s.imageUrl,
-          imageFocalPoint: s.imageFocalPoint as { x: number; y: number } | null,
-          text: s.text,
-          isPortfolio: s.isPortfolio,
-          tags: s.tags,
-          category: s.category,
-          shareStatus: s.shareStatus,
-        }))}
-        portfolioItems={portfolioItems.map((p) => ({
-          id: p.id,
-          title: p.title,
-          imageUrl: p.imageUrl,
-          imageFocalPoint: p.imageFocalPoint as { x: number; y: number } | null,
-          text: p.text,
-          isPortfolio: p.isPortfolio,
-          portfolioOrder: p.portfolioOrder,
-          tags: p.tags,
-          category: p.category,
-          _count: {
-            favorites: p._count.favorites,
-            views: p._count.views,
-          },
-          shareStatus: p.shareStatus,
-        }))}
-        totalPortfolioCount={totalPortfolioCount}
-      />
-    </PageLayout>
-  );
+  redirect(`${getCreatorUrl(user)}/portfolio`);
 }

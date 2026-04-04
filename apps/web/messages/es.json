@@ -388,7 +388,20 @@
     "clearFilters": "Limpiar",
     "loadMoreError": "Error al cargar más elementos. Por favor, inténtalo de nuevo.",
     "bulkDeletePartialError": "Error al eliminar {count} elemento(s). Por favor, inténtalo de nuevo.",
-    "wipBadge": "WIP"
+    "wipBadge": "WIP",
+    "searchPortfolioPlaceholder": "Buscar título, texto o categoría…",
+    "sortBy": "Ordenar por",
+    "sortOrder": "Orden del portafolio",
+    "sortNewest": "Más recientes",
+    "sortOldest": "Más antiguos",
+    "sortTitle": "Título (A–Z)",
+    "sortFavorites": "Más favoritos",
+    "filterByCategory": "Filtrar por categoría…",
+    "selectionMode": "Seleccionar elementos",
+    "exitSelectionMode": "Terminar selección",
+    "reorderHint": "Cambia el orden a \"Orden del portafolio\" para arrastrar y reordenar.",
+    "selectItem": "Seleccionar elemento",
+    "openPortfolioFilters": "Filtros y búsqueda"
   },
   "portfolioEditor": {
     "selectItem": "Seleccionar elemento",

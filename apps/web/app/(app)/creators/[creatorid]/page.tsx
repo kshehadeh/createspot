@@ -367,23 +367,16 @@ export default async function ProfilePage({
             </div>
             <div className="flex flex-row flex-wrap items-end justify-end gap-2">
               <Button asChild variant="outline" size="sm">
-                <Link href={`${getCreatorUrl(user)}/portfolio`}>
+                <Link
+                  href={`${getCreatorUrl(user)}/portfolio`}
+                  data-hint-target="portfolio-link"
+                >
                   <Briefcase className="h-4 w-4" />
                   <span className="hidden md:inline">
                     {t("browsePortfolio")}
                   </span>
                 </Link>
               </Button>
-              {effectiveIsOwnProfile && (
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`${getCreatorUrl(user)}/portfolio/edit`}>
-                    <Pencil className="h-4 w-4" />
-                    <span className="hidden md:inline">
-                      {t("managePortfolio")}
-                    </span>
-                  </Link>
-                </Button>
-              )}
             </div>
           </div>
           <PortfolioGridProfile
@@ -423,7 +416,7 @@ export default async function ProfilePage({
             {effectiveIsOwnProfile && (
               <div className="mt-4 flex justify-center gap-3">
                 <Link
-                  href={`${getCreatorUrl(user)}/portfolio/edit`}
+                  href={`${getCreatorUrl(user)}/portfolio`}
                   className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   {t("addPortfolioItem")}

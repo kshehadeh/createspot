@@ -50,7 +50,7 @@ export function OnboardingSection() {
   }
 
   const portfolioEditHref = session?.user?.id
-    ? buildRoutePath("portfolioEdit", { creatorid: session.user.id })
+    ? buildRoutePath("portfolio", { creatorid: session.user.id })
     : "/welcome";
 
   const items = [
