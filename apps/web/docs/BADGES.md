@@ -143,7 +143,6 @@ export interface BadgeDefinition {
 | Badge Key | Name | Description | Eligibility Check |
 |-----------|------|-------------|-------------------|
 | `first_portfolio_submission` | Aspiring Creator | First Portfolio Submission | Has at least one submission with `isPortfolio = true` |
-| `first_prompt_submission` | Prompt Pioneer | First Prompt Submission | Has at least one submission with `promptId` not null |
 | `first_critique_received` | Featured Voice | First Critique Received | Has at least one critique on their submissions |
 | `first_critique_given` | Artful Eye | First Critique Given | Has written at least one critique |
 
@@ -156,7 +155,6 @@ In `lib/badges.ts`, add the new badge key to the `BadgeKey` type:
 ```typescript
 export type BadgeKey =
   | "first_portfolio_submission"
-  | "first_prompt_submission"
   | "first_critique_received"
   | "first_critique_given"
   | "your_new_badge_key";  // Add your new badge key

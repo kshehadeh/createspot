@@ -16,75 +16,28 @@ This document covers the React component architecture, theming system, and UI pa
 
 ## Project Structure
 
+The App Router lives under `app/` with route groups such as `(app)` (authenticated shell + most pages), `(public)` (e.g. home feed), and parallel `@breadcrumb` slots. High-level layout:
+
 ```
 app/
-├── layout.tsx          # Root layout with providers
-├── page.tsx            # Home page
-├── globals.css         # Global styles & theme tokens
-├── opengraph-image.tsx # Default OG image
-├── icon.tsx            # App icon
-├── apple-icon.tsx      # Apple touch icon
-├── about/              # About pages
-│   ├── page.tsx
-│   ├── purpose/
-│   ├── prompt-submissions/
-│   ├── profile/
-│   └── portfolio/
-├── admin/              # Admin pages
-│   ├── page.tsx
-│   ├── prompts/        # Prompt management
-│   ├── users/          # User management
-│   └── exhibits/       # Exhibit management
-│       ├── page.tsx
-│       ├── new/
-│       ├── [id]/
-│       │   ├── edit/
-│       │   └── content/
-│       └── [components] # Exhibit-related components
-├── api/                # API routes
-│   ├── auth/           # NextAuth routes
-│   ├── prompts/        # Prompt endpoints
-│   ├── submissions/    # Submission CRUD
-│   ├── favorites/      # Favorite management
-│   ├── profile/        # Profile endpoints
-│   ├── exhibition/     # Exhibition endpoints
-│   ├── exhibits/       # Exhibit endpoints
-│   ├── upload/         # Image upload
-│   ├── users/          # User endpoints
-│   └── admin/          # Admin endpoints
-├── auth/
-│   └── signin/         # Sign in page
-├── creators/           # Creators directory page
-│   └── page.tsx
-├── exhibition/         # Exhibition pages
-│   ├── page.tsx
-│   ├── [exhibitId]/    # Individual exhibit
-│   ├── gallery/        # Gallery views
-│   │   ├── page.tsx
-│   │   ├── [exhibitId]/
-│   │   ├── grid/
-│   │   └── path/
-│   ├── constellation/  # Constellation view
-│   └── global/         # Global exhibition
-├── favorites/          # User favorites page
-│   └── page.tsx
-├── portfolio/          # Portfolio pages
-│   ├── [userId]/       # Public portfolio view
-│   └── edit/           # Portfolio editing
-├── profile/            # User profile pages
-│   ├── [userId]/       # Public profile view
-│   └── edit/           # Profile editing
-├── prompt/             # Prompt-related pages
-│   ├── page.tsx
-│   ├── history/        # User submission history
-│   ├── play/           # Submission creation
-│   └── this-week/      # Gallery view
-├── s/                  # Submission detail pages
-│   └── [id]/
-│       ├── page.tsx
-│       └── opengraph-image.tsx
-└── terms/              # Terms of service
-    └── page.tsx
+├── layout.tsx, globals.css, opengraph-image.tsx, icon.tsx, …
+├── (public)/
+│   └── page.tsx                 # Home / feed
+├── (app)/
+│   ├── layout.tsx               # App chrome
+│   ├── welcome/, dashboard/
+│   ├── about/                   # About, purpose, features, museums, terms, changelog
+│   ├── admin/                   # Users, exhibits, notifications, settings (no prompts UI)
+│   ├── inspire/                 # Exhibition, favorites, community, museums
+│   ├── creators/                # Profiles, portfolios, collections, submissions, critiques
+│   ├── contact/, auth/signin/
+│   ├── feed/                    # Redirect / legacy entry
+│   ├── s/[code]/                # Short links
+│   └── @breadcrumb/             # Parallel routes for header crumbs
+├── api/                         # REST handlers (submissions, exhibition, profile, …)
+├── creators/[creatorid]/        # Public OG + metadata routes co-located with creator URLs
+└── …
+```
 
 components/
 ├── ui/                      # shadcn/ui components
@@ -367,11 +320,11 @@ Reusable header with logo, title breadcrumb, navigation, and user avatar.
 import { Header } from "@/components/header";
 
 <Header 
-  title="Play"           // Optional breadcrumb
+  title="Exhibition"     // Optional breadcrumb
   user={session?.user}   // Shows avatar if logged in
 >
-  <Link href="/exhibition/gallery">Grid</Link>
-  <Link href="/prompt/play">Play</Link>
+  <Link href="/inspire/exhibition/gallery/grid">Grid</Link>
+  <Link href="/creators/me/portfolio/edit">Portfolio</Link>
 </Header>
 ```
 
@@ -479,7 +432,7 @@ Several components have been migrated to use shadcn/ui primitives:
 
 - **ConfirmModal** → Uses `AlertDialog`
 - **UserDropdown** → Uses `DropdownMenu` + `Avatar`
-- **AdminDropdown, ExhibitionsDropdown, PromptsDropdown** → Use `DropdownMenu`
+- **AdminDropdown, Inspire / About dropdowns** → Use `DropdownMenu`
 - **ExpandableImage** → Uses `Dialog`
 - **SubmissionLightbox** → Uses `Dialog` + `Tabs` + `Badge` + `Avatar`
 - **AuthButton** → Uses `Button`
@@ -495,7 +448,6 @@ Full-screen lightbox component for viewing submissions with responsive layouts t
 
 **Props:**
 - `submission`: Submission object with `id`, `title`, `imageUrl`, `text`, `user`, `_count`
-- `word`: The prompt word for this submission
 - `onClose`: Callback when lightbox is closed
 - `isOpen`: Boolean to control visibility
 - `hideGoToSubmission?`: Hide the "View Submission" button (default: false)
@@ -910,8 +862,11 @@ Use async/await directly in server components:
 ```tsx
 export default async function Page() {
   const session = await auth();
-  const data = await prisma.prompt.findMany();
-  
+  const data = await prisma.submission.findMany({
+    where: { shareStatus: "PUBLIC", isPortfolio: true },
+    take: 20,
+  });
+
   return <ClientComponent data={data} />;
 }
 ```
@@ -962,7 +917,6 @@ import { PortfolioGrid } from "@/components/portfolio-grid";
   items={portfolioItems}
   isLoggedIn={!!session}
   isOwnProfile={isOwnProfile}
-  showPromptBadge={true}
 />
 ```
 
@@ -970,7 +924,6 @@ import { PortfolioGrid } from "@/components/portfolio-grid";
 - `items`: Array of portfolio items with `id`, `title`, `imageUrl`, `text`, `tags`, `category`, etc.
 - `isLoggedIn`: Whether user is authenticated (for favorite buttons)
 - `isOwnProfile`: Whether viewing own profile (for empty state)
-- `showPromptBadge`: Whether to show prompt badges on items linked to prompts
 
 **Features:**
 - Category filtering (if items have categories)
@@ -1044,31 +997,13 @@ import { ProfileViewTracker } from "@/components/profile-view-tracker";
 
 ## Profile Pages
 
-### Public Profile (`/profile/[userId]`)
+### Public profile (`/creators/[creatorid]`)
 
-Displays user's public portfolio and prompt submissions:
+Displays the creator header, featured work, and portfolio grid (plus collections and critiques as linked from the profile).
 
-**Sections:**
-1. **Header**: Avatar, name, bio, social links
-2. **Analytics** (own profile only): Profile views, favorites, work views
-3. **Featured Submission**: Highlighted work (if set)
-4. **Portfolio**: Grid of portfolio items
-5. **Prompt Submissions**: History of prompt submissions
+### Profile edit (`/creators/[creatorid]/edit`)
 
-### Profile Edit (`/profile/edit`)
-
-Two-tab interface for managing profile:
-
-**Profile Tab:**
-- Bio editor (rich text)
-- Social links (Instagram, Twitter, LinkedIn, Website)
-- Featured submission selector
-
-**Portfolio Tab:**
-- Add new portfolio items
-- Edit existing portfolio items
-- Delete portfolio items
-- Add prompt submissions to portfolio
+Profile settings, protections, email preferences, and slug — portfolio editing is on `/creators/[creatorid]/portfolio/edit`.
 
 ## Portfolio Patterns
 
@@ -1095,23 +1030,7 @@ const response = await fetch("/api/submissions", {
 - `"PROFILE"` - Only visible on your profile page
 - `"PRIVATE"` - Only visible to you
 
-### Linking Portfolio to Prompt
-
-```tsx
-// On Play page - use existing portfolio item
-const response = await fetch(`/api/submissions/${portfolioItemId}`, {
-  method: "PUT",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    promptId: currentPrompt.id,
-    wordIndex: 1  // 1, 2, or 3
-  }),
-});
-```
-
-**Note:** When linking a portfolio item to a prompt, the share status is automatically set to `PUBLIC`.
-
-### Adding Prompt Submission to Portfolio
+### Adding work to the portfolio
 
 ```tsx
 const response = await fetch(`/api/submissions/${submissionId}`, {
@@ -1120,7 +1039,7 @@ const response = await fetch(`/api/submissions/${submissionId}`, {
   body: JSON.stringify({
     isPortfolio: true,
     tags: ["landscape"],
-    category: "Photography"
+    category: "Photography",
   }),
 });
 ```
@@ -1147,7 +1066,7 @@ Use **mini-action links** for navigation to related areas within the site. These
 ```tsx
 // Mini-action link pattern
 <Link
-  href={`/profile/${user.id}`}
+  href={`/creators/${user.id}`}
   className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
 >
   View Profile →
@@ -1155,7 +1074,7 @@ Use **mini-action links** for navigation to related areas within the site. These
 
 // On dark backgrounds (e.g., lightboxes)
 <Link
-  href={`/s/${submission.id}`}
+  href={`/creators/${user.id}/s/${submission.id}`}
   className="text-sm font-medium text-white/80 transition-colors hover:text-white"
 >
   View Submission →
@@ -1188,7 +1107,7 @@ Use **mini-action links** for navigation to related areas within the site. These
 6. **Follow the zinc color scale** for consistent neutral colors
 7. **Use motion sparingly** - entrance animations and hover states only
 8. **Track views client-side** - Use `ProfileViewTracker` for non-blocking analytics
-9. **Handle nullable fields** - Portfolio items may not have `promptId` or `wordIndex`
+9. **Handle nullable fields** - Optional `title`, `imageUrl`, and `text` depending on WIP vs finished work
 10. **Use mini-action links** for related page navigation instead of buttons
 
 ## UI Consistency Checklist

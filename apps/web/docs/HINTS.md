@@ -58,7 +58,7 @@ The `tutorial` JSON blob has the following structure:
 **Fields:**
 - `status`: `"enabled"` | `"disabled"` - Controls whether tutorials show globally
 - `global`: Global hints that can appear on any page
-- `[page]`: Page-specific hints (e.g., `"profile"`, `"prompt"`, `"portfolio"`)
+- `[page]`: Page-specific hints (e.g., `"profile"`, `"submission-view"`, `"portfolio"`)
 - `[hintKey]`: Unique identifier for the hint
   - `order`: Display order for hints on that page (lower numbers shown first)
   - `seen`: Boolean indicating if the user has dismissed this hint
@@ -85,7 +85,7 @@ Global hints appear on any page and are typically tied to global elements like n
 
 ### Page-Specific Hints
 
-Page-specific hints appear only on particular pages (e.g., `"profile"`, `"prompt"`, `"portfolio"`). These are useful for features that are unique to a specific page.
+Page-specific hints appear only on particular pages (e.g., `"profile"`, `"submission-view"`, `"portfolio"`). These are useful for features that are unique to a specific page.
 
 **Implementation:**
 ```tsx
@@ -416,7 +416,7 @@ export default async function YourPage() {
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `hintKey` | `string` | ✓ | Unique identifier for this hint (used in tracking) |
-| `page` | `string` | ✓ | Page identifier where hint appears (e.g., `"global"`, `"prompt"`) |
+| `page` | `string` | ✓ | Page identifier where hint appears (e.g., `"global"`, `"portfolio"`) |
 | `title` | `string` | ✓ | Hint title shown to the user |
 | `description` | `string` | ✓ | Hint description/explanation |
 | `targetSelector` | `string` | - | CSS selector for the element the arrow points to (required for target-based hints) |

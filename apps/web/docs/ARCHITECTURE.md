@@ -1,6 +1,6 @@
 # System Architecture
 
-This document provides an overview of the overall architecture of the Prompts application.
+This document provides an overview of the overall architecture of the Create Spot application.
 
 ## High-Level Architecture
 
@@ -73,7 +73,6 @@ RESTful API endpoints for data operations:
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
 | `/api/auth/[...nextauth]` | GET/POST | NextAuth.js authentication |
-| `/api/prompts` | GET/POST/PUT/DELETE | Prompt management |
 | `/api/submissions` | GET/POST/DELETE | Submission CRUD |
 | `/api/submissions/[id]` | GET/PUT/DELETE | Individual submission operations |
 | `/api/submissions/[id]/view` | POST | Track submission view |
@@ -83,7 +82,8 @@ RESTful API endpoints for data operations:
 | `/api/upload/presign` | POST | Get presigned URL for R2 |
 | `/api/upload/delete` | POST | Delete image from R2 |
 | `/api/favorites` | GET/POST/DELETE | Favorite management |
-| `/api/history` | GET | User submission history |
+| `/api/feed` | GET | Public portfolio feed |
+| `/api/exhibition` | GET | Exhibit / permanent gallery queries |
 | `/api/users` | GET | User listing (admin) |
 
 **Authentication:**
@@ -100,9 +100,9 @@ RESTful API endpoints for data operations:
 - Initial page load performance
 
 **Examples:**
-- `app/page.tsx` - Home page with current prompt
-- `app/profile/[userId]/page.tsx` - Public profile
-- `app/this-week/page.tsx` - Gallery view
+- `app/(public)/page.tsx` - Home / feed
+- `app/(app)/creators/[creatorid]/page.tsx` - Public profile
+- `app/(app)/inspire/exhibition/page.tsx` - Exhibition landing
 
 #### Client Components
 
@@ -115,7 +115,7 @@ RESTful API endpoints for data operations:
 **Examples:**
 - `components/portfolio-item-form.tsx` - Form with file upload
 - `components/profile-analytics.tsx` - Analytics display
-- `app/play/submission-slots.tsx` - Submission interface
+- `components/submission-edit-modal.tsx` - Create / edit submission flows
 
 ### 3. Service Layer
 
@@ -182,8 +182,7 @@ if (!session?.user) {
 
 **Schema Models:**
 - `User` - User accounts and profiles
-- `Prompt` - Weekly creative prompts
-- `Submission` - User submissions (prompts + portfolio)
+- `Submission` - User creative work (portfolio, exhibits, sharing)
 - `Favorite` - User favorites
 - `ProfileView` - Profile view analytics
 - `SubmissionView` - Submission view analytics
@@ -192,8 +191,6 @@ if (!session?.user) {
 **Key Relationships:**
 - User → Submissions (one-to-many)
 - User → Favorites (one-to-many)
-- Prompt → Submissions (one-to-many)
-- Submission → Prompt (many-to-one, nullable)
 - User → Featured Submission (one-to-one)
 
 #### Cloudflare R2
@@ -232,32 +229,16 @@ Page Load → Server Component → Fetch User Data → Render
          Client Component → Track View → API Route → Database
 ```
 
-### Portfolio Item Linking Flow
-
-```
-Portfolio Item → Play Page → Select Item → API Update
-                ↓
-         Link to Prompt (set promptId + wordIndex)
-                ↓
-         Now appears in both portfolio and prompt submission
-```
-
 ## Key Architectural Decisions
 
-### 1. Unified Submission Model
+### 1. Submission model (portfolio + social)
 
-**Decision:** Single `Submission` model handles both prompt submissions and portfolio items.
+**Decision:** A single `Submission` model stores each piece of work; `isPortfolio` and `shareStatus` control profile and public surfaces.
 
 **Rationale:**
-- Reduces complexity
-- Enables cross-linking (portfolio ↔ prompts)
-- Single source of truth for user work
-- Easier to query and manage
-
-**Implementation:**
-- `promptId` and `wordIndex` are nullable
-- `isPortfolio` flag indicates portfolio display
-- Items can have both (portfolio + prompt submission)
+- One source of truth per piece
+- Per-piece visibility without duplicating media rows
+- Exhibit and feed queries filter on `shareStatus` + `isPortfolio` as needed
 
 ### 2. Direct R2 Uploads
 
@@ -340,7 +321,7 @@ Portfolio Item → Play Page → Select Item → API Update
 
 ### Database
 
-- **Indexes:** On frequently queried fields (`userId`, `promptId`, `isPortfolio`)
+- **Indexes:** On frequently queried fields (`userId`, `isPortfolio`, `shareStatus`)
 - **Connection Pooling:** Prisma adapter with pg Pool
 - **Query Optimization:** Selective field fetching with `select`
 

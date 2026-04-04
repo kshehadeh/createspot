@@ -71,46 +71,28 @@ Core user model integrated with NextAuth.js.
 | createdAt | DateTime | Creation timestamp |
 | updatedAt | DateTime | Last update timestamp |
 
-#### Prompt
-Weekly creative prompts with three words.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| id | String | CUID primary key |
-| weekStart | DateTime | Start of prompt week |
-| weekEnd | DateTime | End of prompt week |
-| word1, word2, word3 | String | The three prompt words |
-| createdByUserId | String | Admin who created the prompt |
-
 #### Submission
-User submissions for prompts or standalone portfolio items.
+User submissions: portfolio pieces, exhibit entries, and shareable creative work.
 
 | Field | Type | Description |
 |-------|------|-------------|
 | id | String | CUID primary key |
-| userId | String | Submitting user |
-| promptId | String? | Associated prompt (nullable for portfolio-only items) |
-| wordIndex | Int? | Which word (1, 2, or 3) - nullable for portfolio-only items |
+| userId | String | Owner |
 | title | String? | Submission title |
 | imageUrl | String? | Uploaded image URL |
 | text | String? | Sanitized HTML content |
 | isPortfolio | Boolean | Whether to show in portfolio section (default: false) |
+| portfolioOrder | Int? | Custom ordering for portfolio items |
 | isWorkInProgress | Boolean | Whether this is a work-in-progress piece (default: false) |
+| shareStatus | ShareStatus | `PRIVATE`, `PROFILE`, or `PUBLIC` |
 | tags | String[] | Array of tags for portfolio items (default: []) |
 | category | String? | Category (e.g., "Photography", "Writing", "Digital Art") |
 | createdAt | DateTime | Creation timestamp |
 | updatedAt | DateTime | Last update timestamp |
 
-**Unique constraint:** One submission per user per prompt per word (`userId + promptId + wordIndex`).
-**Note:** `promptId` and `wordIndex` are nullable to support portfolio-only items that aren't tied to prompts.
-
 **Work in Progress (WIP):** When `isWorkInProgress` is true, the submission represents an evolving piece. It may have no main image or text, instead using progressions to document the creative journey. WIP submissions display with a dashed border, amber "WIP" badge, and fall back to the latest progression image for thumbnails. See [PROGRESSIONS.md](PROGRESSIONS.md) for details.
 
-**Portfolio Features:**
-- Submissions can be marked as portfolio items (`isPortfolio: true`)
-- Portfolio items can exist without a `promptId` (standalone creative work)
-- Portfolio items can be linked to prompts later (by setting `promptId` and `wordIndex`)
-- Prompt submissions can be added to portfolio (by setting `isPortfolio: true`)
+**Portfolio:** Submissions are included in the creator’s portfolio when `isPortfolio` is true. The permanent community gallery and feed generally surface public portfolio work (`shareStatus: PUBLIC`, `isPortfolio: true`).
 
 **Progressions:** Submissions can have one or more progressions (work-in-progress steps). See [PROGRESSIONS.md](PROGRESSIONS.md).
 
@@ -287,110 +269,6 @@ bunx prisma generate
 
 ---
 
-# Prompts System
-
-## Overview
-
-The prompts system allows admins to create weekly creative prompts consisting of three words. Users can then submit content (images and/or text) for each word.
-
-## Prompt Lifecycle
-
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Created   │────▶│   Active    │────▶│   Expired   │
-│  (Future)   │     │  (Current)  │     │   (Past)    │
-└─────────────┘     └─────────────┘     └─────────────┘
-      │                   │                    │
-      │                   ▼                    │
-      │            Users can submit            │
-      │                   │                    │
-      ▼                   ▼                    ▼
-  Editable           Locked once          Read-only
-                   has submissions
-```
-
-## Creating Prompts
-
-### Admin UI
-
-Admins access the prompt management interface at `/admin`. The `AdminPrompts` component provides:
-
-- **Create Mode**: Form to create new prompts with three words and date range
-- **Edit Mode**: Modify existing prompts (only if no submissions exist)
-- **Sidebar**: Shows recent past (5) and upcoming future (5) prompts
-
-### API Endpoint
-
-**POST** `/api/prompts`
-
-```typescript
-// Request body
-{
-  word1: string;      // Required
-  word2: string;      // Required
-  word3: string;      // Required
-  weekStart: string;  // Required - ISO date string
-  weekEnd?: string;   // Optional - defaults to weekStart + 7 days
-}
-
-// Response
-{
-  prompt: Prompt
-}
-```
-
-**Authorization**: Requires admin session (`session.user.isAdmin === true`)
-
-### Validation Rules
-
-1. All three words are required
-2. `weekStart` is required
-3. `weekEnd` defaults to 7 days after `weekStart` if not provided
-4. Only admins can create prompts
-
-## Editing Prompts
-
-**PUT** `/api/prompts`
-
-```typescript
-// Request body
-{
-  id: string;         // Required - prompt ID
-  word1?: string;
-  word2?: string;
-  word3?: string;
-  weekStart?: string;
-  weekEnd?: string;
-}
-```
-
-**Constraint**: Cannot edit prompts that have submissions.
-
-## Deleting Prompts
-
-**DELETE** `/api/prompts?id={promptId}`
-
-**Constraint**: Cannot delete prompts that have submissions.
-
-## Querying Prompts
-
-### Get Current Prompt
-
-**GET** `/api/prompts`
-
-Returns the currently active prompt (where `now` is between `weekStart` and `weekEnd`).
-
-### Helper Function
-
-```typescript
-import { getCurrentPrompt } from "@/lib/prompts";
-
-const prompt = await getCurrentPrompt();
-// Returns null if no active prompt
-```
-
----
-
 # Image Storage (Cloudflare R2)
 
 ## Architecture
@@ -525,10 +403,9 @@ await fetch(presignedUrl, {
 The `publicUrl` is stored in the `Submission.imageUrl` field:
 
 ```typescript
-await prisma.submission.upsert({
-  where: { userId_promptId_wordIndex: { userId, promptId, wordIndex } },
-  update: { imageUrl: publicUrl, title, text },
-  create: { userId, promptId, wordIndex, imageUrl: publicUrl, title, text },
+await prisma.submission.update({
+  where: { id: submissionId },
+  data: { imageUrl: publicUrl, title, text },
 });
 ```
 
@@ -591,16 +468,11 @@ The `R2_PUBLIC_URL` should point to either:
 
 ## Overview
 
-The portfolio system allows users to showcase their creative work beyond prompt submissions. Portfolio items can be:
-- **Standalone**: Created independently without a prompt association
-- **Linked to prompts**: Portfolio items can be used as prompt submissions
-- **Converted from prompts**: Prompt submissions can be added to portfolio
+The portfolio system lets users showcase creative work with per-piece visibility. Items are stored as `Submission` rows with `isPortfolio: true` and ordered with `portfolioOrder` when needed.
 
-## Portfolio Item Creation
+## Portfolio item creation
 
-### Standalone Portfolio Items
-
-Create portfolio-only items (no prompt association):
+Create portfolio items via `POST /api/submissions` with `isPortfolio: true` (and no weekly-prompt fields—those were removed from the product).
 
 ```typescript
 // POST /api/submissions
@@ -610,39 +482,14 @@ Create portfolio-only items (no prompt association):
   text: "<p>Description</p>",
   isPortfolio: true,
   tags: ["photography", "nature"],
-  category: "Photography"
-  // No promptId or wordIndex
+  category: "Photography",
+  shareStatus: "PUBLIC"
 }
 ```
 
-### Linking Portfolio Items to Prompts
+Update pieces with `PUT /api/submissions/{id}` (title, media, tags, category, `isPortfolio`, `shareStatus`, etc.).
 
-Link an existing portfolio item to a prompt:
-
-```typescript
-// PUT /api/submissions/{id}
-{
-  promptId: "prompt_123",
-  wordIndex: 1  // 1, 2, or 3
-}
-```
-
-### Adding Prompt Submissions to Portfolio
-
-Mark a prompt submission as a portfolio item:
-
-```typescript
-// PUT /api/submissions/{id}
-{
-  isPortfolio: true,
-  tags: ["landscape"],
-  category: "Photography"
-}
-```
-
-## Querying Portfolio Items
-
-### Get User's Portfolio
+## Querying portfolio items
 
 ```typescript
 // GET /api/submissions?portfolio=true&userId={userId}
@@ -650,11 +497,7 @@ const response = await fetch(`/api/submissions?portfolio=true&userId=${userId}`)
 const { submissions } = await response.json();
 ```
 
-### Portfolio vs Prompt Submissions
-
-- **Portfolio items**: `isPortfolio: true` (may or may not have `promptId`)
-- **Prompt submissions**: `promptId !== null` (may or may not be in portfolio)
-- **Both**: Items that are both portfolio items AND prompt submissions
+Public portfolio surfaces (feed, permanent exhibit) additionally require `shareStatus: PUBLIC` and are enforced in those queries—not in this API shape alone.
 
 ## Portfolio Fields
 
@@ -727,9 +570,10 @@ const { analytics } = await response.json();
   uniqueVisitors: number,      // Unique profile views
   totalFavorites: number,      // Total favorites on all submissions
   totalViews: number,           // Total views on all submissions
-  submissionCount: number,     // Count of prompt submissions
   portfolioCount: number,      // Count of portfolio items
-  totalWorkCount: number       // Total submissions (all types)
+  totalWorkCount: number,      // Total submissions (all types)
+  followersCount: number,
+  followingCount: number,
 }
 ```
 

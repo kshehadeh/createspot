@@ -227,7 +227,7 @@ The following components use `FullScreenModal` for full-viewport form experience
 | Component | Location |
 |-----------|----------|
 | SubmissionEditModal (add/edit/add-to-portfolio) | `components/submission-edit-modal.tsx` |
-| Submission slot form (play page) | `app/(app)/inspire/prompt/play/submission-slots.tsx` |
+| Portfolio / submission edit | `components/submission-edit-modal.tsx`, portfolio editor components |
 
 ## FullScreenModal Component
 

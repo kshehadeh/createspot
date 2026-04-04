@@ -4,7 +4,7 @@ This document provides essential information for AI agents and developers workin
 
 ## Project Overview
 
-**Prompts** is a weekly creative prompt community app where admins publish three-word prompts and users submit photos/text inspired by those words.
+**Create Spot** is a creative community app where users build portfolios, control visibility per piece, and discover work through exhibits, a public feed, and social features.
 
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript (strict mode)
@@ -55,10 +55,9 @@ The app will be available at http://localhost:3000
 ```
 apps/web/app/            # Next.js App Router pages and API routes
 ├── api/                # API endpoints
-├── admin/              # Admin dashboard (prompts, users)
-├── play/               # User submission interface
-├── this-week/          # Gallery view
-└── history/            # User's past submissions
+├── admin/              # Admin dashboard (users, exhibits, notifications)
+├── inspire/            # Exhibition, favorites, community, museums
+└── creators/           # Profiles, portfolios, submissions
 
 apps/web/components/     # Shared React components
 ├── ui/                  # shadcn/ui components (button, dialog, etc.)
@@ -380,13 +379,14 @@ import {
 3. Server returns public URL
 4. Client saves URL to database via `/api/submissions`
 
-### Current Prompt Query
+### Public feed and exhibition data
 
 ```typescript
-import { getCurrentPrompt } from "@/lib/prompts";
+import { getFeedSubmissions } from "@/lib/feed";
+import { getExhibitionSubmissions } from "@/lib/exhibition";
 
-const prompt = await getCurrentPrompt();
-// Returns prompt where now is between weekStart and weekEnd
+const feed = await getFeedSubmissions({ currentUserId: session?.user?.id });
+const { submissions } = await getExhibitionSubmissions({ skip: 0, take: 30 });
 ```
 
 ## Testing & Verification

@@ -1,6 +1,6 @@
 # Entity Relationships
 
-This document describes the relationships between the three core entities in the Prompts application: **Profiles**, **Portfolios**, and **Collections**.
+This document describes the relationships between the three core entities in Create Spot: **Profiles**, **Portfolios**, and **Collections**.
 
 ## Overview
 
@@ -32,14 +32,12 @@ The application centers around three main entities:
 │                   │                 │                   │
 │ - id              │                 │ - id              │
 │ - userId          │                 │ - userId          │
-│ - promptId?       │                 │ - name            │
-│ - wordIndex?      │                 │ - description?    │
-│ - title?          │                 │ - isPublic        │
-│ - imageUrl?       │                 │ - createdAt       │
-│ - text?           │                 │ - updatedAt       │
-│ - isPortfolio     │                 └───────────────────┘
-│ - portfolioOrder │                           │
-│ - tags            │                           │ 1:N
+│ - title?          │                 │ - name            │
+│ - imageUrl?       │                 │ - description?    │
+│ - text?           │                 │ - isPublic        │
+│ - isPortfolio     │                 │ - createdAt       │
+│ - portfolioOrder  │                 │ - updatedAt       │
+│ - tags            │                 └───────────────────┘
 │ - category?       │                           │
 │ - shareStatus     │                           │
 │ - createdAt       │                           │
@@ -71,10 +69,8 @@ The application centers around three main entities:
 **Key Points**:
 - Every submission belongs to exactly one user (`userId` foreign key)
 - Submissions can be deleted when a user is deleted (CASCADE)
-- Submissions can be either:
-  - **Prompt submissions**: Linked to a weekly prompt (`promptId` and `wordIndex` set)
-  - **Portfolio items**: Marked with `isPortfolio: true`
-  - **Both**: Can be both a prompt submission AND a portfolio item
+- Submissions may be shown on the profile portfolio when `isPortfolio: true`
+- `shareStatus` controls who can see each piece (private / profile-only / public)
 
 **Database Constraint**:
 ```prisma
@@ -212,7 +208,7 @@ const user = await prisma.user.findUnique({
 - Featured: `featuredSubmissionId` (optional)
 
 **Relationships**:
-- Has many `submissions` (portfolio items and prompt submissions)
+- Has many `submissions`
 - Has many `collections`
 - Has one optional `featuredSubmission`
 
@@ -223,27 +219,14 @@ const user = await prisma.user.findUnique({
 **Key Attributes**:
 - Content: `title`, `imageUrl`, `imageFocalPoint`, `text`
 - Classification: `isPortfolio`, `category`, `tags`
-- Prompt Link: `promptId`, `wordIndex` (nullable)
 - Organization: `portfolioOrder` (for portfolio display)
 - Visibility: `shareStatus` (PRIVATE, PROFILE, PUBLIC)
-- Features: `critiquesEnabled`
+- Features: `critiquesEnabled`, `isWorkInProgress`, progressions (see [PROGRESSIONS.md](PROGRESSIONS.md))
 
-**Submission Types**:
+**Typical use**:
 
-1. **Prompt Submission Only**:
-   - `promptId` is set
-   - `wordIndex` is set (1, 2, or 3)
-   - `isPortfolio` is `false`
-
-2. **Portfolio Item Only**:
-   - `promptId` is `null`
-   - `wordIndex` is `null`
-   - `isPortfolio` is `true`
-
-3. **Both**:
-   - `promptId` is set
-   - `wordIndex` is set
-   - `isPortfolio` is `true`
+- **On portfolio**: `isPortfolio: true` — ordered with `portfolioOrder` where used
+- **Public discovery**: usually `shareStatus: PUBLIC` and `isPortfolio: true` for feed and permanent exhibit queries
 
 **Relationships**:
 - Belongs to one `user`
@@ -406,17 +389,12 @@ await Promise.all(updates);
    @@unique([collectionId, submissionId])
    ```
 
-2. **Unique Prompt Submission**: One submission per user per prompt per word
-   ```prisma
-   @@unique([userId, promptId, wordIndex])
-   ```
-
-3. **Cascade Deletes**:
+2. **Cascade Deletes**:
    - Deleting a user deletes all their submissions and collections
    - Deleting a submission removes it from all collections
    - Deleting a collection removes all `CollectionSubmission` records
 
-4. **Set Null on Featured Submission**: If featured submission is deleted, user's `featuredSubmissionId` is set to NULL
+3. **Set Null on Featured Submission**: If featured submission is deleted, user's `featuredSubmissionId` is set to NULL
 
 ### Business Rules
 
@@ -434,10 +412,8 @@ await Promise.all(updates);
    - Changing portfolio order does not affect collection order
    - Each collection maintains its own ordering
 
-4. **Submission Types**:
-   - A submission can be a prompt submission, portfolio item, or both
-   - Portfolio items can exist without a prompt association
-   - Prompt submissions can be added to portfolio later
+4. **Visibility**:
+   - `shareStatus` and `isPortfolio` together determine profile, exhibit, and feed eligibility
 
 ## Common Queries
 
@@ -524,4 +500,4 @@ const exists = await prisma.collectionSubmission.findUnique({
 - Collections have independent ordering from portfolio
 - Submissions can belong to multiple collections
 - Collections are non-destructive (deleting doesn't delete submissions)
-- Portfolio items can be prompt submissions, standalone items, or both
+- Portfolio items are submissions with `isPortfolio: true`; visibility is per-piece via `shareStatus`

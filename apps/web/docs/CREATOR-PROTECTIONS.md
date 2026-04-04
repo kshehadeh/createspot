@@ -115,7 +115,7 @@ const finalBuffer = await addImageMetadata(watermarkedBuffer, artistName);
 
 When watermarking is enabled, users see an indicator below upload areas:
 
-- **Submission Slots** (`/prompt/play`): Shows shield icon with "Watermark will be applied to uploads" and link to settings
+- **Submission edit / create flows**: Shows shield icon with "Watermark will be applied to uploads" and link to settings
 - **Portfolio Item Form**: Same indicator when creating/editing portfolio items
 
 ## Download Prevention
@@ -163,7 +163,7 @@ These components have download prevention built-in:
 - `components/submission-lightbox.tsx`
 - `components/image-lightbox.tsx`
 - `components/portfolio-grid.tsx`
-- `app/prompt/this-week/gallery-grid.tsx`
+- `app/(app)/inspire/exhibition/exhibition-grid.tsx`
 
 ### Global CSS
 
@@ -232,17 +232,14 @@ Disallow: /
 
 ### HTTP Headers
 
-The `proxy.ts` file adds `X-Robots-Tag` headers to user content pages:
+Middleware or edge configuration may add `X-Robots-Tag` headers on creator-facing routes. Example path prefixes:
 
 ```typescript
-// Protected paths
+// Example protected path prefixes (adjust to match your deployment)
 const AI_PROTECTED_PATHS = [
-  "/s/",           // Submission pages
-  "/profile/",     // Profile pages
-  "/this-week",    // Gallery pages
-  "/prompt/",      // Prompt-related pages
-  "/portfolio/",   // Portfolio pages
-  "/exhibit/",     // Exhibit pages
+  "/creators/",        // Profiles, portfolios, submissions
+  "/inspire/exhibition",
+  "/inspire/favorites",
 ];
 
 // Header added to responses

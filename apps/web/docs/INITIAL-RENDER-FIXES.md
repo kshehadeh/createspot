@@ -38,7 +38,7 @@ Based on the investigation (baseline TTFB, cold vs warm, server instrumentation,
 
 ## 3. Database and query (cold request)
 
-**Problem:** Cold home request pays for `getExhibitionSubmissions`: Prisma `findMany` with `include` (user, prompt, `_count`) and `orderBy createdAt DESC`.
+**Problem:** Cold home request pays for `getExhibitionSubmissions`: Prisma `findMany` with `include` (user, `_count`) and `orderBy createdAt DESC`.
 
 **Fixes:**
 
