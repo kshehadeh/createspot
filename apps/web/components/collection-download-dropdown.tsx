@@ -27,6 +27,8 @@ type CollectionDownloadDropdownProps =
       collectionName: string;
       /** Icon-only trigger (e.g. mobile FAB); omits label and chevron. */
       compactTrigger?: boolean;
+      /** Outline icon button (h-10), same style as portfolio share/filter toolbar. */
+      toolbarIconTrigger?: boolean;
       triggerClassName?: string;
     }
   | {
@@ -36,6 +38,7 @@ type CollectionDownloadDropdownProps =
       hasImage?: boolean;
       hasProgressionsGif?: boolean;
       compactTrigger?: boolean;
+      toolbarIconTrigger?: boolean;
       triggerClassName?: string;
     };
 
@@ -46,7 +49,9 @@ export function CollectionDownloadDropdown(
   const tSubmission = useTranslations("submission");
   const [isDownloading, setIsDownloading] = useState(false);
   const compactTrigger = props.compactTrigger === true;
+  const toolbarIconTrigger = props.toolbarIconTrigger === true;
   const triggerClassName = props.triggerClassName;
+  const iconOnlyTrigger = compactTrigger || toolbarIconTrigger;
 
   const isCollection = props.variant === "collection";
   const safeName = isCollection
@@ -215,27 +220,40 @@ export function CollectionDownloadDropdown(
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
-          variant={compactTrigger ? "ghost" : "outline"}
-          size="sm"
+          variant={
+            toolbarIconTrigger
+              ? "outline"
+              : compactTrigger
+                ? "ghost"
+                : "outline"
+          }
+          size={toolbarIconTrigger ? "icon" : "sm"}
           disabled={isDownloading}
           className={cn(
-            compactTrigger && "h-12 w-12 shrink-0 rounded-full p-0",
+            toolbarIconTrigger && "h-10 w-10 shrink-0",
+            compactTrigger &&
+              !toolbarIconTrigger &&
+              "h-12 w-12 shrink-0 rounded-full p-0",
             triggerClassName,
           )}
-          aria-label={compactTrigger ? t("downloadAs") : undefined}
-          title={compactTrigger ? t("downloadAs") : undefined}
+          aria-label={iconOnlyTrigger ? t("downloadAs") : undefined}
+          title={iconOnlyTrigger ? t("downloadAs") : undefined}
         >
           {isDownloading ? (
             <Loader2
               className={cn(
                 "animate-spin",
-                compactTrigger ? "h-5 w-5" : "h-4 w-4",
+                compactTrigger && !toolbarIconTrigger ? "h-5 w-5" : "h-4 w-4",
               )}
             />
           ) : (
-            <Download className={cn(compactTrigger ? "h-5 w-5" : "h-4 w-4")} />
+            <Download
+              className={cn(
+                compactTrigger && !toolbarIconTrigger ? "h-5 w-5" : "h-4 w-4",
+              )}
+            />
           )}
-          {!compactTrigger && (
+          {!iconOnlyTrigger && (
             <>
               <span className="hidden md:inline">
                 {isDownloading ? t("downloading") : t("downloadAs")}

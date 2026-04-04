@@ -4,11 +4,11 @@ import Link from "@/components/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
-import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ShareButton } from "@/components/share-button";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { getCollectionMetadata } from "@/lib/og-metadata";
 import { prisma } from "@/lib/prisma";
@@ -177,37 +177,43 @@ export default async function CollectionViewPage({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <PageHeader
-              title={
-                <div className="flex items-center gap-2">
-                  <span className="truncate">{collection.name}</span>
-                  {collection.isPublic ? (
-                    <Globe className="h-4 w-4 shrink-0 text-green-500" />
-                  ) : (
-                    <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  )}
-                </div>
-              }
-              subtitle={
-                <>
-                  {user.name && (
-                    <span>
-                      {t("by", { name: user.name })}
-                      {" · "}
+            <div className="mb-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <h1 className="break-words text-2xl font-bold text-foreground sm:text-3xl">
+                    <span className="inline-flex min-w-0 items-center gap-2">
+                      <span className="truncate">{collection.name}</span>
+                      {collection.isPublic ? (
+                        <Globe className="h-4 w-4 shrink-0 text-green-500" />
+                      ) : (
+                        <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      )}
                     </span>
-                  )}
-                  {collection._count.submissions}{" "}
-                  {collection._count.submissions !== 1 ? t("items") : t("item")}
-                </>
-              }
-              rightContent={
-                <div className="flex items-center gap-2">
+                  </h1>
+                  <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                    {user.name && (
+                      <span>
+                        {t("by", { name: user.name })}
+                        {" · "}
+                      </span>
+                    )}
+                    {collection._count.submissions}{" "}
+                    {collection._count.submissions !== 1
+                      ? t("items")
+                      : t("item")}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-1 pt-0.5">
                   {collection.isPublic && (
                     <ShareButton
                       type="collection"
                       userId={user.id}
                       slug={user.slug}
                       collectionId={collection.id}
+                      className={cn(
+                        buttonVariants({ variant: "outline", size: "icon" }),
+                        "shrink-0",
+                      )}
                     />
                   )}
                   {isOwner && portfolioItems.length > 0 && (
@@ -215,42 +221,29 @@ export default async function CollectionViewPage({
                       variant="collection"
                       collectionId={collection.id}
                       collectionName={collection.name}
+                      toolbarIconTrigger
                     />
                   )}
                   {isOwner && (
-                    <Button asChild variant="outline" size="sm">
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="icon"
+                      className="h-10 w-10 shrink-0"
+                    >
                       <Link
                         href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
+                        aria-label={t("edit")}
+                        title={t("edit")}
                       >
                         <Pencil className="h-4 w-4" />
-                        <span className="hidden md:inline">{t("edit")}</span>
                       </Link>
                     </Button>
                   )}
                 </div>
-              }
-            />
-          </div>
-
-          {isOwner && (
-            <div className="md:hidden mt-4 flex flex-wrap items-center gap-2">
-              {portfolioItems.length > 0 && (
-                <CollectionDownloadDropdown
-                  variant="collection"
-                  collectionId={collection.id}
-                  collectionName={collection.name}
-                />
-              )}
-              <Button asChild variant="outline" size="sm">
-                <Link
-                  href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}
-                >
-                  <Pencil className="h-4 w-4" />
-                  <span className="sr-only">{t("edit")}</span>
-                </Link>
-              </Button>
+              </div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Description */}
