@@ -1,13 +1,12 @@
 "use client";
 
-import { ImageIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FocalPointModal } from "@/components/focal-point-modal";
@@ -27,7 +26,16 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { CATEGORIES, getCategoryIcon } from "@/lib/categories";
-import { getCreatorUrl } from "@/lib/utils";
+import { cn, getCreatorUrl } from "@/lib/utils";
+
+const FIELD_FLASH_MS = 2600;
+
+type FieldFlash =
+  | "step1Content"
+  | "submissionImage"
+  | "referenceImage"
+  | "category"
+  | null;
 
 const RichTextEditor = dynamic(
   () =>
@@ -78,6 +86,11 @@ export function SubmissionCreateWizard({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const referenceFileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+  const step1ContentRef = useRef<HTMLDivElement>(null);
+  const submissionImageStep1Ref = useRef<HTMLDivElement>(null);
+  const referenceImageStep2Ref = useRef<HTMLDivElement>(null);
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const fieldFlashClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [step, setStep] = useState<WizardStep>(1);
   const [draftId, setDraftId] = useState<string | null>(null);
@@ -106,15 +119,56 @@ export function SubmissionCreateWizard({
   const [uploading, setUploading] = useState(false);
   const [uploadingReference, setUploadingReference] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [fieldFlash, setFieldFlash] = useState<FieldFlash>(null);
   const [showRemoveImageConfirm, setShowRemoveImageConfirm] = useState(false);
   const [showRemoveReferenceConfirm, setShowRemoveReferenceConfirm] =
     useState(false);
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
 
+  const showFormError = useCallback(
+    (message: string, flash: FieldFlash) => {
+      toast.error(message);
+      if (!flash) return;
+      if (fieldFlashClearRef.current) {
+        clearTimeout(fieldFlashClearRef.current);
+      }
+      setFieldFlash(flash);
+      requestAnimationFrame(() => {
+        let el: HTMLElement | null = null;
+        if (flash === "step1Content") el = step1ContentRef.current;
+        else if (flash === "category") el = categoryRef.current;
+        else if (flash === "submissionImage") {
+          el = submissionImageStep1Ref.current;
+        } else if (flash === "referenceImage") {
+          el = referenceImageStep2Ref.current;
+        }
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      fieldFlashClearRef.current = setTimeout(() => {
+        setFieldFlash(null);
+        fieldFlashClearRef.current = null;
+      }, FIELD_FLASH_MS);
+    },
+    [],
+  );
+
+  useEffect(
+    () => () => {
+      if (fieldFlashClearRef.current) {
+        clearTimeout(fieldFlashClearRef.current);
+      }
+    },
+    [],
+  );
+
+  const flashRingClass = (key: NonNullable<FieldFlash>) =>
+    fieldFlash === key
+      ? "rounded-lg ring-2 ring-destructive/80 ring-offset-2 ring-offset-background transition-shadow duration-300"
+      : "transition-shadow duration-300";
+
   const validateStepOne = () => {
     if (!imageUrl && !text && !isWorkInProgress) {
-      setError(t("errors.addImageOrText"));
+      showFormError(t("errors.addImageOrText"), "step1Content");
       return false;
     }
     return true;
@@ -215,16 +269,15 @@ export function SubmissionCreateWizard({
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setError(t("errors.selectImageFile"));
+      showFormError(t("errors.selectImageFile"), "submissionImage");
       return;
     }
     if (file.size > 6 * 1024 * 1024) {
-      setError(t("errors.imageTooLarge"));
+      showFormError(t("errors.imageTooLarge"), "submissionImage");
       return;
     }
 
     setUploading(true);
-    setError(null);
     try {
       const presignResponse = await fetch("/api/upload/presign", {
         method: "POST",
@@ -253,7 +306,10 @@ export function SubmissionCreateWizard({
         setImageChangedAfterDraft(true);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.uploadFailed"));
+      showFormError(
+        err instanceof Error ? err.message : t("errors.uploadFailed"),
+        "submissionImage",
+      );
     } finally {
       setUploading(false);
     }
@@ -265,16 +321,15 @@ export function SubmissionCreateWizard({
     const file = e.target.files?.[0];
     if (!file || !draftId) return;
     if (!file.type.startsWith("image/")) {
-      setError(t("errors.selectImageFile"));
+      showFormError(t("errors.selectImageFile"), "referenceImage");
       return;
     }
     if (file.size > 6 * 1024 * 1024) {
-      setError(t("errors.imageTooLarge"));
+      showFormError(t("errors.imageTooLarge"), "referenceImage");
       return;
     }
 
     setUploadingReference(true);
-    setError(null);
     try {
       const presignResponse = await fetch("/api/upload/presign", {
         method: "POST",
@@ -301,7 +356,10 @@ export function SubmissionCreateWizard({
       }
       setReferenceImageUrl(publicUrl);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.uploadFailed"));
+      showFormError(
+        err instanceof Error ? err.message : t("errors.uploadFailed"),
+        "referenceImage",
+      );
     } finally {
       setUploadingReference(false);
     }
@@ -340,7 +398,6 @@ export function SubmissionCreateWizard({
     if (!validateStepOne()) return;
 
     setSaving(true);
-    setError(null);
     try {
       const id = await saveDraft();
       if (!id) throw new Error(t("errors.createFailed"));
@@ -349,7 +406,9 @@ export function SubmissionCreateWizard({
       setFocalPointChangedAfterDraft(false);
       setStep(2);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.createFailed"));
+      toast.error(
+        err instanceof Error ? err.message : t("errors.createFailed"),
+      );
     } finally {
       setSaving(false);
     }
@@ -358,14 +417,15 @@ export function SubmissionCreateWizard({
   const handleStepTwoContinue = async () => {
     if (!draftId) return;
     setSaving(true);
-    setError(null);
     try {
       await updateSubmission(draftId, {
         referenceImageUrl: referenceImageUrl || null,
       });
       setStep(3);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.updateFailed"));
+      toast.error(
+        err instanceof Error ? err.message : t("errors.updateFailed"),
+      );
     } finally {
       setSaving(false);
     }
@@ -374,12 +434,13 @@ export function SubmissionCreateWizard({
   const handleStepThreeContinue = async () => {
     if (!draftId) return;
     setSaving(true);
-    setError(null);
     try {
       await persistProgressions(draftId);
       setStep(4);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.updateFailed"));
+      toast.error(
+        err instanceof Error ? err.message : t("errors.updateFailed"),
+      );
     } finally {
       setSaving(false);
     }
@@ -388,12 +449,11 @@ export function SubmissionCreateWizard({
   const handleFinalSave = async () => {
     if (!draftId) return;
     if (!category) {
-      setError(t("errors.categoryRequired"));
+      showFormError(t("errors.categoryRequired"), "category");
       return;
     }
 
     setSaving(true);
-    setError(null);
     try {
       const trimmedTags = tags
         .map((tag) => tag.trim())
@@ -446,7 +506,7 @@ export function SubmissionCreateWizard({
         isWorkInProgress,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.saveFailed"));
+      toast.error(err instanceof Error ? err.message : t("errors.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -499,23 +559,14 @@ export function SubmissionCreateWizard({
             </p>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="isWorkInProgress">{t("workInProgress")}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t("workInProgressDescription")}
-                </p>
-              </div>
-              <Switch
-                id="isWorkInProgress"
-                checked={isWorkInProgress}
-                onCheckedChange={setIsWorkInProgress}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
+          <div
+            ref={step1ContentRef}
+            className={cn("space-y-6 rounded-md p-1 -m-1", flashRingClass("step1Content"))}
+          >
+          <div
+            ref={submissionImageStep1Ref}
+            className={cn("space-y-2", flashRingClass("submissionImage"))}
+          >
             <Label>{t("image")}</Label>
             {imageUrl ? (
               <div className="relative">
@@ -592,7 +643,24 @@ export function SubmissionCreateWizard({
             />
           </div>
 
-          <div className="flex justify-between gap-3">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="isWorkInProgress">{t("workInProgress")}</Label>
+                <p className="text-xs text-muted-foreground">
+                  {t("workInProgressDescription")}
+                </p>
+              </div>
+              <Switch
+                id="isWorkInProgress"
+                checked={isWorkInProgress}
+                onCheckedChange={setIsWorkInProgress}
+              />
+            </div>
+          </div>
+          </div>
+
+          <div className="mt-8 flex justify-between gap-3 border-t border-border/60 pt-6">
             <Button type="button" variant="outline" onClick={onCancel}>
               {tCommon("cancel")}
             </Button>
@@ -618,20 +686,20 @@ export function SubmissionCreateWizard({
             </p>
           </div>
 
-          <div className="space-y-2">
+          <div
+            ref={referenceImageStep2Ref}
+            className={cn("space-y-2", flashRingClass("referenceImage"))}
+          >
             <Label>{tReference("title")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {tReference("description")}
-            </p>
             {referenceImageUrl ? (
               <div className="relative">
-                <div className="relative aspect-video w-full max-w-sm overflow-hidden rounded-lg bg-muted">
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
                   <Image
                     src={referenceImageUrl}
                     alt={tReference("title")}
                     fill
                     className="object-contain"
-                    sizes="(max-width: 640px) 100vw, 384px"
+                    sizes="(max-width: 640px) 100vw, 512px"
                   />
                 </div>
                 <div className="absolute top-2 right-2">
@@ -660,17 +728,19 @@ export function SubmissionCreateWizard({
             ) : (
               <div
                 onClick={() => referenceFileInputRef.current?.click()}
-                className="cursor-pointer rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/50 max-w-sm"
+                className="w-full cursor-pointer rounded-lg border-2 border-dashed border-border p-8 text-center transition-colors hover:border-primary/50"
               >
                 {uploadingReference ? (
                   <span className="text-sm text-muted-foreground">
-                    {tReference("uploading")}
+                    {t("uploading")}
                   </span>
                 ) : (
                   <>
-                    <ImageIcon className="mx-auto h-6 w-6 text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {tReference("addReference")}
+                    <p className="text-sm text-muted-foreground">
+                      {t("clickToUpload")}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground/70">
+                      {t("uploadFormat")}
                     </p>
                   </>
                 )}
@@ -768,7 +838,10 @@ export function SubmissionCreateWizard({
             />
           </div>
 
-          <div className="space-y-2">
+          <div
+            ref={categoryRef}
+            className={cn("space-y-2", flashRingClass("category"))}
+          >
             <Label>{t("category")}</Label>
             <Select
               value={category || "__none__"}
@@ -930,79 +1003,6 @@ export function SubmissionCreateWizard({
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label>{t("image")}</Label>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {imageUrl ? tWizard("changeImage") : t("clickToUpload")}
-              </Button>
-              {imageUrl && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => setShowRemoveImageConfirm(true)}
-                >
-                  {t("removeImage")}
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>{t("textDescription")}</Label>
-            <RichTextEditor
-              value={text}
-              onChange={setText}
-              placeholder={t("textPlaceholder")}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>{tReference("title")}</Label>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => referenceFileInputRef.current?.click()}
-              >
-                {referenceImageUrl
-                  ? tWizard("changeReference")
-                  : tReference("addReference")}
-              </Button>
-              {referenceImageUrl && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => setShowRemoveReferenceConfirm(true)}
-                >
-                  {tReference("removeReference")}
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="isWorkInProgressReview">
-                  {t("workInProgress")}
-                </Label>
-                <p className="text-xs text-muted-foreground">
-                  {t("workInProgressDescription")}
-                </p>
-              </div>
-              <Switch
-                id="isWorkInProgressReview"
-                checked={isWorkInProgress}
-                onCheckedChange={setIsWorkInProgress}
-              />
-            </div>
-          </div>
-
           <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
             {tUpload("ownershipNotice")}{" "}
             <Link href="/about/protecting-your-work" className="underline">
@@ -1017,20 +1017,11 @@ export function SubmissionCreateWizard({
             <Button
               type="button"
               onClick={handleFinalSave}
-              disabled={saving || uploading || uploadingReference}
+              disabled={saving}
             >
               {saving ? t("saving") : tWizard("finalSave")}
             </Button>
           </div>
-        </div>
-      )}
-
-      {error && (
-        <div
-          className="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
-          aria-live="polite"
-        >
-          {error}
         </div>
       )}
 

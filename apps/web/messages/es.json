@@ -1367,8 +1367,8 @@
           "description": "Comienza tu publicación con el contenido principal."
         },
         "step2": {
-          "title": "Añadir imagen de referencia (opcional)",
-          "description": "Agrega una imagen de inspiración o fuente."
+          "title": "Imagen de referencia (opcional)",
+          "description": "Opcional — sube una imagen de inspiración o fuente igual que en el paso uno, u omite este paso."
         },
         "step3": {
           "title": "Añadir progresiones (opcional)",
@@ -1376,7 +1376,7 @@
         },
         "step4": {
           "title": "Finalizar configuración",
-          "description": "Revisa título, contenido, visibilidad, críticas y detalles de publicación."
+          "description": "Añade título, categoría, etiquetas, visibilidad y opciones de críticas. Imagen, texto, referencia y trabajo en progreso se definieron en pasos anteriores."
         }
       }
     },

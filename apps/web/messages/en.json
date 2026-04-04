@@ -1367,8 +1367,8 @@
           "description": "Start your submission with the core content."
         },
         "step2": {
-          "title": "Add reference image (optional)",
-          "description": "Add an inspiration or source image."
+          "title": "Reference image (optional)",
+          "description": "Optional — upload an inspiration or source image the same way as step one, or skip."
         },
         "step3": {
           "title": "Add progressions (optional)",
@@ -1376,7 +1376,7 @@
         },
         "step4": {
           "title": "Finalize settings",
-          "description": "Review title, content, visibility, critiques, and publishing details."
+          "description": "Add title, category, tags, visibility, and critique options. Image, text, reference, and work-in-progress were set in earlier steps."
         }
       }
     },
