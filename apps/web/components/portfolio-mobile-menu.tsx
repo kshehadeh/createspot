@@ -22,6 +22,8 @@ export interface PortfolioMobileFilterProps {
 
 interface PortfolioMobileMenuProps {
   title: string;
+  /** Shown below the title row (e.g. work count). */
+  subtitle?: string;
   userId: string;
   filterProps: PortfolioMobileFilterProps;
   /** Owner-only: show icon-only select-items toggle beside the filter control. */
@@ -32,6 +34,7 @@ interface PortfolioMobileMenuProps {
 
 export function PortfolioMobileMenu({
   title,
+  subtitle,
   userId,
   filterProps,
   showSelectionToggle = false,
@@ -44,7 +47,7 @@ export function PortfolioMobileMenu({
   return (
     <div className="relative w-full">
       <div className="flex items-start gap-2">
-        <h1 className="min-w-0 flex-1 break-words text-2xl font-bold text-foreground">
+        <h1 className="min-w-0 flex-1 break-words text-2xl font-bold text-foreground sm:text-3xl">
           {title}
         </h1>
         <div className="flex shrink-0 items-center gap-1 pt-0.5">
@@ -84,6 +87,11 @@ export function PortfolioMobileMenu({
           </Button>
         </div>
       </div>
+      {subtitle ? (
+        <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+          {subtitle}
+        </p>
+      ) : null}
 
       {filtersOpen && (
         <>

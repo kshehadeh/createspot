@@ -3,13 +3,10 @@ import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { HintPopover } from "@/components/hint-popover";
-import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
-import { PortfolioFilters } from "@/components/portfolio-filters";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { PortfolioMobileMenu } from "@/components/portfolio-mobile-menu";
 import { PortfolioPageBody } from "@/components/portfolio-page-body";
-import { ShareButton } from "@/components/share-button";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";
 import { getNextPageHint } from "@/lib/hints-helper";
@@ -286,56 +283,38 @@ export default async function PortfolioPage({
     image: user.image,
   };
 
+  const worksSubtitle = `${portfolioItems.length} ${
+    portfolioItems.length !== 1 ? t("works") : t("work")
+  }`;
+
   return (
     <PageLayout maxWidth="max-w-6xl">
       {!isOwnPortfolio && (
-        <div className="md:hidden mb-4 w-full">
-          <PortfolioMobileMenu
-            title={portfolioTitle}
-            userId={user.id}
-            filterProps={filterProps}
-          />
-        </div>
-      )}
-
-      <div className="hidden md:block mb-8 w-full">
-        <div className="flex items-start gap-4">
+        <div className="mb-4 flex w-full items-start gap-4 md:mb-8">
           {user.image ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={user.image}
               alt={user.name || "User"}
-              className="h-12 w-12 rounded-full shrink-0"
+              className="hidden h-12 w-12 shrink-0 rounded-full md:block"
             />
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted shrink-0">
+            <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted md:flex">
               <span className="text-lg font-medium text-muted-foreground">
                 {user.name?.charAt(0) || "?"}
               </span>
             </div>
           )}
-          <div className="flex-1 min-w-0">
-            <PageHeader
-              title={
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="break-words min-w-0">{portfolioTitle}</span>
-                  <div className="shrink-0">
-                    <ShareButton type="portfolio" userId={user.id} />
-                  </div>
-                </div>
-              }
-              subtitle={`${portfolioItems.length} ${
-                portfolioItems.length !== 1 ? t("works") : t("work")
-              }`}
-              rightContent={undefined}
+          <div className="min-w-0 flex-1">
+            <PortfolioMobileMenu
+              title={portfolioTitle}
+              subtitle={worksSubtitle}
+              userId={user.id}
+              filterProps={filterProps}
             />
           </div>
         </div>
-      </div>
-
-      <div className="hidden md:block">
-        <PortfolioFilters {...filterProps} />
-      </div>
+      )}
 
       {isOwnPortfolio ? (
         <PortfolioPageBody

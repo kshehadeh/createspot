@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { FolderPlus, SquareMousePointer, Trash2 } from "lucide-react";
+import { FolderPlus, Trash2 } from "lucide-react";
 import {
   PortfolioAddWorkSection,
   type PortfolioAddWorkSubmissionOption,
@@ -55,6 +55,7 @@ export function PortfolioPageBody({
   const searchParams = useSearchParams();
   const searchParamsKey = searchParams.toString();
   const t = useTranslations("portfolio");
+  const tProfile = useTranslations("profile");
   const tEditor = useTranslations("portfolioEditor");
 
   const [featuredSubmissionId, setFeaturedSubmissionId] = useState<
@@ -172,18 +173,37 @@ export function PortfolioPageBody({
   return (
     <div>
       {isOwnPortfolio && portfolioTitle && filterProps && (
-        <div className="md:hidden mb-4 w-full">
-          <PortfolioMobileMenu
-            title={portfolioTitle}
-            userId={user.id}
-            filterProps={filterProps}
-            showSelectionToggle
-            selectionMode={selectionMode}
-            onSelectionModeToggle={() => {
-              setSelectionMode((m) => !m);
-              setSelectedIds(new Set());
-            }}
-          />
+        <div className="mb-4 flex w-full items-start gap-4 md:mb-8">
+          {user.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.image}
+              alt={user.name || "User"}
+              className="hidden h-12 w-12 shrink-0 rounded-full md:block"
+            />
+          ) : (
+            <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted md:flex">
+              <span className="text-lg font-medium text-muted-foreground">
+                {user.name?.charAt(0) || "?"}
+              </span>
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <PortfolioMobileMenu
+              title={portfolioTitle}
+              subtitle={`${items.length} ${
+                items.length !== 1 ? tProfile("works") : tProfile("work")
+              }`}
+              userId={user.id}
+              filterProps={filterProps}
+              showSelectionToggle
+              selectionMode={selectionMode}
+              onSelectionModeToggle={() => {
+                setSelectionMode((m) => !m);
+                setSelectedIds(new Set());
+              }}
+            />
+          </div>
         </div>
       )}
 
@@ -193,37 +213,8 @@ export function PortfolioPageBody({
         </div>
       )}
 
-      {isOwnPortfolio && (
-        <div className="mb-4 hidden flex-wrap items-center gap-2 md:flex">
-          <Button
-            type="button"
-            variant={selectionMode ? "secondary" : "outline"}
-            size="sm"
-            onClick={() => {
-              setSelectionMode((m) => !m);
-              setSelectedIds(new Set());
-            }}
-          >
-            <SquareMousePointer className="mr-2 h-4 w-4" />
-            {selectionMode ? t("exitSelectionMode") : t("selectionMode")}
-          </Button>
-          {selectionMode && visibleIds.length > 0 && (
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-              <Checkbox
-                checked={allVisibleSelected}
-                onCheckedChange={(c) => handleSelectAllVisible(c === true)}
-              />
-              {allVisibleSelected
-                ? tEditor("deselectAll")
-                : tEditor("selectAll")}
-              {visibleIds.length > 0 && ` (${visibleIds.length})`}
-            </label>
-          )}
-        </div>
-      )}
-
       {isOwnPortfolio && selectionMode && visibleIds.length > 0 && (
-        <div className="mb-3 flex items-center gap-2 md:hidden">
+        <div className="mb-3 flex items-center gap-2">
           <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
             <Checkbox
               checked={allVisibleSelected}
