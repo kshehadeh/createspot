@@ -178,10 +178,11 @@ export function CollectionEditForm({
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <PageHeader
+          className="mb-0"
           title={
             <div className="flex items-center gap-2">
               <span>{t("editCollection")}</span>
