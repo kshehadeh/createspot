@@ -4,13 +4,20 @@ import * as React from "react";
 import { Check, ChevronDown, X, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from "@createspot/ui-primitives/command";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+} from "@createspot/ui-primitives/popover";
+import { Badge } from "@createspot/ui-primitives/badge";
+import { Button } from "@createspot/ui-primitives/button";
+import { Input } from "@createspot/ui-primitives/input";
 import { cn } from "@/lib/utils";
 
 export interface MultiSelectOption {
@@ -276,37 +283,41 @@ export function MultiSelect({
             </div>
           </div>
         )}
-        <div className="max-h-60 overflow-auto p-1">
-          {isSearching ? (
-            <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
-              Searching...
-            </div>
-          ) : displayOptions.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
-              {searchable && searchQuery.trim()
-                ? "No results found"
-                : "No options available"}
-            </div>
-          ) : (
-            displayOptions.map((option) => {
-              const isSelected = selected.includes(option.value);
-              return (
-                <div
-                  key={option.value}
-                  className={cn(
-                    "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                  )}
-                  onClick={() => handleToggle(option.value)}
-                >
-                  <div className="flex h-4 w-4 items-center justify-center rounded-sm border border-primary mr-2">
-                    {isSelected && <Check className="h-4 w-4" />}
-                  </div>
-                  <span>{option.label}</span>
-                </div>
-              );
-            })
-          )}
-        </div>
+        <Command shouldFilter={false}>
+          <CommandList className="max-h-60 overflow-auto p-1">
+            {isSearching ? (
+              <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
+                Searching...
+              </div>
+            ) : (
+              <>
+                <CommandEmpty>
+                  {searchable && searchQuery.trim()
+                    ? "No results found"
+                    : "No options available"}
+                </CommandEmpty>
+                <CommandGroup>
+                  {displayOptions.map((option) => {
+                    const isSelected = selected.includes(option.value);
+                    return (
+                      <CommandItem
+                        key={option.value}
+                        value={option.label}
+                        onSelect={() => handleToggle(option.value)}
+                        className="py-1.5"
+                      >
+                        <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
+                          {isSelected && <Check className="h-4 w-4" />}
+                        </div>
+                        <span>{option.label}</span>
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        </Command>
       </PopoverContent>
     </Popover>
   );

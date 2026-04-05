@@ -12,8 +12,12 @@ import Image from "next/image";
 import Link from "@/components/link";
 import { useTranslations } from "next-intl";
 import useEmblaCarousel from "embla-carousel-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@createspot/ui-primitives/avatar";
+import { Button } from "@createspot/ui-primitives/button";
 import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";

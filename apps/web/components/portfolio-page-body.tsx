@@ -19,7 +19,7 @@ import {
 import { CollectionSelectModal } from "@/components/collection-select-modal";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface PortfolioPageBodyProps {

@@ -8,7 +8,7 @@ import {
   VisuallyHidden,
 } from "@/components/ui/dialog";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 
 interface ImageLightboxProps {

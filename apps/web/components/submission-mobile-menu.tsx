@@ -4,7 +4,7 @@ import Link from "@/components/link";
 import { Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ShareButton } from "@/components/share-button";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@createspot/ui-primitives/button";
 import { cn } from "@/lib/utils";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { FavoriteButton } from "@/components/favorite-button";

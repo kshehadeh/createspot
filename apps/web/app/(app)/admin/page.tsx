@@ -10,7 +10,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Users, LayoutGrid, Bell, Settings } from "lucide-react";
 
 export default async function AdminPage() {

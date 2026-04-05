@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { auth, signIn } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateSpotLogo } from "@/components/create-spot-logo";
 

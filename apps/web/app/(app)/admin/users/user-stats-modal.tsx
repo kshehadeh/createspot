@@ -9,7 +9,7 @@ import {
   BaseModalTitle,
   BaseModalScrollArea,
 } from "@/components/ui/base-modal";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@createspot/ui-primitives/badge";
 import { Loader2, HardDrive, Image, User } from "lucide-react";
 
 interface SubmissionItem {

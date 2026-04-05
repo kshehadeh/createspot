@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { ExhibitFormSimple } from "../exhibit-form-simple";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 
 export default async function NewExhibitPage() {
   const session = await auth();

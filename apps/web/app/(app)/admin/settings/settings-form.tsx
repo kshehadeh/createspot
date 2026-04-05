@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Button } from "@createspot/ui-primitives/button";
+import { Label } from "@createspot/ui-primitives/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@createspot/ui-primitives/select";
 import type { SiteSettings, HomepageCarouselFallback } from "@/lib/settings";
 import { SubmissionBrowser } from "@/components/submission-browser";
 import { getObjectPositionStyle } from "@/lib/image-utils";

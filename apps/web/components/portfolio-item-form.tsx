@@ -31,16 +31,16 @@ import {
   ProgressionFormItem,
 } from "@/components/progression-editor";
 import { ImageEditorWrapper } from "@/components/image-editor-wrapper";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@createspot/ui-primitives/button";
+import { Input } from "@createspot/ui-primitives/input";
+import { Label } from "@createspot/ui-primitives/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@createspot/ui-primitives/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,

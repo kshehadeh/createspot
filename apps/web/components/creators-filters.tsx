@@ -8,9 +8,9 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@createspot/ui-primitives/popover";
+import { Input } from "@createspot/ui-primitives/input";
+import { Button } from "@createspot/ui-primitives/button";
 
 interface CreatorsFiltersProps {
   initialQuery?: string;

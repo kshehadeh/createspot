@@ -6,7 +6,7 @@ import Link from "@/components/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { DashboardSection } from "@/components/dashboard-section";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { ListFilter, SquareMousePointer } from "lucide-react";
 import { ShareButton } from "@/components/share-button";
 import { PortfolioFilters } from "@/components/portfolio-filters";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@createspot/ui-primitives/button";
 import { cn } from "@/lib/utils";
 import type { PortfolioSortValue } from "@/lib/portfolio-page-query";
 

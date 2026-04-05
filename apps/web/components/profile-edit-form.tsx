@@ -2,13 +2,12 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { buildRoutePath } from "@/lib/routes";
-import { TextThumbnail } from "@/components/text-thumbnail";
+import { FeaturedSubmissionSelector } from "@/components/featured-submission-selector";
 
 // Heavy TipTap editor - dynamically import
 const RichTextEditor = dynamic(
@@ -21,18 +20,18 @@ const RichTextEditor = dynamic(
     ),
   },
 );
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@createspot/ui-primitives/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@createspot/ui-primitives/select";
+import { Input } from "@createspot/ui-primitives/input";
+import { Button } from "@createspot/ui-primitives/button";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Label } from "@createspot/ui-primitives/label";
 import { toast } from "sonner";
 import { TutorialManager } from "@/lib/tutorial-manager";
 
@@ -141,7 +140,6 @@ export function ProfileEditForm({
   const router = useRouter();
   const t = useTranslations("profile");
   const tCommon = useTranslations("common");
-  const tCategories = useTranslations("categories");
   const [name, setName] = useState(initialName || initialGoogleName || "");
   const [bio, setBio] = useState(initialBio);
   const [bioHasFocus, setBioHasFocus] = useState(false);
@@ -199,11 +197,9 @@ export function ProfileEditForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [websiteError, setWebsiteError] = useState<string | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isResetTutorialModalOpen, setIsResetTutorialModalOpen] =
     useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Track initial values to detect changes
   const initialValuesRef = useRef({
@@ -240,25 +236,6 @@ export function ProfileEditForm({
 
   // Slug validation debounce timer
   const slugValidationTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    }
-
-    if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDropdownOpen]);
 
   // Auto-save function (excludes bio which is handled separately)
   const saveProfile = useCallback(
@@ -983,13 +960,6 @@ export function ProfileEditForm({
     [saveEmailPreferences],
   );
 
-  const getSubmissionLabel = (submission: SubmissionOption): string => {
-    if (submission.category) {
-      return tCategories(submission.category as never);
-    }
-    return t("portfolioBadge");
-  };
-
   return (
     <div>
       {error && (
@@ -1184,173 +1154,16 @@ export function ProfileEditForm({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-foreground">
-            {t("featuredPiece")}
-          </label>
-          <p className="mb-3 text-xs text-muted-foreground">
-            {t("featuredPieceDescription")}
-          </p>
-          {submissions.length > 0 ? (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex w-full items-center justify-between rounded-lg border border-input bg-background px-4 py-3 text-left text-foreground transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
-                aria-expanded={isDropdownOpen}
-                aria-haspopup="listbox"
-              >
-                {(() => {
-                  const selected = submissions.find(
-                    (s) => s.id === featuredSubmissionId,
-                  );
-                  if (!selected) {
-                    return (
-                      <span className="text-muted-foreground">
-                        {tCommon("none")}
-                      </span>
-                    );
-                  }
-                  const word = getSubmissionLabel(selected);
-                  return (
-                    <div className="flex min-w-0 flex-1 items-center gap-3">
-                      {selected.imageUrl ? (
-                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
-                          <Image
-                            src={selected.imageUrl}
-                            alt={selected.title || word}
-                            fill
-                            className="object-cover"
-                            sizes="40px"
-                          />
-                        </div>
-                      ) : selected.text ? (
-                        <TextThumbnail
-                          text={selected.text}
-                          className="h-10 w-10 shrink-0 rounded-lg"
-                        />
-                      ) : (
-                        <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-muted-foreground">
-                            {word}
-                          </span>
-                        </div>
-                        {selected.title && (
-                          <p className="truncate text-sm font-medium text-foreground">
-                            {selected.title}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
-                <svg
-                  className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${
-                    isDropdownOpen ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {isDropdownOpen && (
-                <div className="absolute z-50 mt-2 max-h-96 w-full overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
-                  <div className="py-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleFeaturedSubmissionChange("");
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left transition-colors ${
-                        featuredSubmissionId === ""
-                          ? "bg-accent text-accent-foreground"
-                          : "text-popover-foreground hover:bg-accent hover:text-accent-foreground"
-                      }`}
-                    >
-                      <span className="text-sm font-medium">
-                        {tCommon("none")}
-                      </span>
-                    </button>
-                    {submissions.map((submission) => {
-                      const word = getSubmissionLabel(submission);
-                      const isSelected = featuredSubmissionId === submission.id;
-                      return (
-                        <button
-                          key={submission.id}
-                          type="button"
-                          onClick={() => {
-                            handleFeaturedSubmissionChange(submission.id);
-                            setIsDropdownOpen(false);
-                          }}
-                          className={`w-full px-4 py-3 text-left transition-colors ${
-                            isSelected
-                              ? "bg-accent text-accent-foreground"
-                              : "text-popover-foreground hover:bg-accent hover:text-accent-foreground"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            {submission.imageUrl ? (
-                              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                                <Image
-                                  src={submission.imageUrl}
-                                  alt={submission.title || word}
-                                  fill
-                                  className="object-cover"
-                                  sizes="48px"
-                                />
-                              </div>
-                            ) : submission.text ? (
-                              <TextThumbnail
-                                text={submission.text}
-                                className="h-12 w-12 shrink-0 rounded-lg"
-                              />
-                            ) : (
-                              <div className="h-12 w-12 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
-                            )}
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                                  {word}
-                                </span>
-                                {submission.isPortfolio && (
-                                  <Badge className="bg-prompt/15 text-prompt-foreground hover:bg-prompt/25">
-                                    {t("portfolioBadge")}
-                                  </Badge>
-                                )}
-                                {isSelected && (
-                                  <span className="text-xs text-muted-foreground">
-                                    {t("featured")}
-                                  </span>
-                                )}
-                              </div>
-                              {submission.title && (
-                                <p className="truncate text-sm font-medium text-popover-foreground">
-                                  {submission.title}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">{t("noWorkYet")}</p>
-          )}
+          <FeaturedSubmissionSelector
+            submissions={submissions}
+            selectedSubmissionId={featuredSubmissionId}
+            onChange={handleFeaturedSubmissionChange}
+            label={t("featuredPiece")}
+            description={t("featuredPieceDescription")}
+            emptyMessage={t("noWorkYet")}
+            noneLabel={tCommon("none")}
+            featuredLabel={t("featured")}
+          />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

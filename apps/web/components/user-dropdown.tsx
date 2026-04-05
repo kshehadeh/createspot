@@ -9,8 +9,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from "@createspot/ui-primitives/dropdown-menu";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@createspot/ui-primitives/avatar";
 import { ChevronDown, Pencil, User } from "lucide-react";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getRoute } from "@/lib/routes";

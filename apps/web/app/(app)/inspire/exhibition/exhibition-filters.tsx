@@ -4,8 +4,8 @@ import type { FormEvent } from "react";
 import { useEffect, useState, useTransition, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@createspot/ui-primitives/input";
+import { Button } from "@createspot/ui-primitives/button";
 import {
   MultiSelect,
   type MultiSelectOption,

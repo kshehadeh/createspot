@@ -57,7 +57,7 @@ import {
   BaseModalDescription,
   BaseModalFooter,
 } from "@/components/ui/base-modal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 
 function MyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   return (

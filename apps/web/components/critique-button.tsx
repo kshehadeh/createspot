@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "@/components/link";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@createspot/ui-primitives/button";
+import { Badge } from "@createspot/ui-primitives/badge";
 import { getCreatorUrl } from "@/lib/utils";
 
 interface CritiqueButtonProps {

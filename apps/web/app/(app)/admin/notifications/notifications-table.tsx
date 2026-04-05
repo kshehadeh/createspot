@@ -17,10 +17,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
+} from "@createspot/ui-primitives/select";
+import { Button } from "@createspot/ui-primitives/button";
+import { Badge } from "@createspot/ui-primitives/badge";
+import { Label } from "@createspot/ui-primitives/label";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { UserAutocomplete } from "@/components/user-autocomplete";
 import { getCreatorUrl } from "@/lib/utils";

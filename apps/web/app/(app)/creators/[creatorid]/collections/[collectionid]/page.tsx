@@ -7,7 +7,7 @@ import { CollectionDownloadDropdown } from "@/components/collection-download-dro
 import { PageLayout } from "@/components/page-layout";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ShareButton } from "@/components/share-button";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@createspot/ui-primitives/button";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { getCollectionMetadata } from "@/lib/og-metadata";

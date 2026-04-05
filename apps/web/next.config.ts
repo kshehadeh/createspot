@@ -7,6 +7,7 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  transpilePackages: ["@createspot/ui-primitives"],
   async redirects() {
     return [
       {

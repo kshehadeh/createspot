@@ -15,7 +15,7 @@ import {
   Check,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import {
   Tooltip,
   TooltipContent,

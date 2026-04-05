@@ -12,7 +12,11 @@ import { ExhibitionFilters } from "../exhibition-filters";
 import { ExhibitionGrid } from "../exhibition-grid";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { TextThumbnail } from "@/components/text-thumbnail";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@createspot/ui-primitives/avatar";
 import { getCreatorUrl } from "@/lib/utils";
 import { ExhibitViewSelector } from "@/components/exhibit-view-selector";
 

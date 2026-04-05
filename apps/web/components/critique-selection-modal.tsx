@@ -10,7 +10,7 @@ import {
   BaseModalTitle,
   BaseModalScrollArea,
 } from "@/components/ui/base-modal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import type { SelectionDataInput } from "@/lib/critique-fragments";

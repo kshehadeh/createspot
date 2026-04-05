@@ -6,8 +6,12 @@ import { getExhibitById } from "@/lib/exhibits";
 import { getExhibitMetadata } from "@/lib/og-metadata";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@createspot/ui-primitives/avatar";
+import { Button } from "@createspot/ui-primitives/button";
 import {
   Card,
   CardContent,

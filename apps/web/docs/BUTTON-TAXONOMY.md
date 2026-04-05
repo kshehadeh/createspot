@@ -6,7 +6,7 @@ Shared vocabulary for interactive controls. Prefer these primitives before addin
 
 **Use:** Primary / secondary / destructive actions in `BaseModalFooter`, form submit rows, admin tables, inline “Retry” on errors.
 
-**Primitive:** [`Button`](../components/ui/button.tsx) from `@/components/ui/button` with `variant` (`default`, `destructive`, `outline`, `secondary`, `ghost`, `link`, `fabFilled`, `fabMuted`, `overlayLight`, `overlayDark`) and `size` (`default`, `sm`, `lg`, `icon`).
+**Primitive:** `Button` from `@createspot/ui-primitives/button` (source in `packages/ui-primitives/src/button.tsx`) with `variant` (`default`, `destructive`, `outline`, `secondary`, `ghost`, `link`, `fabFilled`, `fabMuted`, `overlayLight`, `overlayDark`) and `size` (`default`, `sm`, `lg`, `icon`).
 
 **Navigation:** `Button asChild` wrapping `@/components/link` `Link` when the control navigates.
 
@@ -79,7 +79,7 @@ Shared vocabulary for interactive controls. Prefer these primitives before addin
 
 ## `Button` import inventory
 
-All files importing `@/components/ui/button` are expected to use type **A** unless they explicitly use `overlayLight`, `overlayDark`, `fabFilled`, or `fabMuted` (types **B** / **C**).
+All files importing `@createspot/ui-primitives/button` are expected to use type **A** unless they explicitly use `overlayLight`, `overlayDark`, `fabFilled`, or `fabMuted` (types **B** / **C**).
 
 ## `buttonVariants` usage outside `Button`
 

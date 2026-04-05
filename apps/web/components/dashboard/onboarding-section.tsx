@@ -14,7 +14,7 @@ import {
   UserPlus,
   FolderHeart,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 
 interface OnboardingStatus {
   hasFavorited: boolean;

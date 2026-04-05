@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { getCreatorUrl, cn } from "@/lib/utils";
 
 type ShareButtonPropsBase = {

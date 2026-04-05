@@ -14,7 +14,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
-import { LIGHTBOX_BUTTON_CLASS } from "@/components/ui/button";
+import { LIGHTBOX_BUTTON_CLASS } from "@createspot/ui-primitives/button";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
 import { useImagePreloader } from "@/lib/hooks/use-image-preloader";
 import { usePinchZoom } from "@/lib/hooks/use-pinch-zoom";

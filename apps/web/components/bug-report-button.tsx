@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { SupportFormModal } from "@/components/contact/support-form-modal";
 import { Bug } from "lucide-react";
 

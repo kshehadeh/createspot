@@ -5,7 +5,11 @@ import Link from "@/components/link";
 import Image from "next/image";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { TextThumbnail } from "@/components/text-thumbnail";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@createspot/ui-primitives/avatar";
 import { ExhibitViewSelector } from "@/components/exhibit-view-selector";
 import { GlobalMap } from "./global-map";
 import { getCreatorUrl } from "@/lib/utils";

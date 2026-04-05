@@ -12,7 +12,7 @@ This document provides essential information for AI agents and developers workin
 - **Auth**: NextAuth.js with Google OAuth
 - **Storage**: Cloudflare R2 for images
 - **Styling**: Tailwind CSS 4
-- **UI Components**: shadcn/ui (Radix UI primitives)
+- **UI Components**: shared `@createspot/ui-primitives` package (shadcn/Radix-based primitives)
 - **Theme**: next-themes with user-controllable dark/light mode
 - **i18n**: next-intl with profile-based language preferences
 
@@ -59,8 +59,9 @@ apps/web/app/            # Next.js App Router pages and API routes
 ├── inspire/            # Exhibition, favorites, community, museums
 └── creators/           # Profiles, portfolios, submissions
 
-apps/web/components/     # Shared React components
-├── ui/                  # shadcn/ui components (button, dialog, etc.)
+packages/ui-primitives/   # Shared primitive UI package (button, input, select, etc.)
+apps/web/components/      # Shared React components
+├── ui/                   # App-level UI wrappers/compatibility components
 apps/web/i18n/           # Internationalization configuration
 ├── config.ts            # Supported locales and utilities
 └── request.ts           # next-intl server configuration
@@ -179,25 +180,36 @@ export function InteractiveComponent() {
 ### Styling & UI Components
 
 - **Tailwind CSS 4** - Utility-first styling
-- **shadcn/ui** - Accessible component primitives (Radix UI)
+- **@createspot/ui-primitives** - Shared primitive components (shadcn/Radix-based)
 - **next-themes** - Theme management with user toggle
 - Follow the zinc color palette for consistency
 - Use shadcn components when available (button, dialog, dropdown, etc.)
 
-#### Using shadcn/ui Components
+#### Using Primitive Components
 
-Components are located in `apps/web/components/ui/`. Import and use them directly:
+Primitive components are sourced from `@createspot/ui-primitives` and should be imported directly:
 
 ```tsx
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@createspot/ui-primitives/button";
+import { Input } from "@createspot/ui-primitives/input";
+import { Label } from "@createspot/ui-primitives/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@createspot/ui-primitives/select";
 
 <Button variant="default" size="lg">Click me</Button>
 <Input type="text" placeholder="Enter text" />
 <Label htmlFor="input-id">Label text</Label>
 ```
+
+**Important:**
+- Use direct package imports for primitives: `@createspot/ui-primitives/<component>`.
+- Do not add new primitive imports from `@/components/ui/*`.
+- `apps/web/components/ui/*` should be treated as app-level wrappers/compatibility shims, not the primary primitive source.
 
 #### Theme System
 
@@ -226,13 +238,16 @@ iOS Safari has a known issue where dark mode detection fails for cards with grad
 
 See `apps/web/app/globals.css` for examples (`terms-card`, `contact-card-blue`, `contact-card-purple`) and [apps/web/docs/FRONTEND.md](apps/web/docs/FRONTEND.md) for complete documentation.
 
-#### Adding New shadcn Components
+#### Adding New Primitive Components
 
 ```bash
 bunx shadcn@latest add <component-name>
 ```
 
-This will add the component to `apps/web/components/ui/` and update necessary dependencies.
+After generating or authoring a new primitive:
+1. Implement it in `packages/ui-primitives/src/`.
+2. Export it from `packages/ui-primitives/src/index.ts` and `packages/ui-primitives/package.json` `exports`.
+3. Consume it via `@createspot/ui-primitives/<component>` in app code.
 
 ### Internationalization (i18n)
 
@@ -351,7 +366,7 @@ import {
   BaseModalDescription,
   BaseModalFooter,
 } from "@/components/ui/base-modal";
-
+import { Button } from "@createspot/ui-primitives/button";
 <BaseModal 
   open={isOpen} 
   onOpenChange={onClose}
@@ -427,20 +442,20 @@ const { submissions } = await getExhibitionSubmissions({ skip: 0, take: 30 });
 
 ### Add a Shared Component
 
-1. Check if a shadcn/ui component exists first (`apps/web/components/ui/`)
+1. Check if a primitive exists first in `packages/ui-primitives/src/`
 2. If not, create in `apps/web/components/` directory
 3. Use TypeScript interfaces for props
-4. Use shadcn components as building blocks when possible
+4. Use `@createspot/ui-primitives` components as building blocks when possible
 5. Theme-aware components will automatically work with the theme system
 6. Export from the file
 
-### Add a New shadcn Component
+### Add a New Primitive
 
 ```bash
 bunx shadcn@latest add <component-name>
 ```
 
-Components are installed to `components/ui/` and can be imported directly.
+Use generated code as reference, then place the primitive in `packages/ui-primitives/src/` and export it from the package. Application code should import from `@createspot/ui-primitives/<component>`.
 
 ## Troubleshooting
 

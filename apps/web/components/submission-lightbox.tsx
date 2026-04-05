@@ -13,7 +13,10 @@ import {
   BaseLightboxRenderContext,
 } from "@/components/base-lightbox";
 import { ShareButton } from "@/components/share-button";
-import { Button, LIGHTBOX_BUTTON_CLASS } from "@/components/ui/button";
+import {
+  Button,
+  LIGHTBOX_BUTTON_CLASS,
+} from "@createspot/ui-primitives/button";
 import {
   Tooltip,
   TooltipContent,

@@ -8,7 +8,7 @@ import Link from "@/components/link";
 import { LayoutDashboard, Plus } from "lucide-react";
 import { FeedCard, type FeedCardSubmission } from "@/components/feed-card";
 import { FavoritesProvider } from "@/components/favorites-provider";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
 

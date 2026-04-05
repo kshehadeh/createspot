@@ -9,17 +9,17 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@createspot/ui-primitives/popover";
+import { Badge } from "@createspot/ui-primitives/badge";
+import { Input } from "@createspot/ui-primitives/input";
+import { Button } from "@createspot/ui-primitives/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@createspot/ui-primitives/select";
 
 interface ExhibitFiltersProps {
   curators: Array<{

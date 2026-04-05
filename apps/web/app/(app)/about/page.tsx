@@ -9,7 +9,7 @@ import { getHomepageHeroData } from "@/lib/homepage-hero";
 import { PageLayout } from "@/components/page-layout";
 import { AboutCard } from "@/components/about-card";
 import { getRoute } from "@/lib/routes";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import {
   ArrowRight,
   ExternalLink,

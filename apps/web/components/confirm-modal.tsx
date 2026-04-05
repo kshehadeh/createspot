@@ -9,7 +9,7 @@ import {
   BaseModalHeader,
   BaseModalTitle,
 } from "@/components/ui/base-modal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 
 interface ConfirmModalProps {
   isOpen: boolean;

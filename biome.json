@@ -31,6 +31,9 @@
       "apps/web/**/*.json",
       "apps/web/**/*.ts",
       "apps/web/**/*.tsx",
+      "packages/**/*.ts",
+      "packages/**/*.tsx",
+      "packages/**/*.json",
       "*.ts",
       "*.mjs",
       "*.json"

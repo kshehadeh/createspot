@@ -13,8 +13,8 @@ import {
   BaseModalScrollArea,
   BaseModalTitle,
 } from "@/components/ui/base-modal";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@createspot/ui-primitives/button";
+import { Input } from "@createspot/ui-primitives/input";
 import { toast } from "sonner";
 
 interface DeleteAccountModalProps {

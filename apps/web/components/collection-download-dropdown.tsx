@@ -11,13 +11,13 @@ import {
   Loader2,
   Image as ImageIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@createspot/ui-primitives/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 type CollectionDownloadDropdownProps =

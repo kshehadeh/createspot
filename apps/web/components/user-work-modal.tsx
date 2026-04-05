@@ -13,7 +13,7 @@ import {
   BaseModalTitle,
   BaseModalScrollArea,
 } from "@/components/ui/base-modal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 import { getCreatorUrl } from "@/lib/utils";

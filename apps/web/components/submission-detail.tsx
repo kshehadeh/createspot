@@ -17,7 +17,7 @@ import { SocialLinks } from "@/components/social-links";
 import { SubmissionImage } from "@/components/submission-image";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { SubmissionMobileMenu } from "@/components/submission-mobile-menu";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@createspot/ui-primitives/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,

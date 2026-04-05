@@ -12,7 +12,7 @@ import {
   BaseModalTitle,
   BaseModalScrollArea,
 } from "@/components/ui/base-modal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { FocalPointModal } from "@/components/focal-point-modal";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { getUserImageUrl } from "@/lib/user-image";

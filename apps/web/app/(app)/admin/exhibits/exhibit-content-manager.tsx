@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { SubmissionBrowser } from "@/components/submission-browser";
 import { PortfolioGridExhibit } from "@/components/portfolio-grid";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 
 interface Submission {
   id: string;

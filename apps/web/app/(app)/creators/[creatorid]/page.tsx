@@ -15,7 +15,7 @@ import { ProfileImageViewer } from "@/components/profile-image-viewer";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import { ShareButton } from "@/components/share-button";
 import { SocialLinks } from "@/components/social-links";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@createspot/ui-primitives/button";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { getTutorialData } from "@/lib/get-tutorial-data";

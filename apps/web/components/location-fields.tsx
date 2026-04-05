@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@createspot/ui-primitives/select";
 
 // Types for country-state-city data
 interface CountryData {

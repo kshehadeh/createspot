@@ -24,6 +24,9 @@
         "e2e/**",
         "playwright.config.ts"
       ]
+    },
+    "packages/ui-primitives": {
+      "entry": ["src/**/*.{ts,tsx}"]
     }
   },
   "ignoreExportsUsedInFile": {

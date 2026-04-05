@@ -7,8 +7,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from "@createspot/ui-primitives/dropdown-menu";
+import { Button } from "@createspot/ui-primitives/button";
 import { EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";
 import type { ExhibitionType } from "@/lib/exhibition-constants";
 

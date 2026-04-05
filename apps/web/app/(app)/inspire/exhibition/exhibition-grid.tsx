@@ -11,7 +11,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 import { getObjectPositionStyle } from "@/lib/image-utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 // Heavy components - lazy load the lightbox and session provider

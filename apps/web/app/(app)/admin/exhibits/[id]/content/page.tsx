@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { ExhibitContentManager } from "../../exhibit-content-manager";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 
 interface ExhibitContentPageProps {
   params: Promise<{ id: string }>;

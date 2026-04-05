@@ -10,15 +10,15 @@ import {
   MultiSelect,
   type MultiSelectOption,
 } from "@/components/ui/multi-select";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@createspot/ui-primitives/button";
+import { Input } from "@createspot/ui-primitives/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@createspot/ui-primitives/select";
 import { useTagSearch } from "@/lib/hooks/use-tag-search";
 import { useRecentTags } from "@/lib/hooks/use-recent-tags";
 import { CategoryFilter } from "@/components/category-filter";

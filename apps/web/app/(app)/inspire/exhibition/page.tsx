@@ -9,7 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@createspot/ui-primitives/avatar";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import type { ExhibitionType } from "@/lib/exhibition-constants";
 import { EXHIBITION_CONFIGS } from "@/lib/exhibition-constants";

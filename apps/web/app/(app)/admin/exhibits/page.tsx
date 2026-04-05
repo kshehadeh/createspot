@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
 import { ExhibitGrid } from "./exhibit-grid";
 import { ExhibitFilters } from "./exhibit-filters";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { isExhibitActive } from "@/lib/exhibit-utils";
 
 interface AdminExhibitsPageProps {

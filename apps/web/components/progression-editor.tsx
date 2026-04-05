@@ -13,9 +13,9 @@ import {
   Upload,
   Trash2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@createspot/ui-primitives/button";
+import { Label } from "@createspot/ui-primitives/label";
+import { Textarea } from "@createspot/ui-primitives/textarea";
 import {
   BaseModal,
   BaseModalContent,

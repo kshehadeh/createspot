@@ -1,16 +1,27 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@createspot/ui-primitives/avatar";
+import { Label } from "@createspot/ui-primitives/label";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@createspot/ui-primitives/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+} from "@createspot/ui-primitives/popover";
+import { Button } from "@createspot/ui-primitives/button";
+import { Check, X } from "lucide-react";
 
 export interface UserOption {
   id: string;
@@ -42,7 +53,6 @@ export function UserAutocomplete({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserOption | null>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Clear selected user when value is cleared
   useEffect(() => {
@@ -113,11 +123,6 @@ export function UserAutocomplete({
     if (!newOpen) {
       setSearchQuery("");
       setUsers([]);
-    } else {
-      // Focus input when opening
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 0);
     }
   };
 
@@ -170,65 +175,70 @@ export function UserAutocomplete({
           className="w-[var(--radix-popover-trigger-width)] p-0"
           align="start"
         >
-          <div className="border-b p-2">
-            <Input
-              ref={inputRef}
-              type="text"
+          <Command shouldFilter={false}>
+            <CommandInput
               placeholder={placeholder}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
+              onValueChange={setSearchQuery}
+              autoFocus
             />
-          </div>
-          <div className="max-h-96 overflow-y-auto">
-            {isLoading ? (
-              <div className="px-4 py-3 text-sm text-muted-foreground">
-                Searching...
-              </div>
-            ) : users.length === 0 ? (
-              <div className="px-4 py-3 text-sm text-muted-foreground">
-                {searchQuery.trim()
-                  ? "No users found"
-                  : "Start typing to search for users"}
-              </div>
-            ) : (
-              users.map((user) => (
-                <button
-                  key={user.id}
-                  type="button"
-                  onClick={() => handleSelect(user)}
-                  className="w-full px-4 py-3 text-left transition-colors hover:bg-accent hover:text-accent-foreground"
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 shrink-0">
-                      <AvatarImage src={user.image || undefined} />
-                      <AvatarFallback className="bg-muted text-muted-foreground">
-                        {user.name
-                          ? user.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")
-                              .toUpperCase()
-                              .slice(0, 2)
-                          : user.email[0]?.toUpperCase() || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-foreground">
-                        {user.name || "Anonymous"}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {user.email}
-                      </p>
-                    </div>
-                    {selectedUser?.id === user.id && (
-                      <div className="h-4 w-4 shrink-0 rounded-full bg-primary" />
-                    )}
-                  </div>
-                </button>
-              ))
-            )}
-          </div>
+            <CommandList className="max-h-96 overflow-y-auto">
+              {isLoading ? (
+                <div className="px-4 py-3 text-sm text-muted-foreground">
+                  Searching...
+                </div>
+              ) : (
+                <>
+                  <CommandEmpty>
+                    {searchQuery.trim()
+                      ? "No users found"
+                      : "Start typing to search for users"}
+                  </CommandEmpty>
+                  <CommandGroup>
+                    {users.map((user) => (
+                      <CommandItem
+                        key={user.id}
+                        value={`${user.name ?? ""} ${user.email}`.trim()}
+                        onSelect={() => handleSelect(user)}
+                        className="px-4 py-3"
+                      >
+                        <div className="flex w-full items-center gap-3">
+                          <Avatar className="h-10 w-10 shrink-0">
+                            <AvatarImage src={user.image || undefined} />
+                            <AvatarFallback className="bg-muted text-muted-foreground">
+                              {user.name
+                                ? user.name
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")
+                                    .toUpperCase()
+                                    .slice(0, 2)
+                                : user.email[0]?.toUpperCase() || "?"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-foreground">
+                              {user.name || "Anonymous"}
+                            </p>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {user.email}
+                            </p>
+                          </div>
+                          <Check
+                            className={`h-4 w-4 shrink-0 text-primary ${
+                              selectedUser?.id === user.id
+                                ? "opacity-100"
+                                : "opacity-0"
+                            }`}
+                          />
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </>
+              )}
+            </CommandList>
+          </Command>
         </PopoverContent>
       </Popover>
     </div>

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "@/components/link";
 import { buildRoutePath } from "@/lib/routes";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Table,

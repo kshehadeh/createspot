@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 
 export interface PortfolioAddWorkSubmissionOption {

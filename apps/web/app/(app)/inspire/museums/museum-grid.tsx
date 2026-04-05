@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MUSEUM_PAGE_SIZE } from "@/lib/museums/constants";
 import { getMuseumDisplayName } from "@/lib/museums/museum-display-names";

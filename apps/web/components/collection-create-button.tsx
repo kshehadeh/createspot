@@ -12,10 +12,10 @@ import {
   BaseModalHeader,
   BaseModalTitle,
 } from "@/components/ui/base-modal";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@createspot/ui-primitives/button";
+import { Input } from "@createspot/ui-primitives/input";
+import { Label } from "@createspot/ui-primitives/label";
+import { Textarea } from "@createspot/ui-primitives/textarea";
 import { Switch } from "@/components/ui/switch";
 
 interface CollectionCreateButtonProps {

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@createspot/ui-primitives/badge";
+import { Button } from "@createspot/ui-primitives/button";
 import { BarChart3, Trash2 } from "lucide-react";
 import { DeleteAccountModal } from "@/components/delete-account-modal";
 import { UserStatsModal } from "./user-stats-modal";

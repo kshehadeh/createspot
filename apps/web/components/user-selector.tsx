@@ -1,8 +1,27 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
+import { useEffect, useMemo, useState } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@createspot/ui-primitives/avatar";
+import { Button } from "@createspot/ui-primitives/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@createspot/ui-primitives/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@createspot/ui-primitives/popover";
+import { cn } from "@/lib/utils";
 
 interface UserOption {
   id: string;
@@ -30,52 +49,49 @@ export function UserSelector({
   onSearch,
   loading = false,
 }: UserSelectorProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
+    if (!open || !onSearch) {
+      return;
     }
-
-    if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDropdownOpen]);
-
-  useEffect(() => {
-    if (onSearch && searchQuery) {
-      const timeoutId = setTimeout(() => {
-        onSearch(searchQuery);
-      }, 300);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [searchQuery, onSearch]);
+    const timeoutId = setTimeout(() => {
+      onSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [open, searchQuery, onSearch]);
 
   const selectedUser = users.find((u) => u.id === selectedUserId);
 
-  const filteredUsers = searchQuery
-    ? users.filter(
-        (user) =>
-          user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    : users;
+  const filteredUsers = useMemo(() => {
+    if (onSearch || !searchQuery) {
+      return users;
+    }
+    const normalized = searchQuery.toLowerCase();
+    return users.filter(
+      (user) =>
+        user.name?.toLowerCase().includes(normalized) ||
+        user.email.toLowerCase().includes(normalized),
+    );
+  }, [onSearch, searchQuery, users]);
 
   const handleSelect = (userId: string) => {
     onChange(userId);
-    setIsDropdownOpen(false);
+    setOpen(false);
     setSearchQuery("");
+  };
+
+  const getInitials = (name: string | null, email: string) => {
+    if (name) {
+      return name
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    return email[0]?.toUpperCase() ?? "?";
   };
 
   return (
@@ -86,141 +102,108 @@ export function UserSelector({
       {description && (
         <p className="mb-3 text-xs text-muted-foreground">{description}</p>
       )}
-      <div className="relative" ref={dropdownRef}>
-        <button
-          type="button"
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex w-full items-center justify-between rounded-lg border border-input bg-background px-4 py-3 text-left text-foreground transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
-          aria-expanded={isDropdownOpen}
-          aria-haspopup="listbox"
-        >
-          {selectedUser ? (
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <Avatar className="h-10 w-10 shrink-0">
-                <AvatarImage src={selectedUser.image || undefined} />
-                <AvatarFallback className="bg-muted text-muted-foreground">
-                  {selectedUser.name
-                    ? selectedUser.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()
-                        .slice(0, 2)
-                    : "?"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-foreground">
-                  {selectedUser.name || "Anonymous"}
-                </p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {selectedUser.email}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <span className="text-muted-foreground">Select a user</span>
-          )}
-          <svg
-            className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${
-              isDropdownOpen ? "rotate-180" : ""
-            }`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+      <Popover
+        open={open}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen);
+          if (!nextOpen) {
+            setSearchQuery("");
+          }
+        }}
+      >
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="h-auto w-full justify-between px-4 py-3 text-left font-normal"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
-
-        {isDropdownOpen && (
-          <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-lg">
-            {onSearch && (
-              <div className="border-b border-border p-2">
-                <Input
-                  type="text"
-                  placeholder="Search by name or email..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full"
-                  autoFocus
-                />
+            {selectedUser ? (
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <Avatar className="h-10 w-10 shrink-0">
+                  <AvatarImage src={selectedUser.image || undefined} />
+                  <AvatarFallback className="bg-muted text-muted-foreground">
+                    {getInitials(selectedUser.name, selectedUser.email)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {selectedUser.name || "Anonymous"}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {selectedUser.email}
+                  </p>
+                </div>
               </div>
+            ) : (
+              <span className="text-muted-foreground">Select a user</span>
             )}
-            <div className="max-h-96 overflow-y-auto py-1">
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-0"
+          align="start"
+        >
+          <Command shouldFilter={!onSearch}>
+            <CommandInput
+              placeholder="Search by name or email..."
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+            />
+            <CommandList>
               {loading ? (
                 <div className="px-4 py-3 text-sm text-muted-foreground">
                   Loading...
                 </div>
-              ) : filteredUsers.length === 0 ? (
-                <div className="px-4 py-3 text-sm text-muted-foreground">
-                  {searchQuery ? "No users found" : "No users available"}
-                </div>
               ) : (
-                filteredUsers.map((user) => {
-                  const isSelected = selectedUserId === user.id;
-                  return (
-                    <button
-                      key={user.id}
-                      type="button"
-                      onClick={() => handleSelect(user.id)}
-                      className={`w-full px-4 py-3 text-left transition-colors ${
-                        isSelected
-                          ? "bg-accent text-accent-foreground"
-                          : "text-popover-foreground hover:bg-accent hover:text-accent-foreground"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 shrink-0">
-                          <AvatarImage src={user.image || undefined} />
-                          <AvatarFallback className="bg-muted text-muted-foreground">
-                            {user.name
-                              ? user.name
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")
-                                  .toUpperCase()
-                                  .slice(0, 2)
-                              : "?"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-popover-foreground">
-                            {user.name || "Anonymous"}
-                          </p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {user.email}
-                          </p>
-                        </div>
-                        {isSelected && (
-                          <svg
-                            className="h-5 w-5 shrink-0 text-primary"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
+                <>
+                  <CommandEmpty>
+                    {searchQuery ? "No users found" : "No users available"}
+                  </CommandEmpty>
+                  <CommandGroup>
+                    {filteredUsers.map((user) => {
+                      const isSelected = selectedUserId === user.id;
+                      return (
+                        <CommandItem
+                          key={user.id}
+                          value={`${user.name ?? ""} ${user.email}`.trim()}
+                          onSelect={() => handleSelect(user.id)}
+                          className="px-4 py-3"
+                        >
+                          <div className="flex w-full items-center gap-3">
+                            <Avatar className="h-10 w-10 shrink-0">
+                              <AvatarImage src={user.image || undefined} />
+                              <AvatarFallback className="bg-muted text-muted-foreground">
+                                {getInitials(user.name, user.email)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium text-foreground">
+                                {user.name || "Anonymous"}
+                              </p>
+                              <p className="truncate text-xs text-muted-foreground">
+                                {user.email}
+                              </p>
+                            </div>
+                            <Check
+                              className={cn(
+                                "h-4 w-4 shrink-0 text-primary",
+                                isSelected ? "opacity-100" : "opacity-0",
+                              )}
                             />
-                          </svg>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })
+                          </div>
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                </>
               )}
-            </div>
-          </div>
-        )}
-      </div>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

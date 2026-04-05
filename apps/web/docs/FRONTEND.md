@@ -2,7 +2,7 @@
 
 This document covers the React component architecture, theming system, and UI patterns used in the application.
 
-> **Note**: This app uses **shadcn/ui** for accessible, theme-aware components. Most UI components are built on shadcn primitives located in `components/ui/`. The theme system uses **next-themes** for user-controllable dark/light mode.
+> **Note**: This app uses **shadcn/Radix-based primitives** via the shared package `@createspot/ui-primitives`. The theme system uses **next-themes** for user-controllable dark/light mode.
 
 ## Tech Stack
 
@@ -39,22 +39,12 @@ app/
 └── …
 ```
 
+packages/ui-primitives/
+├── src/                     # Shared primitive source (button, input, select, ...)
+│   └── ...
 components/
-├── ui/                      # shadcn/ui components
-│   ├── alert-dialog.tsx
-│   ├── avatar.tsx
-│   ├── badge.tsx
-│   ├── button.tsx
-│   ├── card.tsx
-│   ├── dialog.tsx
-│   ├── dropdown-menu.tsx
-│   ├── input.tsx
-│   ├── label.tsx
-│   ├── popover.tsx
-│   ├── select.tsx
-│   ├── sonner.tsx          # Toast notifications
-│   ├── switch.tsx
-│   └── tooltip.tsx
+├── ui/                      # App-level wrappers / compatibility components
+│   └── ...
 ├── breadcrumb.tsx           # Breadcrumb navigation
 ├── confirm-modal.tsx        # Reusable confirmation dialog
 ├── constellation-path.tsx   # Constellation path visualization
@@ -333,21 +323,21 @@ import { Header } from "@/components/header";
 - `children?: ReactNode` - Navigation links
 - `user?: { name?: string; image?: string }` - User info for avatar
 
-### shadcn/ui Components
+### Shared Primitive Components
 
-The app uses shadcn/ui for accessible, theme-aware components. All components are in `components/ui/` and can be imported directly.
+The app uses `@createspot/ui-primitives` for accessible, theme-aware primitive components.
 
 #### Common Components
 
 ```tsx
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@createspot/ui-primitives/button";
+import { Input } from "@createspot/ui-primitives/input";
+import { Label } from "@createspot/ui-primitives/label";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@createspot/ui-primitives/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@createspot/ui-primitives/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@createspot/ui-primitives/avatar";
+import { Badge } from "@createspot/ui-primitives/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Button variants
@@ -382,13 +372,21 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 Tabbed interfaces use the shared `@/components/ui/tabs` component (Radix Tabs via shadcn). The submission view (Image, Text, Journey, Reference) and the Community page (Recents, Followers, Following, Blocked) both use this base.
 
-#### Adding New shadcn Components
+#### Adding New Primitives
 
 ```bash
 bunx shadcn@latest add <component-name>
 ```
 
-This installs the component to `components/ui/` with all necessary dependencies.
+Then move/adapt the primitive into `packages/ui-primitives/src/` and export it from the package.
+
+#### Rules for Future Primitive Work
+
+1. Add and maintain primitives in `packages/ui-primitives/src/`.
+2. Export each primitive through `packages/ui-primitives/package.json` `exports`.
+3. Import primitives directly from `@createspot/ui-primitives/<component>` in app code.
+4. Do not introduce new primitive imports from `@/components/ui/*`.
+5. Keep `components/ui/*` for app-specific wrappers and migration compatibility only.
 
 ### ConfirmModal
 
@@ -714,15 +712,15 @@ Usage:
 
 ## Form Patterns
 
-### Using shadcn Form Components
+### Using Primitive Form Components
 
-Forms should use shadcn/ui components for consistent, accessible, theme-aware styling:
+Forms should use `@createspot/ui-primitives` for consistent, accessible, theme-aware styling:
 
 ```tsx
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@createspot/ui-primitives/input";
+import { Label } from "@createspot/ui-primitives/label";
+import { Button } from "@createspot/ui-primitives/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@createspot/ui-primitives/select";
 
 const [formData, setFormData] = useState({ title: "", category: "" });
 

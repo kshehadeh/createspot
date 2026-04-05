@@ -11,7 +11,7 @@ import { getCreatorUrl } from "@/lib/utils";
 import { CreatorCritiquesSubmissionsTable } from "@/components/creator-critiques-submissions-table";
 import { PageLayout } from "@/components/page-layout";
 import { PageHeader } from "@/components/page-header";
-import { Button } from "@/components/ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface CreatorCritiquesPageProps {

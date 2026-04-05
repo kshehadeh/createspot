@@ -12,17 +12,17 @@ import {
   BaseModalHeader,
   BaseModalTitle,
 } from "@/components/ui/base-modal";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Button } from "@createspot/ui-primitives/button";
+import { Input } from "@createspot/ui-primitives/input";
+import { Textarea } from "@createspot/ui-primitives/textarea";
+import { Label } from "@createspot/ui-primitives/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@createspot/ui-primitives/select";
 import { useRecentUrls } from "@/lib/hooks/use-recent-urls";
 
 interface FormData {
