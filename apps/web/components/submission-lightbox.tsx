@@ -13,10 +13,7 @@ import {
   BaseLightboxRenderContext,
 } from "@/components/base-lightbox";
 import { ShareButton } from "@/components/share-button";
-import {
-  Button,
-  LIGHTBOX_BUTTON_CLASS,
-} from "@createspot/ui-primitives/button";
+import { Button } from "@createspot/ui-primitives/button";
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +22,6 @@ import {
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { buildRoutePath } from "@/lib/routes";
 import { fetcher } from "@/lib/swr";
-import { cn } from "@/lib/utils";
 
 interface LightboxSubmission {
   id: string;
@@ -493,10 +489,8 @@ export function SubmissionLightbox({
                   submissionId={submission.id}
                   userId={submissionUserId ?? undefined}
                   userSlug={submissionUserSlug ?? undefined}
-                  className={cn(
-                    "inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 [&_svg]:size-4",
-                    LIGHTBOX_BUTTON_CLASS,
-                  )}
+                  triggerVariant="overlayDark"
+                  className="shrink-0"
                   ariaLabel={t("shareSubmission")}
                 />
               </span>

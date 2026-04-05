@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Bird, Copy, Instagram, Share2, Twitter } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@createspot/ui-primitives/button";
+import { Button, type ButtonProps } from "@createspot/ui-primitives/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +16,11 @@ import { getCreatorUrl, cn } from "@/lib/utils";
 
 type ShareButtonPropsBase = {
   className?: string;
+  /**
+   * Trigger button variant. Use `overlayDark` on dark image overlays (e.g. submission lightbox)
+   * so the icon contrasts with the control background.
+   */
+  triggerVariant?: ButtonProps["variant"];
   /** Override default aria-label/title on the menu trigger. */
   ariaLabel?: string;
   /** Optional URL override used for share/copy payload. */
@@ -167,7 +172,14 @@ async function fetchShortUrl(
 }
 
 export function ShareButton(props: ShareButtonProps) {
-  const { type, className = "", ariaLabel, shareUrl, shareText } = props;
+  const {
+    type,
+    className = "",
+    triggerVariant,
+    ariaLabel,
+    shareUrl,
+    shareText,
+  } = props;
   const t = useTranslations("share");
 
   const submissionId = type === "submission" ? props.submissionId : undefined;
@@ -300,7 +312,7 @@ export function ShareButton(props: ShareButtonProps) {
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
-          variant="default"
+          variant={triggerVariant ?? "default"}
           size="icon"
           className={cn(
             !useCustomStyle && "rounded-lg active:brightness-95 [&_svg]:size-5",
