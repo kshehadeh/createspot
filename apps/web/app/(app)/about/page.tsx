@@ -10,12 +10,7 @@ import { PageLayout } from "@/components/page-layout";
 import { AboutCard } from "@/components/about-card";
 import { getRoute } from "@/lib/routes";
 import { Button } from "@createspot/ui-primitives/button";
-import {
-  ArrowRight,
-  ExternalLink,
-  Sparkles,
-  Target,
-} from "lucide-react";
+import { ExternalLink, Sparkles, Target } from "lucide-react";
 import { RecentSubmissionsCarousel } from "@/components/recent-submissions-carousel";
 import { AboutScrollSection } from "@/components/about-scroll-section";
 

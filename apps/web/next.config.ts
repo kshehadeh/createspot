@@ -21,6 +21,16 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/inspire/museums",
+        destination: "/inspire/exhibition",
+        permanent: true,
+      },
+      {
+        source: "/inspire/museums/:path*",
+        destination: "/inspire/exhibition",
+        permanent: true,
+      },
+      {
         source: "/admin/prompts",
         destination: "/admin",
         permanent: true,
@@ -57,6 +67,16 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/about/features/:path*",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/museums",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about/museums/:path*",
         destination: "/about",
         permanent: true,
       },

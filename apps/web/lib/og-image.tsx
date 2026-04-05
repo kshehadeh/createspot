@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
-import { LOGO_BASE_PATHS, LOGO_HIGHLIGHT_PATHS } from "@/lib/logo-paths";
 
 /** Standard OG image dimensions for next/og. */
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 };

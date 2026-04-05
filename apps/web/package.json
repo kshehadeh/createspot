@@ -92,7 +92,6 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19",
-    "commander": "^14.0.3",
     "oxlint": "^1.42.0",
     "tailwindcss": "^4",
     "typescript": "^5.9.3"
