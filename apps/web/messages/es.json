@@ -30,6 +30,20 @@
     "signInWithGoogle": "Iniciar sesión con Google",
     "unauthorized": "No autorizado"
   },
+  "share": {
+    "menuAria": "Compartir",
+    "copyUrl": "Copiar URL",
+    "instagram": "Compartir en Instagram",
+    "bluesky": "Compartir en Bluesky",
+    "x": "Compartir en X",
+    "systemShare": "Compartir del sistema",
+    "urlCopied": "Enlace copiado",
+    "captionCopied": "Texto copiado — pégalo en la app si hace falta",
+    "failedResolveUrl": "No se pudo obtener el enlace para compartir",
+    "clipboardDenied": "No se pudo acceder al portapapeles",
+    "systemShareUnavailable": "Compartir del sistema no está disponible en este navegador",
+    "shareFailed": "Se canceló o falló el uso de compartir"
+  },
   "profile": {
     "title": "Perfil",
     "edit": "Editar Perfil",
@@ -324,7 +338,7 @@
     "reachedEnd": "Has llegado al final.",
     "previousSubmission": "Anterior",
     "nextSubmission": "Siguiente",
-    "shareSubmission": "Copiar enlace de la publicación"
+    "shareSubmission": "Compartir publicación"
   },
   "submission": {
     "label": "Publicación",

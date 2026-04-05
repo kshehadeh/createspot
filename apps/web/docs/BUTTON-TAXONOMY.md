@@ -49,7 +49,7 @@ Shared vocabulary for interactive controls. Prefer these primitives before addin
 |------|------|------|
 | `portfolio-item-form.tsx` | Tag remove chip | D |
 | `critiques-panel.tsx` | Embedded panel controls | D |
-| `share-button.tsx` | Copy link (uses `Button`) | A/B via `Button` |
+| `share-button.tsx` | Share menu trigger (`Button` + `DropdownMenu`) | A |
 | `submission-create-wizard.tsx` | Wizard step UI | Review per instance |
 | `profile-edit-form.tsx` | Inline controls | D / A |
 | `dashboard/onboarding-section.tsx` | Dismiss / card action | A where applicable |

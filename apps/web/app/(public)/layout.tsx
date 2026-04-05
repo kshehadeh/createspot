@@ -21,6 +21,7 @@ const PUBLIC_MESSAGE_KEYS = [
   "profile",
   "progression",
   "reference",
+  "share",
   "submission",
   "upload",
 ] as const;

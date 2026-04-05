@@ -388,6 +388,68 @@ Then move/adapt the primitive into `packages/ui-primitives/src/` and export it f
 4. Do not introduce new primitive imports from `@/components/ui/*`.
 5. Keep `components/ui/*` for app-specific wrappers and migration compatibility only.
 
+### ShareButton
+
+All page-level sharing should use the shared `ShareButton` component at `components/share-button.tsx` so updates apply everywhere.
+
+```tsx
+import { ShareButton } from "@/components/share-button";
+```
+
+**Supported types:**
+- `submission`
+- `collection`
+- `profile`
+- `portfolio`
+
+**Shared props:**
+- `className?: string` - Styling override for the trigger button.
+- `ariaLabel?: string` - Override default `aria-label` / `title`.
+- `shareUrl?: string` - Optional URL override for share/copy payload.
+- `shareText?: string` - Optional text included in native share and clipboard fallback.
+
+**UI:** The trigger opens a `DropdownMenu` (`@createspot/ui-primitives/dropdown-menu`) with:
+
+1. **Copy URL** — copies the resolved link only (toast on success).
+2. **Share to Instagram** — copies optional `shareText` + URL (blank line between), then opens `instagram://app` so the user can paste into a new post (Instagram does not expose a public web compose URL with prefilled text).
+3. **Share to Bluesky** — copies the same caption, then opens `https://bsky.app/intent/compose?text=…` (text is truncated to Bluesky’s compose limit of 300 grapheme clusters for the intent URL; the clipboard still has the full caption).
+4. **Share to X** — copies the same caption, then opens `https://twitter.com/intent/tweet` with `text` / `url` query params when `shareText` is set.
+5. **System share** — `navigator.share()` with `{ url, text? }` when the browser supports it (disabled otherwise). On macOS Safari/Chrome this surfaces the native share sheet when available.
+
+**URL resolution:** If `shareUrl` is omitted, the component keeps default per-type behavior:
+
+- `submission` / `collection`: short-link API (`/api/short-link`)
+- `profile` / `portfolio`: canonical route URL
+
+**Strings:** Menu labels live in `messages/*.json` under the `share` namespace.
+
+**`shareUrl` notes:**
+- Accepts absolute URLs (`https://...`), protocol URLs (`mailto:`, `sms:`), or root-relative paths (`/creators/...`).
+- Root-relative paths are normalized to absolute URLs in the browser.
+
+**Example (default behavior):**
+
+```tsx
+<ShareButton
+  type="submission"
+  submissionId={submission.id}
+  userId={submission.user.id}
+  userSlug={submission.user.slug}
+/>
+```
+
+**Example (custom URL + text):**
+
+```tsx
+<ShareButton
+  type="profile"
+  userId={user.id}
+  slug={user.slug}
+  shareUrl={`/creators/${user.slug ?? user.id}`}
+  shareText="Check out this creator on Create Spot"
+/>
+```
+
 ### ConfirmModal
 
 Accessible confirmation dialog built on shadcn's AlertDialog.

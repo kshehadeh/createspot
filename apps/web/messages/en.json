@@ -30,6 +30,20 @@
     "signInWithGoogle": "Sign in with Google",
     "unauthorized": "Unauthorized"
   },
+  "share": {
+    "menuAria": "Share",
+    "copyUrl": "Copy URL",
+    "instagram": "Share to Instagram",
+    "bluesky": "Share to Bluesky",
+    "x": "Share to X",
+    "systemShare": "System share",
+    "urlCopied": "Link copied",
+    "captionCopied": "Caption copied — paste in the app if needed",
+    "failedResolveUrl": "Could not get a link to share",
+    "clipboardDenied": "Clipboard access was denied",
+    "systemShareUnavailable": "System share is not available in this browser",
+    "shareFailed": "Sharing was canceled or failed"
+  },
   "profile": {
     "title": "Profile",
     "edit": "Edit Profile",
@@ -324,7 +338,7 @@
     "reachedEnd": "You've reached the end.",
     "previousSubmission": "Previous",
     "nextSubmission": "Next",
-    "shareSubmission": "Copy submission link"
+    "shareSubmission": "Share submission"
   },
   "submission": {
     "label": "Submission",
