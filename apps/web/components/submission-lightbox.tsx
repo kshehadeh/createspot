@@ -64,7 +64,11 @@ export interface SubmissionLightboxNavigation {
 const LIGHTBOX_FAVORITE_BUTTON_CLASS =
   "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border !border-white/20 !bg-white/10 text-white shadow-sm hover:!bg-white/20 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40";
 
-function SubmissionLightboxFavorite({ submissionId }: { submissionId: string }) {
+function SubmissionLightboxFavorite({
+  submissionId,
+}: {
+  submissionId: string;
+}) {
   const { data: session } = useSession();
   const favorites = useFavoritesOptional();
   const t = useTranslations("exhibition");
@@ -83,9 +87,7 @@ function SubmissionLightboxFavorite({ submissionId }: { submissionId: string }) 
         </span>
       </TooltipTrigger>
       <TooltipContent>
-        <p>
-          {favorited ? t("removeFromFavorites") : t("addToFavorites")}
-        </p>
+        <p>{favorited ? t("removeFromFavorites") : t("addToFavorites")}</p>
       </TooltipContent>
     </Tooltip>
   );
@@ -268,13 +270,7 @@ export function SubmissionLightbox({
         )}
       </>
     ),
-    [
-      submission.title,
-      submission.user?.name,
-      submission.text,
-      hasText,
-      t,
-    ],
+    [submission.title, submission.user?.name, submission.text, hasText, t],
   );
 
   const renderBottomLeading = useCallback(
@@ -557,9 +553,25 @@ export function SubmissionLightbox({
     ],
   );
 
+  const renderMetadataOverlay = useCallback(
+    (_context: BaseLightboxRenderContext) => (
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <span className="truncate text-sm font-medium text-white sm:text-base">
+          {submission.title || t("untitled")}
+        </span>
+        {submission.user?.name ? (
+          <span className="truncate text-xs text-zinc-300 sm:text-sm">
+            {submission.user.name}
+          </span>
+        ) : null}
+      </div>
+    ),
+    [submission.title, submission.user?.name, t],
+  );
+
   // Render text overlay content
   const renderTextOverlay = useCallback(
-    () => (
+    (context: BaseLightboxRenderContext) => (
       <>
         {submission.title && (
           <h2 className="mb-4 text-2xl font-semibold text-white">
@@ -573,7 +585,7 @@ export function SubmissionLightbox({
         <Button
           variant="overlayDark"
           size="icon"
-          onClick={() => {}}
+          onClick={() => context.setIsTextOverlayOpen(false)}
           className="absolute right-4 top-4"
           aria-label="Close text overlay"
         >
@@ -600,6 +612,7 @@ export function SubmissionLightbox({
       renderControls={renderControls}
       renderSidebar={hasImage ? renderSidebar : undefined}
       renderBottomLeading={hasImage ? renderBottomLeading : undefined}
+      renderMetadataOverlay={hasImage ? renderMetadataOverlay : undefined}
       renderTextOverlay={hasText ? renderTextOverlay : undefined}
     />
   );

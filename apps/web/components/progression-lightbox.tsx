@@ -138,7 +138,7 @@ export function ProgressionLightbox({
 
   // Render metadata overlay (mobile)
   const renderMetadataOverlay = useCallback(
-    () => (
+    (_context: BaseLightboxRenderContext) => (
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <span className="text-white font-medium text-sm sm:text-base">
           {t("stepOf", {
@@ -155,6 +155,15 @@ export function ProgressionLightbox({
     ),
     [currentIndex, progressions.length, hasComment, currentProgression, t],
   );
+
+  // Handle tooltip state: show close tooltip after 300ms hover (must be above renderControls closure)
+  const handleTooltipHover = useCallback((hovered: boolean) => {
+    if (hovered) {
+      const timer = setTimeout(() => setCloseTooltipOpen(true), 300);
+      return () => clearTimeout(timer);
+    }
+    setCloseTooltipOpen(false);
+  }, []);
 
   // Render control buttons
   const renderControls = useCallback(
@@ -211,12 +220,12 @@ export function ProgressionLightbox({
         </Tooltip>
       </>
     ),
-    [hasText, hasImage, closeTooltipOpen, onClose, t],
+    [hasText, hasImage, closeTooltipOpen, onClose, t, handleTooltipHover],
   );
 
   // Render text overlay content
   const renderTextOverlay = useCallback(
-    () => (
+    (context: BaseLightboxRenderContext) => (
       <>
         {hasComment && (
           <div className="flex items-start gap-2 mb-4 pb-4 border-b border-zinc-700">
@@ -235,6 +244,7 @@ export function ProgressionLightbox({
           size="icon"
           className="absolute right-4 top-4"
           aria-label={t("closeTextOverlay")}
+          onClick={() => context.setIsTextOverlayOpen(false)}
         >
           <X className="h-6 w-6" />
         </Button>
@@ -242,15 +252,6 @@ export function ProgressionLightbox({
     ),
     [hasComment, currentProgression, t],
   );
-
-  // Handle tooltip state: show close tooltip after 300ms hover
-  const handleTooltipHover = useCallback((hovered: boolean) => {
-    if (hovered) {
-      const timer = setTimeout(() => setCloseTooltipOpen(true), 300);
-      return () => clearTimeout(timer);
-    }
-    setCloseTooltipOpen(false);
-  }, []);
 
   if (!currentProgression) {
     return null;
