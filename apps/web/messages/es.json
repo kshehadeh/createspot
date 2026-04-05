@@ -737,6 +737,7 @@
   },
   "footer": {
     "copyright": "© {year} Create Spot",
+    "publisherCopyright": "© {year} iWonder Designs",
     "terms": "Términos de Servicio",
     "version": "Versión {version}"
   },

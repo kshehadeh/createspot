@@ -6,6 +6,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DeferredAnalytics } from "@/components/deferred-analytics";
 import { GlobalHints } from "@/components/global-hints";
+import { AppVersionFooter } from "@/components/app-version-footer";
 import { Header } from "@/components/header";
 import { HtmlLangSetter } from "@/components/html-lang-setter";
 import { UrlTracker } from "@/components/url-tracker";
@@ -38,6 +39,7 @@ async function AppLayoutContent({
           <Suspense fallback={null}>{breadcrumb}</Suspense>
         ) : null}
         {children}
+        <AppVersionFooter />
       </div>
       <Suspense fallback={null}>
         <GlobalHintsWithData userId={session?.user?.id} />
