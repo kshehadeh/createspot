@@ -35,7 +35,26 @@ interface SupportFormModalProps {
   onClose: () => void;
 }
 
+/**
+ * `useSession` requires SessionProvider. During some server renders (e.g. PPR /
+ * partial static shells), client subtrees can run without that context and
+ * next-auth throws. Defer mounting the implementation until the client so
+ * `useSession` only runs under the layout's SessionProvider.
+ */
 export function SupportFormModal({ isOpen, onClose }: SupportFormModalProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  return <SupportFormModalImpl isOpen={isOpen} onClose={onClose} />;
+}
+
+function SupportFormModalImpl({ isOpen, onClose }: SupportFormModalProps) {
   const t = useTranslations("contact.support");
   const tCommon = useTranslations("common");
   const { data: session } = useSession();
