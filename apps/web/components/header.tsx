@@ -38,7 +38,7 @@ const DashboardNavigation = dynamic(
 );
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { ThemeToggle } from "./theme-toggle";
-import { Button } from "./ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
 import { getRoute } from "@/lib/routes";
 

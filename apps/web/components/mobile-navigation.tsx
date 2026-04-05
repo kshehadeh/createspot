@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { signOut, signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Button } from "./ui/button";
+import { Button } from "@createspot/ui-primitives/button";
 import { SubmissionEditModal } from "./submission-edit-modal";
 import { cn, getCreatorUrl } from "@/lib/utils";
 import { getRoute, isCreatorsListingPath } from "@/lib/routes";
