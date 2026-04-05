@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Pencil } from "lucide-react";
 import Link from "@/components/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -16,7 +17,7 @@ import { SocialLinks } from "@/components/social-links";
 import { SubmissionImage } from "@/components/submission-image";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { SubmissionMobileMenu } from "@/components/submission-mobile-menu";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
@@ -27,7 +28,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePageHints } from "@/lib/hooks/use-page-hints";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
-import { getCreatorUrl } from "@/lib/utils";
+import { cn, getCreatorUrl } from "@/lib/utils";
 
 interface ProgressionData {
   id: string;
@@ -294,23 +295,14 @@ export function SubmissionDetail({
               </div>
             </div>
 
-            {/* Desktop: full header with inline actions */}
+            {/* Desktop: title left; outline icon toolbar right (matches collection view) */}
             <div className="hidden md:block">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl">
-                      {submission.title || tExhibition("untitled")}
-                    </h1>
-                    <ShareButton
-                      type="submission"
-                      submissionId={submission.id}
-                      className="shrink-0"
-                      userId={submission.user.id}
-                      userSlug={submission.user.slug}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl break-words">
+                    {submission.title || tExhibition("untitled")}
+                  </h1>
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
                     <Link
                       href={getCreatorUrl(submission.user)}
                       className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -332,67 +324,72 @@ export function SubmissionDetail({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    {isOwner && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                        className="gap-1.5"
-                      >
-                        <Link
-                          href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
-                        >
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
-                          {tSubmission("edit")}
-                        </Link>
-                      </Button>
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1 pt-0.5">
+                  <ShareButton
+                    type="submission"
+                    submissionId={submission.id}
+                    userId={submission.user.id}
+                    userSlug={submission.user.slug}
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "icon" }),
+                      "h-10 w-10 shrink-0",
                     )}
-                    {isOwner && (hasImage || hasProgressionsGif) && (
-                      <CollectionDownloadDropdown
-                        variant="submission"
+                  />
+                  {isOwner && (hasImage || hasProgressionsGif) && (
+                    <CollectionDownloadDropdown
+                      variant="submission"
+                      submissionId={submission.id}
+                      submissionTitle={submission.title || "submission"}
+                      hasImage={hasImage}
+                      hasProgressionsGif={hasProgressionsGif}
+                      toolbarIconTrigger
+                    />
+                  )}
+                  {isOwner && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="icon"
+                      className="h-10 w-10 shrink-0"
+                    >
+                      <Link
+                        href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
+                        aria-label={tSubmission("edit")}
+                        title={tSubmission("edit")}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
+                  {isLoggedIn &&
+                    submission.critiquesEnabled &&
+                    (isOwner || submission.shareStatus === "PUBLIC") && (
+                      <CritiqueButton
                         submissionId={submission.id}
-                        submissionTitle={submission.title || "submission"}
-                        hasImage={hasImage}
-                        hasProgressionsGif={hasProgressionsGif}
+                        critiquesEnabled={submission.critiquesEnabled}
+                        isOwner={isOwner}
+                        currentUserId={currentUserId}
+                        submissionTitle={submission.title}
+                        user={submission.user}
+                        toolbarIcon
                       />
                     )}
-                    {isLoggedIn &&
-                      submission.critiquesEnabled &&
-                      (isOwner || submission.shareStatus === "PUBLIC") && (
-                        <CritiqueButton
-                          submissionId={submission.id}
-                          critiquesEnabled={submission.critiquesEnabled}
-                          isOwner={isOwner}
-                          currentUserId={currentUserId}
-                          submissionTitle={submission.title}
-                          user={submission.user}
-                        />
+                  {isLoggedIn && (
+                    <div className="flex items-center gap-1">
+                      <FavoriteButton
+                        submissionId={submission.id}
+                        className={cn(
+                          buttonVariants({ variant: "outline", size: "icon" }),
+                          "h-10 w-10 shrink-0",
+                        )}
+                      />
+                      {submission._count.favorites > 0 && (
+                        <span className="text-sm tabular-nums text-muted-foreground">
+                          {submission._count.favorites}
+                        </span>
                       )}
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    {isLoggedIn && (
-                      <FavoriteButton submissionId={submission.id} size="md" />
-                    )}
-                    {submission._count.favorites > 0 && (
-                      <span className="text-sm text-muted-foreground">
-                        {submission._count.favorites}
-                      </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

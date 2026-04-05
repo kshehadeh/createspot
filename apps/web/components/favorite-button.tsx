@@ -29,6 +29,13 @@ export function FavoriteButton({
   const buttonClassName = useCustomStyle
     ? className
     : `flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${buttonSize}`;
+  const iconColorClass = useCustomStyle
+    ? favorited
+      ? "text-red-500"
+      : "text-muted-foreground"
+    : favorited
+      ? "text-red-500"
+      : "text-white";
 
   return (
     <motion.button
@@ -41,7 +48,7 @@ export function FavoriteButton({
       aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
     >
       <motion.svg
-        className={`${iconSize} ${favorited ? "text-red-500" : "text-white"}`}
+        className={`${iconSize} ${iconColorClass}`}
         fill={favorited ? "currentColor" : "none"}
         viewBox="0 0 24 24"
         stroke="currentColor"

@@ -9,9 +9,11 @@ interface CreatorOwnerShellProps {
   children: React.ReactNode;
 }
 
-/** Specific submission pages where full-width content is preferred. */
+/** Submission routes where the owner sidebar should not appear on desktop. */
 function isFullWidthSubmissionPath(pathname: string | null): boolean {
   if (!pathname) return false;
+  // Main submission view: .../s/:submissionId only
+  if (/\/s\/[^/]+\/?$/.test(pathname)) return true;
   return (
     /\/s\/[^/]+\/critiques\/?$/.test(pathname) ||
     /\/s\/[^/]+\/edit\/image\/?$/.test(pathname)
