@@ -1,6 +1,6 @@
 "use client";
 
-import { Edit, Eye, FileText, Heart, MessageSquare, X } from "lucide-react";
+import { Edit, Eye, FileText, MessageSquare, X } from "lucide-react";
 import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -12,6 +12,8 @@ import {
   BaseLightboxNavigation,
   BaseLightboxRenderContext,
 } from "@/components/base-lightbox";
+import { FavoriteButton } from "@/components/favorite-button";
+import { useFavoritesOptional } from "@/components/favorites-provider";
 import { ShareButton } from "@/components/share-button";
 import { Button } from "@createspot/ui-primitives/button";
 import {
@@ -57,6 +59,36 @@ export interface SubmissionLightboxNavigation {
   nextImageUrl?: string | null;
   /** Optional image URL for the previous submission; when provided, preloaded for instant display on navigate. */
   prevImageUrl?: string | null;
+}
+
+const LIGHTBOX_FAVORITE_BUTTON_CLASS =
+  "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border !border-white/20 !bg-white/10 text-white shadow-sm hover:!bg-white/20 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40";
+
+function SubmissionLightboxFavorite({ submissionId }: { submissionId: string }) {
+  const { data: session } = useSession();
+  const favorites = useFavoritesOptional();
+  const t = useTranslations("exhibition");
+  if (!session?.user?.id || !favorites) return null;
+  const favorited = favorites.meta.isFavorited(submissionId);
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex">
+          <FavoriteButton
+            submissionId={submissionId}
+            size="sm"
+            className={LIGHTBOX_FAVORITE_BUTTON_CLASS}
+            iconClassName="text-white"
+          />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>
+          {favorited ? t("removeFromFavorites") : t("addToFavorites")}
+        </p>
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 interface SubmissionLightboxProps {
@@ -142,9 +174,6 @@ export function SubmissionLightbox({
   const showCritique =
     !isPrivate && submission.critiquesEnabled && !!currentUserId;
 
-  const favoriteCount =
-    submission._count?.favorites ?? (submission as any).favoriteCount ?? 0;
-
   // Get creator ID for route building
   const getCreatorId = useCallback((): string | null => {
     if (submission.user?.id) {
@@ -226,12 +255,6 @@ export function SubmissionLightbox({
               {submission.user.name}
             </p>
           )}
-          {favoriteCount > 0 && (
-            <div className="flex items-center gap-1.5 text-muted-foreground/70">
-              <Heart className="h-4 w-4 fill-red-400 text-red-400" />
-              <span className="text-sm">{favoriteCount}</span>
-            </div>
-          )}
         </div>
 
         {/* Text content */}
@@ -249,33 +272,25 @@ export function SubmissionLightbox({
       submission.title,
       submission.user?.name,
       submission.text,
-      favoriteCount,
       hasText,
       t,
     ],
   );
 
-  // Render metadata overlay (mobile)
-  const renderMetadataOverlay = useCallback(
+  const renderBottomLeading = useCallback(
     () => (
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        <span className="text-white font-medium text-sm sm:text-base">
-          {submission.title || "Untitled"}
-        </span>
-        {submission.user && (
-          <span className="text-zinc-300 text-xs sm:text-sm">
-            {submission.user.name || "Anonymous"}
-          </span>
-        )}
-        {favoriteCount > 0 && (
-          <div className="flex items-center gap-1.5 text-white">
-            <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-red-400 text-red-400" />
-            <span className="text-xs sm:text-sm">{favoriteCount}</span>
-          </div>
+      <div>
+        <p className="text-sm font-semibold text-white drop-shadow-md sm:text-base">
+          {submission.title || t("untitled")}
+        </p>
+        {submission.user?.name && (
+          <p className="mt-0.5 text-xs text-zinc-200 drop-shadow-md sm:text-sm">
+            {submission.user.name}
+          </p>
         )}
       </div>
     ),
-    [submission.title, submission.user, favoriteCount],
+    [submission.title, submission.user?.name, t],
   );
 
   // Render control buttons
@@ -501,6 +516,8 @@ export function SubmissionLightbox({
           </Tooltip>
         )}
 
+        <SubmissionLightboxFavorite submissionId={submission.id} />
+
         {/* Close button */}
         <Tooltip open={closeTooltipOpen} onOpenChange={() => {}}>
           <TooltipTrigger asChild>
@@ -582,7 +599,7 @@ export function SubmissionLightbox({
       navigation={baseNavigation}
       renderControls={renderControls}
       renderSidebar={hasImage ? renderSidebar : undefined}
-      renderMetadataOverlay={renderMetadataOverlay}
+      renderBottomLeading={hasImage ? renderBottomLeading : undefined}
       renderTextOverlay={hasText ? renderTextOverlay : undefined}
     />
   );

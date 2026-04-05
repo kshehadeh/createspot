@@ -7,12 +7,15 @@ interface FavoriteButtonProps {
   submissionId: string;
   size?: "sm" | "md";
   className?: string;
+  /** Icon color when not favorited (e.g. `text-white` on dark overlays). */
+  iconClassName?: string;
 }
 
 export function FavoriteButton({
   submissionId,
   size = "md",
   className = "",
+  iconClassName,
 }: FavoriteButtonProps) {
   const { state, actions, meta } = useFavorites();
   const favorited = meta.isFavorited(submissionId);
@@ -29,13 +32,17 @@ export function FavoriteButton({
   const buttonClassName = useCustomStyle
     ? className
     : `flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${buttonSize}`;
-  const iconColorClass = useCustomStyle
+  const iconColorClass = iconClassName
     ? favorited
       ? "text-red-500"
-      : "text-muted-foreground"
-    : favorited
-      ? "text-red-500"
-      : "text-white";
+      : iconClassName
+    : useCustomStyle
+      ? favorited
+        ? "text-red-500"
+        : "text-muted-foreground"
+      : favorited
+        ? "text-red-500"
+        : "text-white";
 
   return (
     <motion.button

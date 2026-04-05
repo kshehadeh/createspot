@@ -147,3 +147,8 @@ export function useFavorites(): FavoritesContextValue {
   }
   return context;
 }
+
+/** Returns null when no `FavoritesProvider` ancestor (e.g. lightbox on optional pages). */
+export function useFavoritesOptional(): FavoritesContextValue | null {
+  return use(FavoritesContext);
+}

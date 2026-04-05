@@ -338,7 +338,9 @@
     "reachedEnd": "Has llegado al final.",
     "previousSubmission": "Anterior",
     "nextSubmission": "Siguiente",
-    "shareSubmission": "Compartir publicación"
+    "shareSubmission": "Compartir publicación",
+    "addToFavorites": "Añadir a favoritos",
+    "removeFromFavorites": "Quitar de favoritos"
   },
   "submission": {
     "label": "Publicación",

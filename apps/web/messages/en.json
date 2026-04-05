@@ -338,7 +338,9 @@
     "reachedEnd": "You've reached the end.",
     "previousSubmission": "Previous",
     "nextSubmission": "Next",
-    "shareSubmission": "Share submission"
+    "shareSubmission": "Share submission",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites"
   },
   "submission": {
     "label": "Submission",

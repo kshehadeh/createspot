@@ -15,6 +15,11 @@ interface CarouselNavButtonProps {
    * Use for carousel; set false or omit for lightbox so the button is always visible.
    */
   showOnHover?: boolean;
+  /**
+   * Semi-transparent dark overlay (lightbox / dark image) — same as overlayDark controls.
+   * Default is overlayLight for feed-style carousels on light backgrounds.
+   */
+  overlayDark?: boolean;
   className?: string;
   ref?: Ref<HTMLButtonElement>;
 }
@@ -25,6 +30,7 @@ export function CarouselNavButton({
   disabled = false,
   "aria-label": ariaLabel,
   showOnHover = false,
+  overlayDark = false,
   className,
   ref,
 }: CarouselNavButtonProps) {
@@ -34,7 +40,7 @@ export function CarouselNavButton({
     <Button
       ref={ref}
       type="button"
-      variant="overlayLight"
+      variant={overlayDark ? "overlayDark" : "overlayLight"}
       size="icon"
       onClick={onClick}
       disabled={disabled}
@@ -44,7 +50,7 @@ export function CarouselNavButton({
         className,
       )}
     >
-      <Icon className="h-5 w-5" />
+      <Icon className={overlayDark ? undefined : "h-5 w-5"} />
     </Button>
   );
 }

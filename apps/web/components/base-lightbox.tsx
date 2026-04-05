@@ -14,12 +14,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
-import { LIGHTBOX_BUTTON_CLASS } from "@createspot/ui-primitives/button";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
 import { useImagePreloader } from "@/lib/hooks/use-image-preloader";
 import { usePinchZoom } from "@/lib/hooks/use-pinch-zoom";
 
-export { LIGHTBOX_BUTTON_CLASS };
+export { LIGHTBOX_BUTTON_CLASS } from "@createspot/ui-primitives/button";
 
 export interface BaseLightboxNavigation {
   onGoToPrevious: () => void;
@@ -80,6 +79,8 @@ export interface BaseLightboxProps {
   renderSidebar?: (context: BaseLightboxRenderContext) => ReactNode;
   /** Render function for metadata overlay (mobile) */
   renderMetadataOverlay?: (context: BaseLightboxRenderContext) => ReactNode;
+  /** Lower-leading content on small screens only (e.g. title), aligned with bottom control stack */
+  renderBottomLeading?: (context: BaseLightboxRenderContext) => ReactNode;
   /** Render function for text overlay modal content */
   renderTextOverlay?: (context: BaseLightboxRenderContext) => ReactNode;
   /** Callback when item changes (for tracking, etc.) */
@@ -96,6 +97,7 @@ export function BaseLightbox({
   renderControls,
   renderSidebar,
   renderMetadataOverlay,
+  renderBottomLeading,
   renderTextOverlay,
 }: BaseLightboxProps) {
   const [zoomState, setZoomState] = useState<{
@@ -514,6 +516,11 @@ export function BaseLightbox({
     setIsTextOverlayOpen,
   };
 
+  const controlStackBottom =
+    typeof window !== "undefined" && window.innerWidth < 768
+      ? `max(2rem, calc(env(safe-area-inset-bottom, 0px) + 2rem))`
+      : `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
@@ -713,13 +720,13 @@ export function BaseLightbox({
                 <TooltipTrigger asChild>
                   <CarouselNavButton
                     side="prev"
+                    overlayDark
                     onClick={(e) => {
                       e.stopPropagation();
                       handleGoToPrevious();
                     }}
                     disabled={!hasPrevious}
                     aria-label={navigation?.prevLabel || "Previous"}
-                    className={LIGHTBOX_BUTTON_CLASS}
                   />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -739,13 +746,13 @@ export function BaseLightbox({
                 <TooltipTrigger asChild>
                   <CarouselNavButton
                     side="next"
+                    overlayDark
                     onClick={(e) => {
                       e.stopPropagation();
                       handleGoToNext();
                     }}
                     disabled={!hasNext}
                     aria-label={navigation?.nextLabel || "Next"}
-                    className={LIGHTBOX_BUTTON_CLASS}
                   />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -760,17 +767,27 @@ export function BaseLightbox({
         {renderControls && (
           <TooltipProvider delayDuration={300}>
             <div
-              className="absolute right-4 z-10 flex items-center gap-2"
+              className="absolute z-10 flex flex-col items-end gap-2"
               style={{
-                bottom:
-                  typeof window !== "undefined" && window.innerWidth < 768
-                    ? `max(2rem, calc(env(safe-area-inset-bottom, 0px) + 2rem))`
-                    : `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`,
+                bottom: controlStackBottom,
+                right: "max(1rem, env(safe-area-inset-right, 0px) + 1rem)",
               }}
             >
               {renderControls(renderContext)}
             </div>
           </TooltipProvider>
+        )}
+
+        {renderBottomLeading && (
+          <div
+            className="pointer-events-none absolute z-10 max-w-[min(20rem,calc(100vw-5.5rem))] text-left xl:hidden"
+            style={{
+              bottom: controlStackBottom,
+              left: "max(1rem, env(safe-area-inset-left, 0px) + 1rem)",
+            }}
+          >
+            {renderBottomLeading(renderContext)}
+          </div>
         )}
 
         {/* Text Overlay Modal */}
