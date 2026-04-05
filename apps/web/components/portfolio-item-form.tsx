@@ -36,6 +36,7 @@ import {
   ProgressionEditor,
   ProgressionFormItem,
 } from "@/components/progression-editor";
+import { ImageEditorWrapper } from "@/components/image-editor-wrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -127,6 +128,7 @@ export function PortfolioItemForm({
     y: number;
   } | null>(initialData?.imageFocalPoint || null);
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
+  const [isImageEditorOpen, setIsImageEditorOpen] = useState(false);
   const [critiquesEnabled, setCritiquesEnabled] = useState(
     initialData?.critiquesEnabled ?? false,
   );
@@ -156,14 +158,6 @@ export function PortfolioItemForm({
     fetcher,
   );
   const watermarkEnabled = profileData?.user?.enableWatermark ?? false;
-
-  const { data: submissionData } = useSWR<{ submission: { userId: string } }>(
-    mode === "edit" && initialData?.id
-      ? `/api/submissions/${initialData.id}`
-      : null,
-    fetcher,
-  );
-  const submissionUserId = submissionData?.submission?.userId ?? null;
 
   // Load image metadata when imageUrl changes
   useEffect(() => {
@@ -612,19 +606,14 @@ export function PortfolioItemForm({
                   type="button"
                   variant="outline"
                   size="sm"
-                  asChild
                   className="w-full sm:w-auto"
+                  disabled={!imageUrl}
+                  onClick={() => setIsImageEditorOpen(true)}
                 >
-                  <Link
-                    href={
-                      submissionUserId
-                        ? `/creators/${submissionUserId}/s/${initialData.id}/edit/image`
-                        : "#"
-                    }
-                  >
+                  <span className="inline-flex items-center">
                     <ImageIcon className="mr-2 h-4 w-4" />
                     {t("cleanupImage")}
-                  </Link>
+                  </span>
                 </Button>
                 <p className="hidden text-sm text-muted-foreground sm:block">
                   {t("cleanupImageDescription")}
@@ -1151,6 +1140,19 @@ export function PortfolioItemForm({
           initialFocalPoint={imageFocalPoint}
           onSave={setImageFocalPoint}
           previewAspectRatio="square"
+        />
+      )}
+      {mode === "edit" && initialData?.id && imageUrl && (
+        <ImageEditorWrapper
+          open={isImageEditorOpen}
+          onOpenChange={setIsImageEditorOpen}
+          submissionId={initialData.id}
+          imageUrl={imageUrl}
+          submissionTitle={title || initialData.title}
+          onImageSaved={(updatedImageUrl) => {
+            setImageUrl(updatedImageUrl);
+            setIsImageEditorOpen(false);
+          }}
         />
       )}
     </form>

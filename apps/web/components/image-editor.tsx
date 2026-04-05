@@ -11,15 +11,17 @@ import {
   Save,
   RefreshCw,
   Sparkles,
-  Info,
   Crop,
   Check,
   X,
-  ChevronDown,
-  ChevronUp,
-  Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   canvasToFile,
   getMimeTypeFromSource,
@@ -30,26 +32,25 @@ import {
   type ImageMetadata,
   type CropArea,
 } from "@/lib/image-editor";
-import {
-  autoEvenLighting as applyAutoEvenLighting,
-  removeYellowing as applyRemoveYellowing,
-  evenColors as applyEvenColors,
-} from "@/lib/image-editor/lighting";
 
 interface ImageEditorProps {
   submissionId: string;
   imageUrl: string;
   submissionTitle: string | null;
+  onImageSaved?: (imageUrl: string) => void;
 }
 
 export function ImageEditor({
   submissionId,
   imageUrl: initialImageUrl,
+  submissionTitle,
+  onImageSaved,
 }: ImageEditorProps) {
   const t = useTranslations("imageEditor");
   const tCommon = useTranslations("common");
 
   const [imageUrl, setImageUrl] = useState<string>(initialImageUrl);
+  const [sessionImageUrl, setSessionImageUrl] = useState<string | null>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const [imageMetadata, setImageMetadata] = useState<ImageMetadata | null>(
     null,
@@ -59,37 +60,42 @@ export function ImageEditor({
   const [pendingCropArea, setPendingCropArea] = useState<CropArea | null>(null);
   const [isCropMode, setIsCropMode] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
-  const [autoEvenLighting, setAutoEvenLighting] = useState(false);
-  const [removeYellowing, setRemoveYellowing] = useState(false);
-  const [evenColors, setEvenColors] = useState(false);
+  const [isAutoFixing, setIsAutoFixing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [isImageInfoOpen, setIsImageInfoOpen] = useState(false);
   const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const sourceImageUrl = sessionImageUrl ?? imageUrl;
+  const metadataSubtitle = imageMetadata
+    ? [
+        `${imageMetadata.width} × ${imageMetadata.height}`,
+        imageMetadata.format?.toUpperCase(),
+        imageMetadata.size
+          ? `${(imageMetadata.size / 1024).toFixed(1)} KB`
+          : undefined,
+        imageMetadata.colorDepth ? `${imageMetadata.colorDepth} bit` : undefined,
+      ]
+        .filter(Boolean)
+        .join(" • ")
+    : t("loadingImage");
 
   // Track if there are any changes
-  const hasChanges =
-    cropArea ||
-    rotation !== 0 ||
-    autoEvenLighting ||
-    removeYellowing ||
-    evenColors;
+  const hasChanges = Boolean(cropArea || rotation !== 0 || sessionImageUrl);
 
   // Load image metadata on mount
   useEffect(() => {
     const loadMetadata = async () => {
       try {
-        const metadata = await getImageMetadata(imageUrl);
+        const metadata = await getImageMetadata(sourceImageUrl);
         setImageMetadata(metadata);
       } catch (error) {
         console.error("Error loading image metadata:", error);
       }
     };
     loadMetadata();
-  }, [imageUrl]);
+  }, [sourceImageUrl]);
 
-  // Generate preview with all adjustments (crop, rotation, lighting)
+  // Generate preview with crop and rotation adjustments
   useEffect(() => {
-    if (!imageUrl) {
+    if (!sourceImageUrl) {
       setPreviewImageUrl(null);
       return;
     }
@@ -103,7 +109,7 @@ export function ImageEditor({
     previewTimeoutRef.current = setTimeout(async () => {
       try {
         // Load image to canvas
-        let canvas = await loadImageToCanvas(imageUrl);
+        let canvas = await loadImageToCanvas(sourceImageUrl);
 
         // Apply crop first (if any)
         if (cropArea && cropArea.width > 0 && cropArea.height > 0) {
@@ -115,28 +121,8 @@ export function ImageEditor({
           canvas = rotateImage(canvas, rotation);
         }
 
-        // Apply lighting adjustments if any are enabled
-        const hasLightingAdjustments =
-          autoEvenLighting || removeYellowing || evenColors;
-        if (hasLightingAdjustments) {
-          // Apply auto even lighting first if enabled
-          if (autoEvenLighting) {
-            canvas = applyAutoEvenLighting(canvas);
-          }
-
-          // Apply color corrections
-          if (removeYellowing) {
-            canvas = applyRemoveYellowing(canvas, 80);
-          }
-
-          if (evenColors) {
-            canvas = applyEvenColors(canvas, 60);
-          }
-        }
-
         // If no adjustments at all, use original
-        const hasAnyAdjustments =
-          cropArea || rotation !== 0 || hasLightingAdjustments;
+        const hasAnyAdjustments = cropArea || rotation !== 0;
         if (!hasAnyAdjustments) {
           setPreviewImageUrl(null);
           return;
@@ -157,12 +143,9 @@ export function ImageEditor({
       }
     };
   }, [
-    imageUrl,
+    sourceImageUrl,
     cropArea,
     rotation,
-    autoEvenLighting,
-    removeYellowing,
-    evenColors,
   ]);
 
   const handleCropChange = useCallback((newCropArea: CropArea) => {
@@ -194,19 +177,17 @@ export function ImageEditor({
     setCropArea(null);
     setPendingCropArea(null);
     setIsCropMode(false);
-    setAutoEvenLighting(false);
-    setRemoveYellowing(false);
-    setEvenColors(false);
+    setSessionImageUrl(null);
     setPreviewImageUrl(null);
   };
 
-  const handleSave = async () => {
-    if (!imageUrl) return;
+  const handleSave = useCallback(async () => {
+    if (!sourceImageUrl) return;
 
     setSaving(true);
     try {
       // Load original image
-      let canvas = await loadImageToCanvas(imageUrl);
+      let canvas = await loadImageToCanvas(sourceImageUrl);
 
       // Apply crop first (if any)
       if (cropArea && cropArea.width > 0 && cropArea.height > 0) {
@@ -218,22 +199,9 @@ export function ImageEditor({
         canvas = rotateImage(canvas, rotation);
       }
 
-      // Apply lighting adjustments
-      if (autoEvenLighting) {
-        canvas = applyAutoEvenLighting(canvas);
-      }
-
-      if (removeYellowing) {
-        canvas = applyRemoveYellowing(canvas, 80);
-      }
-
-      if (evenColors) {
-        canvas = applyEvenColors(canvas, 60);
-      }
-
       // Get MIME type from original image
-      const mimeType = getMimeTypeFromSource(imageUrl) || "image/jpeg";
-      const filename = imageUrl.split("/").pop() || "image.jpg";
+      const mimeType = getMimeTypeFromSource(sourceImageUrl) || "image/jpeg";
+      const filename = sourceImageUrl.split("/").pop() || "image.jpg";
 
       // Convert canvas to file
       const file = await canvasToFile(canvas, filename, 0.9, mimeType);
@@ -258,15 +226,14 @@ export function ImageEditor({
 
       // Update image URL - new key is always generated on save, so no cache-busting needed
       setImageUrl(data.imageUrl);
+      setSessionImageUrl(null);
       setPreviewImageUrl(null);
+      onImageSaved?.(data.imageUrl);
 
       // Reset adjustments
       setRotation(0);
       setCropArea(null);
       setPendingCropArea(null);
-      setAutoEvenLighting(false);
-      setRemoveYellowing(false);
-      setEvenColors(false);
 
       toast.success(t("saved"));
     } catch (error) {
@@ -277,16 +244,65 @@ export function ImageEditor({
     } finally {
       setSaving(false);
     }
-  };
+  }, [cropArea, onImageSaved, rotation, sourceImageUrl, submissionId, t]);
+
+  const handleAutoFix = useCallback(async () => {
+    if (!sourceImageUrl) return;
+
+    setIsAutoFixing(true);
+    try {
+      const response = await fetch(
+        `/api/submissions/${submissionId}/image/auto-fix`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ sourceImageUrl }),
+        },
+      );
+
+      if (!response.ok) {
+        const error = await response
+          .json()
+          .catch(() => ({ error: t("autoFixFailed") }));
+        throw new Error(error.error || t("autoFixFailed"));
+      }
+
+      const data = await response.json();
+      if (!data?.imageDataUrl) {
+        throw new Error(t("autoFixFailed"));
+      }
+
+      setSessionImageUrl(data.imageDataUrl);
+      setPreviewImageUrl(null);
+      toast.success(t("autoFixApplied"));
+    } catch (error) {
+      console.error("Auto-fix failed:", error);
+      toast.error(error instanceof Error ? error.message : t("autoFixFailed"));
+    } finally {
+      setIsAutoFixing(false);
+    }
+  }, [sourceImageUrl, submissionId, t]);
 
   return (
-    <div className="space-y-6">
+    <div className="flex h-full flex-col gap-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="truncate text-2xl font-semibold sm:text-3xl">
+            {submissionTitle || t("untitled")}
+          </h1>
+          <p className="truncate text-sm text-muted-foreground">
+            {metadataSubtitle}
+          </p>
+        </div>
+      </div>
       {imageUrl && (
-        <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="grid h-full min-h-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
           {/* Main editor area */}
-          <div className="lg:col-span-2">
+          <div className="min-h-0">
             <div
-              className="relative h-[400px] w-full overflow-hidden sm:h-[500px]"
+              className="relative h-[55vh] min-h-[420px] w-full overflow-hidden rounded-lg border border-border/40 sm:h-[65vh]"
               style={{
                 backgroundImage: `
                   linear-gradient(45deg, hsl(var(--muted)) 25%, transparent 25%),
@@ -313,7 +329,7 @@ export function ImageEditor({
               {isCropMode ? (
                 <>
                   <ResizableCrop
-                    imageUrl={previewImageUrl || imageUrl}
+                    imageUrl={previewImageUrl || sourceImageUrl}
                     rotation={rotation}
                     onCropChange={handleCropChange}
                     initialCrop={pendingCropArea || cropArea}
@@ -342,7 +358,7 @@ export function ImageEditor({
               ) : (
                 <div className="relative h-full w-full overflow-hidden flex items-center justify-center bg-black/5">
                   <img
-                    src={previewImageUrl || imageUrl || undefined}
+                    src={previewImageUrl || sourceImageUrl || undefined}
                     alt="Preview"
                     className="max-w-full max-h-full object-contain"
                     style={
@@ -359,179 +375,125 @@ export function ImageEditor({
             </div>
           </div>
 
-          {/* Controls sidebar */}
-          <div className="space-y-4">
-            {/* Image information - collapsible */}
-            {imageMetadata && (
-              <div>
-                <button
-                  onClick={() => setIsImageInfoOpen(!isImageInfoOpen)}
-                  className="flex items-center justify-between w-full text-2xl font-semibold mb-4 hover:opacity-80 transition-opacity"
-                >
-                  <span className="flex items-center gap-2">
-                    <Info className="h-5 w-5" />
-                    {t("imageInfo")}
-                  </span>
-                  {isImageInfoOpen ? (
-                    <ChevronUp className="h-5 w-5" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5" />
-                  )}
-                </button>
-                {isImageInfoOpen && (
-                  <div className="space-y-2 text-sm mb-4">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        {t("dimensions")}:
-                      </span>
-                      <span className="font-mono">
-                        {imageMetadata.width} × {imageMetadata.height}
-                      </span>
-                    </div>
-                    {imageMetadata.format && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("format")}:
-                        </span>
-                        <span className="font-mono uppercase">
-                          {imageMetadata.format}
-                        </span>
-                      </div>
-                    )}
-                    {imageMetadata.size && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("size")}:
-                        </span>
-                        <span className="font-mono">
-                          {(imageMetadata.size / 1024).toFixed(1)} KB
-                        </span>
-                      </div>
-                    )}
-                    {imageMetadata.colorDepth && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("colorDepth")}:
-                        </span>
-                        <span className="font-mono">
-                          {imageMetadata.colorDepth} bit
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* All tools in one container */}
-            <div>
-              <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <Wrench className="h-6 w-6" />
-                {t("tools")}
-              </h3>
-              <div className="space-y-3">
-                <Button
-                  variant={isCropMode ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => {
-                    if (isCropMode) {
-                      // Exit crop mode - cancel any pending changes
-                      handleCancelCrop();
-                    } else {
-                      // Enter crop mode - initialize pending crop with current crop area
-                      setPendingCropArea(cropArea);
-                      setIsCropMode(true);
-                    }
-                  }}
-                  className="w-full justify-start"
-                >
-                  <Crop className="h-4 w-4 mr-2" />
+          {/* Compact tools rail */}
+          <TooltipProvider>
+            <div className="flex shrink-0 flex-row gap-2 rounded-lg border border-border/40 bg-background/95 p-2 lg:h-fit lg:flex-col">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={isCropMode ? "default" : "outline"}
+                    size="icon"
+                    onClick={() => {
+                      if (isCropMode) {
+                        handleCancelCrop();
+                      } else {
+                        setPendingCropArea(cropArea);
+                        setIsCropMode(true);
+                      }
+                    }}
+                    aria-label={isCropMode ? t("exitCrop") : t("crop")}
+                  >
+                    <Crop className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
                   {isCropMode ? t("exitCrop") : t("crop")}
-                </Button>
-                <div className="flex gap-2">
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="icon"
                     onClick={() => handleRotate(false)}
-                    className="flex-1"
+                    aria-label={t("rotateLeft")}
                   >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    {t("rotateLeft")}
+                    <RotateCcw className="h-4 w-4" />
                   </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">{t("rotateLeft")}</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="icon"
                     onClick={() => handleRotate(true)}
-                    className="flex-1"
+                    aria-label={t("rotateRight")}
                   >
-                    <RotateCw className="h-4 w-4 mr-2" />
-                    {t("rotateRight")}
+                    <RotateCw className="h-4 w-4" />
                   </Button>
-                </div>
-                <Button
-                  variant={autoEvenLighting ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setAutoEvenLighting(!autoEvenLighting)}
-                  className="w-full justify-start"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {t("removeUnwantedShadows")}
-                </Button>
-                <Button
-                  variant={removeYellowing ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setRemoveYellowing(!removeYellowing)}
-                  className="w-full justify-start"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {t("removeYellowing")}
-                </Button>
-                <Button
-                  variant={evenColors ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setEvenColors(!evenColors)}
-                  className="w-full justify-start"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {t("evenColors")}
-                </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">{t("rotateRight")}</TooltipContent>
+              </Tooltip>
 
-                {/* Separator */}
-                <div className="border-t border-border my-2" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleAutoFix}
+                    disabled={isAutoFixing || saving}
+                    aria-label={isAutoFixing ? t("autoFixing") : t("autoFix")}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  {isAutoFixing ? t("autoFixing") : t("autoFix")}
+                </TooltipContent>
+              </Tooltip>
 
-                <Button
-                  variant={showGrid ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowGrid(!showGrid)}
-                  className="w-full justify-start"
-                >
-                  <Grid3x3 className="h-4 w-4 mr-2" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={showGrid ? "default" : "outline"}
+                    size="icon"
+                    onClick={() => setShowGrid(!showGrid)}
+                    aria-label={showGrid ? t("hideGrid") : t("showGrid")}
+                  >
+                    <Grid3x3 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
                   {showGrid ? t("hideGrid") : t("showGrid")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleReset}
-                  disabled={!hasChanges}
-                  className="w-full justify-start"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  {t("reset")}
-                </Button>
-              </div>
-            </div>
+                </TooltipContent>
+              </Tooltip>
 
-            {/* Save button */}
-            <Button
-              onClick={handleSave}
-              disabled={saving || !hasChanges}
-              className="w-full"
-              size="lg"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {saving ? t("saving") : t("save")}
-            </Button>
-          </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleReset}
+                    disabled={!hasChanges}
+                    aria-label={t("reset")}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">{t("reset")}</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                <Button
+                  onClick={handleSave}
+                  disabled={saving || !hasChanges}
+                  size="icon"
+                  aria-label={saving ? t("saving") : t("save")}
+                >
+                  <Save className="h-4 w-4" />
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  {saving ? t("saving") : t("save")}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         </div>
       )}
     </div>

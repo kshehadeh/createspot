@@ -9,10 +9,13 @@ interface CreatorOwnerShellProps {
   children: React.ReactNode;
 }
 
-/** Submission critiques page: hide studio sidebar; mobile nav stays for quick exit. */
-function isSubmissionCritiquesPath(pathname: string | null): boolean {
+/** Specific submission pages where full-width content is preferred. */
+function isFullWidthSubmissionPath(pathname: string | null): boolean {
   if (!pathname) return false;
-  return /\/s\/[^/]+\/critiques\/?$/.test(pathname);
+  return (
+    /\/s\/[^/]+\/critiques\/?$/.test(pathname) ||
+    /\/s\/[^/]+\/edit\/image\/?$/.test(pathname)
+  );
 }
 
 export function CreatorOwnerShell({
@@ -20,7 +23,7 @@ export function CreatorOwnerShell({
   children,
 }: CreatorOwnerShellProps) {
   const pathname = usePathname();
-  const hideSidebar = isSubmissionCritiquesPath(pathname);
+  const hideSidebar = isFullWidthSubmissionPath(pathname);
 
   return (
     <div className="flex flex-1">
