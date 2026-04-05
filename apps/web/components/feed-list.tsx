@@ -8,6 +8,7 @@ import Link from "@/components/link";
 import { LayoutDashboard, Plus } from "lucide-react";
 import { FeedCard, type FeedCardSubmission } from "@/components/feed-card";
 import { FavoritesProvider } from "@/components/favorites-provider";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
 
@@ -149,23 +150,25 @@ function FeedListContent({
       className="fixed right-4 z-50 flex flex-col items-center gap-2.5 sm:right-6"
       style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
     >
-      <button
+      <Button
         type="button"
+        variant="fabFilled"
         onClick={() => setIsCreateModalOpen(true)}
         title={t("newPost")}
         aria-label={t("newPost")}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Plus className="h-5 w-5" />
-      </button>
-      <Link
-        href="/dashboard"
+      </Button>
+      <Button
+        variant="fabMuted"
+        asChild
         title={t("dashboard")}
         aria-label={t("dashboard")}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <LayoutDashboard className="h-5 w-5" />
-      </Link>
+        <Link href="/dashboard">
+          <LayoutDashboard className="h-5 w-5" />
+        </Link>
+      </Button>
     </div>
   );
 

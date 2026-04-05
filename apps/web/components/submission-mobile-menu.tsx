@@ -4,6 +4,8 @@ import Link from "@/components/link";
 import { Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ShareButton } from "@/components/share-button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { FavoriteButton } from "@/components/favorite-button";
 import { CritiqueButton } from "@/components/critique-button";
@@ -71,14 +73,18 @@ export function SubmissionMobileMenu({
         style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 5.5rem)" }}
       >
         {isOwner && (
-          <Link
-            href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
+          <Button
+            variant="fabMuted"
+            asChild
             aria-label={tSubmission("edit")}
             title={tSubmission("edit")}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95"
           >
-            <Pencil className="h-5 w-5" />
-          </Link>
+            <Link
+              href={`${getCreatorUrl(submission.user)}/s/${submission.id}/edit`}
+            >
+              <Pencil className="h-5 w-5" />
+            </Link>
+          </Button>
         )}
         {isOwner && (hasImage || hasProgressionsGif) && (
           <CollectionDownloadDropdown
@@ -88,14 +94,13 @@ export function SubmissionMobileMenu({
             hasImage={hasImage}
             hasProgressionsGif={hasProgressionsGif}
             compactTrigger
-            triggerClassName="flex items-center justify-center bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95 hover:bg-accent"
           />
         )}
         {isLoggedIn && (
           <FavoriteButton
             submissionId={submission.id}
             size="md"
-            className="relative flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground shadow-lg ring-1 ring-border transition-transform hover:scale-105 active:scale-95"
+            className={cn("relative", buttonVariants({ variant: "fabMuted" }))}
           />
         )}
         <ShareButton
@@ -103,7 +108,7 @@ export function SubmissionMobileMenu({
           submissionId={submission.id}
           userId={submission.user.id}
           userSlug={submission.user.slug}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
+          className={buttonVariants({ variant: "fabFilled" })}
         />
       </div>
     </>

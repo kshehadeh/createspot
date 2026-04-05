@@ -14,13 +14,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
+import { LIGHTBOX_BUTTON_CLASS } from "@/components/ui/button";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
 import { useImagePreloader } from "@/lib/hooks/use-image-preloader";
 import { usePinchZoom } from "@/lib/hooks/use-pinch-zoom";
 
-/** Shared style for lightbox controls: semi-transparent on black, capsule shape. */
-export const LIGHTBOX_BUTTON_CLASS =
-  "rounded-full !bg-white/10 border border-white/20 text-white hover:!bg-white/20 hover:!text-white focus-visible:ring-white/30 focus-visible:ring-offset-transparent";
+export { LIGHTBOX_BUTTON_CLASS };
 
 export interface BaseLightboxNavigation {
   onGoToPrevious: () => void;

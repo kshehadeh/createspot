@@ -11,10 +11,9 @@ import {
   BaseLightbox,
   BaseLightboxNavigation,
   BaseLightboxRenderContext,
-  LIGHTBOX_BUTTON_CLASS,
 } from "@/components/base-lightbox";
 import { ShareButton } from "@/components/share-button";
-import { Button } from "@/components/ui/button";
+import { Button, LIGHTBOX_BUTTON_CLASS } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -23,6 +22,7 @@ import {
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { buildRoutePath } from "@/lib/routes";
 import { fetcher } from "@/lib/swr";
+import { cn } from "@/lib/utils";
 
 interface LightboxSubmission {
   id: string;
@@ -288,13 +288,13 @@ export function SubmissionLightbox({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="outline"
+                variant="overlayDark"
                 size="icon"
                 onClick={(e) => {
                   e.stopPropagation();
                   context.setIsTextOverlayOpen(true);
                 }}
-                className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                className="xl:hidden"
                 aria-label="View text"
               >
                 <FileText className="h-4 w-4" />
@@ -311,10 +311,10 @@ export function SubmissionLightbox({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="outline"
+                variant="overlayDark"
                 size="sm"
                 asChild
-                className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
+                className="hidden xl:flex"
               >
                 <Link
                   href={getSubmissionUrl() || "#"}
@@ -344,10 +344,10 @@ export function SubmissionLightbox({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="outline"
+                variant="overlayDark"
                 size="icon"
                 asChild
-                className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                className="xl:hidden"
                 aria-label="View submission"
               >
                 <Link
@@ -382,13 +382,13 @@ export function SubmissionLightbox({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="overlayDark"
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEditClick();
                   }}
-                  className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
+                  className="hidden xl:flex"
                   aria-label="Edit submission"
                 >
                   <Edit className="h-4 w-4" />
@@ -402,13 +402,13 @@ export function SubmissionLightbox({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="overlayDark"
                   size="icon"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEditClick();
                   }}
-                  className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                  className="xl:hidden"
                   aria-label="Edit submission"
                 >
                   <Edit className="h-4 w-4" />
@@ -436,10 +436,10 @@ export function SubmissionLightbox({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="outline"
+                      variant="overlayDark"
                       size="sm"
                       asChild
-                      className={`hidden xl:flex ${LIGHTBOX_BUTTON_CLASS}`}
+                      className="hidden xl:flex"
                       aria-label="Critique"
                     >
                       <Link
@@ -458,10 +458,10 @@ export function SubmissionLightbox({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="outline"
+                      variant="overlayDark"
                       size="icon"
                       asChild
-                      className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                      className="xl:hidden"
                       aria-label="Critique"
                     >
                       <Link
@@ -490,7 +490,10 @@ export function SubmissionLightbox({
                   submissionId={submission.id}
                   userId={submissionUserId ?? undefined}
                   userSlug={submissionUserSlug ?? undefined}
-                  className={`inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 [&_svg]:size-4 ${LIGHTBOX_BUTTON_CLASS} border`}
+                  className={cn(
+                    "inline-flex h-10 w-10 shrink-0 items-center justify-center p-0 [&_svg]:size-4",
+                    LIGHTBOX_BUTTON_CLASS,
+                  )}
                   ariaLabel={t("shareSubmission")}
                 />
               </span>
@@ -505,12 +508,11 @@ export function SubmissionLightbox({
         <Tooltip open={closeTooltipOpen} onOpenChange={() => {}}>
           <TooltipTrigger asChild>
             <Button
-              variant="outline"
+              variant="overlayDark"
               size="icon"
               onClick={onClose}
               onMouseEnter={() => setCloseTooltipHovered(true)}
               onMouseLeave={() => setCloseTooltipHovered(false)}
-              className={LIGHTBOX_BUTTON_CLASS}
               aria-label="Close"
             >
               <X className="h-4 w-4" />
@@ -555,7 +557,7 @@ export function SubmissionLightbox({
           dangerouslySetInnerHTML={{ __html: submission.text! }}
         />
         <Button
-          variant="ghost"
+          variant="overlayDark"
           size="icon"
           onClick={() => {}}
           className="absolute right-4 top-4"

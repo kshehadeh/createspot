@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Crosshair,
-  ImageIcon,
-  Trash2,
-} from "lucide-react";
+import { Crosshair, ImageIcon, Trash2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "@/components/link";
@@ -14,7 +10,6 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
-import { LIGHTBOX_BUTTON_CLASS } from "@/components/base-lightbox";
 import { fetcher } from "@/lib/swr";
 
 // Heavy TipTap editor - dynamically import
@@ -558,10 +553,10 @@ export function PortfolioItemForm({
                   <TooltipTrigger asChild>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="overlayDark"
                       size="icon"
                       onClick={() => setIsFocalPointModalOpen(true)}
-                      className={cn("h-10 w-10 shrink-0", LIGHTBOX_BUTTON_CLASS)}
+                      className="h-10 w-10 shrink-0"
                     >
                       <Crosshair className="h-4 w-4" />
                     </Button>
@@ -581,12 +576,9 @@ export function PortfolioItemForm({
                     <TooltipTrigger asChild>
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="overlayDark"
                         size="icon"
-                        className={cn(
-                          "h-10 w-10 shrink-0",
-                          LIGHTBOX_BUTTON_CLASS,
-                        )}
+                        className="h-10 w-10 shrink-0"
                         disabled={!imageUrl}
                         onClick={() => setIsImageEditorOpen(true)}
                       >
@@ -600,11 +592,10 @@ export function PortfolioItemForm({
                   <TooltipTrigger asChild>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="overlayDark"
                       size="icon"
                       className={cn(
                         "h-10 w-10 shrink-0",
-                        LIGHTBOX_BUTTON_CLASS,
                         "hover:!border-red-300/50 hover:!bg-red-500/30 hover:!text-white",
                       )}
                       onClick={() => setShowRemoveImageConfirm(true)}

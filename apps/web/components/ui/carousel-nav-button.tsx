@@ -2,6 +2,7 @@
 
 import type { Ref } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface CarouselNavButtonProps {
@@ -30,19 +31,20 @@ export function CarouselNavButton({
   const Icon = side === "prev" ? ChevronLeft : ChevronRight;
 
   return (
-    <button
+    <Button
       ref={ref}
       type="button"
+      variant="overlayLight"
+      size="icon"
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
       className={cn(
-        "rounded-full bg-background/80 p-2 shadow-md backdrop-blur-sm transition-opacity hover:bg-background disabled:pointer-events-none disabled:opacity-0",
         showOnHover && "opacity-0 group-hover:opacity-100",
         className,
       )}
     >
       <Icon className="h-5 w-5" />
-    </button>
+    </Button>
   );
 }

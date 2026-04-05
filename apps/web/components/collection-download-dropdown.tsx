@@ -224,16 +224,14 @@ export function CollectionDownloadDropdown(
             toolbarIconTrigger
               ? "outline"
               : compactTrigger
-                ? "ghost"
+                ? "fabMuted"
                 : "outline"
           }
-          size={toolbarIconTrigger ? "icon" : "sm"}
+          size={toolbarIconTrigger ? "icon" : compactTrigger ? "default" : "sm"}
           disabled={isDownloading}
           className={cn(
             toolbarIconTrigger && "h-10 w-10 shrink-0",
-            compactTrigger &&
-              !toolbarIconTrigger &&
-              "h-12 w-12 shrink-0 rounded-full p-0",
+            compactTrigger && !toolbarIconTrigger && "shrink-0",
             triggerClassName,
           )}
           aria-label={iconOnlyTrigger ? t("downloadAs") : undefined}

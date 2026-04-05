@@ -13,7 +13,6 @@ import {
   BaseLightbox,
   type BaseLightboxNavigation,
   type BaseLightboxRenderContext,
-  LIGHTBOX_BUTTON_CLASS,
 } from "@/components/base-lightbox";
 import { getMuseumDisplayName } from "@/lib/museums/museum-display-names";
 import type { MuseumArtworkListItem } from "@/lib/museums/types";
@@ -78,10 +77,9 @@ export function MuseumLightbox({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="outline"
+            variant="overlayDark"
             size="icon"
             onClick={onClose}
-            className={LIGHTBOX_BUTTON_CLASS}
             aria-label={t("close")}
           >
             <X className="h-4 w-4" />

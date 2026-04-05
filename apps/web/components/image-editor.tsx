@@ -71,7 +71,9 @@ export function ImageEditor({
         imageMetadata.size
           ? `${(imageMetadata.size / 1024).toFixed(1)} KB`
           : undefined,
-        imageMetadata.colorDepth ? `${imageMetadata.colorDepth} bit` : undefined,
+        imageMetadata.colorDepth
+          ? `${imageMetadata.colorDepth} bit`
+          : undefined,
       ]
         .filter(Boolean)
         .join(" • ")
@@ -142,11 +144,7 @@ export function ImageEditor({
         clearTimeout(previewTimeoutRef.current);
       }
     };
-  }, [
-    sourceImageUrl,
-    cropArea,
-    rotation,
-  ]);
+  }, [sourceImageUrl, cropArea, rotation]);
 
   const handleCropChange = useCallback((newCropArea: CropArea) => {
     // Store as pending crop (not applied yet)
@@ -479,14 +477,14 @@ export function ImageEditor({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                <Button
-                  onClick={handleSave}
-                  disabled={saving || !hasChanges}
-                  size="icon"
-                  aria-label={saving ? t("saving") : t("save")}
-                >
-                  <Save className="h-4 w-4" />
-                </Button>
+                  <Button
+                    onClick={handleSave}
+                    disabled={saving || !hasChanges}
+                    size="icon"
+                    aria-label={saving ? t("saving") : t("save")}
+                  >
+                    <Save className="h-4 w-4" />
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent side="left">
                   {saving ? t("saving") : t("save")}

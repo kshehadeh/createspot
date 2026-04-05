@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { auth, signIn } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateSpotLogo } from "@/components/create-spot-logo";
 
@@ -148,13 +149,14 @@ export default async function WelcomePage() {
                 await signIn("google", { redirectTo: "/" });
               }}
             >
-              <button
+              <Button
                 type="submit"
-                className="flex w-full items-center justify-center gap-3 rounded-lg bg-card px-4 py-3 text-sm font-medium text-foreground shadow-sm ring-1 ring-border/50 transition-all hover:bg-accent hover:shadow-md"
+                variant="outline"
+                className="flex w-full gap-3 bg-card px-4 py-3 text-sm shadow-sm ring-1 ring-border/50 hover:bg-accent hover:shadow-md"
               >
                 <GoogleIcon />
                 {t("continueWithGoogle")}
-              </button>
+              </Button>
             </form>
           </CardContent>
         </Card>
@@ -174,13 +176,14 @@ export default async function WelcomePage() {
                 await signIn("google", { redirectTo: "/" });
               }}
             >
-              <button
+              <Button
                 type="submit"
-                className="flex w-full items-center justify-center gap-3 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md"
+                variant="default"
+                className="flex w-full gap-3 px-4 py-3 text-sm shadow-sm hover:shadow-md"
               >
                 <GoogleIcon />
                 {t("createAccount")}
-              </button>
+              </Button>
             </form>
           </CardContent>
         </Card>

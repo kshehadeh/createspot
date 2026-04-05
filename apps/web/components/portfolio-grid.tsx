@@ -24,7 +24,6 @@ import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { LIGHTBOX_BUTTON_CLASS } from "@/components/base-lightbox";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
@@ -650,9 +649,9 @@ function SortablePortfolioItem({
                 <TooltipTrigger asChild>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="overlayDark"
                     size="icon"
-                    className={cn("h-10 w-10 shrink-0", LIGHTBOX_BUTTON_CLASS)}
+                    className="h-10 w-10 shrink-0"
                     onClick={handleEdit}
                   >
                     <Pencil className="h-4 w-4" />
@@ -669,11 +668,10 @@ function SortablePortfolioItem({
                 <TooltipTrigger asChild>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="overlayDark"
                     size="icon"
                     className={cn(
                       "h-10 w-10 shrink-0",
-                      LIGHTBOX_BUTTON_CLASS,
                       featuredSubmissionId === item.id &&
                         "!border-amber-300/50 !bg-amber-500/35 !text-white hover:!bg-amber-500/50",
                     )}
@@ -704,11 +702,10 @@ function SortablePortfolioItem({
               <TooltipTrigger asChild>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="overlayDark"
                   size="icon"
                   className={cn(
                     "h-10 w-10 shrink-0",
-                    LIGHTBOX_BUTTON_CLASS,
                     "hover:!border-red-300/50 hover:!bg-red-500/30 hover:!text-white",
                   )}
                   onClick={(e) => onDeleteClick(e, item)}

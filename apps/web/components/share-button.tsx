@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { getCreatorUrl } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { getCreatorUrl, cn } from "@/lib/utils";
 
 type ShareButtonPropsBase = {
   className?: string;
@@ -140,15 +141,17 @@ export function ShareButton(props: ShareButtonProps) {
   const label = ariaLabel ?? (copied ? labels.copied : labels.copy);
 
   const useCustomStyle = className.length > 0;
-  const buttonClassName = useCustomStyle
-    ? className
-    : `flex items-center justify-center rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground active:brightness-95 ${className}`;
 
   return (
-    <button
+    <Button
       type="button"
+      variant="default"
+      size="icon"
       onClick={() => void handleCopy()}
-      className={buttonClassName}
+      className={cn(
+        !useCustomStyle && "rounded-lg active:brightness-95 [&_svg]:size-5",
+        useCustomStyle && className,
+      )}
       aria-label={label}
       title={label}
     >
@@ -181,6 +184,6 @@ export function ShareButton(props: ShareButtonProps) {
           />
         </svg>
       )}
-    </button>
+    </Button>
   );
 }

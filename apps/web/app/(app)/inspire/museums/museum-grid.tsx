@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MUSEUM_PAGE_SIZE } from "@/lib/museums/constants";
 import { getMuseumDisplayName } from "@/lib/museums/museum-display-names";
@@ -184,13 +185,15 @@ export function MuseumGrid({
             <span className="text-red-500 dark:text-red-400">
               {loadError === "loadMoreError" ? t("loadMoreError") : loadError}
             </span>
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={loadMore}
-              className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
+              className="h-auto rounded-lg px-3 py-1 text-xs"
             >
               {t("retry")}
-            </button>
+            </Button>
           </div>
         )}
         {!hasMore && items.length > 0 && (

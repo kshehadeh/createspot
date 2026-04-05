@@ -11,6 +11,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 import { getObjectPositionStyle } from "@/lib/image-utils";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 // Heavy components - lazy load the lightbox and session provider
@@ -339,13 +340,15 @@ function GridContent({
             <span className="text-red-500 dark:text-red-400">
               {loadError === "loadMoreError" ? t("loadMoreError") : loadError}
             </span>
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={onLoadMore}
-              className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
+              className="h-auto rounded-lg px-3 py-1 text-xs"
             >
               {t("retry")}
-            </button>
+            </Button>
           </div>
         )}
         {!hasMore && submissions.length > 0 && (

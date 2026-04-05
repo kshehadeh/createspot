@@ -175,9 +175,11 @@ export function SubmissionDetail({
       <h3 className="text-lg font-semibold text-foreground mb-4">
         {tReference("title")}
       </h3>
-      <button
+      <Button
+        type="button"
+        variant="ghost"
         onClick={() => setIsReferenceLightboxOpen(true)}
-        className="relative w-full aspect-video max-h-[70vh] rounded-lg overflow-hidden border-2 border-transparent hover:border-primary/50 focus:border-primary focus:outline-none transition-all group bg-muted"
+        className="relative h-auto w-full max-h-[70vh] aspect-video rounded-lg overflow-hidden border-2 border-transparent p-0 hover:border-primary/50 hover:bg-muted focus-visible:border-primary focus-visible:ring-0 group"
         aria-label={tReference("viewReference")}
       >
         <Image
@@ -187,7 +189,7 @@ export function SubmissionDetail({
           className="object-contain transition-transform group-hover:scale-[1.02]"
           sizes="(max-width: 1024px) 100vw, 1280px"
         />
-      </button>
+      </Button>
     </div>
   );
 

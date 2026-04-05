@@ -13,6 +13,7 @@ import Link from "@/components/link";
 import { useTranslations } from "next-intl";
 import useEmblaCarousel from "embla-carousel-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";
@@ -480,25 +481,29 @@ export function FeedCard({
           className="flex h-8 w-8 items-center justify-center rounded-full bg-transparent p-0 text-foreground transition-colors hover:bg-muted hover:text-foreground"
         />
         {submission.critiquesEnabled && (
-          <Link
-            href={`${submissionUrl}/critiques`}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted hover:text-foreground"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full text-foreground hover:bg-muted hover:text-foreground"
+            asChild
             aria-label={t("critiques")}
           >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
-          </Link>
+            <Link href={`${submissionUrl}/critiques`}>
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+            </Link>
+          </Button>
         )}
         <Link
           href={submissionUrl}

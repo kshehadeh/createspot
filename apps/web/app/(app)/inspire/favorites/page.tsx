@@ -1,4 +1,5 @@
 import Link from "@/components/link";
+import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
@@ -61,12 +62,13 @@ export default async function FavoritesPage() {
       ) : (
         <div className="text-center">
           <p className="mb-4 text-muted-foreground">{t("empty")}</p>
-          <Link
-            href="/inspire/exhibition"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          <Button
+            asChild
+            size="lg"
+            className="h-12 rounded-full px-8 text-sm font-medium"
           >
-            {t("exploreExhibits")}
-          </Link>
+            <Link href="/inspire/exhibition">{t("exploreExhibits")}</Link>
+          </Button>
         </div>
       )}
     </PageLayout>

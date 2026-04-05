@@ -13,7 +13,6 @@ import {
   BaseLightbox,
   BaseLightboxNavigation,
   BaseLightboxRenderContext,
-  LIGHTBOX_BUTTON_CLASS,
 } from "@/components/base-lightbox";
 
 export interface ProgressionItem {
@@ -166,13 +165,13 @@ export function ProgressionLightbox({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="outline"
+                variant="overlayDark"
                 size="icon"
                 onClick={(e) => {
                   e.stopPropagation();
                   context.setIsTextOverlayOpen(true);
                 }}
-                className={`xl:hidden ${LIGHTBOX_BUTTON_CLASS}`}
+                className="xl:hidden"
                 aria-label={t("viewText")}
               >
                 <FileText className="h-4 w-4" />
@@ -188,7 +187,7 @@ export function ProgressionLightbox({
         <Tooltip open={closeTooltipOpen} onOpenChange={() => {}}>
           <TooltipTrigger asChild>
             <Button
-              variant="outline"
+              variant="overlayDark"
               size="icon"
               onClick={onClose}
               onMouseEnter={() => {
@@ -201,7 +200,6 @@ export function ProgressionLightbox({
                 closeTooltipCleanupRef.current = null;
                 handleTooltipHover(false);
               }}
-              className={LIGHTBOX_BUTTON_CLASS}
               aria-label={t("close")}
             >
               <X className="h-4 w-4" />
@@ -233,7 +231,7 @@ export function ProgressionLightbox({
           dangerouslySetInnerHTML={{ __html: currentProgression.text! }}
         />
         <Button
-          variant="ghost"
+          variant="overlayDark"
           size="icon"
           className="absolute right-4 top-4"
           aria-label={t("closeTextOverlay")}

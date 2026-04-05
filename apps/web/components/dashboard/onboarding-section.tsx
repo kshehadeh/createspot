@@ -14,6 +14,7 @@ import {
   UserPlus,
   FolderHeart,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface OnboardingStatus {
   hasFavorited: boolean;
@@ -116,14 +117,17 @@ export function OnboardingSection() {
   return (
     <div className="not-first-child overflow-hidden rounded-xl border bg-card text-foreground shadow-sm">
       <div className="flex justify-end p-4">
-        <button
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={handleDismiss}
           disabled={dismissing}
-          className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50"
+          className="h-8 w-8 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
           aria-label={t("dismiss")}
         >
           <X className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col gap-6 px-5 pb-6 sm:px-6 lg:flex-row">
