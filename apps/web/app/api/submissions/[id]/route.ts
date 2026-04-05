@@ -55,6 +55,16 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             website: true,
           },
         },
+        progressions: {
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            imageUrl: true,
+            text: true,
+            comment: true,
+            order: true,
+          },
+        },
         _count: {
           select: {
             favorites: true,

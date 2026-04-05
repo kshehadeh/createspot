@@ -324,6 +324,8 @@
       "close": "Close",
       "previous": "Previous",
       "next": "Next",
+      "previousArtworkNav": "Previous artwork",
+      "nextArtworkNav": "Next artwork",
       "viewAtMuseum": "View on museum website"
     }
   },
@@ -338,6 +340,8 @@
     "reachedEnd": "You've reached the end.",
     "previousSubmission": "Previous",
     "nextSubmission": "Next",
+    "previousSubmissionNav": "Previous submission",
+    "nextSubmissionNav": "Next submission",
     "shareSubmission": "Share submission"
   },
   "submission": {

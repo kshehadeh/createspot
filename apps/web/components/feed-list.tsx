@@ -25,7 +25,10 @@ function mapFeedSubmissionForLightbox(submission: FeedCardSubmission) {
     id: submission.id,
     title: submission.title,
     imageUrl: submission.imageUrl,
+    imageFocalPoint: submission.imageFocalPoint,
     text: submission.text,
+    referenceImageUrl: submission.referenceImageUrl,
+    progressions: submission.progressions,
     shareStatus: "PUBLIC" as const,
     critiquesEnabled: submission.critiquesEnabled,
     user: {
@@ -263,6 +266,19 @@ function FeedListContent({
                 prevImageUrl: hasPrevious
                   ? (submissions[currentIndex - 1]?.imageUrl ?? null)
                   : null,
+                galleryPagination:
+                  submissions.length > 1
+                    ? {
+                        itemCount: submissions.length,
+                        selectedIndex: currentIndex,
+                        onSelect: (index: number) => {
+                          const next = submissions[index];
+                          if (next) setLightboxSubmissionId(next.id);
+                        },
+                        getItemAriaLabel: (index: number) =>
+                          t("goToSlide", { n: index + 1 }),
+                      }
+                    : undefined,
               }}
             />
           );

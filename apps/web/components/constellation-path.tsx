@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { Card } from "@/components/ui/card";
@@ -259,6 +260,7 @@ export function ConstellationPath({
   className,
   headerRef,
 }: ConstellationPathProps) {
+  const tFeed = useTranslations("feed");
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -559,15 +561,37 @@ export function ConstellationPath({
               }}
               isOpen={!!selectedItem}
               onClose={() => setSelectedItem(null)}
-              onGoToPrevious={() => {
-                if (hasPrevious)
-                  setSelectedItem(orderedItems[currentIndex - 1]);
+              navigation={{
+                onGoToPrevious: () => {
+                  if (hasPrevious)
+                    setSelectedItem(orderedItems[currentIndex - 1]);
+                },
+                onGoToNext: () => {
+                  if (hasNext)
+                    setSelectedItem(orderedItems[currentIndex + 1]);
+                },
+                hasPrevious,
+                hasNext,
+                nextImageUrl: hasNext
+                  ? (orderedItems[currentIndex + 1]?.imageUrl ?? null)
+                  : null,
+                prevImageUrl: hasPrevious
+                  ? (orderedItems[currentIndex - 1]?.imageUrl ?? null)
+                  : null,
+                galleryPagination:
+                  orderedItems.length > 1
+                    ? {
+                        itemCount: orderedItems.length,
+                        selectedIndex: currentIndex,
+                        onSelect: (index: number) => {
+                          const next = orderedItems[index];
+                          if (next) setSelectedItem(next);
+                        },
+                        getItemAriaLabel: (index: number) =>
+                          tFeed("goToSlide", { n: index + 1 }),
+                      }
+                    : undefined,
               }}
-              onGoToNext={() => {
-                if (hasNext) setSelectedItem(orderedItems[currentIndex + 1]);
-              }}
-              hasPrevious={hasPrevious}
-              hasNext={hasNext}
             />
           );
         })()}

@@ -777,6 +777,7 @@ function PortfolioGridContent({
 }) {
   const router = useRouter();
   const t = useTranslations("portfolio");
+  const tFeed = useTranslations("feed");
   const dndContextId = useId();
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
   const [removingItem, setRemovingItem] = useState<PortfolioItem | null>(null);
@@ -1138,6 +1139,7 @@ function PortfolioGridContent({
                   id: selectedSubmission.id,
                   title: selectedSubmission.title,
                   imageUrl: selectedSubmission.imageUrl,
+                  imageFocalPoint: selectedSubmission.imageFocalPoint ?? null,
                   text: selectedSubmission.text,
                   shareStatus: selectedSubmission.shareStatus ?? "PUBLIC",
                   critiquesEnabled:
@@ -1166,6 +1168,19 @@ function PortfolioGridContent({
                   prevImageUrl: hasPrevious
                     ? (items[currentIndex - 1]?.imageUrl ?? null)
                     : null,
+                  galleryPagination:
+                    items.length > 1
+                      ? {
+                          itemCount: items.length,
+                          selectedIndex: currentIndex,
+                          onSelect: (index: number) => {
+                            const next = items[index];
+                            if (next) setSelectedSubmission(next);
+                          },
+                          getItemAriaLabel: (index: number) =>
+                            tFeed("goToSlide", { n: index + 1 }),
+                        }
+                      : undefined,
                 }}
               />
             );

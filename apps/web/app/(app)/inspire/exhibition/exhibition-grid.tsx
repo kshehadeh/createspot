@@ -169,6 +169,7 @@ function GridContent({
   loadError: string | null;
 }) {
   const t = useTranslations("exhibition");
+  const tFeed = useTranslations("feed");
   const tProfile = useTranslations("profile");
   const [selectedSubmission, setSelectedSubmission] =
     useState<ExhibitionSubmission | null>(null);
@@ -390,6 +391,19 @@ function GridContent({
                 prevImageUrl: hasPrevious
                   ? (submissions[currentIndex - 1]?.imageUrl ?? null)
                   : null,
+                galleryPagination:
+                  submissions.length > 1
+                    ? {
+                        itemCount: submissions.length,
+                        selectedIndex: currentIndex,
+                        onSelect: (index: number) => {
+                          const next = submissions[index];
+                          if (next) setSelectedSubmission(next);
+                        },
+                        getItemAriaLabel: (index: number) =>
+                          tFeed("goToSlide", { n: index + 1 }),
+                      }
+                    : undefined,
               }}
             />
           );

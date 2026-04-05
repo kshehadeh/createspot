@@ -67,8 +67,8 @@ export function MuseumLightbox({
   const baseNavigation: BaseLightboxNavigation | undefined = navigation
     ? {
         ...navigation,
-        prevLabel: t("previous"),
-        nextLabel: t("next"),
+        prevLabel: t("previousArtworkNav"),
+        nextLabel: t("nextArtworkNav"),
       }
     : undefined;
 

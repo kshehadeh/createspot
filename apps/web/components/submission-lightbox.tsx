@@ -5,13 +5,14 @@ import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import {
   BaseLightbox,
   BaseLightboxNavigation,
   BaseLightboxRenderContext,
 } from "@/components/base-lightbox";
+import { SubmissionMediaCarousel } from "@/components/submission-media-carousel";
 import { ShareButton } from "@/components/share-button";
 import { Button } from "@createspot/ui-primitives/button";
 import {
@@ -22,12 +23,39 @@ import {
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { buildRoutePath } from "@/lib/routes";
 import { fetcher } from "@/lib/swr";
+import {
+  buildSubmissionSlides,
+  type SubmissionMediaInput,
+  type SubmissionProgressionInput,
+  type SubmissionSlide,
+} from "@/lib/submission-slides";
 
-interface LightboxSubmission {
+function parseImageFocalPoint(value: unknown): { x: number; y: number } | null {
+  if (value == null || typeof value !== "object") return null;
+  const o = value as Record<string, unknown>;
+  if (typeof o.x === "number" && typeof o.y === "number") {
+    return { x: o.x, y: o.y };
+  }
+  return null;
+}
+
+function shouldUseSubmissionMediaCarousel(slides: SubmissionSlide[]): boolean {
+  if (slides.length > 1) return true;
+  if (slides.length === 1) {
+    const ty = slides[0].type;
+    return ty === "reference" || ty === "progression";
+  }
+  return false;
+}
+
+export interface LightboxSubmission {
   id: string;
   title: string | null;
   imageUrl: string | null;
+  imageFocalPoint?: { x: number; y: number } | null;
   text: string | null;
+  referenceImageUrl?: string | null;
+  progressions?: SubmissionProgressionInput[];
   shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled: boolean;
   user?: {
@@ -57,6 +85,13 @@ export interface SubmissionLightboxNavigation {
   nextImageUrl?: string | null;
   /** Optional image URL for the previous submission; when provided, preloaded for instant display on navigate. */
   prevImageUrl?: string | null;
+  /** Dots for moving between submissions in a gallery (feed-style). */
+  galleryPagination?: {
+    itemCount: number;
+    selectedIndex: number;
+    onSelect: (index: number) => void;
+    getItemAriaLabel: (index: number) => string;
+  };
 }
 
 interface SubmissionLightboxProps {
@@ -112,6 +147,7 @@ export function SubmissionLightbox({
   const prevImageUrl = navigation?.prevImageUrl;
 
   const t = useTranslations("exhibition");
+  const tFeed = useTranslations("feed");
   const { data: session } = useSession();
   const currentUserId = session?.user?.id || propCurrentUserId;
   const router = useRouter();
@@ -119,7 +155,13 @@ export function SubmissionLightbox({
   const [closeTooltipHovered, setCloseTooltipHovered] = useState(false);
 
   const { data: submissionData } = useSWR<{
-    submission: { userId: string; user?: { slug: string | null } };
+    submission: {
+      userId: string;
+      user?: { slug: string | null };
+      referenceImageUrl?: string | null;
+      imageFocalPoint?: unknown;
+      progressions?: SubmissionProgressionInput[];
+    };
   }>(
     isOpen && submission.id ? `/api/submissions/${submission.id}` : null,
     fetcher,
@@ -129,8 +171,39 @@ export function SubmissionLightbox({
   const submissionUserSlug =
     submissionData?.submission?.user?.slug ?? submission.user?.slug ?? null;
 
+  const mergedMedia: SubmissionMediaInput = useMemo(() => {
+    const api = submissionData?.submission;
+    const focalFromApi = parseImageFocalPoint(api?.imageFocalPoint);
+    return {
+      title: submission.title,
+      imageUrl: submission.imageUrl,
+      imageFocalPoint: submission.imageFocalPoint ?? focalFromApi ?? null,
+      text: submission.text,
+      referenceImageUrl:
+        submission.referenceImageUrl ?? api?.referenceImageUrl ?? null,
+      progressions:
+        submission.progressions && submission.progressions.length > 0
+          ? submission.progressions
+          : (api?.progressions ?? []),
+    };
+  }, [submission, submissionData]);
+
+  const slides = useMemo(
+    () =>
+      buildSubmissionSlides(mergedMedia, {
+        submissionAlt: tFeed("submissionAlt"),
+        progressionStep: (step, total) =>
+          tFeed("progressionStep", { step, total }),
+      }),
+    [mergedMedia, tFeed],
+  );
+
+  const useMediaCarousel = shouldUseSubmissionMediaCarousel(slides);
+  const textInCarousel = slides.some((s) => s.type === "text");
+
   const hasImage = !!submission.imageUrl;
   const hasText = !!submission.text;
+  const showImageColumn = hasImage || useMediaCarousel;
   // For WIP submissions without a main image, show nothing in lightbox
   // (the grid navigates to detail page instead)
   const isOwner =
@@ -207,8 +280,8 @@ export function SubmissionLightbox({
           hasNext,
           nextImageUrl,
           prevImageUrl,
-          prevLabel: t("previousSubmission"),
-          nextLabel: t("nextSubmission"),
+          prevLabel: t("previousSubmissionNav"),
+          nextLabel: t("nextSubmissionNav"),
         }
       : undefined;
 
@@ -234,8 +307,8 @@ export function SubmissionLightbox({
           )}
         </div>
 
-        {/* Text content */}
-        {hasText && (
+        {/* Text content (omit when the media carousel already includes a text slide) */}
+        {hasText && !textInCarousel && (
           <div className="flex-1 overflow-y-auto px-6 xl:px-8 pb-6 xl:pb-8">
             <div
               className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
@@ -251,6 +324,7 @@ export function SubmissionLightbox({
       submission.text,
       favoriteCount,
       hasText,
+      textInCarousel,
       t,
     ],
   );
@@ -282,8 +356,8 @@ export function SubmissionLightbox({
   const renderControls = useCallback(
     (context: BaseLightboxRenderContext) => (
       <>
-        {/* Text overlay button - mobile only when text exists */}
-        {hasText && hasImage && (
+        {/* Text overlay button - mobile only when text exists as separate pane */}
+        {hasText && showImageColumn && !textInCarousel && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -523,7 +597,8 @@ export function SubmissionLightbox({
     ),
     [
       hasText,
-      hasImage,
+      showImageColumn,
+      textInCarousel,
       isOwner,
       showCritique,
       showShare,
@@ -542,7 +617,7 @@ export function SubmissionLightbox({
 
   // Render text overlay content
   const renderTextOverlay = useCallback(
-    () => (
+    (context: BaseLightboxRenderContext) => (
       <>
         {submission.title && (
           <h2 className="mb-4 text-2xl font-semibold text-white">
@@ -556,7 +631,10 @@ export function SubmissionLightbox({
         <Button
           variant="overlayDark"
           size="icon"
-          onClick={() => {}}
+          onClick={(e) => {
+            e.stopPropagation();
+            context.setIsTextOverlayOpen(false);
+          }}
           className="absolute right-4 top-4"
           aria-label="Close text overlay"
         >
@@ -565,6 +643,17 @@ export function SubmissionLightbox({
       </>
     ),
     [submission.title, submission.text],
+  );
+
+  const renderImageStage = useCallback(
+    () => (
+      <SubmissionMediaCarousel
+        submission={mergedMedia}
+        submissionId={submission.id}
+        variant="lightbox"
+      />
+    ),
+    [mergedMedia, submission.id],
   );
 
   return (
@@ -580,10 +669,14 @@ export function SubmissionLightbox({
       dialogTitle={`${submission.title || "Submission"} ${submission.user?.name ? `by ${submission.user.name}` : ""}`}
       protectionEnabled={protectionEnabled}
       navigation={baseNavigation}
+      renderImageStage={useMediaCarousel ? renderImageStage : undefined}
+      galleryPagination={navigation?.galleryPagination}
       renderControls={renderControls}
-      renderSidebar={hasImage ? renderSidebar : undefined}
+      renderSidebar={showImageColumn ? renderSidebar : undefined}
       renderMetadataOverlay={renderMetadataOverlay}
-      renderTextOverlay={hasText ? renderTextOverlay : undefined}
+      renderTextOverlay={
+        hasText && !textInCarousel ? renderTextOverlay : undefined
+      }
     />
   );
 }
