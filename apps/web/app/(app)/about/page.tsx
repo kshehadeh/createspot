@@ -13,7 +13,6 @@ import { Button } from "@createspot/ui-primitives/button";
 import {
   ArrowRight,
   ExternalLink,
-  Landmark,
   Sparkles,
   Target,
 } from "lucide-react";
@@ -41,13 +40,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [tAbout, tHome, tPurpose, tFeatures, tMuseums, heroData, session] =
+  const [tAbout, tHome, tPurpose, tFeatures, heroData, session] =
     await Promise.all([
       getTranslations("about"),
       getTranslations("home"),
       getTranslations("aboutPurpose"),
       getTranslations("aboutFeatures"),
-      getTranslations("aboutMuseums"),
       getHomepageHeroData(),
       auth(),
     ]);
@@ -97,12 +95,6 @@ export default async function AboutPage() {
       helpUrl: "https://help.create.spot/inspiration/prompts",
       screenshotSrc: "/images/about/this-week-gallery.png",
       hasScreenshot: true,
-    },
-    {
-      key: "museums",
-      helpUrl: "https://help.create.spot/inspiration/museums",
-      screenshotSrc: "/images/about/feature-placeholder.svg",
-      hasScreenshot: false,
     },
     {
       key: "exhibits",
@@ -187,12 +179,6 @@ export default async function AboutPage() {
               className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
             >
               Features
-            </a>
-            <a
-              href="#museums"
-              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
-            >
-              Museums
             </a>
             <a
               href="#protecting-your-work"
@@ -284,36 +270,6 @@ export default async function AboutPage() {
                   </a>
                 </div>
               ))}
-            </div>
-          </AboutCard>
-        </AboutScrollSection>
-
-        <AboutScrollSection id="museums">
-          <AboutCard className="border-border/60">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-xl bg-emerald-500/15 p-2 text-emerald-500 dark:bg-emerald-400/15 dark:text-emerald-300">
-                <Landmark className="h-5 w-5" />
-              </div>
-              <h2 className="text-3xl font-permanent-marker text-foreground">
-                {tAbout("museums.title")}
-              </h2>
-            </div>
-            <p className="mb-4 text-base leading-relaxed text-muted-foreground">
-              {tMuseums("dataSources.description")}
-            </p>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>{tMuseums("dataSources.artic")}</li>
-              <li>{tMuseums("dataSources.cleveland")}</li>
-              <li>{tMuseums("dataSources.nga")}</li>
-            </ul>
-            <div className="mt-6">
-              <Link
-                href="/inspire/museums"
-                className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
-              >
-                {tHome("highlights.museums.cta")}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
             </div>
           </AboutCard>
         </AboutScrollSection>

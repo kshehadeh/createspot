@@ -61,16 +61,6 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: "/about/museums",
-        destination: "/about",
-        permanent: true,
-      },
-      {
-        source: "/about/museums/:path*",
-        destination: "/about",
-        permanent: true,
-      },
-      {
         source: "/about/portfolio",
         destination: "/about",
         permanent: true,

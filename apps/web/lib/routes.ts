@@ -8,7 +8,6 @@ import {
   LogOut,
   Users,
   LayoutGrid,
-  Landmark,
   Sparkles,
   Info,
   Mail,
@@ -59,7 +58,7 @@ const ROUTES: Record<string, RouteConfig> = {
     icon: Rss,
   },
 
-  // Inspire section (community, exhibition, museums)
+  // Inspire section (community, exhibition)
   inspire: {
     path: "/inspire",
     label: "navigation.inspire",
@@ -98,13 +97,6 @@ const ROUTES: Record<string, RouteConfig> = {
     label: "navigation.map",
     parentPath: "/inspire/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.global.icon,
-  },
-
-  museums: {
-    path: "/inspire/museums",
-    label: "navigation.museums",
-    icon: Landmark,
-    parentPath: "/inspire",
   },
 
   // Admin routes

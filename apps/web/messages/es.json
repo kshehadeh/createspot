@@ -183,7 +183,6 @@
     "home": "Inicio",
     "inspire": "Inspirar",
     "exhibits": "Exposiciones",
-    "museums": "Museos",
     "prompts": "Indicaciones",
     "portfolio": "Portafolio",
     "collections": "Colecciones",
@@ -288,44 +287,6 @@
     "emptyBlocked": "No has bloqueado a nadie.",
     "loadMore": "Cargar más",
     "anonymous": "Anónimo"
-  },
-  "museums": {
-    "page": {
-      "title": "Museos",
-      "description": "Explora obras de arte de colecciones abiertas en museos de todo el mundo."
-    },
-    "filters": {
-      "title": "Filtros",
-      "expandLabel": "Mostrar filtros",
-      "closeLabel": "Cerrar filtros",
-      "searchPlaceholder": "Buscar por título o palabras clave...",
-      "search": "Buscar",
-      "museumPlaceholder": "Filtrar por museo...",
-      "museumFilterTitle": "Filtro de museo",
-      "artistPlaceholder": "Filtrar por artista...",
-      "artistFilterTitle": "Filtro de artista",
-      "mediumPlaceholder": "Filtrar por medio...",
-      "mediumFilterTitle": "Filtro de medio",
-      "stylePlaceholder": "Filtrar por estilo...",
-      "styleFilterTitle": "Filtro de estilo",
-      "dateStartPlaceholder": "Desde año",
-      "dateEndPlaceholder": "Hasta año",
-      "clear": "Limpiar"
-    },
-    "grid": {
-      "noMatches": "Ninguna obra coincide con estos filtros.",
-      "tryDifferentFilters": "Prueba otros filtros o términos de búsqueda.",
-      "loadingMore": "Cargando más...",
-      "loadMoreError": "Error al cargar más",
-      "retry": "Reintentar",
-      "reachedEnd": "Has llegado al final."
-    },
-    "lightbox": {
-      "close": "Cerrar",
-      "previous": "Anterior",
-      "next": "Siguiente",
-      "viewAtMuseum": "Ver en el sitio del museo"
-    }
   },
   "exhibition": {
     "loadMoreError": "Error al cargar más trabajos",
@@ -743,7 +704,6 @@
     "terms": "Términos de Servicio",
     "version": "Versión {version}"
   },
-
   "aboutChangelog": {
     "title": "Actualizaciones | Create Spot",
     "description": "Actualizaciones y mejoras recientes en Create Spot.",
@@ -839,11 +799,6 @@
       "community": {
         "title": "Comunidad",
         "description": "Publicaciones de quienes sigues.",
-        "cta": "Explorar"
-      },
-      "museums": {
-        "title": "Museos",
-        "description": "Arte de colecciones de primer nivel.",
         "cta": "Explorar"
       },
       "exhibits": {
@@ -945,16 +900,6 @@
       "stayConnected": "permanecen conectados",
       "learnMore": "Aprende más sobre las publicaciones de indicaciones →"
     },
-    "museums": {
-      "title": "Colecciones de museos",
-      "description": "Explora miles de obras de arte de museos de clase mundial para alimentar tu creatividad. Busca por palabra clave, filtra por medio, estilo o período, y explora obras del",
-      "artInstitute": "Art Institute of Chicago",
-      "theMuseum": ", el",
-      "clevelandMuseum": "Cleveland Museum of Art",
-      "andThe": ", y la",
-      "nationalGallery": "National Gallery of Art",
-      "learnMore": "Más información sobre colecciones de museos →"
-    },
     "badges": {
       "title": "Insignias",
       "description": "Celebra tu viaje creativo con insignias que reconocen tus logros.",
@@ -1045,10 +990,6 @@
         "title": "Indicaciones de Arte",
         "description": "Inspírate para crear más a través de indicaciones de arte y navegando la colección."
       },
-      "museums": {
-        "title": "Colecciones de Museos",
-        "description": "Busca y explora miles de obras de arte del Art Institute of Chicago, el Cleveland Museum of Art y la National Gallery of Art."
-      },
       "exhibits": {
         "title": "Exposiciones",
         "description": "Destácate en exposiciones especiales y visualiza estas exposiciones usando diferentes vistas."
@@ -1084,46 +1025,6 @@
       "forCurrentPrompt": "para la indicación actual o",
       "removeIndividual": "eliminar publicaciones individuales",
       "fullDescription": "siempre que quieras refinar lo que compartes. Esto facilita actualizar tus entradas de indicaciones sin perder impulso."
-    },
-    "backToAbout": "← Volver a Acerca de"
-  },
-  "aboutMuseums": {
-    "title": "Colecciones de Museos | Create Spot",
-    "description": "Explora y busca miles de obras de arte de museos de clase mundial para inspirar tu trabajo creativo.",
-    "mainTitle": "Explora arte de museos de clase mundial.",
-    "mainDescription": "Busca y explora miles de obras de arte de acceso abierto de tres colecciones de museos reconocidos, directamente dentro de Create Spot.",
-    "dataSources": {
-      "title": "De dónde viene el arte",
-      "description": "La función de colecciones de museos se nutre de tres instituciones de clase mundial, cada una de las cuales pone los datos de su colección a disposición del público a través de programas de acceso abierto:",
-      "artic": "Art Institute of Chicago — uno de los museos de arte más antiguos y grandes de Estados Unidos, con una colección que abarca 5,000 años de arte.",
-      "cleveland": "Cleveland Museum of Art — reconocido por su colección enciclopédica, con un fuerte compromiso de acceso abierto para todas las obras.",
-      "nga": "National Gallery of Art — el museo de arte de la nación en Washington, D.C., que alberga una de las mejores colecciones de arte occidental."
-    },
-    "searching": {
-      "title": "Cómo buscar y explorar",
-      "description": "La página de museos ofrece herramientas poderosas para descubrir arte:",
-      "keywordSearch": "Búsqueda por palabra clave",
-      "keywordSearchDescription": "busca en títulos y descripciones de obras para ayudarte a encontrar piezas por tema, temática o artista.",
-      "museumFilter": "Filtro de museo",
-      "museumFilterDescription": "te permite reducir los resultados a una o más de las tres colecciones.",
-      "artistFilter": "Filtro de artista",
-      "artistFilterDescription": "te permite buscar por nombre de artista y filtrar obras por uno o más artistas.",
-      "mediumFilter": "Filtro de medio",
-      "mediumFilterDescription": "se enfoca en materiales específicos como óleo sobre lienzo, acuarela, fotografía o escultura.",
-      "styleFilter": "Filtro de estilo y género",
-      "styleFilterDescription": "te ayuda a explorar por movimiento artístico o categoría, como paisajes, retratos o arte abstracto.",
-      "dateRange": "Rango de fechas",
-      "dateRangeDescription": "te permite explorar arte de períodos específicos estableciendo un año de inicio y fin."
-    },
-    "browsing": {
-      "title": "Visualización de obras",
-      "description": "Las obras aparecen en una cuadrícula responsive que carga más mientras te desplazas. Pasa el cursor sobre cualquier obra para ver su título, artista y museo de un vistazo. Haz clic para abrir una vista en pantalla completa con la imagen en alta resolución y metadatos detallados incluyendo el artista, fecha, medio, dimensiones, cultura y línea de crédito. Cada obra también enlaza a su página original del museo para mayor exploración."
-    },
-    "openAccess": {
-      "title": "Sobre el acceso abierto",
-      "description": "Todas las obras mostradas en las colecciones de museos provienen de",
-      "openAccessPrograms": "programas de acceso abierto",
-      "continuation": " ofrecidos por cada museo. Estas instituciones ponen imágenes y datos sobre sus colecciones a disposición libre para uso creativo, educativo y personal. Acreditamos a cada museo y enlazamos a la fuente original de cada obra."
     },
     "backToAbout": "← Volver a Acerca de"
   },

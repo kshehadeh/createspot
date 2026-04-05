@@ -61,7 +61,6 @@ Shared vocabulary for interactive controls. Prefer these primitives before addin
 | `submission-browser.tsx` | Browser chrome | A / D |
 | `submission-detail.tsx` | Detail actions | A |
 | `exhibition-grid.tsx` | Load-more retry | A |
-| `museum-grid.tsx` | Load-more retry | A |
 | `featured-submission-selector.tsx` | Selector UI | A / D |
 | `mobile-nav-bar.tsx` | Nav | D |
 | `progression-strip.tsx` | Strip control | D |

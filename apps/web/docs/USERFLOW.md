@@ -12,7 +12,6 @@ High-level map of the Create Spot app after the portfolio- and social-first prod
 | Gallery views | `/inspire/exhibition/gallery/grid`, `/inspire/exhibition/gallery/path`, `/inspire/exhibition/global` | Grid, path (“constellation”), and global views. |
 | Favorites | `/inspire/favorites` | Authenticated. |
 | Community | `/inspire/community` | Following-focused discovery. |
-| Museums | `/inspire/museums` | Museum integrations. |
 | Creators | `/creators`, `/creators/[creatorid]` | Directory and public profiles. |
 | Portfolio | `/creators/[creatorid]/portfolio`, `/creators/[creatorid]/portfolio/edit` | Public portfolio and owner edit UI. |
 | Submission | `/creators/[creatorid]/s/[submissionid]` (+ `/edit`, `/critiques`, …) | Canonical submission pages. |

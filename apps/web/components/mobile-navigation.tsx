@@ -23,7 +23,6 @@ import {
   Info,
   LayoutDashboard,
   LayoutGrid,
-  Landmark,
   Lock,
   Mail,
   Palette,
@@ -141,7 +140,6 @@ export function MobileNavigation({
     setInspireExpanded(
       pathname === exhibitionRoute.path ||
         pathname === creatorsRoute.path ||
-        pathname === getRoute("museums").path ||
         pathname === getRoute("community").path ||
         pathname === favoritesRoute.path,
     );
@@ -275,12 +273,6 @@ export function MobileNavigation({
                 href={getRoute("exhibition").path}
                 icon={LayoutGrid}
                 label={t("exhibits")}
-                onClose={() => setIsMenuOpen(false)}
-              />
-              <MobileNavItem
-                href={getRoute("museums").path}
-                icon={Landmark}
-                label={t("museums")}
                 onClose={() => setIsMenuOpen(false)}
               />
               <MobileNavItem

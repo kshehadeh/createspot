@@ -26,9 +26,9 @@ app/
 ├── (app)/
 │   ├── layout.tsx               # App chrome
 │   ├── welcome/, dashboard/
-│   ├── about/                   # About, purpose, features, museums, terms, changelog
+│   ├── about/                   # About, purpose, features, terms, changelog
 │   ├── admin/                   # Users, exhibits, notifications, settings (no prompts UI)
-│   ├── inspire/                 # Exhibition, favorites, community, museums
+│   ├── inspire/                 # Exhibition, favorites, community
 │   ├── creators/                # Profiles, portfolios, collections, submissions, critiques
 │   ├── contact/, auth/signin/
 │   ├── feed/                    # Redirect / legacy entry

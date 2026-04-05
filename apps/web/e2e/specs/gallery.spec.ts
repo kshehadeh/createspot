@@ -16,11 +16,6 @@ test.describe("Gallery", () => {
     await expect(page).toHaveURL("/inspire/exhibition");
   });
 
-  test("can view museums page", async ({ page }) => {
-    await page.goto("/inspire/museums");
-    await expect(page).toHaveURL("/inspire/museums");
-  });
-
   test("can click on a submission to view details", async ({ page }) => {
     await page.goto("/inspire/exhibition");
 

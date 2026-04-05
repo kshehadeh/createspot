@@ -4,7 +4,7 @@ import Link from "@/components/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
-import { Heart, LayoutGrid, Landmark, Users } from "lucide-react";
+import { Heart, LayoutGrid, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getRoute } from "@/lib/routes";
@@ -22,7 +22,6 @@ export function InspireSidebar() {
   const { data: session } = useSession();
 
   const exhibitionRoute = getRoute("exhibition");
-  const museumsRoute = getRoute("museums");
   const communityRoute = getRoute("community");
   const favoritesRoute = getRoute("favorites");
 
@@ -34,12 +33,6 @@ export function InspireSidebar() {
       isActive:
         pathname === exhibitionRoute.path ||
         pathname.startsWith(`${exhibitionRoute.path}/`),
-    },
-    {
-      href: museumsRoute.path,
-      labelKey: "museums",
-      icon: Landmark,
-      isActive: pathname === museumsRoute.path,
     },
     {
       href: communityRoute.path,

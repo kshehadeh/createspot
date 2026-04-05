@@ -11,7 +11,6 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "download-words": "bun scripts/download-words.ts",
-    "museum": "bun scripts/museum.ts",
     "postinstall": "prisma generate && bun scripts/patch-prisma-client.ts && bun scripts/download-words.ts",
     "db:migrate:deploy": "bun scripts/migrate-deploy.ts",
     "changelog:discord": "bun scripts/post-changelog-to-discord.ts",
