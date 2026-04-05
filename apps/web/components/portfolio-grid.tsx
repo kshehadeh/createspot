@@ -23,7 +23,7 @@ import Image from "next/image";
 import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { LIGHTBOX_BUTTON_CLASS } from "@/components/base-lightbox";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -780,6 +780,7 @@ function PortfolioGridContent({
 }) {
   const router = useRouter();
   const t = useTranslations("portfolio");
+  const dndContextId = useId();
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
   const [removingItem, setRemovingItem] = useState<PortfolioItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -1047,6 +1048,7 @@ function PortfolioGridContent({
 
         {isDndEnabled ? (
           <DndContext
+            id={dndContextId}
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragStart={(event) => setActiveId(event.active.id as string)}
