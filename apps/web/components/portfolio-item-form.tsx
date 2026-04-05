@@ -1,11 +1,9 @@
 "use client";
 
 import {
-  ChevronDown,
-  ChevronUp,
   Crosshair,
   ImageIcon,
-  Info,
+  Trash2,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -16,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
+import { LIGHTBOX_BUTTON_CLASS } from "@/components/base-lightbox";
 import { fetcher } from "@/lib/swr";
 
 // Heavy TipTap editor - dynamically import
@@ -59,7 +58,7 @@ import {
   getImageMetadata,
   type ImageMetadata,
 } from "@/lib/image-editor/metadata";
-import { getCreatorUrl } from "@/lib/utils";
+import { cn, getCreatorUrl } from "@/lib/utils";
 
 interface SubmissionData {
   id: string;
@@ -144,7 +143,6 @@ export function PortfolioItemForm({
   const [imageMetadata, setImageMetadata] = useState<ImageMetadata | null>(
     null,
   );
-  const [isImageInfoOpen, setIsImageInfoOpen] = useState(false);
   const [progressions, setProgressions] = useState<ProgressionFormItem[]>(
     (initialData?.progressions || []).map((p, i) => ({
       ...p,
@@ -545,7 +543,7 @@ export function PortfolioItemForm({
         <Label>{t("image")}</Label>
         {imageUrl ? (
           <div className="relative">
-            <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted group">
               <Image
                 src={imageUrl}
                 alt="Preview"
@@ -554,16 +552,16 @@ export function PortfolioItemForm({
                 sizes="(max-width: 640px) 100vw, 512px"
               />
             </div>
-            <div className="absolute top-2 right-2 flex gap-2">
+            <div className="absolute bottom-2 right-2 z-10 flex flex-col gap-2">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       type="button"
-                      variant="secondary"
+                      variant="outline"
                       size="icon"
                       onClick={() => setIsFocalPointModalOpen(true)}
-                      className="bg-black/50 text-white hover:bg-black/70"
+                      className={cn("h-10 w-10 shrink-0", LIGHTBOX_BUTTON_CLASS)}
                     >
                       <Crosshair className="h-4 w-4" />
                     </Button>
@@ -577,108 +575,70 @@ export function PortfolioItemForm({
                       : t("setFocalPoint")}
                   </TooltipContent>
                 </Tooltip>
+                {/* Cleanup Image button - only shown in edit mode */}
+                {mode === "edit" && initialData?.id && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className={cn(
+                          "h-10 w-10 shrink-0",
+                          LIGHTBOX_BUTTON_CLASS,
+                        )}
+                        disabled={!imageUrl}
+                        onClick={() => setIsImageEditorOpen(true)}
+                      >
+                        <ImageIcon className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("cleanupImage")}</TooltipContent>
+                  </Tooltip>
+                )}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className={cn(
+                        "h-10 w-10 shrink-0",
+                        LIGHTBOX_BUTTON_CLASS,
+                        "hover:!border-red-300/50 hover:!bg-red-500/30 hover:!text-white",
+                      )}
+                      onClick={() => setShowRemoveImageConfirm(true)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("removeImage")}</TooltipContent>
+                </Tooltip>
               </TooltipProvider>
-              <Button
-                type="button"
-                variant="destructive"
-                size="icon"
-                onClick={() => setShowRemoveImageConfirm(true)}
-              >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </Button>
             </div>
-            {/* Cleanup Image button - only shown in edit mode */}
-            {mode === "edit" && initialData?.id && (
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full sm:w-auto"
-                  disabled={!imageUrl}
-                  onClick={() => setIsImageEditorOpen(true)}
-                >
-                  <span className="inline-flex items-center">
-                    <ImageIcon className="mr-2 h-4 w-4" />
-                    {t("cleanupImage")}
-                  </span>
-                </Button>
-                <p className="hidden text-sm text-muted-foreground sm:block">
-                  {t("cleanupImageDescription")}
-                </p>
-              </div>
-            )}
-            {/* Image metadata - collapsible */}
+            {/* Image metadata (subtle text under preview) */}
             {imageMetadata && (
-              <div className="mt-3">
-                <button
-                  type="button"
-                  onClick={() => setIsImageInfoOpen(!isImageInfoOpen)}
-                  className="flex w-full items-center justify-between rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm font-medium hover:bg-muted transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <Info className="h-4 w-4" />
-                    {tImageEditor("imageInfo")}
+              <div className="mt-2 text-xs text-muted-foreground">
+                <span>
+                  {tImageEditor("dimensions")}: {imageMetadata.width} ×{" "}
+                  {imageMetadata.height}
+                </span>
+                {imageMetadata.format && (
+                  <span className="ml-3">
+                    {tImageEditor("format")}:{" "}
+                    <span className="uppercase">{imageMetadata.format}</span>
                   </span>
-                  {isImageInfoOpen ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </button>
-                {isImageInfoOpen && (
-                  <div className="mt-2 space-y-2 rounded-lg border border-border bg-muted/30 p-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        {tImageEditor("dimensions")}:
-                      </span>
-                      <span className="font-mono">
-                        {imageMetadata.width} × {imageMetadata.height}
-                      </span>
-                    </div>
-                    {imageMetadata.format && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {tImageEditor("format")}:
-                        </span>
-                        <span className="font-mono uppercase">
-                          {imageMetadata.format}
-                        </span>
-                      </div>
-                    )}
-                    {imageMetadata.size && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {tImageEditor("fileSize")}:
-                        </span>
-                        <span className="font-mono">
-                          {(imageMetadata.size / 1024).toFixed(1)} KB
-                        </span>
-                      </div>
-                    )}
-                    {imageMetadata.colorDepth && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {tImageEditor("colorDepth")}:
-                        </span>
-                        <span className="font-mono">
-                          {imageMetadata.colorDepth} bit
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                )}
+                {imageMetadata.size && (
+                  <span className="ml-3">
+                    {tImageEditor("fileSize")}:{" "}
+                    {(imageMetadata.size / 1024).toFixed(1)} KB
+                  </span>
+                )}
+                {imageMetadata.colorDepth && (
+                  <span className="ml-3">
+                    {tImageEditor("colorDepth")}: {imageMetadata.colorDepth} bit
+                  </span>
                 )}
               </div>
             )}
