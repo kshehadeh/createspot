@@ -7,6 +7,7 @@ import { CritiquesSection } from "@/components/dashboard/critiques-section";
 import { RecentViewsSection } from "@/components/dashboard/recent-views-section";
 import { FollowingSection } from "@/components/dashboard/following-section";
 import { BadgesSection } from "@/components/dashboard/badges-section";
+import { DashboardAnalyticsSection } from "@/components/dashboard/dashboard-analytics-section";
 import { DashboardSection } from "@/components/dashboard-section";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -61,6 +62,8 @@ export function Dashboard({
           <RecentViewsSection />
         </Suspense>
       </div>
+
+      <DashboardAnalyticsSection />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Suspense fallback={<SectionSkeleton title="People You Follow" />}>

@@ -3,8 +3,18 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "@/components/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { DashboardSection } from "@/components/dashboard-section";
+import {
+  dashboardMiniThumbGridClass,
+  dashboardMiniThumbImageSizes,
+  dashboardMiniThumbScrollClass,
+} from "@/components/dashboard/dashboard-mini-thumb-layout";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCreatorUrl } from "@/lib/utils";
 import { getObjectPositionStyle } from "@/lib/image-utils";
@@ -26,6 +36,7 @@ interface RecentViewItem {
 
 export function RecentViewsSection() {
   const t = useTranslations("dashboard.recentViews");
+  const locale = useLocale();
   const [views, setViews] = useState<RecentViewItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,60 +48,95 @@ export function RecentViewsSection() {
       .finally(() => setLoading(false));
   }, []);
 
+  const formatVisitedAt = (iso: string) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) {
+      return "";
+    }
+    return d.toLocaleString(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  };
+
   return (
     <DashboardSection title={t("title")}>
       {loading ? (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <Skeleton className="h-12 w-12 shrink-0 rounded-md" />
-              <Skeleton className="h-4 flex-1 rounded" />
-            </div>
-          ))}
+        <div className={dashboardMiniThumbScrollClass}>
+          <div className={dashboardMiniThumbGridClass}>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <Skeleton key={i} className="aspect-square w-full rounded-md" />
+            ))}
+          </div>
         </div>
       ) : views.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
-        <ul className="flex flex-col gap-2">
-          {views.map((v) => {
-            const submissionUrl = `${getCreatorUrl(v.submission.user)}/s/${v.submission.id}`;
-            return (
-              <li key={v.submission.id}>
-                <Link
-                  href={submissionUrl}
-                  className="-mx-2 flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-muted/60"
+        <div className={dashboardMiniThumbScrollClass}>
+          <div className={dashboardMiniThumbGridClass}>
+            {views.map((v) => {
+              const submissionUrl = `${getCreatorUrl(v.submission.user)}/s/${v.submission.id}`;
+              const displayTitle =
+                v.submission.title ||
+                v.submission.user.name ||
+                t("untitledFallback");
+              const creatorDisplay =
+                v.submission.user.name ||
+                v.submission.user.slug ||
+                t("unknownCreator");
+              const visitedLabel = formatVisitedAt(v.viewedAt);
+
+              return (
+                <HoverCard
+                  key={v.submission.id}
+                  openDelay={200}
+                  closeDelay={100}
                 >
-                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-muted">
-                    {v.submission.imageUrl ? (
-                      <Image
-                        src={v.submission.imageUrl}
-                        alt={v.submission.title ?? ""}
-                        fill
-                        className="object-cover"
-                        sizes="48px"
-                        style={{
-                          objectPosition: getObjectPositionStyle(
-                            v.submission.imageFocalPoint,
-                          ),
-                        }}
-                      />
+                  <HoverCardTrigger asChild>
+                    <Link
+                      href={submissionUrl}
+                      className="group relative aspect-square overflow-hidden rounded-md bg-muted outline-none"
+                    >
+                      {v.submission.imageUrl ? (
+                        <Image
+                          src={v.submission.imageUrl}
+                          alt={displayTitle}
+                          fill
+                          className="object-cover transition-transform duration-200 group-hover:scale-105"
+                          sizes={dashboardMiniThumbImageSizes}
+                          style={{
+                            objectPosition: getObjectPositionStyle(
+                              v.submission.imageFocalPoint,
+                            ),
+                          }}
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center p-2">
+                          <p className="line-clamp-3 text-center text-xs text-muted-foreground">
+                            {displayTitle}
+                          </p>
+                        </div>
+                      )}
+                    </Link>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-72" side="top" align="center">
+                    <p className="font-medium text-foreground">
+                      {displayTitle}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {t("hover.by", { name: creatorDisplay })}
+                    </p>
+                    {visitedLabel ? (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {t("hover.lastVisited", { datetime: visitedLabel })}
+                      </p>
                     ) : null}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {v.submission.title ||
-                        v.submission.user.name ||
-                        "Submission"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {v.submission.user.name}
-                    </p>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                  </HoverCardContent>
+                </HoverCard>
+              );
+            })}
+          </div>
+        </div>
       )}
     </DashboardSection>
   );

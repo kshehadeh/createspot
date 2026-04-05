@@ -1855,7 +1855,13 @@
       "viewAll": "Ver Portafolio Completo",
       "empty": "Aún no has agregado elementos a tu portafolio.",
       "addSubmission": "Agregar un envío",
-      "wipBadge": "WIP"
+      "wipBadge": "WIP",
+      "hover": {
+        "visibility": "Visibilidad",
+        "added": "Añadido el {datetime}",
+        "description": "Descripción",
+        "workInProgress": "Obra en progreso"
+      }
     },
     "critiques": {
       "title": "Críticas Recientes",
@@ -1864,9 +1870,26 @@
       "viewAll": "Ver todas las críticas",
       "viewSubmission": "Ver envío"
     },
+    "analytics": {
+      "submissionsOverTime": "Envíos (últimos 30 días)",
+      "submissionsTooltip": "{count, plural, one {# envío} other {# envíos}}",
+      "submissionsAria": "Gráfico de barras de tus envíos nuevos por día en los últimos 30 días",
+      "categoryDistribution": "Portafolio por categoría",
+      "categoryTooltip": "{count} ({percent}%)",
+      "categoriesAria": "Gráfico circular de piezas del portafolio por categoría",
+      "emptyCategories": "Añade piezas al portafolio con categoría para ver este gráfico.",
+      "uncategorized": "Sin categoría",
+      "loadError": "No se pudieron cargar los datos del gráfico."
+    },
     "recentViews": {
       "title": "Visitados Recientemente",
-      "empty": "Aún no has visitado ningún envío."
+      "empty": "Aún no has visitado ningún envío.",
+      "untitledFallback": "Envío",
+      "unknownCreator": "Creador desconocido",
+      "hover": {
+        "by": "Por {name}",
+        "lastVisited": "Última visita: {datetime}"
+      }
     },
     "following": {
       "title": "Personas que Sigues",

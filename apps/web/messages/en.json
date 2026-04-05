@@ -1855,7 +1855,13 @@
       "viewAll": "View Full Portfolio",
       "empty": "You haven't added any portfolio items yet.",
       "addSubmission": "Add a submission",
-      "wipBadge": "WIP"
+      "wipBadge": "WIP",
+      "hover": {
+        "visibility": "Visibility",
+        "added": "Added {datetime}",
+        "description": "Description",
+        "workInProgress": "Work in progress"
+      }
     },
     "critiques": {
       "title": "Recent Critiques",
@@ -1864,9 +1870,26 @@
       "viewAll": "View all critiques",
       "viewSubmission": "View submission"
     },
+    "analytics": {
+      "submissionsOverTime": "Submissions (last 30 days)",
+      "submissionsTooltip": "{count, plural, one {# submission} other {# submissions}}",
+      "submissionsAria": "Bar chart of your new submissions per day over the last 30 days",
+      "categoryDistribution": "Portfolio by category",
+      "categoryTooltip": "{count} ({percent}%)",
+      "categoriesAria": "Pie chart of portfolio items by category",
+      "emptyCategories": "Add portfolio items with categories to see this chart.",
+      "uncategorized": "Uncategorized",
+      "loadError": "Could not load chart data."
+    },
     "recentViews": {
       "title": "Recently Visited",
-      "empty": "You haven't visited any submissions yet."
+      "empty": "You haven't visited any submissions yet.",
+      "untitledFallback": "Submission",
+      "unknownCreator": "Unknown creator",
+      "hover": {
+        "by": "By {name}",
+        "lastVisited": "Last visited {datetime}"
+      }
     },
     "following": {
       "title": "People You Follow",

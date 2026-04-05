@@ -14,7 +14,7 @@ export async function GET() {
       viewerUserId: session.user.id,
     },
     orderBy: { viewedAt: "desc" },
-    take: 5,
+    take: 36,
     select: {
       viewedAt: true,
       submission: {

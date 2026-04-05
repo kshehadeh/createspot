@@ -3,10 +3,20 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "@/components/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { DashboardSection } from "@/components/dashboard-section";
+import {
+  dashboardMiniThumbGridClass,
+  dashboardMiniThumbImageSizes,
+  dashboardMiniThumbScrollClass,
+} from "@/components/dashboard/dashboard-mini-thumb-layout";
 import { Button } from "@createspot/ui-primitives/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getObjectPositionStyle } from "@/lib/image-utils";
 
@@ -35,8 +45,26 @@ interface PortfolioSectionProps {
   portfolioUrl: string;
 }
 
+function shareStatusLabel(
+  status: string,
+  tPortfolio: (key: string) => string,
+): string {
+  if (status === "PRIVATE") {
+    return tPortfolio("shareStatus.private");
+  }
+  if (status === "PROFILE") {
+    return tPortfolio("shareStatus.profile");
+  }
+  if (status === "PUBLIC") {
+    return tPortfolio("shareStatus.public");
+  }
+  return status;
+}
+
 export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
   const t = useTranslations("dashboard.portfolio");
+  const tPortfolio = useTranslations("portfolio");
+  const locale = useLocale();
   const [submissions, setSubmissions] = useState<PortfolioSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -58,11 +86,22 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
     </Link>
   );
 
+  const formatAddedAt = (iso: string) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) {
+      return "";
+    }
+    return d.toLocaleString(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  };
+
   return (
     <DashboardSection title={t("title")} action={action}>
       {loading ? (
-        <div className="max-h-[400px] min-h-0 overflow-y-auto overflow-x-hidden">
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(5rem,1fr))] gap-3">
+        <div className={dashboardMiniThumbScrollClass}>
+          <div className={dashboardMiniThumbGridClass}>
             {Array.from({ length: 12 }).map((_, i) => (
               <Skeleton key={i} className="aspect-square w-full rounded-md" />
             ))}
@@ -83,52 +122,92 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
           />
         </>
       ) : (
-        <div className="max-h-[400px] min-h-0 overflow-y-auto overflow-x-hidden">
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(5rem,1fr))] gap-3">
+        <div className={dashboardMiniThumbScrollClass}>
+          <div className={dashboardMiniThumbGridClass}>
             {submissions.map((s) => {
               const displayImageUrl =
                 s.imageUrl ||
                 (s.isWorkInProgress ? s.latestProgressionImageUrl : null);
               const creatorBase = portfolioUrl.replace(/\/portfolio\/?$/, "");
               const submissionViewUrl = `${creatorBase}/s/${s.id}`;
+              const displayTitle = s.title || tPortfolio("untitled");
+              const visibility = shareStatusLabel(s.shareStatus, tPortfolio);
+              const addedLabel = formatAddedAt(s.createdAt);
+
               return (
-                <Link
-                  key={s.id}
-                  href={submissionViewUrl}
-                  className={`group relative aspect-square overflow-hidden bg-muted ${
-                    s.isWorkInProgress
-                      ? "rounded-sm border-2 border-dashed border-muted-foreground/40"
-                      : "rounded-md"
-                  }`}
-                >
-                  {displayImageUrl ? (
-                    <Image
-                      src={displayImageUrl}
-                      alt={s.title ?? ""}
-                      fill
-                      className={`object-cover transition-transform duration-200 group-hover:scale-105 ${
-                        !s.imageUrl && s.isWorkInProgress ? "opacity-70" : ""
+                <HoverCard key={s.id} openDelay={200} closeDelay={100}>
+                  <HoverCardTrigger asChild>
+                    <Link
+                      href={submissionViewUrl}
+                      className={`group relative aspect-square overflow-hidden bg-muted outline-none ${
+                        s.isWorkInProgress
+                          ? "rounded-sm border-2 border-dashed border-muted-foreground/40"
+                          : "rounded-md"
                       }`}
-                      sizes="(max-width: 640px) 40vw, (max-width: 1024px) 20vw, 160px"
-                      style={{
-                        objectPosition: s.imageUrl
-                          ? getObjectPositionStyle(s.imageFocalPoint)
-                          : undefined,
-                      }}
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center p-2">
-                      <p className="line-clamp-3 text-xs text-muted-foreground">
-                        {s.title ?? ""}
+                    >
+                      {displayImageUrl ? (
+                        <Image
+                          src={displayImageUrl}
+                          alt={displayTitle}
+                          fill
+                          className={`object-cover transition-transform duration-200 group-hover:scale-105 ${
+                            !s.imageUrl && s.isWorkInProgress
+                              ? "opacity-70"
+                              : ""
+                          }`}
+                          sizes={dashboardMiniThumbImageSizes}
+                          style={{
+                            objectPosition: s.imageUrl
+                              ? getObjectPositionStyle(s.imageFocalPoint)
+                              : undefined,
+                          }}
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center p-2">
+                          <p className="line-clamp-3 text-xs text-muted-foreground">
+                            {displayTitle}
+                          </p>
+                        </div>
+                      )}
+                      {s.isWorkInProgress && (
+                        <span className="absolute top-1 right-1 z-10 rounded bg-amber-500/80 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                          {t("wipBadge")}
+                        </span>
+                      )}
+                    </Link>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-72" side="top" align="center">
+                    <p className="font-medium text-foreground">
+                      {displayTitle}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      <span className="font-medium text-foreground/80">
+                        {t("hover.visibility")}
+                      </span>{" "}
+                      {visibility}
+                    </p>
+                    {addedLabel ? (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {t("hover.added", { datetime: addedLabel })}
                       </p>
-                    </div>
-                  )}
-                  {s.isWorkInProgress && (
-                    <span className="absolute top-1 right-1 rounded bg-amber-500/80 px-1.5 py-0.5 text-[10px] font-medium text-white z-10">
-                      {t("wipBadge")}
-                    </span>
-                  )}
-                </Link>
+                    ) : null}
+                    {s.isWorkInProgress ? (
+                      <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-500">
+                        {t("hover.workInProgress")}
+                      </p>
+                    ) : null}
+                    {s.text?.trim() ? (
+                      <div className="mt-2 border-t border-border pt-2">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {t("hover.description")}
+                        </p>
+                        <p className="mt-1 line-clamp-4 text-sm text-foreground">
+                          {s.text.trim()}
+                        </p>
+                      </div>
+                    ) : null}
+                  </HoverCardContent>
+                </HoverCard>
               );
             })}
           </div>
