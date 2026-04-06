@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "@/components/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { ExhibitRequestModal } from "@/components/contact/exhibit-request-form";
+import { SupportFormModal } from "@/components/contact/support-form-modal";
 import { getRoute, isCreatorsListingPath } from "@/lib/routes";
 import { cn, getCreatorUrl } from "@/lib/utils";
-import { SupportFormModal } from "@/components/contact/support-form-modal";
-import { ExhibitRequestModal } from "@/components/contact/exhibit-request-form";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +32,14 @@ import {
   ScrollText,
 } from "lucide-react";
 
+function iconOnlyNavTriggerClass(isActive: boolean) {
+  return cn(
+    "flex size-9 shrink-0 items-center justify-center rounded-lg text-sm transition-colors",
+    "text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    isActive && "bg-accent text-accent-foreground",
+  );
+}
+
 interface DashboardNavigationProps {
   user?: {
     id?: string | undefined;
@@ -47,9 +55,6 @@ export function DashboardNavigation({
 }: DashboardNavigationProps) {
   const pathname = usePathname();
   const t = useTranslations("navigation");
-  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
-  const [isExhibitRequestModalOpen, setIsExhibitRequestModalOpen] =
-    useState(false);
   const exhibitionRoute = getRoute("exhibition");
   const creatorsRoute = getRoute("creators");
   const profileRoute = getRoute("profile");
@@ -57,13 +62,6 @@ export function DashboardNavigation({
   const portfolioRoute = getRoute("portfolio");
   const communityRoute = getRoute("community");
   const favoritesRoute = getRoute("favorites");
-  const aboutRoute = getRoute("about");
-  const changelogRoute = getRoute("aboutChangelog");
-  const termsRoute = getRoute("terms");
-  const adminUsersRoute = getRoute("adminUsers");
-  const adminExhibitsRoute = getRoute("adminExhibits");
-  const adminNotificationsRoute = getRoute("adminNotifications");
-  const adminSettingsRoute = getRoute("adminSettings");
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -88,12 +86,6 @@ export function DashboardNavigation({
     (creatorBase
       ? pathname.startsWith(creatorBase)
       : isActive(profileRoute.path) || isActive(portfolioRoute.path));
-  const isAdminActive =
-    pathname.startsWith(adminUsersRoute.path) ||
-    pathname.startsWith(adminExhibitsRoute.path) ||
-    pathname.startsWith(adminNotificationsRoute.path) ||
-    pathname.startsWith(adminSettingsRoute.path);
-  const isSupportActive = isActive(aboutRoute.path);
 
   const buttonClassName = () => {
     return cn(
@@ -107,208 +99,245 @@ export function DashboardNavigation({
   };
 
   return (
-    <>
-      <nav className="flex items-center gap-1">
-        {/* Inspire Dropdown */}
+    <nav className="flex items-center gap-1">
+      {/* Inspire Dropdown */}
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger
+          className={cn(
+            buttonClassName(),
+            isInspireActive && "bg-accent text-accent-foreground",
+          )}
+        >
+          <Brain className="h-4 w-4" />
+          <span>{t("inspire")}</span>
+          <ChevronDown className="h-3 w-3" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="min-w-52">
+          <DropdownMenuItem asChild>
+            <Link
+              href={exhibitionRoute.path}
+              prefetch={false}
+              className={cn(
+                "flex items-center gap-2",
+                isActive(exhibitionRoute.path) &&
+                  "bg-accent text-accent-foreground",
+              )}
+            >
+              {exhibitionRoute.icon && (
+                <exhibitionRoute.icon className="h-4 w-4" />
+              )}
+              {t("exhibits")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link
+              href={creatorsRoute.path}
+              prefetch={false}
+              className={cn(
+                "flex items-center gap-2",
+                isCreatorsListingPath(pathname) &&
+                  "bg-accent text-accent-foreground",
+              )}
+            >
+              {creatorsRoute.icon && <creatorsRoute.icon className="h-4 w-4" />}
+              {t("creators")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link
+              href={communityRoute.path}
+              prefetch={false}
+              className={cn(
+                "flex items-center gap-2",
+                isActive(communityRoute.path) &&
+                  "bg-accent text-accent-foreground",
+              )}
+            >
+              {communityRoute.icon && (
+                <communityRoute.icon className="h-4 w-4" />
+              )}
+              {t("community")}
+            </Link>
+          </DropdownMenuItem>
+          {user && (
+            <DropdownMenuItem asChild>
+              <Link
+                href={favoritesRoute.path}
+                prefetch={false}
+                className={cn(
+                  "flex items-center gap-2",
+                  isActive(favoritesRoute.path) &&
+                    "bg-accent text-accent-foreground",
+                )}
+              >
+                {favoritesRoute.icon && (
+                  <favoritesRoute.icon className="h-4 w-4" />
+                )}
+                {t("favorites")}
+              </Link>
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Create Dropdown (authenticated only) */}
+      {user && (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
               buttonClassName(),
-              isInspireActive && "bg-accent text-accent-foreground",
+              isMyHubActive && "bg-accent text-accent-foreground",
             )}
           >
-            <Brain className="h-4 w-4" />
-            <span>{t("inspire")}</span>
+            <Palette className="h-4 w-4" />
+            <span>{t("myHub")}</span>
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-52">
+            <DropdownMenuItem
+              onClick={handleCreateClick}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              {t("create")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link
-                href={exhibitionRoute.path}
+                href={dashboardRoute.path}
                 prefetch={false}
                 className={cn(
                   "flex items-center gap-2",
-                  isActive(exhibitionRoute.path) &&
+                  isActive(dashboardRoute.path) &&
                     "bg-accent text-accent-foreground",
                 )}
               >
-                {exhibitionRoute.icon && (
-                  <exhibitionRoute.icon className="h-4 w-4" />
-                )}
-                {t("exhibits")}
+                <LayoutDashboard className="h-4 w-4" />
+                {t("dashboard")}
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href={creatorsRoute.path}
-                prefetch={false}
-                className={cn(
-                  "flex items-center gap-2",
-                  isCreatorsListingPath(pathname) &&
-                    "bg-accent text-accent-foreground",
-                )}
-              >
-                {creatorsRoute.icon && (
-                  <creatorsRoute.icon className="h-4 w-4" />
-                )}
-                {t("creators")}
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href={communityRoute.path}
-                prefetch={false}
-                className={cn(
-                  "flex items-center gap-2",
-                  isActive(communityRoute.path) &&
-                    "bg-accent text-accent-foreground",
-                )}
-              >
-                {communityRoute.icon && (
-                  <communityRoute.icon className="h-4 w-4" />
-                )}
-                {t("community")}
-              </Link>
-            </DropdownMenuItem>
-            {user && (
-              <DropdownMenuItem asChild>
-                <Link
-                  href={favoritesRoute.path}
-                  prefetch={false}
-                  className={cn(
-                    "flex items-center gap-2",
-                    isActive(favoritesRoute.path) &&
-                      "bg-accent text-accent-foreground",
-                  )}
-                >
-                  {favoritesRoute.icon && (
-                    <favoritesRoute.icon className="h-4 w-4" />
-                  )}
-                  {t("favorites")}
-                </Link>
-              </DropdownMenuItem>
-            )}
+            {user.id &&
+              (() => {
+                if (!creatorBase) return null;
+                const isProfileActive =
+                  pathname.startsWith(creatorBase) &&
+                  !pathname.startsWith(`${creatorBase}/portfolio`) &&
+                  !pathname.startsWith(`${creatorBase}/collections`);
+                const isPortfolioActive = pathname.startsWith(
+                  `${creatorBase}/portfolio`,
+                );
+                const isCollectionsActive = pathname.startsWith(
+                  `${creatorBase}/collections`,
+                );
+                return (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={creatorBase}
+                        prefetch={false}
+                        className={cn(
+                          "flex items-center gap-2",
+                          isProfileActive && "bg-accent text-accent-foreground",
+                        )}
+                      >
+                        {profileRoute.icon && (
+                          <profileRoute.icon className="h-4 w-4" />
+                        )}
+                        {t("profile")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`${creatorBase}/portfolio`}
+                        prefetch={false}
+                        className={cn(
+                          "flex items-center gap-2",
+                          isPortfolioActive &&
+                            "bg-accent text-accent-foreground",
+                        )}
+                      >
+                        {portfolioRoute.icon && (
+                          <portfolioRoute.icon className="h-4 w-4" />
+                        )}
+                        {t("portfolio")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`${creatorBase}/collections`}
+                        prefetch={false}
+                        className={cn(
+                          "flex items-center gap-2",
+                          isCollectionsActive &&
+                            "bg-accent text-accent-foreground",
+                        )}
+                      >
+                        <FolderOpen className="h-4 w-4" />
+                        {t("collections")}
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                );
+              })()}
           </DropdownMenuContent>
         </DropdownMenu>
+      )}
+    </nav>
+  );
+}
 
-        {/* Create Dropdown (authenticated only) */}
-        {user && (
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger
-              className={cn(
-                buttonClassName(),
-                isMyHubActive && "bg-accent text-accent-foreground",
-              )}
-            >
-              <Palette className="h-4 w-4" />
-              <span>{t("myHub")}</span>
-              <ChevronDown className="h-3 w-3" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="min-w-52">
-              <DropdownMenuItem
-                onClick={handleCreateClick}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                {t("create")}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link
-                  href={dashboardRoute.path}
-                  prefetch={false}
-                  className={cn(
-                    "flex items-center gap-2",
-                    isActive(dashboardRoute.path) &&
-                      "bg-accent text-accent-foreground",
-                  )}
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  {t("dashboard")}
-                </Link>
-              </DropdownMenuItem>
-              {user.id &&
-                (() => {
-                  if (!creatorBase) return null;
-                  const isProfileActive =
-                    pathname.startsWith(creatorBase) &&
-                    !pathname.startsWith(`${creatorBase}/portfolio`) &&
-                    !pathname.startsWith(`${creatorBase}/collections`);
-                  const isPortfolioActive = pathname.startsWith(
-                    `${creatorBase}/portfolio`,
-                  );
-                  const isCollectionsActive = pathname.startsWith(
-                    `${creatorBase}/collections`,
-                  );
-                  return (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link
-                          href={creatorBase}
-                          prefetch={false}
-                          className={cn(
-                            "flex items-center gap-2",
-                            isProfileActive &&
-                              "bg-accent text-accent-foreground",
-                          )}
-                        >
-                          {profileRoute.icon && (
-                            <profileRoute.icon className="h-4 w-4" />
-                          )}
-                          {t("profile")}
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link
-                          href={`${creatorBase}/portfolio`}
-                          prefetch={false}
-                          className={cn(
-                            "flex items-center gap-2",
-                            isPortfolioActive &&
-                              "bg-accent text-accent-foreground",
-                          )}
-                        >
-                          {portfolioRoute.icon && (
-                            <portfolioRoute.icon className="h-4 w-4" />
-                          )}
-                          {t("portfolio")}
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link
-                          href={`${creatorBase}/collections`}
-                          prefetch={false}
-                          className={cn(
-                            "flex items-center gap-2",
-                            isCollectionsActive &&
-                              "bg-accent text-accent-foreground",
-                          )}
-                        >
-                          <FolderOpen className="h-4 w-4" />
-                          {t("collections")}
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  );
-                })()}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+interface HeaderUtilityNavProps {
+  user?: {
+    id?: string | undefined;
+    slug?: string | null;
+    isAdmin?: boolean | undefined;
+  } | null;
+}
 
-        {/* Admin Dropdown (admin only) */}
+export function HeaderUtilityNav({ user }: HeaderUtilityNavProps) {
+  const pathname = usePathname();
+  const t = useTranslations("navigation");
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isExhibitRequestModalOpen, setIsExhibitRequestModalOpen] =
+    useState(false);
+
+  const exhibitionRoute = getRoute("exhibition");
+  const creatorsRoute = getRoute("creators");
+  const aboutRoute = getRoute("about");
+  const changelogRoute = getRoute("aboutChangelog");
+  const termsRoute = getRoute("terms");
+  const adminUsersRoute = getRoute("adminUsers");
+  const adminExhibitsRoute = getRoute("adminExhibits");
+  const adminNotificationsRoute = getRoute("adminNotifications");
+  const adminSettingsRoute = getRoute("adminSettings");
+
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(path);
+  };
+
+  const isAdminActive =
+    pathname.startsWith(adminUsersRoute.path) ||
+    pathname.startsWith(adminExhibitsRoute.path) ||
+    pathname.startsWith(adminNotificationsRoute.path) ||
+    pathname.startsWith(adminSettingsRoute.path);
+  const isSupportActive = isActive(aboutRoute.path);
+
+  return (
+    <>
+      <div className="flex items-center gap-1">
         {user?.isAdmin && (
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger
-              className={cn(
-                buttonClassName(),
-                isAdminActive && "bg-accent text-accent-foreground",
-              )}
+              className={iconOnlyNavTriggerClass(isAdminActive)}
+              aria-label={t("admin")}
+              title={t("admin")}
             >
               <Lock className="h-4 w-4" />
-              <span>{t("admin")}</span>
-              <ChevronDown className="h-3 w-3" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="min-w-52">
+            <DropdownMenuContent align="end" className="min-w-52">
               <DropdownMenuItem asChild>
                 <Link
                   href={adminUsersRoute.path}
@@ -375,19 +404,15 @@ export function DashboardNavigation({
           </DropdownMenu>
         )}
 
-        {/* Support Dropdown */}
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger
-            className={cn(
-              buttonClassName(),
-              isSupportActive && "bg-accent text-accent-foreground",
-            )}
+            className={iconOnlyNavTriggerClass(isSupportActive)}
+            aria-label={t("support")}
+            title={t("support")}
           >
             <HelpCircle className="h-4 w-4" />
-            <span>{t("support")}</span>
-            <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="min-w-52">
+          <DropdownMenuContent align="end" className="min-w-52">
             <DropdownMenuItem asChild>
               <Link
                 href={aboutRoute.path}
@@ -469,7 +494,7 @@ export function DashboardNavigation({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </nav>
+      </div>
       <SupportFormModal
         isOpen={isSupportModalOpen}
         onClose={() => setIsSupportModalOpen(false)}

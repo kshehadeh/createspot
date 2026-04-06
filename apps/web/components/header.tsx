@@ -8,7 +8,7 @@ import { CreateSpotLogo } from "./create-spot-logo";
 import { MobileNavigation } from "./mobile-navigation";
 import { ChevronDown, Plus, Signpost } from "lucide-react";
 
-// Dynamically import DashboardNavigation to avoid SSR hydration issues with Radix UI dropdown IDs
+// Dynamically import nav chunks to avoid SSR hydration issues with Radix UI dropdown IDs
 const DashboardNavigation = dynamic(
   () =>
     import("./navigation-links").then((mod) => ({
@@ -18,21 +18,33 @@ const DashboardNavigation = dynamic(
     ssr: false,
     loading: () => (
       <nav className="flex items-center gap-1" aria-hidden="true">
-        <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground whitespace-nowrap">
+        <div className="flex h-9 items-center gap-2 rounded-lg px-3 text-sm text-muted-foreground whitespace-nowrap">
           <Signpost className="h-4 w-4" />
           <span>…</span>
           <ChevronDown className="h-3 w-3" />
         </div>
-        <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground whitespace-nowrap">
+        <div className="flex h-9 items-center gap-2 rounded-lg px-3 text-sm text-muted-foreground whitespace-nowrap">
           <Plus className="h-4 w-4" />
           <span>…</span>
           <ChevronDown className="h-3 w-3" />
         </div>
-        <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground whitespace-nowrap">
-          <span>…</span>
-          <ChevronDown className="h-3 w-3" />
-        </div>
       </nav>
+    ),
+  },
+);
+
+const HeaderUtilityNav = dynamic(
+  () =>
+    import("./navigation-links").then((mod) => ({
+      default: mod.HeaderUtilityNav,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center gap-1" aria-hidden="true">
+        <div className="size-9 rounded-lg bg-muted animate-pulse" />
+        <div className="size-9 rounded-lg bg-muted animate-pulse" />
+      </div>
     ),
   },
 );
@@ -107,7 +119,8 @@ export function Header({ user }: HeaderProps) {
               user={user}
               onCreateModalOpen={() => setIsCreateModalOpen(true)}
             />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <HeaderUtilityNav user={user} />
               <ThemeToggle />
               <Button
                 asChild
