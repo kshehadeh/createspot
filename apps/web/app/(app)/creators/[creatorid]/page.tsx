@@ -8,7 +8,7 @@ import { ExpandableBio } from "@/components/expandable-bio";
 import { FollowButton } from "@/components/follow-button";
 import { HintPopover } from "@/components/hint-popover";
 import { PageLayout } from "@/components/page-layout";
-import { PortfolioGridProfile } from "@/components/portfolio-grid";
+import { ProfilePagePortfolioGrid } from "@/components/profile-page-portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileBadges } from "@/components/profile-badges";
 import { ProfileImageViewer } from "@/components/profile-image-viewer";
@@ -410,7 +410,7 @@ export default async function ProfilePage({
               </Button>
             </div>
           </div>
-          <PortfolioGridProfile
+          <ProfilePagePortfolioGrid
             items={allPortfolioItems
               .slice(0, MAX_PORTFOLIO_ITEMS)
               .map((item) => ({
