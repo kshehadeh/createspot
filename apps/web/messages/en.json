@@ -55,7 +55,7 @@
     "language": "Language",
     "languageDescription": "Select your preferred language",
     "theme": "Theme",
-    "themeDescription": "Choose light, dark, or system.",
+    "themeDescription": "Toggle between light and dark appearance.",
     "location": "Location",
     "country": "Country",
     "selectCountry": "Select country",
