@@ -47,16 +47,12 @@ export function Dashboard({
 
       <OnboardingSection />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <div className="min-w-0 md:row-span-2 xl:row-span-1">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="min-w-0">
           <Suspense fallback={<SectionSkeleton title="My Portfolio" />}>
             <PortfolioSection portfolioUrl={portfolioUrl} />
           </Suspense>
         </div>
-
-        <Suspense fallback={<SectionSkeleton title="Recent Critiques" />}>
-          <CritiquesSection critiquesUrl={critiquesUrl} />
-        </Suspense>
 
         <Suspense fallback={<SectionSkeleton title="Recently Visited" />}>
           <RecentViewsSection />
@@ -64,6 +60,10 @@ export function Dashboard({
       </div>
 
       <DashboardAnalyticsSection />
+
+      <Suspense fallback={<SectionSkeleton title="Recent Critiques" />}>
+        <CritiquesSection critiquesUrl={critiquesUrl} />
+      </Suspense>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Suspense fallback={<SectionSkeleton title="People You Follow" />}>
