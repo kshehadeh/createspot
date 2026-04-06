@@ -33,6 +33,31 @@ import {
   type CropArea,
 } from "@/lib/image-editor";
 
+function AutoFixLoadingToastIcon() {
+  return (
+    <span
+      className="relative flex size-10 shrink-0 items-center justify-center"
+      aria-hidden
+    >
+      <span
+        className="absolute size-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin"
+        style={{ animationDuration: "0.85s" }}
+      />
+      <Sparkles className="relative z-10 size-4 text-primary animate-pulse" />
+    </span>
+  );
+}
+
+function AutoFixLoadingToastActivity() {
+  return (
+    <div className="mt-2 flex items-center gap-1.5" aria-hidden>
+      <span className="inline-block size-1.5 rounded-full bg-primary animate-bounce" />
+      <span className="inline-block size-1.5 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
+      <span className="inline-block size-1.5 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+    </div>
+  );
+}
+
 interface ImageEditorProps {
   submissionId: string;
   imageUrl: string;
@@ -248,6 +273,17 @@ export function ImageEditor({
     if (!sourceImageUrl) return;
 
     setIsAutoFixing(true);
+    const toastId = crypto.randomUUID();
+    const loadingToastOptions = {
+      id: toastId,
+      icon: <AutoFixLoadingToastIcon />,
+      description: <AutoFixLoadingToastActivity />,
+    } as const;
+    toast.loading(t("autoFixToastWorking"), loadingToastOptions);
+    const stillWorkingTimer = setTimeout(() => {
+      toast.loading(t("autoFixToastStillWorking"), loadingToastOptions);
+    }, 10_000);
+
     try {
       const response = await fetch(
         `/api/submissions/${submissionId}/image/auto-fix`,
@@ -274,11 +310,15 @@ export function ImageEditor({
 
       setSessionImageUrl(data.imageDataUrl);
       setPreviewImageUrl(null);
-      toast.success(t("autoFixApplied"));
+      toast.success(t("autoFixApplied"), { id: toastId });
     } catch (error) {
       console.error("Auto-fix failed:", error);
-      toast.error(error instanceof Error ? error.message : t("autoFixFailed"));
+      toast.error(
+        error instanceof Error ? error.message : t("autoFixFailed"),
+        { id: toastId },
+      );
     } finally {
+      clearTimeout(stillWorkingTimer);
       setIsAutoFixing(false);
     }
   }, [sourceImageUrl, submissionId, t]);

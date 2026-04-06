@@ -1659,6 +1659,8 @@
     "autoColorCorrectionFailed": "Error al aplicar corrección automática de color",
     "autoFix": "Autoajustar",
     "autoFixing": "Autoajustando...",
+    "autoFixToastWorking": "Analizando tu imagen y aplicando mejoras…",
+    "autoFixToastStillWorking": "Sigue en proceso: las imágenes grandes pueden tardar hasta un minuto.",
     "autoFixApplied": "Autoajuste aplicado",
     "autoFixFailed": "No se pudo autoajustar la imagen",
     "closeEditor": "Cerrar editor",

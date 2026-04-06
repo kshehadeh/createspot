@@ -1659,6 +1659,8 @@
     "autoColorCorrectionFailed": "Failed to apply auto color correction",
     "autoFix": "Auto-fix",
     "autoFixing": "Auto-fixing...",
+    "autoFixToastWorking": "Analyzing your image and applying improvements…",
+    "autoFixToastStillWorking": "Still working—large images can take up to a minute.",
     "autoFixApplied": "Auto-fix applied",
     "autoFixFailed": "Failed to auto-fix image",
     "closeEditor": "Close editor",
