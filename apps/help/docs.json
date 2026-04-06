@@ -41,10 +41,13 @@
             "pages": [
               "creators/portfolio",
               "creators/portfolio/working-with-submissions",
+              "creators/portfolio/progressions",
+              "creators/portfolio/references",
               "creators/portfolio/getting-feedback",
               "creators/portfolio/organizing-portfolio",
               "creators/portfolio/collections",
               "creators/portfolio/critiques",
+              "creators/portfolio/submission-cleanup",
               "creators/portfolio/social-sharing",
               "creators/portfolio/downloading-work"
             ]
