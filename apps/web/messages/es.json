@@ -986,9 +986,17 @@
         "title": "Críticas",
         "description": "Solicita críticas de tu trabajo (opcionalmente) para mejorar tus habilidades con la ayuda de otros."
       },
-      "prompts": {
-        "title": "Indicaciones de Arte",
-        "description": "Inspírate para crear más a través de indicaciones de arte y navegando la colección."
+      "submissionCleanup": {
+        "title": "Limpieza de envíos",
+        "description": "Herramientas integradas para corregir problemas habituales en fotografías de tu obra: recorta, endereza y reduce reflejos, sombras y otros artefactos para que tu envío se vea lo mejor posible."
+      },
+      "progressions": {
+        "title": "Progresiones",
+        "description": "Muestra cómo evolucionó una pieza con pasos ordenados—imágenes, texto y notas—para que quien vea tu obra siga el camino del boceto al resultado final."
+      },
+      "references": {
+        "title": "Referencias",
+        "description": "Añade una imagen opcional de inspiración o fuente junto a tu obra principal, claramente separada para que el contexto se entienda en la galería y en la página del envío."
       },
       "exhibits": {
         "title": "Exposiciones",

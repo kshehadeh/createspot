@@ -986,9 +986,17 @@
         "title": "Critiques",
         "description": "Request critiques of your work (optionally) to grow your skills with the help of others."
       },
-      "prompts": {
-        "title": "Art Prompts",
-        "description": "Get inspired to make more through art prompts and browsing the collection."
+      "submissionCleanup": {
+        "title": "Submission Cleanup",
+        "description": "Built-in tools help fix common problems in photographed work—crop, straighten, and reduce glare, shadows, and other artifacts so your submission looks its best."
+      },
+      "progressions": {
+        "title": "Progressions",
+        "description": "Show how a piece evolved with ordered steps—images, text, and notes—so viewers can follow your journey from sketch to finish."
+      },
+      "references": {
+        "title": "References",
+        "description": "Add an optional inspiration or source image alongside your main work, clearly separated so context stays obvious in the gallery and on the submission page."
       },
       "exhibits": {
         "title": "Exhibits",

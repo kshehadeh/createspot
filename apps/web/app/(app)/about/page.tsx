@@ -45,7 +45,6 @@ export default async function AboutPage() {
       auth(),
     ]);
 
-  const changelogRoute = getRoute("aboutChangelog");
   const termsRoute = getRoute("terms");
 
   const features: Feature[] = [
@@ -58,49 +57,61 @@ export default async function AboutPage() {
     {
       key: "collections",
       helpUrl: "https://help.create.spot/creators/portfolio/collections",
-      screenshotSrc: "/images/about/feature-placeholder.svg",
-      hasScreenshot: false,
+      screenshotSrc: "/images/about/collections.png",
+      hasScreenshot: true,
     },
     {
       key: "socialSharing",
       helpUrl: "https://help.create.spot/creators/portfolio/social-sharing",
-      screenshotSrc: "/images/about/feature-placeholder.svg",
-      hasScreenshot: false,
+      screenshotSrc: "/images/about/social-share.png",
+      hasScreenshot: true,
     },
     {
       key: "protection",
       helpUrl: "https://help.create.spot/creators/profile/setup-your-space",
-      screenshotSrc: "/images/about/profile-edit.png",
+      screenshotSrc: "/images/about/work-protection.png",
       hasScreenshot: true,
     },
     {
       key: "downloads",
       helpUrl: "https://help.create.spot/creators/portfolio/downloading-work",
-      screenshotSrc: "/images/about/feature-placeholder.svg",
-      hasScreenshot: false,
+      screenshotSrc: "/images/about/collection-save.png",
+      hasScreenshot: true,
     },
     {
       key: "critiques",
       helpUrl: "https://help.create.spot/creators/portfolio/critiques",
-      screenshotSrc: "/images/about/feature-placeholder.svg",
-      hasScreenshot: false,
+      screenshotSrc: "/images/about/critiques.png",
+      hasScreenshot: true,
     },
     {
-      key: "prompts",
-      helpUrl: "https://help.create.spot/inspiration/prompts",
-      screenshotSrc: "/images/about/this-week-gallery.png",
+      key: "submissionCleanup",
+      helpUrl: "https://help.create.spot/creators/portfolio/submission-cleanup",
+      screenshotSrc: "/images/about/image-editor.png",
+      hasScreenshot: true,
+    },
+    {
+      key: "progressions",
+      helpUrl: "https://help.create.spot/creators/portfolio/progressions",
+      screenshotSrc: "/images/about/progressions.png",
+      hasScreenshot: true,
+    },
+    {
+      key: "references",
+      helpUrl: "https://help.create.spot/creators/portfolio/references",
+      screenshotSrc: "/images/about/references.png",
       hasScreenshot: true,
     },
     {
       key: "exhibits",
       helpUrl: "https://help.create.spot/browsers/exhibits",
-      screenshotSrc: "/images/about/exhibit-grid.png",
+      screenshotSrc: "/images/about/exhibits.png",
       hasScreenshot: true,
     },
     {
       key: "mapView",
       helpUrl: "https://help.create.spot/browsers/exhibits/map-view",
-      screenshotSrc: "/images/about/exhibit-map.png",
+      screenshotSrc: "/images/about/map-view.png",
       hasScreenshot: true,
     },
   ];
@@ -294,9 +305,6 @@ export default async function AboutPage() {
                 >
                   {tAbout("protectingYourWork.learnMore")}
                 </a>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href={changelogRoute.path}>View updates</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href={termsRoute.path}>Read terms</Link>
