@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "@/components/link";
-import { LayoutDashboard, Plus } from "lucide-react";
+import { HelpCircle, LayoutDashboard, LogIn, Plus } from "lucide-react";
 import { FeedCard, type FeedCardSubmission } from "@/components/feed-card";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { Button } from "@createspot/ui-primitives/button";
@@ -83,6 +83,7 @@ function FeedListContent({
   showActionBar = false,
 }: FeedListProps) {
   const t = useTranslations("feed");
+  const tNav = useTranslations("navigation");
   const router = useRouter();
   const [submissions, setSubmissions] = useState(initialSubmissions);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -172,6 +173,24 @@ function FeedListContent({
     </div>
   );
 
+  const guestActionBar = showActionBar && !isLoggedIn && (
+    <div
+      className="fixed right-4 z-50 flex flex-col items-center gap-2.5 sm:right-6"
+      style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
+    >
+      <Button variant="fabFilled" asChild title={tNav("overview")} aria-label={tNav("overview")}>
+        <Link href="/about">
+          <HelpCircle className="h-5 w-5" />
+        </Link>
+      </Button>
+      <Button variant="fabMuted" asChild title={t("signIn")} aria-label={t("signIn")}>
+        <Link href="/welcome">
+          <LogIn className="h-5 w-5" />
+        </Link>
+      </Button>
+    </div>
+  );
+
   if (submissions.length === 0) {
     return (
       <>
@@ -179,6 +198,7 @@ function FeedListContent({
           <p className="text-muted-foreground">{t("empty")}</p>
         </div>
         {fab}
+        {guestActionBar}
         {isLoggedIn && (
           <SubmissionEditModal
             isOpen={isCreateModalOpen}
@@ -218,6 +238,7 @@ function FeedListContent({
         )}
       </div>
       {fab}
+      {guestActionBar}
       {isLoggedIn && (
         <SubmissionEditModal
           isOpen={isCreateModalOpen}

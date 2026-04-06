@@ -19,12 +19,15 @@ import { ChevronDown, Pencil, User } from "lucide-react";
 import { getUserImageUrl } from "@/lib/user-image";
 import { getRoute } from "@/lib/routes";
 import { buildRoutePath } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 interface UserDropdownProps {
   id?: string;
   name?: string | null;
   image?: string | null;
   profileImageUrl?: string | null;
+  /** Merged onto the trigger; e.g. `border-l-0 pl-0` when the trigger is the first header control. */
+  triggerClassName?: string;
 }
 
 export function UserDropdown({
@@ -32,6 +35,7 @@ export function UserDropdown({
   name,
   image,
   profileImageUrl,
+  triggerClassName,
 }: UserDropdownProps) {
   const [mounted, setMounted] = useState(false);
   const t = useTranslations("profile");
@@ -49,7 +53,12 @@ export function UserDropdown({
 
   if (!mounted) {
     return (
-      <div className="flex items-center gap-2 border-l border-border pl-4 outline-none">
+      <div
+        className={cn(
+          "flex items-center gap-2 border-l border-border pl-4 outline-none",
+          triggerClassName,
+        )}
+      >
         {name && (
           <span className="hidden text-sm text-foreground lg:inline">
             {name}
@@ -71,7 +80,12 @@ export function UserDropdown({
 
   return (
     <DropdownMenu modal={false}>
-      <DropdownMenuTrigger className="flex items-center gap-2 border-l border-border pl-4 outline-none">
+      <DropdownMenuTrigger
+        className={cn(
+          "flex items-center gap-2 border-l border-border pl-4 outline-none",
+          triggerClassName,
+        )}
+      >
         {name && (
           <span className="hidden text-sm text-foreground lg:inline">
             {name}

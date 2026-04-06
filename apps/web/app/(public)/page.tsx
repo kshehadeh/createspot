@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { getFeedSubmissions } from "@/lib/feed";
 import { FeedList } from "@/components/feed-list";
+import { PublicHomeMobileScrollbar } from "@/components/public-home-mobile-scrollbar";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("home");
@@ -31,6 +32,7 @@ export default async function Home() {
 
   return (
     <main className="mx-auto w-full max-w-[600px] flex-1 py-4">
+      <PublicHomeMobileScrollbar />
       <h1 className="sr-only">{t("title")}</h1>
       <FeedList
         initialSubmissions={submissions}
