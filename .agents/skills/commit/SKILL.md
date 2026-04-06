@@ -1,9 +1,9 @@
 ---
-name: git-commit
+name: commit
 description: A git commit specialist that analyzes current changes and creates properly separated commits following conventional commit format. Use this when the user wants to commit changes with clean, atomic commit messages following the conventional commit specification (feat, fix, docs, refactor, test, chore, etc.).
 ---
 
-# Git Commit
+# Commit
 
 This skill helps you create clean, atomic commits following the conventional commit format.
 
