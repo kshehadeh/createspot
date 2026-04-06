@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Bird, Copy, Instagram, Share2, Twitter } from "lucide-react";
+import { SiBluesky, SiX } from "@icons-pack/react-simple-icons";
+import { Copy, Instagram, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button, type ButtonProps } from "@createspot/ui-primitives/button";
 import {
@@ -61,10 +62,16 @@ function getCanonicalUrl(
   if (typeof window === "undefined") return "";
   const origin = window.location.origin;
   switch (props.type) {
-    case "submission":
-      return resolvedUser
-        ? `${origin}${getCreatorUrl(resolvedUser)}/s/${props.submissionId}`
+    case "submission": {
+      const u =
+        resolvedUser ??
+        (props.userId
+          ? { id: props.userId, slug: props.userSlug ?? null }
+          : null);
+      return u
+        ? `${origin}${getCreatorUrl(u)}/s/${props.submissionId}`
         : "";
+    }
     case "collection":
       return `${origin}${getCreatorUrl({ id: props.userId, slug: props.slug ?? null })}/collections/${props.collectionId}`;
     case "profile":
@@ -189,13 +196,50 @@ export function ShareButton(props: ShareButtonProps) {
   const customUrl = shareUrl ? normalizeShareUrl(shareUrl) : null;
   const customText = shareText?.trim() || null;
 
+  /** Short link from prefetch when the menu opens (see onShareMenuOpenChange). */
+  const prefetchedShortRef = useRef<string | null>(null);
+  const prefetchGenerationRef = useRef(0);
+
+  const onShareMenuOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) return;
+      prefetchedShortRef.current = null;
+      if (customUrl) return;
+      if (type !== "submission" && type !== "collection") return;
+      const targetId = type === "submission" ? submissionId : collectionId;
+      if (!targetId) return;
+      const gen = ++prefetchGenerationRef.current;
+      const apiType = type === "submission" ? "submission" : "collection";
+      void fetchShortUrl(apiType, targetId).then((url) => {
+        if (prefetchGenerationRef.current === gen && url) {
+          prefetchedShortRef.current = url;
+        }
+      });
+    },
+    [customUrl, type, submissionId, collectionId],
+  );
+
+  /**
+   * URL available without awaiting network. Mobile Safari only allows clipboard writes
+   * while a user gesture is still active; awaiting fetch() first revokes that, so
+   * copy/social actions must use this (canonical or prefetched short) before any await.
+   */
+  const pickShareUrlSync = useCallback((): string | null => {
+    if (customUrl) return customUrl;
+    const pre = prefetchedShortRef.current;
+    if (pre) return pre;
+    const c = canonicalUrl.trim();
+    return c || null;
+  }, [customUrl, canonicalUrl]);
+
   const resolveShareUrl = useCallback(async (): Promise<string | null> => {
     if (customUrl) return customUrl;
     if (type === "submission" || type === "collection") {
       const targetId = type === "submission" ? submissionId : collectionId;
-      if (!targetId) return null;
+      if (!targetId) return canonicalUrl || null;
       const apiType = type === "submission" ? "submission" : "collection";
-      return fetchShortUrl(apiType, targetId);
+      const short = await fetchShortUrl(apiType, targetId);
+      return short ?? (canonicalUrl || null);
     }
     return canonicalUrl || null;
   }, [customUrl, type, submissionId, collectionId, canonicalUrl]);
@@ -210,7 +254,8 @@ export function ShareButton(props: ShareButtonProps) {
   };
 
   const handleCopyUrl = async () => {
-    const url = await resolveShareUrl();
+    let url = pickShareUrlSync();
+    if (!url) url = await resolveShareUrl();
     if (!url) {
       toast.error(t("failedResolveUrl"));
       return;
@@ -221,7 +266,8 @@ export function ShareButton(props: ShareButtonProps) {
   };
 
   const handleInstagram = async () => {
-    const url = await resolveShareUrl();
+    let url = pickShareUrlSync();
+    if (!url) url = await resolveShareUrl();
     if (!url) {
       toast.error(t("failedResolveUrl"));
       return;
@@ -238,7 +284,8 @@ export function ShareButton(props: ShareButtonProps) {
   };
 
   const handleBluesky = async () => {
-    const url = await resolveShareUrl();
+    let url = pickShareUrlSync();
+    if (!url) url = await resolveShareUrl();
     if (!url) {
       toast.error(t("failedResolveUrl"));
       return;
@@ -258,7 +305,8 @@ export function ShareButton(props: ShareButtonProps) {
   };
 
   const handleX = async () => {
-    const url = await resolveShareUrl();
+    let url = pickShareUrlSync();
+    if (!url) url = await resolveShareUrl();
     if (!url) {
       toast.error(t("failedResolveUrl"));
       return;
@@ -282,7 +330,8 @@ export function ShareButton(props: ShareButtonProps) {
       toast.error(t("systemShareUnavailable"));
       return;
     }
-    const url = await resolveShareUrl();
+    let url = pickShareUrlSync();
+    if (!url) url = await resolveShareUrl();
     if (!url) {
       toast.error(t("failedResolveUrl"));
       return;
@@ -308,7 +357,7 @@ export function ShareButton(props: ShareButtonProps) {
   const triggerLabel = ariaLabel ?? t("menuAria");
 
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu modal={false} onOpenChange={onShareMenuOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
@@ -346,11 +395,11 @@ export function ShareButton(props: ShareButtonProps) {
           {t("instagram")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => void handleBluesky()}>
-          <Bird className="text-muted-foreground" />
+          <SiBluesky className="text-muted-foreground" />
           {t("bluesky")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => void handleX()}>
-          <Twitter className="text-muted-foreground" />
+          <SiX className="text-muted-foreground" />
           {t("x")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
