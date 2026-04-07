@@ -172,29 +172,6 @@ export default async function AboutPage() {
       </section>
 
       <PageLayout maxWidth="max-w-6xl" className="space-y-10 py-10 sm:py-16">
-        <section className="sticky top-[3.5rem] z-20 rounded-2xl border border-border/60 bg-background/95 p-3 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-          <div className="flex flex-wrap gap-2">
-            <a
-              href="#purpose"
-              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
-            >
-              Purpose
-            </a>
-            <a
-              href="#features"
-              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
-            >
-              Features
-            </a>
-            <a
-              href="#protecting-your-work"
-              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80"
-            >
-              Protection
-            </a>
-          </div>
-        </section>
-
         <AboutScrollSection id="purpose">
           <AboutCard className="border-border/60">
             <div className="mb-6 flex items-center gap-3">
