@@ -38,6 +38,8 @@ Options:
 
 Environment:
   RELEASE_BRANCH  Branch name required (default: main)
+  RELEASE_NO_GPG  If set to 1/true, git commit/tag run with signing disabled
+                  (useful when commit/tag signing via 1Password errors locally).
 `);
 }
 
@@ -144,6 +146,10 @@ function main(): void {
   }
   const dryRun = args.includes("--dry-run");
   const branch = getReleaseBranch();
+  const noGpgEnv = process.env["RELEASE_NO_GPG"]?.trim().toLowerCase();
+  const noGpg = noGpgEnv === "1" || noGpgEnv === "true" || noGpgEnv === "yes";
+  const gitCommit = noGpg ? "git -c commit.gpgsign=false commit" : "git commit";
+  const gitTag = noGpg ? "git -c tag.gpgSign=false tag" : "git tag";
 
   const currentBranch = getCurrentBranch();
   if (!currentBranch) {
@@ -205,14 +211,14 @@ function main(): void {
   }
 
   const commitMsg = `chore(release): bump version to ${nextVer}`;
-  const commit = sh(`git commit -m ${JSON.stringify(commitMsg)}`);
+  const commit = sh(`${gitCommit} -m ${JSON.stringify(commitMsg)}`);
   if (!commit.ok) {
     console.error("git commit failed:", commit.stderr);
     process.exit(1);
   }
 
   const tag = sh(
-    `git tag -a ${tagName} -m ${JSON.stringify(`Release ${tagName}`)}`,
+    `${gitTag} -a ${tagName} -m ${JSON.stringify(`Release ${tagName}`)}`,
   );
   if (!tag.ok) {
     console.error("git tag failed:", tag.stderr);
