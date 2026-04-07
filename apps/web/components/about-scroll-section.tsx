@@ -22,10 +22,16 @@ export function AboutScrollSection({
       className={cn("scroll-mt-24", className)}
       initial={shouldReduceMotion ? "visible" : "hidden"}
       whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      // "some" + root margin: strict fractional thresholds (e.g. 0.2) often fail to
+      // fire on mobile for very tall sections (features grid), leaving content opacity 0.
+      viewport={{
+        once: true,
+        amount: "some",
+        margin: "0px 0px 48px 0px",
+      }}
       variants={{
-        hidden: { opacity: 0, y: 24, scale: 0.98 },
-        visible: { opacity: 1, y: 0, scale: 1 },
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 },
       }}
       transition={{
         duration: shouldReduceMotion ? 0 : 0.45,
