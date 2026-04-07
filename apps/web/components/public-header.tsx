@@ -82,17 +82,9 @@ export function PublicHeader({ user }: PublicHeaderProps) {
               </>
             )}
           </div>
-          {/* Mobile: about + hamburger (ThemeToggle lives inside the sidebar) */}
+          {/* Mobile: about + hamburger for guests; signed-in users use hamburger only (account is in the drawer) */}
           <div className="flex md:hidden items-center gap-2">
-            {user ? (
-              <UserDropdown
-                id={user.id}
-                name={user.name}
-                image={user.image}
-                profileImageUrl={user.profileImageUrl}
-                triggerClassName="border-l-0 pl-0"
-              />
-            ) : (
+            {!user && (
               <Button variant="outline" size="icon" className="shrink-0 rounded-full" asChild>
                 <Link href="/about" title={tNav("overview")} aria-label={tNav("overview")}>
                   <HelpCircle className="h-4 w-4" />
