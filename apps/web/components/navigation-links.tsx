@@ -1,13 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Link from "@/components/link";
-import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { ExhibitRequestModal } from "@/components/contact/exhibit-request-form";
-import { SupportFormModal } from "@/components/contact/support-form-modal";
-import { getRoute, isCreatorsListingPath } from "@/lib/routes";
-import { cn, getCreatorUrl } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +11,7 @@ import {
   Brain,
   Bug,
   ChevronDown,
-  FileText,
+  FolderOpen,
   Heart,
   HelpCircle,
   LayoutDashboard,
@@ -28,9 +20,16 @@ import {
   Mail,
   Palette,
   Plus,
-  FolderOpen,
   ScrollText,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { ExhibitRequestModal } from "@/components/contact/exhibit-request-form";
+import { SupportFormModal } from "@/components/contact/support-form-modal";
+import Link from "@/components/link";
+import { getRoute, isCreatorsListingPath } from "@/lib/routes";
+import { cn, getCreatorUrl } from "@/lib/utils";
 
 function iconOnlyNavTriggerClass(isActive: boolean) {
   return cn(
@@ -305,7 +304,6 @@ export function HeaderUtilityNav({ user }: HeaderUtilityNavProps) {
   const creatorsRoute = getRoute("creators");
   const aboutRoute = getRoute("about");
   const changelogRoute = getRoute("aboutChangelog");
-  const termsRoute = getRoute("terms");
   const adminUsersRoute = getRoute("adminUsers");
   const adminExhibitsRoute = getRoute("adminExhibits");
   const adminNotificationsRoute = getRoute("adminNotifications");
@@ -428,6 +426,17 @@ export function HeaderUtilityNav({ user }: HeaderUtilityNavProps) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
+              <a
+                href="https://help.create.spot"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2"
+              >
+                <HelpIcon className="h-4 w-4" />
+                {t("help")}
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link
                 href={changelogRoute.path}
                 prefetch={false}
@@ -441,37 +450,23 @@ export function HeaderUtilityNav({ user }: HeaderUtilityNavProps) {
                 {t("updates")}
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href={termsRoute.path}
-                prefetch={false}
-                className={cn(
-                  "flex items-center gap-2",
-                  isActive(termsRoute.path) &&
-                    "bg-accent text-accent-foreground",
-                )}
-              >
-                <FileText className="h-4 w-4" />
-                {t("terms")}
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a
-                href="https://help.create.spot"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2"
-              >
-                <HelpIcon className="h-4 w-4" />
-                {t("help")}
-              </a>
-            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => setIsExhibitRequestModalOpen(true)}
               className="flex items-center gap-2"
             >
-              <LayoutGrid className="h-4 w-4" />
-              {t("requestExhibit")}
+              <LayoutGrid className="h-4 w-4 text-muted-foreground" />
+              <span className="bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text font-bold text-transparent dark:from-amber-400 dark:via-rose-400 dark:to-violet-400">
+                {t("requestExhibit")}
+              </span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setIsSupportModalOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <Bug className="h-4 w-4" />
+              {t("submitBug")}
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a
@@ -483,14 +478,6 @@ export function HeaderUtilityNav({ user }: HeaderUtilityNavProps) {
                 <Heart className="h-4 w-4" />
                 {t("buyMeACoffee")}
               </a>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => setIsSupportModalOpen(true)}
-              className="flex items-center gap-2"
-            >
-              <Bug className="h-4 w-4" />
-              {t("submitBug")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

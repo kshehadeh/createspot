@@ -1,14 +1,6 @@
 "use client";
 
-import Link from "@/components/link";
-import { useState, useEffect, useRef, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
-import { signOut, signIn } from "next-auth/react";
-import { useTranslations } from "next-intl";
 import { Button } from "@createspot/ui-primitives/button";
-import { SubmissionEditModal } from "./submission-edit-modal";
-import { cn, getCreatorUrl } from "@/lib/utils";
-import { getRoute, isCreatorsListingPath } from "@/lib/routes";
 import type { LucideIcon } from "lucide-react";
 import {
   Brain,
@@ -16,7 +8,6 @@ import {
   Bug,
   ChevronDown,
   ChevronRight,
-  FileText,
   FolderOpen,
   Heart,
   HelpCircle,
@@ -32,8 +23,16 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { SupportFormModal } from "./contact/support-form-modal";
+import { usePathname } from "next/navigation";
+import { signIn, signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import Link from "@/components/link";
+import { getRoute, isCreatorsListingPath } from "@/lib/routes";
+import { cn, getCreatorUrl } from "@/lib/utils";
 import { ExhibitRequestModal } from "./contact/exhibit-request-form";
+import { SupportFormModal } from "./contact/support-form-modal";
+import { SubmissionEditModal } from "./submission-edit-modal";
 import { ThemeToggle } from "./theme-toggle";
 
 // Icon for Help link
@@ -413,29 +412,34 @@ export function MobileNavigation({
                 onClose={() => setIsMenuOpen(false)}
               />
               <MobileNavItem
-                href={getRoute("aboutChangelog").path}
-                icon={ScrollText}
-                label={t("updates")}
-                onClose={() => setIsMenuOpen(false)}
-              />
-              <MobileNavItem
-                href={getRoute("terms").path}
-                icon={FileText}
-                label={t("terms")}
-                onClose={() => setIsMenuOpen(false)}
-              />
-              <MobileNavItem
                 href="https://help.create.spot"
                 icon={HelpIcon}
                 label={t("help")}
                 isExternal
                 onClose={() => setIsMenuOpen(false)}
               />
+              <MobileNavItem
+                href={getRoute("aboutChangelog").path}
+                icon={ScrollText}
+                label={t("updates")}
+                onClose={() => setIsMenuOpen(false)}
+              />
+              <div className="my-2 h-px bg-border" aria-hidden />
               <MobileNavActionItem
                 icon={LayoutGrid}
                 label={t("requestExhibit")}
+                labelClassName="bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text font-bold text-transparent dark:from-amber-400 dark:via-rose-400 dark:to-violet-400"
                 onClick={() => {
                   setIsExhibitRequestModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+              />
+              <div className="my-2 h-px bg-border" aria-hidden />
+              <MobileNavActionItem
+                icon={Bug}
+                label={t("submitBug")}
+                onClick={() => {
+                  setIsSupportModalOpen(true);
                   setIsMenuOpen(false);
                 }}
               />
@@ -445,14 +449,6 @@ export function MobileNavigation({
                 label={t("buyMeACoffee")}
                 isExternal
                 onClose={() => setIsMenuOpen(false)}
-              />
-              <MobileNavActionItem
-                icon={Bug}
-                label={t("submitBug")}
-                onClick={() => {
-                  setIsSupportModalOpen(true);
-                  setIsMenuOpen(false);
-                }}
               />
             </MobileSection>
 
@@ -641,18 +637,20 @@ function MobileNavActionItem({
   icon: Icon,
   label,
   onClick,
+  labelClassName,
 }: {
   icon: any;
   label: string;
   onClick: () => void;
+  labelClassName?: string;
 }) {
   return (
     <button
       onClick={onClick}
       className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <Icon className="h-5 w-5" />
-      {label}
+      <Icon className="h-5 w-5 shrink-0" />
+      <span className={cn(labelClassName)}>{label}</span>
     </button>
   );
 }
