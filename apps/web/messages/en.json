@@ -454,6 +454,7 @@
     },
     "users": {
       "title": "All Users ({count})",
+      "pageTitle": "All Users",
       "joined": "Joined",
       "role": "Role",
       "admin": "Admin",
@@ -464,6 +465,7 @@
       "updating": "Updating...",
       "removeAdmin": "Remove Admin",
       "makeAdmin": "Make Admin",
+      "makeRegularUser": "Make Regular User",
       "deleteUser": "Delete User",
       "updateError": "Failed to update user",
       "error": "An error occurred",
@@ -480,7 +482,28 @@
       "workTitle": "Title",
       "workDate": "Date",
       "workSize": "Size",
-      "untitled": "Untitled"
+      "untitled": "Untitled",
+      "search": "Search",
+      "searchPlaceholder": "Search by name or email...",
+      "filterByRole": "Role",
+      "allRoles": "All roles",
+      "loading": "Loading users...",
+      "noUsers": "No users found",
+      "columns": {
+        "avatar": "",
+        "name": "Name",
+        "email": "Email",
+        "joined": "Joined",
+        "role": "Role",
+        "actions": "Actions"
+      },
+      "pagination": {
+        "page": "Page",
+        "of": "of",
+        "total": "total",
+        "previous": "Previous",
+        "next": "Next"
+      }
     },
     "prompts": {
       "title": "Manage Prompts",

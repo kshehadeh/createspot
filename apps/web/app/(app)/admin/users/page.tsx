@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
-import { UsersList } from "./users-list";
+import { UsersTable } from "./users-table";
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -18,27 +17,15 @@ export default async function AdminUsersPage() {
 
   const t = await getTranslations("admin.users");
 
-  const users = await prisma.user.findMany({
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      image: true,
-      isAdmin: true,
-      createdAt: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
   return (
     <PageLayout maxWidth="max-w-5xl">
       <section>
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-foreground">
-            {t("title", { count: users.length })}
+            {t("pageTitle")}
           </h2>
         </div>
-        <UsersList users={users} currentUserId={session.user.id} />
+        <UsersTable currentUserId={session.user.id} />
       </section>
     </PageLayout>
   );

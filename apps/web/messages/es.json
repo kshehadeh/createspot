@@ -454,6 +454,7 @@
     },
     "users": {
       "title": "Todos los Usuarios ({count})",
+      "pageTitle": "Todos los Usuarios",
       "joined": "Se unió",
       "role": "Rol",
       "admin": "Admin",
@@ -464,6 +465,7 @@
       "updating": "Actualizando...",
       "removeAdmin": "Quitar Admin",
       "makeAdmin": "Hacer Admin",
+      "makeRegularUser": "Hacer Usuario Regular",
       "deleteUser": "Eliminar Usuario",
       "updateError": "Error al actualizar usuario",
       "error": "Ocurrió un error",
@@ -480,7 +482,28 @@
       "workTitle": "Título",
       "workDate": "Fecha",
       "workSize": "Tamaño",
-      "untitled": "Sin título"
+      "untitled": "Sin título",
+      "search": "Buscar",
+      "searchPlaceholder": "Buscar por nombre o correo...",
+      "filterByRole": "Rol",
+      "allRoles": "Todos los roles",
+      "loading": "Cargando usuarios...",
+      "noUsers": "No se encontraron usuarios",
+      "columns": {
+        "avatar": "",
+        "name": "Nombre",
+        "email": "Correo",
+        "joined": "Se unió",
+        "role": "Rol",
+        "actions": "Acciones"
+      },
+      "pagination": {
+        "page": "Página",
+        "of": "de",
+        "total": "total",
+        "previous": "Anterior",
+        "next": "Siguiente"
+      }
     },
     "prompts": {
       "title": "Gestionar Indicaciones",
