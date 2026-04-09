@@ -223,16 +223,16 @@ export function UsersTable({ currentUserId }: UsersTableProps) {
 
                 return (
                   <TableRow key={user.id}>
-                    <TableCell>
+                    <TableCell className="w-10">
                       {user.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={user.image}
                           alt={user.name || tProfile("anonymous")}
-                          className="h-8 w-8 rounded-full"
+                          className="h-8 w-8 shrink-0 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
                           <span className="text-xs font-medium text-muted-foreground">
                             {user.name?.charAt(0) ||
                               user.email?.charAt(0) ||
