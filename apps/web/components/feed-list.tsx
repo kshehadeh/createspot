@@ -178,12 +178,22 @@ function FeedListContent({
       className="fixed right-4 z-50 flex flex-col items-center gap-2.5 sm:right-6"
       style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
     >
-      <Button variant="fabFilled" asChild title={tNav("overview")} aria-label={tNav("overview")}>
+      <Button
+        variant="fabFilled"
+        asChild
+        title={tNav("overview")}
+        aria-label={tNav("overview")}
+      >
         <Link href="/about">
           <HelpCircle className="h-5 w-5" />
         </Link>
       </Button>
-      <Button variant="fabMuted" asChild title={t("signIn")} aria-label={t("signIn")}>
+      <Button
+        variant="fabMuted"
+        asChild
+        title={t("signIn")}
+        aria-label={t("signIn")}
+      >
         <Link href="/welcome">
           <LogIn className="h-5 w-5" />
         </Link>

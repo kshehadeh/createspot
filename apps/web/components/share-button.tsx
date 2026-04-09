@@ -68,9 +68,7 @@ function getCanonicalUrl(
         (props.userId
           ? { id: props.userId, slug: props.userSlug ?? null }
           : null);
-      return u
-        ? `${origin}${getCreatorUrl(u)}/s/${props.submissionId}`
-        : "";
+      return u ? `${origin}${getCreatorUrl(u)}/s/${props.submissionId}` : "";
     }
     case "collection":
       return `${origin}${getCreatorUrl({ id: props.userId, slug: props.slug ?? null })}/collections/${props.collectionId}`;

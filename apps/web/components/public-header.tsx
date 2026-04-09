@@ -68,8 +68,17 @@ export function PublicHeader({ user }: PublicHeaderProps) {
               />
             ) : (
               <>
-                <Button variant="outline" size="icon" className="shrink-0 rounded-full" asChild>
-                  <Link href="/about" title={tNav("overview")} aria-label={tNav("overview")}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0 rounded-full"
+                  asChild
+                >
+                  <Link
+                    href="/about"
+                    title={tNav("overview")}
+                    aria-label={tNav("overview")}
+                  >
                     <HelpCircle className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -85,8 +94,17 @@ export function PublicHeader({ user }: PublicHeaderProps) {
           {/* Mobile: about + hamburger for guests; signed-in users use hamburger only (account is in the drawer) */}
           <div className="flex md:hidden items-center gap-2">
             {!user && (
-              <Button variant="outline" size="icon" className="shrink-0 rounded-full" asChild>
-                <Link href="/about" title={tNav("overview")} aria-label={tNav("overview")}>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 rounded-full"
+                asChild
+              >
+                <Link
+                  href="/about"
+                  title={tNav("overview")}
+                  aria-label={tNav("overview")}
+                >
                   <HelpCircle className="h-4 w-4" />
                 </Link>
               </Button>

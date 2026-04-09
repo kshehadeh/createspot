@@ -313,10 +313,9 @@ export function ImageEditor({
       toast.success(t("autoFixApplied"), { id: toastId });
     } catch (error) {
       console.error("Auto-fix failed:", error);
-      toast.error(
-        error instanceof Error ? error.message : t("autoFixFailed"),
-        { id: toastId },
-      );
+      toast.error(error instanceof Error ? error.message : t("autoFixFailed"), {
+        id: toastId,
+      });
     } finally {
       clearTimeout(stillWorkingTimer);
       setIsAutoFixing(false);
