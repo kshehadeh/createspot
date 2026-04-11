@@ -316,119 +316,60 @@ export function SubmissionLightbox({
           </Tooltip>
         )}
 
-        {/* View button */}
-        <>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="overlayDark"
-                size="sm"
-                asChild
-                className="hidden xl:flex"
+        {/* View */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="overlayDark"
+              size="icon"
+              asChild
+              aria-label="View submission"
+            >
+              <Link
+                href={getSubmissionUrl() || "#"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const url = getSubmissionUrl();
+                  if (!url && submissionUserId && submission.id) {
+                    e.preventDefault();
+                    router.push(
+                      buildRoutePath("submission", {
+                        creatorid: submissionUserId,
+                        submissionid: submission.id,
+                      }),
+                    );
+                  }
+                }}
               >
-                <Link
-                  href={getSubmissionUrl() || "#"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const url = getSubmissionUrl();
-                    if (!url && submissionUserId && submission.id) {
-                      e.preventDefault();
-                      router.push(
-                        buildRoutePath("submission", {
-                          creatorid: submissionUserId,
-                          submissionid: submission.id,
-                        }),
-                      );
-                    }
-                  }}
-                >
-                  <Eye className="h-4 w-4" />
-                  <span>View</span>
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>View full submission page</p>
-            </TooltipContent>
-          </Tooltip>
+                <Eye className="h-4 w-4" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>View full submission page</p>
+          </TooltipContent>
+        </Tooltip>
+
+        {/* Edit button - shown if user owns the submission */}
+        {isOwner && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="overlayDark"
                 size="icon"
-                asChild
-                className="xl:hidden"
-                aria-label="View submission"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditClick();
+                }}
+                aria-label="Edit submission"
               >
-                <Link
-                  href={getSubmissionUrl() || "#"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const url = getSubmissionUrl();
-                    if (!url && submissionUserId && submission.id) {
-                      e.preventDefault();
-                      router.push(
-                        buildRoutePath("submission", {
-                          creatorid: submissionUserId,
-                          submissionid: submission.id,
-                        }),
-                      );
-                    }
-                  }}
-                >
-                  <Eye className="h-4 w-4" />
-                </Link>
+                <Edit className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>View submission</p>
+              <p>Edit submission</p>
             </TooltipContent>
           </Tooltip>
-        </>
-
-        {/* Edit button - shown if user owns the submission */}
-        {isOwner && (
-          <>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="overlayDark"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditClick();
-                  }}
-                  className="hidden xl:flex"
-                  aria-label="Edit submission"
-                >
-                  <Edit className="h-4 w-4" />
-                  <span>Edit</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit submission</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="overlayDark"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditClick();
-                  }}
-                  className="xl:hidden"
-                  aria-label="Edit submission"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit submission</p>
-              </TooltipContent>
-            </Tooltip>
-          </>
         )}
 
         {/* Critique button */}
@@ -442,51 +383,26 @@ export function SubmissionLightbox({
                   })
                 : "#";
             return (
-              <>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="overlayDark"
-                      size="sm"
-                      asChild
-                      className="hidden xl:flex"
-                      aria-label="Critique"
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="overlayDark"
+                    size="icon"
+                    asChild
+                    aria-label="Critique"
+                  >
+                    <Link
+                      href={critiqueHref}
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <Link
-                        href={critiqueHref}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <MessageSquare className="h-4 w-4" />
-                        <span>Critique</span>
-                      </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Critique</p>
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="overlayDark"
-                      size="icon"
-                      asChild
-                      className="xl:hidden"
-                      aria-label="Critique"
-                    >
-                      <Link
-                        href={critiqueHref}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <MessageSquare className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Critique</p>
-                  </TooltipContent>
-                </Tooltip>
-              </>
+                      <MessageSquare className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Critique</p>
+                </TooltipContent>
+              </Tooltip>
             );
           })()}
 
@@ -553,22 +469,6 @@ export function SubmissionLightbox({
     ],
   );
 
-  const renderMetadataOverlay = useCallback(
-    (_context: BaseLightboxRenderContext) => (
-      <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate text-sm font-medium text-white sm:text-base">
-          {submission.title || t("untitled")}
-        </span>
-        {submission.user?.name ? (
-          <span className="truncate text-xs text-zinc-300 sm:text-sm">
-            {submission.user.name}
-          </span>
-        ) : null}
-      </div>
-    ),
-    [submission.title, submission.user?.name, t],
-  );
-
   // Render text overlay content
   const renderTextOverlay = useCallback(
     (context: BaseLightboxRenderContext) => (
@@ -612,7 +512,6 @@ export function SubmissionLightbox({
       renderControls={renderControls}
       renderSidebar={hasImage ? renderSidebar : undefined}
       renderBottomLeading={hasImage ? renderBottomLeading : undefined}
-      renderMetadataOverlay={hasImage ? renderMetadataOverlay : undefined}
       renderTextOverlay={hasText ? renderTextOverlay : undefined}
     />
   );
