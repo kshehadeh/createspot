@@ -9,6 +9,41 @@ export interface ImageMetadata {
   colorDepth?: number; // Bits per pixel
 }
 
+/** Short label for UI (e.g. "jpeg", "png") — never the raw data URL */
+function formatLabelFromSource(source: string): string {
+  if (source.startsWith("data:")) {
+    const mimeMatch = /^data:([^;,]+)/.exec(source);
+    const mime = mimeMatch?.[1]?.trim().toLowerCase();
+    if (mime?.startsWith("image/")) {
+      const subtype = mime.slice("image/".length).split("+")[0];
+      return subtype || "unknown";
+    }
+    return "unknown";
+  }
+
+  const lastSegment = source.split(".").pop()?.toLowerCase();
+  if (
+    lastSegment &&
+    !lastSegment.includes("/") &&
+    lastSegment.length <= 8 &&
+    !lastSegment.startsWith("data:")
+  ) {
+    return lastSegment;
+  }
+  return "unknown";
+}
+
+function formatLabelFromFile(file: File): string {
+  const t = file.type?.trim().toLowerCase();
+  if (t.startsWith("image/")) {
+    return t.slice("image/".length).split("+")[0] || "unknown";
+  }
+  if (file.name?.includes(".")) {
+    return formatLabelFromSource(file.name);
+  }
+  return "unknown";
+}
+
 /**
  * Extract metadata from an image URL or File
  */
@@ -24,7 +59,7 @@ export async function getImageMetadata(
         const metadata: ImageMetadata = {
           width: img.width,
           height: img.height,
-          format: img.src.split(".").pop()?.toLowerCase() || "unknown",
+          format: formatLabelFromFile(source),
           size: source.size,
         };
 
@@ -70,7 +105,7 @@ export async function getImageMetadata(
           const metadata: ImageMetadata = {
             width: img.width,
             height: img.height,
-            format: source.split(".").pop()?.toLowerCase() || "unknown",
+            format: formatLabelFromSource(source),
           };
           resolve(metadata);
         };

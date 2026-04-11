@@ -37,12 +37,13 @@ const FullScreenModalContent = React.forwardRef<
 >(({ className, children, dismissible = true, ...props }, ref) => {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+      {/* z-[45] leaves z-50 for stacked dialogs (e.g. discard confirmation) */}
+      <DialogPrimitive.Overlay className="fixed inset-0 z-[45] bg-black/60 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
       <DialogPrimitive.Content
         ref={ref}
         onEscapeKeyDown={dismissible ? undefined : (e) => e.preventDefault()}
         className={cn(
-          "fixed inset-0 z-50 flex flex-col bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200",
+          "fixed inset-0 z-[45] flex flex-col bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200",
           className,
         )}
         {...props}

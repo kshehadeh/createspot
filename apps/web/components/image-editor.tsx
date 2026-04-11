@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ResizableCrop } from "@/components/resizable-crop";
@@ -32,28 +38,37 @@ import {
   type ImageMetadata,
   type CropArea,
 } from "@/lib/image-editor";
+import { cn } from "@/lib/utils";
 
-function AutoFixLoadingToastIcon() {
+function AutoFixStatusToastRow({
+  message,
+  variant,
+}: {
+  message: ReactNode;
+  variant: "loading" | "done";
+}) {
   return (
-    <span
-      className="relative flex size-10 shrink-0 items-center justify-center"
-      aria-hidden
-    >
+    <div className="flex items-center gap-3">
       <span
-        className="absolute size-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin"
-        style={{ animationDuration: "0.85s" }}
-      />
-      <Sparkles className="relative z-10 size-4 text-primary animate-pulse" />
-    </span>
-  );
-}
-
-function AutoFixLoadingToastActivity() {
-  return (
-    <div className="mt-2 flex items-center gap-1.5" aria-hidden>
-      <span className="inline-block size-1.5 rounded-full bg-primary animate-bounce" />
-      <span className="inline-block size-1.5 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
-      <span className="inline-block size-1.5 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+        className="relative flex size-9 shrink-0 items-center justify-center"
+        aria-hidden
+      >
+        {variant === "loading" ? (
+          <>
+            <span
+              className="absolute size-7 rounded-full border-2 border-primary/20 border-t-primary animate-spin"
+              style={{ animationDuration: "0.85s" }}
+            />
+            <Sparkles className="relative z-10 size-3.5 text-primary animate-pulse" />
+          </>
+        ) : (
+          <>
+            <span className="absolute size-7 rounded-full border-2 border-primary/40" />
+            <Check className="relative z-10 size-3.5 text-primary" strokeWidth={2.5} />
+          </>
+        )}
+      </span>
+      <span className="min-w-0 flex-1 text-left leading-snug">{message}</span>
     </div>
   );
 }
@@ -63,6 +78,8 @@ interface ImageEditorProps {
   imageUrl: string;
   submissionTitle: string | null;
   onImageSaved?: (imageUrl: string) => void;
+  /** Fires when unsaved edits exist (crop, rotation, session preview, etc.) */
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 export function ImageEditor({
@@ -70,6 +87,7 @@ export function ImageEditor({
   imageUrl: initialImageUrl,
   submissionTitle,
   onImageSaved,
+  onDirtyChange,
 }: ImageEditorProps) {
   const t = useTranslations("imageEditor");
   const tCommon = useTranslations("common");
@@ -88,7 +106,18 @@ export function ImageEditor({
   const [isAutoFixing, setIsAutoFixing] = useState(false);
   const [saving, setSaving] = useState(false);
   const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [toolsTooltipSide, setToolsTooltipSide] = useState<"left" | "top">(
+    "top",
+  );
   const sourceImageUrl = sessionImageUrl ?? imageUrl;
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setToolsTooltipSide(mq.matches ? "left" : "top");
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
   const metadataSubtitle = imageMetadata
     ? [
         `${imageMetadata.width} × ${imageMetadata.height}`,
@@ -106,6 +135,10 @@ export function ImageEditor({
 
   // Track if there are any changes
   const hasChanges = Boolean(cropArea || rotation !== 0 || sessionImageUrl);
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   // Load image metadata on mount
   useEffect(() => {
@@ -251,12 +284,13 @@ export function ImageEditor({
       setImageUrl(data.imageUrl);
       setSessionImageUrl(null);
       setPreviewImageUrl(null);
-      onImageSaved?.(data.imageUrl);
 
-      // Reset adjustments
+      // Reset adjustments before notifying parent so dirty state clears before close
       setRotation(0);
       setCropArea(null);
       setPendingCropArea(null);
+
+      onImageSaved?.(data.imageUrl);
 
       toast.success(t("saved"));
     } catch (error) {
@@ -276,12 +310,23 @@ export function ImageEditor({
     const toastId = crypto.randomUUID();
     const loadingToastOptions = {
       id: toastId,
-      icon: <AutoFixLoadingToastIcon />,
-      description: <AutoFixLoadingToastActivity />,
+      icon: null,
     } as const;
-    toast.loading(t("autoFixToastWorking"), loadingToastOptions);
+    toast.loading(
+      <AutoFixStatusToastRow
+        message={t("autoFixToastWorking")}
+        variant="loading"
+      />,
+      loadingToastOptions,
+    );
     const stillWorkingTimer = setTimeout(() => {
-      toast.loading(t("autoFixToastStillWorking"), loadingToastOptions);
+      toast.loading(
+        <AutoFixStatusToastRow
+          message={t("autoFixToastStillWorking")}
+          variant="loading"
+        />,
+        loadingToastOptions,
+      );
     }, 10_000);
 
     try {
@@ -310,11 +355,16 @@ export function ImageEditor({
 
       setSessionImageUrl(data.imageDataUrl);
       setPreviewImageUrl(null);
-      toast.success(t("autoFixApplied"), { id: toastId });
+      toast.success(
+        <AutoFixStatusToastRow message={t("autoFixApplied")} variant="done" />,
+        { id: toastId, icon: null, description: undefined },
+      );
     } catch (error) {
       console.error("Auto-fix failed:", error);
       toast.error(error instanceof Error ? error.message : t("autoFixFailed"), {
         id: toastId,
+        icon: null,
+        description: undefined,
       });
     } finally {
       clearTimeout(stillWorkingTimer);
@@ -433,7 +483,7 @@ export function ImageEditor({
                     <Crop className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="left">
+                <TooltipContent side={toolsTooltipSide}>
                   {isCropMode ? t("exitCrop") : t("crop")}
                 </TooltipContent>
               </Tooltip>
@@ -449,7 +499,9 @@ export function ImageEditor({
                     <RotateCcw className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="left">{t("rotateLeft")}</TooltipContent>
+                <TooltipContent side={toolsTooltipSide}>
+                  {t("rotateLeft")}
+                </TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -463,14 +515,20 @@ export function ImageEditor({
                     <RotateCw className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="left">{t("rotateRight")}</TooltipContent>
+                <TooltipContent side={toolsTooltipSide}>
+                  {t("rotateRight")}
+                </TooltipContent>
               </Tooltip>
 
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="default"
                     size="icon"
+                    className={cn(
+                      "begin-button border-0 text-white [&_svg]:text-white",
+                      isAutoFixing && "clicked",
+                    )}
                     onClick={handleAutoFix}
                     disabled={isAutoFixing || saving}
                     aria-label={isAutoFixing ? t("autoFixing") : t("autoFix")}
@@ -478,10 +536,15 @@ export function ImageEditor({
                     <Sparkles className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="left">
+                <TooltipContent side={toolsTooltipSide}>
                   {isAutoFixing ? t("autoFixing") : t("autoFix")}
                 </TooltipContent>
               </Tooltip>
+
+              <div
+                aria-hidden
+                className="shrink-0 self-center bg-border max-lg:h-6 max-lg:w-px lg:h-px lg:w-full"
+              />
 
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -494,7 +557,7 @@ export function ImageEditor({
                     <Grid3x3 className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="left">
+                <TooltipContent side={toolsTooltipSide}>
                   {showGrid ? t("hideGrid") : t("showGrid")}
                 </TooltipContent>
               </Tooltip>
@@ -511,7 +574,7 @@ export function ImageEditor({
                     <RefreshCw className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="left">{t("reset")}</TooltipContent>
+                <TooltipContent side={toolsTooltipSide}>{t("reset")}</TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -525,7 +588,7 @@ export function ImageEditor({
                     <Save className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="left">
+                <TooltipContent side={toolsTooltipSide}>
                   {saving ? t("saving") : t("save")}
                 </TooltipContent>
               </Tooltip>

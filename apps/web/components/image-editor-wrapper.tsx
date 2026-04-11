@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { ConfirmModal } from "@/components/confirm-modal";
 import {
   FullScreenModal,
   FullScreenModalContent,
@@ -44,41 +46,73 @@ export function ImageEditorWrapper({
   onImageSaved,
 }: ImageEditorWrapperProps) {
   const router = useRouter();
+  const t = useTranslations("imageEditor");
   const [internalOpen, setInternalOpen] = useState(true);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const isControlled = typeof open === "boolean";
   const isOpen = isControlled ? open : internalOpen;
 
-  const handleOpenChange = (open: boolean) => {
-    if (!isControlled) {
-      setInternalOpen(open);
+  useEffect(() => {
+    if (!isOpen) {
+      setHasUnsavedChanges(false);
     }
-    onOpenChange?.(open);
-    if (!open) {
-      if (backHref) {
+  }, [isOpen]);
+
+  const commitClose = useCallback(
+    (next: boolean) => {
+      if (!isControlled) {
+        setInternalOpen(next);
+      }
+      onOpenChange?.(next);
+      if (!next && backHref) {
         router.push(backHref);
       }
+    },
+    [isControlled, onOpenChange, backHref, router],
+  );
+
+  const handleOpenChange = (next: boolean) => {
+    if (!next && hasUnsavedChanges) {
+      setShowDiscardConfirm(true);
+      return;
     }
+    commitClose(next);
   };
 
   return (
-    <FullScreenModal open={isOpen} onOpenChange={handleOpenChange}>
-      <FullScreenModalContent>
-        <FullScreenModalHeader className="sr-only">
-          <FullScreenModalTitle>
-            {submissionTitle || "Image Editor"}
-          </FullScreenModalTitle>
-        </FullScreenModalHeader>
-        <FullScreenModalBody className="p-4 sm:p-6">
-          <div className="mx-auto w-full max-w-7xl">
-            <ImageEditor
-              submissionId={submissionId}
-              imageUrl={imageUrl}
-              submissionTitle={submissionTitle}
-              onImageSaved={onImageSaved}
-            />
-          </div>
-        </FullScreenModalBody>
-      </FullScreenModalContent>
-    </FullScreenModal>
+    <>
+      <FullScreenModal open={isOpen} onOpenChange={handleOpenChange}>
+        <FullScreenModalContent>
+          <FullScreenModalHeader className="sr-only">
+            <FullScreenModalTitle>
+              {submissionTitle || "Image Editor"}
+            </FullScreenModalTitle>
+          </FullScreenModalHeader>
+          <FullScreenModalBody className="p-4 sm:p-6">
+            <div className="mx-auto w-full max-w-7xl">
+              <ImageEditor
+                submissionId={submissionId}
+                imageUrl={imageUrl}
+                submissionTitle={submissionTitle}
+                onImageSaved={onImageSaved}
+                onDirtyChange={setHasUnsavedChanges}
+              />
+            </div>
+          </FullScreenModalBody>
+        </FullScreenModalContent>
+      </FullScreenModal>
+      <ConfirmModal
+        isOpen={showDiscardConfirm}
+        title={t("unsavedCloseTitle")}
+        message={t("unsavedCloseMessage")}
+        confirmLabel={t("discardChanges")}
+        onConfirm={() => {
+          setShowDiscardConfirm(false);
+          commitClose(false);
+        }}
+        onCancel={() => setShowDiscardConfirm(false)}
+      />
+    </>
   );
 }
