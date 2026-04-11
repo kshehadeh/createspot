@@ -24,6 +24,7 @@ import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { useViewportHeight } from "@/lib/hooks/use-viewport-height";
 import { useImagePreloader } from "@/lib/hooks/use-image-preloader";
 import { usePinchZoom } from "@/lib/hooks/use-pinch-zoom";
+import { cn } from "@/lib/utils";
 
 export { LIGHTBOX_BUTTON_CLASS } from "@createspot/ui-primitives/button";
 
@@ -102,6 +103,11 @@ export interface BaseLightboxProps {
   onItemChange?: (itemId: string) => void;
   /** Called when the prev/next slide animation finishes (outgoing panel removed). */
   onNavTransitionComplete?: () => void;
+  /**
+   * When true, show a very subtle checkerboard in the image column only (transparency cue).
+   * Does not affect text-only panels. Default false.
+   */
+  subtleCheckerboardBehindImage?: boolean;
 }
 
 export function BaseLightbox({
@@ -117,6 +123,7 @@ export function BaseLightbox({
   renderBottomLeading,
   renderTextOverlay,
   onNavTransitionComplete,
+  subtleCheckerboardBehindImage = false,
 }: BaseLightboxProps) {
   const [zoomState, setZoomState] = useState<{
     isActive: boolean;
@@ -609,7 +616,10 @@ export function BaseLightbox({
         {panelHasImage && (
           <div
             ref={interactive ? imageContainerRef : undefined}
-            className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden"
+            className={cn(
+              "protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden",
+              subtleCheckerboardBehindImage && "lightbox-image-checkerboard",
+            )}
             style={{
               touchAction: supportsHover ? "none" : "pan-x pan-y",
             }}

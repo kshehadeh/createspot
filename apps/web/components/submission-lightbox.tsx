@@ -536,6 +536,7 @@ export function SubmissionLightbox({
       protectionEnabled={protectionEnabled}
       navigation={baseNavigation}
       onNavTransitionComplete={() => setOutgoingSubmission(null)}
+      subtleCheckerboardBehindImage
       renderControls={renderControls}
       renderSidebar={hasImage ? renderSidebar : undefined}
       renderBottomLeading={hasImage ? renderBottomLeading : undefined}

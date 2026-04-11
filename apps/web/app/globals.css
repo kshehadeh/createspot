@@ -461,6 +461,16 @@ body {
   will-change: transform;
 }
 
+/* Submission lightbox image column: subtle transparency cue (image area only, not text panels) */
+.lightbox-image-checkerboard {
+  background-color: hsl(240 6% 6%);
+  background-image: repeating-conic-gradient(
+    hsl(240 5% 9%) 0% 25%,
+    hsl(240 5% 7%) 0% 50%
+  );
+  background-size: 12px 12px;
+}
+
 /* Multi-colored Begin button with shifting gradient */
 @keyframes begin-gradient-shift {
   0% {
