@@ -64,7 +64,10 @@ function AutoFixStatusToastRow({
         ) : (
           <>
             <span className="absolute size-7 rounded-full border-2 border-primary/40" />
-            <Check className="relative z-10 size-3.5 text-primary" strokeWidth={2.5} />
+            <Check
+              className="relative z-10 size-3.5 text-primary"
+              strokeWidth={2.5}
+            />
           </>
         )}
       </span>
@@ -574,7 +577,9 @@ export function ImageEditor({
                     <RefreshCw className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side={toolsTooltipSide}>{t("reset")}</TooltipContent>
+                <TooltipContent side={toolsTooltipSide}>
+                  {t("reset")}
+                </TooltipContent>
               </Tooltip>
 
               <Tooltip>

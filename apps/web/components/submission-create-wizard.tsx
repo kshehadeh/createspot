@@ -698,7 +698,9 @@ export function SubmissionCreateWizard({
                       }
                     }
                   }}
-                  placeholder={tags.length === 0 ? t("tagPlaceholderEmpty") : ""}
+                  placeholder={
+                    tags.length === 0 ? t("tagPlaceholderEmpty") : ""
+                  }
                   className="flex-1 min-w-[120px] border-0 bg-transparent px-0 py-1 text-foreground placeholder:text-muted-foreground focus:outline-none"
                 />
               </div>
