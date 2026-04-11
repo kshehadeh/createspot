@@ -1326,7 +1326,7 @@
       "steps": {
         "step1": {
           "title": "Añade imagen o texto",
-          "description": "Comienza tu publicación con el contenido principal."
+          "description": "Comienza tu publicación con el contenido principal. Añade etiquetas bajo la descripción para que otros descubran tu trabajo."
         },
         "step2": {
           "title": "Imagen de referencia (opcional)",
@@ -1338,7 +1338,7 @@
         },
         "step4": {
           "title": "Finalizar configuración",
-          "description": "Añade título, categoría, etiquetas, visibilidad y opciones de críticas. Imagen, texto, referencia y trabajo en progreso se definieron en pasos anteriores."
+          "description": "Añade título, categoría, visibilidad y opciones de críticas. Imagen, texto, etiquetas, referencia y trabajo en progreso se definieron en pasos anteriores."
         }
       }
     },

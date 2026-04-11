@@ -1326,7 +1326,7 @@
       "steps": {
         "step1": {
           "title": "Add image or text",
-          "description": "Start your submission with the core content."
+          "description": "Start your submission with the core content. Add tags under the description to help others discover your work."
         },
         "step2": {
           "title": "Reference image (optional)",
@@ -1338,7 +1338,7 @@
         },
         "step4": {
           "title": "Finalize settings",
-          "description": "Add title, category, tags, visibility, and critique options. Image, text, reference, and work-in-progress were set in earlier steps."
+          "description": "Add title, category, visibility, and critique options. Image, text, tags, reference, and work-in-progress were set in earlier steps."
         }
       }
     },

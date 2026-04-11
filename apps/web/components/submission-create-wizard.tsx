@@ -172,6 +172,9 @@ export function SubmissionCreateWizard({
   };
 
   const saveDraft = async () => {
+    const trimmedTags = tags
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
     const response = await fetch("/api/submissions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -181,7 +184,7 @@ export function SubmissionCreateWizard({
         imageFocalPoint: imageFocalPoint || null,
         text: text || null,
         isPortfolio: true,
-        tags: [],
+        tags: trimmedTags,
         category: null,
         shareStatus: "PRIVATE",
         critiquesEnabled: false,
@@ -644,6 +647,64 @@ export function SubmissionCreateWizard({
             </div>
 
             <div className="space-y-2">
+              <Label>{t("tags")}</Label>
+              <p className="text-xs text-muted-foreground">{t("tagHelper")}</p>
+              <div className="flex min-h-[42px] flex-wrap items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 focus-within:border-ring focus-within:outline-none focus-within:ring-2 focus-within:ring-ring">
+                {tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1 text-sm text-secondary-foreground"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTags(tags.filter((_, i) => i !== index));
+                        tagInputRef.current?.focus();
+                      }}
+                      className="ml-0.5 rounded hover:bg-secondary/80"
+                      aria-label={t("removeTag", { tag })}
+                    >
+                      <svg
+                        className="h-3.5 w-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+                <input
+                  ref={tagInputRef}
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === " " || e.key === "Enter") {
+                      e.preventDefault();
+                      const trimmed = e.currentTarget.value.trim();
+                      if (trimmed && !tags.includes(trimmed)) {
+                        setTags((curr) => [...curr, trimmed]);
+                        setTagInput("");
+                      } else if (trimmed) {
+                        setTagInput("");
+                      }
+                    }
+                  }}
+                  placeholder={tags.length === 0 ? t("tagPlaceholderEmpty") : ""}
+                  className="flex-1 min-w-[120px] border-0 bg-transparent px-0 py-1 text-foreground placeholder:text-muted-foreground focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="isWorkInProgress">
@@ -869,63 +930,6 @@ export function SubmissionCreateWizard({
                 })}
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>{t("tags")}</Label>
-            <div className="flex min-h-[42px] flex-wrap items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 focus-within:border-ring focus-within:outline-none focus-within:ring-2 focus-within:ring-ring">
-              {tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1 text-sm text-secondary-foreground"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTags(tags.filter((_, i) => i !== index));
-                      tagInputRef.current?.focus();
-                    }}
-                    className="ml-0.5 rounded hover:bg-secondary/80"
-                    aria-label={t("removeTag", { tag })}
-                  >
-                    <svg
-                      className="h-3.5 w-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </span>
-              ))}
-              <input
-                ref={tagInputRef}
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === " " || e.key === "Enter") {
-                    e.preventDefault();
-                    const trimmed = e.currentTarget.value.trim();
-                    if (trimmed && !tags.includes(trimmed)) {
-                      setTags((curr) => [...curr, trimmed]);
-                      setTagInput("");
-                    } else if (trimmed) {
-                      setTagInput("");
-                    }
-                  }
-                }}
-                placeholder={tags.length === 0 ? t("tagPlaceholderEmpty") : ""}
-                className="flex-1 min-w-[120px] border-0 bg-transparent px-0 py-1 text-foreground placeholder:text-muted-foreground focus:outline-none"
-              />
-            </div>
           </div>
 
           <div className="space-y-2">
