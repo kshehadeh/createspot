@@ -519,22 +519,6 @@ export function PortfolioItemForm({
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label htmlFor="isWorkInProgress">{t("workInProgress")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("workInProgressDescription")}
-            </p>
-          </div>
-          <Switch
-            id="isWorkInProgress"
-            checked={isWorkInProgress}
-            onCheckedChange={setIsWorkInProgress}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
         <Label>{t("image")}</Label>
         {imageUrl ? (
           <div className="relative">
@@ -733,6 +717,22 @@ export function PortfolioItemForm({
           onChange={setText}
           placeholder={t("textPlaceholder")}
         />
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="isWorkInProgress">{t("workInProgress")}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t("workInProgressDescription")}
+            </p>
+          </div>
+          <Switch
+            id="isWorkInProgress"
+            checked={isWorkInProgress}
+            onCheckedChange={setIsWorkInProgress}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
