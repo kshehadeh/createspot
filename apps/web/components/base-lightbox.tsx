@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, ReactNode } from "react";
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  ReactNode,
+} from "react";
 import {
   Dialog,
   DialogContent,
@@ -42,6 +49,9 @@ export interface BaseLightboxItem {
   title?: string | null;
 }
 
+/** Which logical panel a render prop is drawing (for prev/next slide transitions). */
+export type BaseLightboxSlideRole = "single" | "incoming" | "outgoing";
+
 export interface BaseLightboxRenderContext {
   /** Whether device supports hover (desktop) */
   supportsHover: boolean;
@@ -58,6 +68,11 @@ export interface BaseLightboxRenderContext {
   isTextOverlayOpen: boolean;
   /** Set text overlay open state */
   setIsTextOverlayOpen: (open: boolean) => void;
+  /**
+   * During a prev/next transition, `outgoing` is the panel leaving and `incoming` is the new item.
+   * `single` when only one panel is shown.
+   */
+  slideRole: BaseLightboxSlideRole;
 }
 
 export interface BaseLightboxProps {
@@ -85,6 +100,8 @@ export interface BaseLightboxProps {
   renderTextOverlay?: (context: BaseLightboxRenderContext) => ReactNode;
   /** Callback when item changes (for tracking, etc.) */
   onItemChange?: (itemId: string) => void;
+  /** Called when the prev/next slide animation finishes (outgoing panel removed). */
+  onNavTransitionComplete?: () => void;
 }
 
 export function BaseLightbox({
@@ -99,6 +116,7 @@ export function BaseLightbox({
   renderMetadataOverlay,
   renderBottomLeading,
   renderTextOverlay,
+  onNavTransitionComplete,
 }: BaseLightboxProps) {
   const [zoomState, setZoomState] = useState<{
     isActive: boolean;
@@ -109,12 +127,16 @@ export function BaseLightbox({
   const [supportsHover, setSupportsHover] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isTextOverlayOpen, setIsTextOverlayOpen] = useState(false);
-  // Slide transition state for iOS-compatible animations
-  const [slideState, setSlideState] = useState<{
-    direction: "left" | "right" | null;
-    phase: "start" | "end";
-  }>({ direction: null, phase: "end" });
-  const prevItemIdRef = useRef<string | null>(null);
+  /** Previous item while a horizontal strip transition is playing (outgoing panel). */
+  const [outgoingItem, setOutgoingItem] = useState<BaseLightboxItem | null>(
+    null,
+  );
+  const [navDirection, setNavDirection] = useState<"next" | "prev" | null>(
+    null,
+  );
+  /** After strip mounts at the initial offset, set true to run CSS transition. */
+  const [shouldAnimateStrip, setShouldAnimateStrip] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -152,23 +174,37 @@ export function BaseLightbox({
   const onGoToPrevious = navigation?.onGoToPrevious;
   const onGoToNext = navigation?.onGoToNext;
 
-  // Wrapped nav handlers: set slide direction then call parent
+  const inNavTransition = outgoingItem != null;
+
+  // Wrapped nav handlers: stash outgoing item, then let parent update `item` to the target
   const handleGoToPrevious = useCallback(() => {
-    if (!hasPrevious || !onGoToPrevious) return;
-    setSlideState({ direction: "left", phase: "start" });
+    if (!hasPrevious || !onGoToPrevious || inNavTransition) return;
+    if (reduceMotion) {
+      onGoToPrevious();
+      return;
+    }
+    setOutgoingItem(item);
+    setNavDirection("prev");
+    setShouldAnimateStrip(false);
     onGoToPrevious();
-  }, [hasPrevious, onGoToPrevious]);
+  }, [hasPrevious, onGoToPrevious, inNavTransition, reduceMotion, item]);
 
   const handleGoToNext = useCallback(() => {
-    if (!hasNext || !onGoToNext) return;
-    setSlideState({ direction: "right", phase: "start" });
+    if (!hasNext || !onGoToNext || inNavTransition) return;
+    if (reduceMotion) {
+      onGoToNext();
+      return;
+    }
+    setOutgoingItem(item);
+    setNavDirection("next");
+    setShouldAnimateStrip(false);
     onGoToNext();
-  }, [hasNext, onGoToNext]);
+  }, [hasNext, onGoToNext, inNavTransition, reduceMotion, item]);
 
   const hasNavigation =
     onGoToPrevious != null && onGoToNext != null && (hasPrevious || hasNext);
   const canSwipeToNavigate =
-    !supportsHover && hasNavigation && !touchZoom.isZoomed;
+    !supportsHover && hasNavigation && !touchZoom.isZoomed && !inNavTransition;
 
   const handleTouchStartWithSwipe = useCallback(
     (e: React.TouchEvent<HTMLImageElement>) => {
@@ -223,7 +259,7 @@ export function BaseLightbox({
   );
 
   // Simpler swipe handlers for text-only content (no pinch-zoom)
-  const canSwipeTextOnly = !supportsHover && hasNavigation;
+  const canSwipeTextOnly = !supportsHover && hasNavigation && !inNavTransition;
 
   const handleTextTouchStart = useCallback(
     (e: React.TouchEvent<HTMLDivElement>) => {
@@ -273,7 +309,6 @@ export function BaseLightbox({
     ],
   );
 
-  const hasImage = !!item.imageUrl;
   const hasText = !!item.text;
 
   // Check if device supports hover (not touch)
@@ -281,6 +316,14 @@ export function BaseLightbox({
     if (typeof window !== "undefined") {
       setSupportsHover(window.matchMedia("(hover: hover)").matches);
     }
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReduceMotion(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
   }, []);
 
   // Handle Escape key to close text overlay
@@ -301,28 +344,46 @@ export function BaseLightbox({
     }
   }, [isOpen, item.id, resetTouchZoom]);
 
-  // iOS Safari fix: use CSS transitions with explicit start/end phases
   useEffect(() => {
-    const prevId = prevItemIdRef.current;
-    prevItemIdRef.current = item.id;
+    setImageLoaded(false);
+  }, [item.id]);
 
-    if (
-      prevId !== null &&
-      prevId !== item.id &&
-      slideState.direction &&
-      slideState.phase === "start"
-    ) {
-      let cancelled = false;
-      const timer = setTimeout(() => {
-        if (cancelled) return;
-        setSlideState((s) => ({ ...s, phase: "end" }));
-      }, 20);
-      return () => {
-        cancelled = true;
-        clearTimeout(timer);
-      };
+  useEffect(() => {
+    if (!isOpen) {
+      setOutgoingItem(null);
+      setNavDirection(null);
+      setShouldAnimateStrip(false);
     }
-  }, [item.id, slideState.direction, slideState.phase]);
+  }, [isOpen]);
+
+  const STRIP_TRANSITION_MS = 280;
+
+  // After the two-panel strip mounts, run the translate animation on the next frame.
+  useLayoutEffect(() => {
+    if (!outgoingItem || navDirection == null || reduceMotion) return;
+    let cancelled = false;
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!cancelled) setShouldAnimateStrip(true);
+      });
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(id);
+    };
+  }, [outgoingItem, item.id, navDirection, reduceMotion]);
+
+  const handleStripTransitionEnd = useCallback(
+    (e: React.TransitionEvent<HTMLDivElement>) => {
+      if (e.propertyName !== "transform") return;
+      if (e.target !== e.currentTarget) return;
+      setOutgoingItem(null);
+      setNavDirection(null);
+      setShouldAnimateStrip(false);
+      onNavTransitionComplete?.();
+    },
+    [onNavTransitionComplete],
+  );
 
   // Handle ArrowLeft/ArrowRight for previous/next
   useEffect(() => {
@@ -397,12 +458,15 @@ export function BaseLightbox({
   const ZOOM_PREVIEW_SIZE = 400;
   const ZOOM_LEVEL = ZOOM_PREVIEW_SIZE / ZOOM_SQUARE_SIZE;
 
-  const getZoomPreviewStyle = (): React.CSSProperties => {
+  const getZoomPreviewStyle = (
+    sourceItem: BaseLightboxItem,
+  ): React.CSSProperties => {
     if (
       !zoomState.isActive ||
       !zoomState.imageRect ||
       !imageRef.current ||
-      typeof window === "undefined"
+      typeof window === "undefined" ||
+      !sourceItem.imageUrl
     ) {
       return { display: "none" };
     }
@@ -439,7 +503,7 @@ export function BaseLightbox({
 
       return {
         position: "absolute" as const,
-        backgroundImage: `url(${item.imageUrl})`,
+        backgroundImage: `url(${sourceItem.imageUrl})`,
         backgroundSize: `${bgWidth}px ${bgHeight}px`,
         backgroundPosition: `${bgPosX}px ${bgPosY}px`,
         backgroundRepeat: "no-repeat",
@@ -454,7 +518,7 @@ export function BaseLightbox({
     const margin = 20;
     return {
       position: "fixed" as const,
-      backgroundImage: `url(${item.imageUrl})`,
+      backgroundImage: `url(${sourceItem.imageUrl})`,
       backgroundSize: `${bgWidth}px ${bgHeight}px`,
       backgroundPosition: `${bgPosX}px ${bgPosY}px`,
       backgroundRepeat: "no-repeat",
@@ -507,19 +571,195 @@ export function BaseLightbox({
     };
   };
 
-  // Create render context
-  const renderContext: BaseLightboxRenderContext = {
+  const makeContext = (
+    slideRole: BaseLightboxSlideRole,
+  ): BaseLightboxRenderContext => ({
     supportsHover,
     touchZoom,
     viewportHeight,
     isTextOverlayOpen,
     setIsTextOverlayOpen,
+    slideRole,
+  });
+
+  const renderSlideColumn = (
+    panelItem: BaseLightboxItem,
+    slideRole: BaseLightboxSlideRole,
+    columnVariant: "strip" | "full",
+  ) => {
+    const panelHasImage = !!panelItem.imageUrl;
+    const panelHasText = !!panelItem.text;
+    const interactive = slideRole !== "outgoing";
+    const ctx = makeContext(slideRole);
+    const colWidthClass =
+      columnVariant === "strip"
+        ? "min-w-0 flex-[0_0_50%]"
+        : "h-full w-full min-w-0";
+
+    return (
+      <div
+        key={`${slideRole}-${panelItem.id}`}
+        className={`flex ${colWidthClass} flex-col overflow-y-auto p-0 md:overflow-hidden ${
+          panelHasImage ? "flex-col xl:flex-row" : "flex-col"
+        } ${slideRole === "outgoing" ? "pointer-events-none" : ""}`}
+        onClick={(e) => {
+          if (interactive) e.stopPropagation();
+        }}
+      >
+        {panelHasImage && (
+          <div
+            ref={interactive ? imageContainerRef : undefined}
+            className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden"
+            style={{
+              touchAction: supportsHover ? "none" : "pan-x pan-y",
+            }}
+            onContextMenu={interactive ? handleContextMenu : undefined}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              ref={interactive ? imageRef : undefined}
+              src={panelItem.imageUrl!}
+              alt={panelItem.title || "Image"}
+              className={`h-auto w-auto max-h-[100dvh] max-w-full object-contain select-none ${
+                interactive ? "" : "pointer-events-none"
+              }`}
+              style={{
+                maxHeight:
+                  viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
+                maxWidth: "100%",
+                ...(interactive && !supportsHover && touchZoom.isZoomed
+                  ? {
+                      transform: `translate(${touchZoom.translateX}px, ${touchZoom.translateY}px) scale(${touchZoom.scale})`,
+                      transformOrigin: "center center",
+                      transition: "none",
+                    }
+                  : {}),
+                ...(protectionEnabled
+                  ? { WebkitUserSelect: "none", userSelect: "none" }
+                  : {}),
+              }}
+              onLoad={
+                interactive
+                  ? () => {
+                      setImageLoaded(true);
+                      setBaseDimensions();
+                    }
+                  : undefined
+              }
+              onMouseMove={interactive ? handleImageMouseMove : undefined}
+              onMouseLeave={interactive ? handleImageMouseLeave : undefined}
+              onTouchStart={interactive ? handleTouchStartWithSwipe : undefined}
+              onTouchMove={interactive ? handleTouchMove : undefined}
+              onTouchEnd={interactive ? handleTouchEndWithSwipe : undefined}
+              draggable={interactive && !protectionEnabled}
+              onDragStart={interactive ? handleDragStart : undefined}
+            />
+
+            {interactive && zoomState.isActive && supportsHover && (
+              <div
+                className="pointer-events-none absolute z-20 border-2 border-white bg-white/10 xl:hidden"
+                style={{
+                  width: `${ZOOM_SQUARE_SIZE}px`,
+                  height: `${ZOOM_SQUARE_SIZE}px`,
+                  ...getZoomSquareStyle(),
+                }}
+              />
+            )}
+
+            {interactive && zoomState.isActive && supportsHover && (
+              <div
+                className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl xl:hidden"
+                style={{
+                  width: `${ZOOM_PREVIEW_SIZE}px`,
+                  height: `${ZOOM_PREVIEW_SIZE}px`,
+                  ...getZoomPreviewStyle(panelItem),
+                }}
+              />
+            )}
+
+            {interactive && !supportsHover && touchZoom.isZoomed && (
+              <div
+                className="absolute left-4 top-4 z-20 rounded-lg bg-black/70 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm"
+                style={{
+                  top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
+                  left: `max(1rem, env(safe-area-inset-left, 0px) + 1rem)`,
+                }}
+              >
+                {Math.round(touchZoom.scale * 100)}%
+              </div>
+            )}
+          </div>
+        )}
+
+        {panelHasImage && renderSidebar && (
+          <div
+            ref={interactive ? sidebarRef : undefined}
+            className="hidden xl:flex xl:w-[400px] xl:flex-shrink-0 xl:flex-col xl:overflow-hidden xl:border-l xl:border-border/50 xl:bg-black/40"
+          >
+            {interactive && zoomState.isActive && supportsHover && (
+              <div className="relative flex-shrink-0 p-4">
+                <div
+                  className="border-2 border-white/90 shadow-2xl"
+                  style={{
+                    width: `${ZOOM_PREVIEW_SIZE}px`,
+                    height: `${ZOOM_PREVIEW_SIZE}px`,
+                    ...getZoomPreviewStyle(panelItem),
+                  }}
+                />
+              </div>
+            )}
+            {renderSidebar(ctx)}
+          </div>
+        )}
+
+        {panelHasText && !panelHasImage && (
+          <div
+            className="relative flex h-full w-full flex-1 items-center justify-center overflow-y-auto p-8 sm:p-12"
+            style={{
+              touchAction: supportsHover ? "auto" : "pan-y",
+            }}
+            onTouchStart={interactive ? handleTextTouchStart : undefined}
+            onTouchEnd={interactive ? handleTextTouchEnd : undefined}
+          >
+            <div className="mx-auto w-full max-w-4xl">
+              {panelItem.title && (
+                <h2 className="mb-6 text-3xl font-semibold text-muted-foreground sm:text-4xl">
+                  {panelItem.title}
+                </h2>
+              )}
+              <div
+                className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: panelItem.text! }}
+              />
+            </div>
+          </div>
+        )}
+
+        {renderMetadataOverlay && (
+          <div
+            className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
+            style={{
+              top:
+                interactive && !supportsHover && touchZoom.isZoomed
+                  ? `max(4.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem))`
+                  : `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
+            }}
+          >
+            {renderMetadataOverlay(ctx)}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const controlStackBottom =
     typeof window !== "undefined" && window.innerWidth < 768
       ? `max(2rem, calc(env(safe-area-inset-bottom, 0px) + 2rem))`
       : `max(1rem, env(safe-area-inset-bottom, 0px) + 1rem)`;
+
+  const chromeContext = makeContext(
+    outgoingItem && navDirection && !reduceMotion ? "incoming" : "single",
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -536,175 +776,49 @@ export function BaseLightbox({
           <DialogTitle>{dialogTitle}</DialogTitle>
         </VisuallyHidden>
         <div className="relative h-full w-full min-w-0 flex-1 overflow-hidden">
-          <div
-            key={item.id}
-            className={`flex h-full w-full p-0 overflow-y-auto md:overflow-hidden ${
-              hasImage ? "flex-col xl:flex-row" : "flex-col"
-            } ${slideState.direction ? "lightbox-slide-panel" : ""}`}
-            style={
-              slideState.direction
-                ? {
-                    transform:
-                      slideState.phase === "start"
-                        ? `translate3d(${slideState.direction === "right" ? "100%" : "-100%"}, 0, 0)`
-                        : "translate3d(0, 0, 0)",
-                    transition:
-                      slideState.phase === "end"
-                        ? "transform 0.28s ease-out"
-                        : "none",
-                  }
-                : undefined
-            }
-            onClick={(e) => e.stopPropagation()}
-            onTransitionEnd={() =>
-              setSlideState({ direction: null, phase: "end" })
-            }
-          >
-            {/* Image section */}
-            {hasImage && (
+          {outgoingItem && navDirection && !reduceMotion ? (
+            <div className="relative h-full w-full overflow-hidden">
               <div
-                ref={imageContainerRef}
-                className="protected-image-wrapper relative flex h-full flex-1 items-center justify-center overflow-hidden"
+                className="lightbox-nav-strip flex h-full w-[200%] will-change-transform"
                 style={{
-                  touchAction: supportsHover ? "none" : "pan-x pan-y",
+                  transform:
+                    navDirection === "next"
+                      ? shouldAnimateStrip
+                        ? "translate3d(-50%, 0, 0)"
+                        : "translate3d(0, 0, 0)"
+                      : shouldAnimateStrip
+                        ? "translate3d(0, 0, 0)"
+                        : "translate3d(-50%, 0, 0)",
+                  transition: shouldAnimateStrip
+                    ? `transform ${STRIP_TRANSITION_MS}ms ease-out`
+                    : "none",
+                  WebkitBackfaceVisibility: "hidden",
+                  backfaceVisibility: "hidden",
                 }}
-                onContextMenu={handleContextMenu}
+                onTransitionEnd={handleStripTransitionEnd}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  ref={imageRef}
-                  src={item.imageUrl!}
-                  alt={item.title || "Image"}
-                  className="h-auto w-auto max-h-[100dvh] max-w-full object-contain select-none"
-                  style={{
-                    maxHeight:
-                      viewportHeight > 0 ? `${viewportHeight}px` : "100dvh",
-                    maxWidth: "100%",
-                    ...(!supportsHover && touchZoom.isZoomed
-                      ? {
-                          transform: `translate(${touchZoom.translateX}px, ${touchZoom.translateY}px) scale(${touchZoom.scale})`,
-                          transformOrigin: "center center",
-                          transition: "none",
-                        }
-                      : {}),
-                    ...(protectionEnabled
-                      ? { WebkitUserSelect: "none", userSelect: "none" }
-                      : {}),
-                  }}
-                  onLoad={() => {
-                    setImageLoaded(true);
-                    setBaseDimensions();
-                  }}
-                  onMouseMove={handleImageMouseMove}
-                  onMouseLeave={handleImageMouseLeave}
-                  onTouchStart={handleTouchStartWithSwipe}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEndWithSwipe}
-                  draggable={!protectionEnabled}
-                  onDragStart={handleDragStart}
-                />
-
-                {/* Zoom square overlay - only shown when NOT in sidebar mode */}
-                {zoomState.isActive && supportsHover && (
-                  <div
-                    className="pointer-events-none absolute z-20 border-2 border-white bg-white/10 xl:hidden"
-                    style={{
-                      width: `${ZOOM_SQUARE_SIZE}px`,
-                      height: `${ZOOM_SQUARE_SIZE}px`,
-                      ...getZoomSquareStyle(),
-                    }}
-                  />
-                )}
-
-                {/* Zoom preview box - overlay mode (when sidebar not visible) */}
-                {zoomState.isActive && supportsHover && (
-                  <div
-                    className="pointer-events-none z-50 border-2 border-white/90 shadow-2xl xl:hidden"
-                    style={{
-                      width: `${ZOOM_PREVIEW_SIZE}px`,
-                      height: `${ZOOM_PREVIEW_SIZE}px`,
-                      ...getZoomPreviewStyle(),
-                    }}
-                  />
-                )}
-
-                {/* Zoom percentage indicator - mobile only */}
-                {!supportsHover && touchZoom.isZoomed && (
-                  <div
-                    className="absolute left-4 top-4 z-20 rounded-lg bg-black/70 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm"
-                    style={{
-                      top: `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
-                      left: `max(1rem, env(safe-area-inset-left, 0px) + 1rem)`,
-                    }}
-                  >
-                    {Math.round(touchZoom.scale * 100)}%
-                  </div>
+                {navDirection === "next" ? (
+                  <>
+                    {renderSlideColumn(outgoingItem, "outgoing", "strip")}
+                    {renderSlideColumn(item, "incoming", "strip")}
+                  </>
+                ) : (
+                  <>
+                    {renderSlideColumn(item, "incoming", "strip")}
+                    {renderSlideColumn(outgoingItem, "outgoing", "strip")}
+                  </>
                 )}
               </div>
-            )}
-
-            {/* Sidebar - shown on xl+ screens when image exists */}
-            {hasImage && renderSidebar && (
-              <div
-                ref={sidebarRef}
-                className="hidden xl:flex xl:w-[400px] xl:flex-shrink-0 xl:flex-col xl:overflow-hidden xl:border-l xl:border-border/50 xl:bg-black/40"
-              >
-                {/* Zoom preview window in sidebar */}
-                {zoomState.isActive && supportsHover && (
-                  <div className="relative flex-shrink-0 p-4">
-                    <div
-                      className="border-2 border-white/90 shadow-2xl"
-                      style={{
-                        width: `${ZOOM_PREVIEW_SIZE}px`,
-                        height: `${ZOOM_PREVIEW_SIZE}px`,
-                        ...getZoomPreviewStyle(),
-                      }}
-                    />
-                  </div>
-                )}
-                {renderSidebar(renderContext)}
-              </div>
-            )}
-
-            {/* Text-only section */}
-            {hasText && !hasImage && (
-              <div
-                className="relative flex h-full w-full flex-1 items-center justify-center overflow-y-auto p-8 sm:p-12"
-                style={{
-                  touchAction: supportsHover ? "auto" : "pan-y",
-                }}
-                onTouchStart={handleTextTouchStart}
-                onTouchEnd={handleTextTouchEnd}
-              >
-                <div className="mx-auto w-full max-w-4xl">
-                  {item.title && (
-                    <h2 className="mb-6 text-3xl font-semibold text-muted-foreground sm:text-4xl">
-                      {item.title}
-                    </h2>
-                  )}
-                  <div
-                    className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
-                    dangerouslySetInnerHTML={{ __html: item.text! }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Metadata overlay - mobile */}
-            {renderMetadataOverlay && (
-              <div
-                className="absolute left-4 right-4 z-10 rounded-xl bg-black/70 px-4 py-3 backdrop-blur-sm sm:left-8 sm:right-8 sm:px-6 sm:py-4 xl:hidden"
-                style={{
-                  top:
-                    !supportsHover && touchZoom.isZoomed
-                      ? `max(4.5rem, calc(env(safe-area-inset-top, 0px) + 4.5rem))`
-                      : `max(1rem, env(safe-area-inset-top, 0px) + 1rem)`,
-                }}
-              >
-                {renderMetadataOverlay(renderContext)}
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div
+              key={item.id}
+              className="lightbox-slide-panel h-full w-full min-w-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {renderSlideColumn(item, "single", "full")}
+            </div>
+          )}
         </div>
 
         {/* Prev/Next navigation buttons */}
@@ -725,7 +839,7 @@ export function BaseLightbox({
                       e.stopPropagation();
                       handleGoToPrevious();
                     }}
-                    disabled={!hasPrevious}
+                    disabled={!hasPrevious || inNavTransition}
                     aria-label={navigation?.prevLabel || "Previous"}
                   />
                 </TooltipTrigger>
@@ -751,7 +865,7 @@ export function BaseLightbox({
                       e.stopPropagation();
                       handleGoToNext();
                     }}
-                    disabled={!hasNext}
+                    disabled={!hasNext || inNavTransition}
                     aria-label={navigation?.nextLabel || "Next"}
                   />
                 </TooltipTrigger>
@@ -773,7 +887,7 @@ export function BaseLightbox({
                 right: "max(1rem, env(safe-area-inset-right, 0px) + 1rem)",
               }}
             >
-              {renderControls(renderContext)}
+              {renderControls(chromeContext)}
             </div>
           </TooltipProvider>
         )}
@@ -786,7 +900,7 @@ export function BaseLightbox({
               left: "max(1rem, env(safe-area-inset-left, 0px) + 1rem)",
             }}
           >
-            {renderBottomLeading(renderContext)}
+            {renderBottomLeading(chromeContext)}
           </div>
         )}
 
@@ -800,7 +914,7 @@ export function BaseLightbox({
               className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-zinc-900 border border-zinc-700 p-8"
               onClick={(e) => e.stopPropagation()}
             >
-              {renderTextOverlay(renderContext)}
+              {renderTextOverlay(chromeContext)}
             </div>
           </div>
         )}

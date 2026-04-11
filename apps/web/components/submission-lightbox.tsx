@@ -151,6 +151,9 @@ export function SubmissionLightbox({
   const router = useRouter();
   const [closeTooltipOpen, setCloseTooltipOpen] = useState(false);
   const [closeTooltipHovered, setCloseTooltipHovered] = useState(false);
+  /** Snapshot while BaseLightbox animates prev/next so the outgoing panel keeps correct copy. */
+  const [outgoingSubmission, setOutgoingSubmission] =
+    useState<LightboxSubmission | null>(null);
 
   const { data: submissionData } = useSWR<{
     submission: { userId: string; user?: { slug: string | null } };
@@ -199,6 +202,8 @@ export function SubmissionLightbox({
     if (isOpen) {
       setCloseTooltipOpen(false);
       setCloseTooltipHovered(false);
+    } else {
+      setOutgoingSubmission(null);
     }
   }, [isOpen]);
 
@@ -228,12 +233,26 @@ export function SubmissionLightbox({
     }
   }, [getCreatorId, submission.id, router]);
 
+  const submissionForPanel = useCallback(
+    (context: BaseLightboxRenderContext) =>
+      context.slideRole === "outgoing" && outgoingSubmission
+        ? outgoingSubmission
+        : submission,
+    [outgoingSubmission, submission],
+  );
+
   // Convert to base lightbox navigation format
   const baseNavigation: BaseLightboxNavigation | undefined =
     onGoToPrevious && onGoToNext
       ? {
-          onGoToPrevious,
-          onGoToNext,
+          onGoToPrevious: () => {
+            setOutgoingSubmission(submission);
+            onGoToPrevious();
+          },
+          onGoToNext: () => {
+            setOutgoingSubmission(submission);
+            onGoToNext();
+          },
           hasPrevious,
           hasNext,
           nextImageUrl,
@@ -245,48 +264,55 @@ export function SubmissionLightbox({
 
   // Render sidebar content
   const renderSidebar = useCallback(
-    (_context: BaseLightboxRenderContext) => (
-      <>
-        {/* Title and creator */}
-        <div className="flex-shrink-0 p-6 xl:p-8 pb-4">
-          <h2 className="mb-2 text-2xl font-semibold text-muted-foreground">
-            {submission.title || t("untitled")}
-          </h2>
-          {submission.user?.name && (
-            <p className="text-sm text-muted-foreground/70 mb-2">
-              {submission.user.name}
-            </p>
-          )}
-        </div>
-
-        {/* Text content */}
-        {hasText && (
-          <div className="flex-1 overflow-y-auto px-6 xl:px-8 pb-6 xl:pb-8">
-            <div
-              className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
-              dangerouslySetInnerHTML={{ __html: submission.text! }}
-            />
+    (context: BaseLightboxRenderContext) => {
+      const sub = submissionForPanel(context);
+      const panelHasText = !!sub.text;
+      return (
+        <>
+          {/* Title and creator */}
+          <div className="flex-shrink-0 p-6 xl:p-8 pb-4">
+            <h2 className="mb-2 text-2xl font-semibold text-muted-foreground">
+              {sub.title || t("untitled")}
+            </h2>
+            {sub.user?.name && (
+              <p className="text-sm text-muted-foreground/70 mb-2">
+                {sub.user.name}
+              </p>
+            )}
           </div>
-        )}
-      </>
-    ),
-    [submission.title, submission.user?.name, submission.text, hasText, t],
+
+          {/* Text content */}
+          {panelHasText && (
+            <div className="flex-1 overflow-y-auto px-6 xl:px-8 pb-6 xl:pb-8">
+              <div
+                className="prose prose-lg prose-invert max-w-none text-muted-foreground prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-a:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: sub.text! }}
+              />
+            </div>
+          )}
+        </>
+      );
+    },
+    [submissionForPanel, t],
   );
 
   const renderBottomLeading = useCallback(
-    () => (
-      <div>
-        <p className="text-sm font-semibold text-white drop-shadow-md sm:text-base">
-          {submission.title || t("untitled")}
-        </p>
-        {submission.user?.name && (
-          <p className="mt-0.5 text-xs text-zinc-200 drop-shadow-md sm:text-sm">
-            {submission.user.name}
+    (context: BaseLightboxRenderContext) => {
+      const sub = submissionForPanel(context);
+      return (
+        <div>
+          <p className="text-sm font-semibold text-white drop-shadow-md sm:text-base">
+            {sub.title || t("untitled")}
           </p>
-        )}
-      </div>
-    ),
-    [submission.title, submission.user?.name, t],
+          {sub.user?.name && (
+            <p className="mt-0.5 text-xs text-zinc-200 drop-shadow-md sm:text-sm">
+              {sub.user.name}
+            </p>
+          )}
+        </div>
+      );
+    },
+    [submissionForPanel, t],
   );
 
   // Render control buttons
@@ -509,6 +535,7 @@ export function SubmissionLightbox({
       dialogTitle={`${submission.title || "Submission"} ${submission.user?.name ? `by ${submission.user.name}` : ""}`}
       protectionEnabled={protectionEnabled}
       navigation={baseNavigation}
+      onNavTransitionComplete={() => setOutgoingSubmission(null)}
       renderControls={renderControls}
       renderSidebar={hasImage ? renderSidebar : undefined}
       renderBottomLeading={hasImage ? renderBottomLeading : undefined}
