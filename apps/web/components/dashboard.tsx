@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+import { useTranslations } from "next-intl";
 import { OnboardingSection } from "@/components/dashboard/onboarding-section";
 import { PortfolioSection } from "@/components/dashboard/portfolio-section";
 import { CritiquesSection } from "@/components/dashboard/critiques-section";
@@ -35,6 +36,7 @@ export function Dashboard({
   profileUrl,
   userName,
 }: DashboardProps) {
+  const tPortfolioSection = useTranslations("dashboard.portfolio");
   const firstName = userName?.split(" ")[0] ?? null;
 
   return (
@@ -49,7 +51,9 @@ export function Dashboard({
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="min-w-0">
-          <Suspense fallback={<SectionSkeleton title="My Portfolio" />}>
+          <Suspense
+            fallback={<SectionSkeleton title={tPortfolioSection("title")} />}
+          >
             <PortfolioSection portfolioUrl={portfolioUrl} />
           </Suspense>
         </div>

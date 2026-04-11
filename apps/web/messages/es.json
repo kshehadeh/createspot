@@ -1785,7 +1785,7 @@
   "dashboard": {
     "title": "Panel",
     "portfolio": {
-      "title": "Mi Portafolio",
+      "title": "Añadidos recientemente",
       "viewAll": "Ver Portafolio Completo",
       "empty": "Aún no has agregado elementos a tu portafolio.",
       "addSubmission": "Agregar un envío",
@@ -1813,7 +1813,13 @@
       "categoriesAria": "Gráfico circular de piezas del portafolio por categoría",
       "emptyCategories": "Añade piezas al portafolio con categoría para ver este gráfico.",
       "uncategorized": "Sin categoría",
-      "loadError": "No se pudieron cargar los datos del gráfico."
+      "loadError": "No se pudieron cargar los datos del gráfico.",
+      "tagDistribution": "Etiquetas del portafolio",
+      "tagTooltip": "{count, plural, one {# pieza} other {# piezas}} ({percent}% del portafolio)",
+      "tagsAria": "Gráfico de barras horizontales de etiquetas en tus piezas del portafolio",
+      "emptyTagsNoPortfolio": "Añade piezas al portafolio para ver la distribución de etiquetas.",
+      "emptyTagsNoneYet": "Añade etiquetas a tus piezas del portafolio para ver este gráfico.",
+      "tagDistributionTruncatedNote": "Mostrando las {limit} etiquetas más usadas."
     },
     "recentViews": {
       "title": "Visitados Recientemente",

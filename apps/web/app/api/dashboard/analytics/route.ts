@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const WINDOW_DAYS = 30;
+const TAG_DISTRIBUTION_LIMIT = 22;
 
 function startOfUtcDay(d: Date): Date {
   return new Date(
@@ -41,7 +42,7 @@ export async function GET() {
     }),
     prisma.submission.findMany({
       where: { userId, isPortfolio: true },
-      select: { category: true },
+      select: { category: true, tags: true },
     }),
   ]);
 
@@ -77,8 +78,33 @@ export async function GET() {
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
 
+  const portfolioItemCount = portfolioRows.length;
+  const tagCount = new Map<string, number>();
+  for (const row of portfolioRows) {
+    const seen = new Set<string>();
+    for (const raw of row.tags) {
+      const tag = raw.trim();
+      if (tag.length === 0 || seen.has(tag)) {
+        continue;
+      }
+      seen.add(tag);
+      tagCount.set(tag, (tagCount.get(tag) ?? 0) + 1);
+    }
+  }
+
+  const tagSorted = [...tagCount.entries()].sort((a, b) => b[1] - a[1]);
+  const distinctTagCount = tagSorted.length;
+  const tagDistributionTruncated = distinctTagCount > TAG_DISTRIBUTION_LIMIT;
+  const tagDistribution = tagSorted
+    .slice(0, TAG_DISTRIBUTION_LIMIT)
+    .map(([name, count]) => ({ name, count }));
+
   return NextResponse.json({
     submissionsByDay,
     categoryDistribution,
+    tagDistribution,
+    tagDistributionTruncated,
+    tagDistributionLimit: TAG_DISTRIBUTION_LIMIT,
+    portfolioItemCount,
   });
 }

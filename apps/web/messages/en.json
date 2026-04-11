@@ -1785,7 +1785,7 @@
   "dashboard": {
     "title": "Dashboard",
     "portfolio": {
-      "title": "My Portfolio",
+      "title": "Recently Added",
       "viewAll": "View Full Portfolio",
       "empty": "You haven't added any portfolio items yet.",
       "addSubmission": "Add a submission",
@@ -1813,7 +1813,13 @@
       "categoriesAria": "Pie chart of portfolio items by category",
       "emptyCategories": "Add portfolio items with categories to see this chart.",
       "uncategorized": "Uncategorized",
-      "loadError": "Could not load chart data."
+      "loadError": "Could not load chart data.",
+      "tagDistribution": "Portfolio tags",
+      "tagTooltip": "{count, plural, one {# piece} other {# pieces}} ({percent}% of portfolio)",
+      "tagsAria": "Horizontal bar chart of tags used across your portfolio pieces",
+      "emptyTagsNoPortfolio": "Add portfolio items to see tag distribution.",
+      "emptyTagsNoneYet": "Add tags to your portfolio pieces to see this chart.",
+      "tagDistributionTruncatedNote": "Showing the {limit} most-used tags."
     },
     "recentViews": {
       "title": "Recently Visited",

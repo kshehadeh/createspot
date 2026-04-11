@@ -102,7 +102,7 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
       {loading ? (
         <div className={dashboardMiniThumbScrollClass}>
           <div className={dashboardMiniThumbGridClass}>
-            {Array.from({ length: 12 }).map((_, i) => (
+            {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton key={i} className="aspect-square w-full rounded-md" />
             ))}
           </div>
