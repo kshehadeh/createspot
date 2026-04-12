@@ -102,7 +102,7 @@ function RecentsTab({
 
   if (submissions.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-border py-12 text-center">
+      <div className="rounded-lg bg-surface-container py-12 text-center">
         <p className="text-muted-foreground">{t("followingFeedEmpty")}</p>
       </div>
     );
@@ -142,7 +142,7 @@ function FollowingTab() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-border py-12 text-center">
+      <div className="rounded-lg bg-surface-container py-12 text-center">
         <p className="text-muted-foreground">{t("emptyFollowing")}</p>
       </div>
     );
@@ -150,7 +150,7 @@ function FollowingTab() {
 
   return (
     <div className="space-y-4">
-      <ul className="divide-y divide-border rounded-lg border border-border bg-card">
+      <ul className="divide-y divide-surface-bright/40 rounded-lg bg-surface-container">
         {items.map((user) => {
           const imageUrl = getUserImageUrl(user.profileImageUrl, user.image);
           return (
@@ -221,7 +221,7 @@ function BlockedTab() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-border py-12 text-center">
+      <div className="rounded-lg bg-surface-container py-12 text-center">
         <p className="text-muted-foreground">{t("emptyBlocked")}</p>
       </div>
     );
@@ -229,7 +229,7 @@ function BlockedTab() {
 
   return (
     <div className="space-y-4">
-      <ul className="divide-y divide-border rounded-lg border border-border bg-card">
+      <ul className="divide-y divide-surface-bright/40 rounded-lg bg-surface-container">
         {items.map((user) => {
           const imageUrl = getUserImageUrl(user.profileImageUrl, user.image);
           return (
@@ -313,7 +313,7 @@ function FollowersTab() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-border py-12 text-center">
+      <div className="rounded-lg bg-surface-container py-12 text-center">
         <p className="text-muted-foreground">{t("emptyFollowers")}</p>
       </div>
     );
@@ -321,7 +321,7 @@ function FollowersTab() {
 
   return (
     <div className="space-y-4">
-      <ul className="divide-y divide-border rounded-lg border border-border bg-card">
+      <ul className="divide-y divide-surface-bright/40 rounded-lg bg-surface-container">
         {items.map((user) => {
           const imageUrl = getUserImageUrl(user.profileImageUrl, user.image);
           return (

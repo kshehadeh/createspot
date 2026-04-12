@@ -5,27 +5,30 @@ import * as React from "react";
 import { cn } from "./utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default:
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_10px_30px_hsl(var(--primary)/0.1)]",
+        gradient:
+          "bg-gradient-primary-cta text-primary-foreground hover:opacity-95 shadow-[0_10px_30px_hsl(var(--primary)/0.18)]",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground",
+          "border border-outline-variant/15 bg-transparent text-primary hover:bg-surface-bright/35",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "border border-outline-variant/15 bg-transparent text-primary hover:bg-surface-bright/35",
+        ghost: "text-secondary hover:bg-accent hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         fabFilled:
-          "border-0 bg-primary text-primary-foreground shadow-lg hover:bg-primary/90",
+          "border-0 bg-gradient-primary-cta text-primary-foreground shadow-lg hover:opacity-95",
         fabMuted:
-          "border-0 bg-background text-foreground shadow-lg ring-1 ring-border hover:bg-accent hover:text-accent-foreground",
+          "border-0 bg-surface-container text-foreground shadow-lg ring-1 ring-outline-variant/15 hover:bg-surface-bright hover:text-foreground",
         overlayLight:
-          "border-0 bg-background/80 text-foreground shadow-md backdrop-blur-sm hover:bg-background",
+          "border-0 bg-glass-surface/70 text-foreground shadow-md backdrop-blur-[20px] hover:bg-glass-surface/85",
         overlayDark:
-          "border !border-white/20 !bg-white/10 text-white shadow-sm hover:!bg-white/20 hover:!text-white focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
+          "border border-outline-variant/20 bg-glass-surface/70 text-foreground shadow-sm backdrop-blur-[20px] hover:bg-surface-bright/75 hover:text-foreground focus-visible:ring-ring/60 focus-visible:ring-offset-transparent",
       },
       size: {
         default: "h-10 px-4 py-2",

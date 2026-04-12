@@ -161,8 +161,8 @@ export function SettingsForm({
             </p>
 
             {homepageHeroSubmission ? (
-              <div className="flex items-center gap-3 rounded-md border border-border bg-card p-3">
-                <div className="relative h-12 w-16 overflow-hidden rounded-md bg-muted">
+              <div className="flex items-center gap-3 rounded-md bg-surface-container p-3">
+                <div className="relative h-12 w-16 overflow-hidden rounded-md bg-surface-lowest">
                   {homepageHeroSubmission.imageUrl ? (
                     <Image
                       src={homepageHeroSubmission.imageUrl}

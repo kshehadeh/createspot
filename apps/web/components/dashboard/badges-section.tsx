@@ -35,7 +35,7 @@ export function BadgesSection({ profileUrl }: BadgesSectionProps) {
   const action = (
     <Link
       href={profileUrl}
-      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:underline underline-offset-4"
+      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:text-foreground hover:underline underline-offset-4"
     >
       {t("viewProfile")}
     </Link>
@@ -50,7 +50,7 @@ export function BadgesSection({ profileUrl }: BadgesSectionProps) {
           ))}
         </div>
       ) : badges.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        <p className="text-sm text-on-surface-variant">{t("empty")}</p>
       ) : (
         <div className="flex flex-wrap gap-3 sm:gap-4">
           {badges.map((badge) => (
@@ -59,7 +59,7 @@ export function BadgesSection({ profileUrl }: BadgesSectionProps) {
               className="flex flex-col items-center gap-1 text-center"
               title={badge.description}
             >
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-muted ring-2 ring-border">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-surface-lowest ring-2 ring-outline-variant/30">
                 <Image
                   src={badge.image}
                   alt={badge.name}

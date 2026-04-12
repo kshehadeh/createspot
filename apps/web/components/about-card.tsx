@@ -8,14 +8,17 @@ interface AboutCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Shared card for all /about pages. Uses theme tokens (bg-card, border-border,
- * text-card-foreground) for consistent, theme-aware styling.
+ * Shared card for all /about pages.
+ * Uses tonal layering instead of visible dividers.
  */
 const AboutCard = React.forwardRef<HTMLDivElement, AboutCardProps>(
   ({ className, contentClassName, children, ...props }, ref) => (
     <Card
       ref={ref}
-      className={cn("rounded-3xl shadow-sm", className)}
+      className={cn(
+        "rounded-3xl bg-surface-container shadow-gallery-modal",
+        className,
+      )}
       {...props}
     >
       <CardContent className={cn("p-8", contentClassName)}>

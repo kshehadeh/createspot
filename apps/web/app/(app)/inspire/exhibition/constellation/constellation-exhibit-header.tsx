@@ -5,6 +5,7 @@ import Link from "@/components/link";
 import Image from "next/image";
 import { ConstellationPath } from "@/components/constellation-path";
 import { ExpandableBio } from "@/components/expandable-bio";
+import { InspireTitle } from "@/components/inspire-page-header";
 import { TextThumbnail } from "@/components/text-thumbnail";
 import {
   Avatar,
@@ -63,7 +64,7 @@ export function ConstellationExhibitHeader({
 
   const titleAndMeta = exhibit ? (
     <>
-      <h1 className="text-3xl font-bold text-foreground">{exhibitTitle}</h1>
+      <InspireTitle>{exhibitTitle}</InspireTitle>
       <div className="mt-4 space-y-3">
         {exhibit.description && (
           <ExpandableBio
@@ -117,7 +118,7 @@ export function ConstellationExhibitHeader({
       </div>
     </>
   ) : (
-    <h1 className="text-3xl font-bold text-foreground">{exhibitTitle}</h1>
+    <InspireTitle>{exhibitTitle}</InspireTitle>
   );
 
   return (
@@ -156,9 +157,9 @@ export function ConstellationExhibitHeader({
                   allowedViewTypes={exhibit?.allowedViewTypes}
                 />
               </div>
-              <h1 className="text-2xl font-bold tracking-tight pr-24">
+              <InspireTitle className="pr-24 text-2xl sm:text-3xl">
                 {exhibitTitle}
-              </h1>
+              </InspireTitle>
               {exhibit.description && (
                 <div className="text-sm text-muted-foreground [&_.prose]:text-sm mt-1">
                   <ExpandableBio html={exhibit.description} maxHeight={52} />
@@ -217,9 +218,9 @@ export function ConstellationExhibitHeader({
         {(!hasFeaturedImage || !exhibit?.featuredSubmission) && (
           <div className="md:hidden space-y-3">
             <div className="flex items-start justify-between gap-2">
-              <h1 className="text-2xl font-bold text-foreground">
+              <InspireTitle className="text-2xl sm:text-3xl">
                 {exhibitTitle}
-              </h1>
+              </InspireTitle>
               <ExhibitViewSelector
                 currentView="constellation"
                 exhibitId={exhibitId}

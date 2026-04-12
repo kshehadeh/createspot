@@ -6,6 +6,7 @@ import { getExhibitById } from "@/lib/exhibits";
 import { getExhibitMetadata } from "@/lib/og-metadata";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
+import { InspireTitle } from "@/components/inspire-page-header";
 import {
   Avatar,
   AvatarFallback,
@@ -118,9 +119,7 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
   const titleBlock = (
     <>
       <div className="flex items-start justify-between gap-4 mb-3">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          {exhibit.title}
-        </h1>
+        <InspireTitle>{exhibit.title}</InspireTitle>
         {session?.user?.isAdmin && (
           <Button asChild variant="outline" size="sm">
             <Link href={`/admin/exhibits/${exhibitId}/edit`}>Edit Exhibit</Link>
@@ -197,9 +196,9 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
               aria-label="Exhibit details"
             >
               <div className="flex items-start justify-between gap-2 mb-2">
-                <h1 className="text-2xl font-bold tracking-tight shrink-0">
+                <InspireTitle className="shrink-0 text-2xl sm:text-3xl">
                   {exhibit.title}
-                </h1>
+                </InspireTitle>
                 {session?.user?.isAdmin && (
                   <Button
                     asChild

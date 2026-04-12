@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/page-layout";
-import { PageHeader } from "@/components/page-header";
+import { InspirePageHeader } from "@/components/inspire-page-header";
 import { ExhibitionGrid } from "@/app/(app)/inspire/exhibition/exhibition-grid";
 
 async function getFavorites(userId: string) {
@@ -51,7 +51,7 @@ export default async function FavoritesPage() {
 
   return (
     <PageLayout>
-      <PageHeader title={t("title")} subtitle={t("subtitle")} />
+      <InspirePageHeader title={t("title")} subtitle={t("subtitle")} />
 
       {submissions.length > 0 ? (
         <ExhibitionGrid

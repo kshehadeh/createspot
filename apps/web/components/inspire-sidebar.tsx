@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { Heart, LayoutGrid, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getRoute } from "@/lib/routes";
+import { getRoute, isCreatorsListingPath } from "@/lib/routes";
 
 interface NavItem {
   href: string;
@@ -23,6 +23,7 @@ export function InspireSidebar() {
 
   const exhibitionRoute = getRoute("exhibition");
   const communityRoute = getRoute("community");
+  const creatorsInspirePath = "/inspire/creators";
   const favoritesRoute = getRoute("favorites");
 
   const navItems: NavItem[] = [
@@ -33,6 +34,12 @@ export function InspireSidebar() {
       isActive:
         pathname === exhibitionRoute.path ||
         pathname.startsWith(`${exhibitionRoute.path}/`),
+    },
+    {
+      href: creatorsInspirePath,
+      labelKey: "creators",
+      icon: Users,
+      isActive: isCreatorsListingPath(pathname),
     },
     {
       href: communityRoute.path,
@@ -54,15 +61,21 @@ export function InspireSidebar() {
 
   const linkClass = (item: NavItem) =>
     cn(
-      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
       item.isActive
-        ? "bg-accent text-accent-foreground"
-        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+        ? "bg-surface-container-high text-foreground shadow-[0_10px_24px_rgb(0_0_0_/_0.24)]"
+        : "text-on-surface-variant hover:bg-surface-container-high hover:text-foreground",
     );
 
   return (
-    <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-border bg-background">
-      <nav className="flex-1 p-2 pt-4" aria-label="Inspire">
+    <aside className="sticky top-24 hidden h-fit w-64 shrink-0 md:ml-6 md:flex lg:ml-12">
+      <nav
+        className="w-full rounded-2xl bg-surface-container p-3 shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]"
+        aria-label="Inspire"
+      >
+        <p className="px-3 pb-2 text-xs font-semibold tracking-[0.12em] text-on-surface-variant uppercase">
+          Inspire
+        </p>
         <ul className="space-y-2">
           {navItems.map((item) => (
             <li key={item.href}>

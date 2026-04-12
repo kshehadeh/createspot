@@ -98,7 +98,7 @@ export function CreatorCritiquesSubmissionsTable({
   };
 
   return (
-    <Card className="overflow-hidden border-border/50 shadow-sm">
+    <Card className="overflow-hidden rounded-2xl border-transparent bg-surface-container shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]">
       <CardContent className="p-0">
         <Table>
           <TableHeader>
@@ -107,7 +107,7 @@ export function CreatorCritiquesSubmissionsTable({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="-ml-3 h-8 px-3 font-medium text-muted-foreground hover:text-foreground"
+                  className="-ml-3 h-8 px-3 font-medium text-on-surface-variant hover:text-foreground"
                   onClick={() => setSort("title")}
                   aria-label={t("submissionsTableSortSubmission")}
                 >
@@ -120,7 +120,7 @@ export function CreatorCritiquesSubmissionsTable({
                   <Button
                     type="button"
                     variant="ghost"
-                    className="-mr-3 h-8 px-3 font-medium text-muted-foreground hover:text-foreground"
+                    className="-mr-3 h-8 px-3 font-medium text-on-surface-variant hover:text-foreground"
                     onClick={() => setSort("critiquers")}
                     aria-label={t("submissionsTableSortCritiquers")}
                   >
@@ -145,7 +145,7 @@ export function CreatorCritiquesSubmissionsTable({
                     {row.title || untitled}
                   </Link>
                 </TableCell>
-                <TableCell className="text-right tabular-nums text-muted-foreground">
+                <TableCell className="text-right tabular-nums text-on-surface-variant">
                   {row.critiquerCount}
                 </TableCell>
                 <TableCell className="text-right">
@@ -165,8 +165,8 @@ export function CreatorCritiquesSubmissionsTable({
           </TableBody>
         </Table>
       </CardContent>
-      <CardFooter className="flex flex-col gap-3 border-t border-border/50 bg-muted/30 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted-foreground">
+      <CardFooter className="flex flex-col gap-3 border-t border-outline-variant/25 bg-surface-container-high/60 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-on-surface-variant">
           {t("submissionsTableShowing", { start: from, end: to, total })}
           {totalPages > 1
             ? ` · ${t("submissionsTablePageOf", { page: safePage, totalPages })}`

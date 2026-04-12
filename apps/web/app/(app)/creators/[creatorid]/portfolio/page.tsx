@@ -290,29 +290,15 @@ export default async function PortfolioPage({
   return (
     <PageLayout maxWidth="max-w-6xl">
       {!isOwnPortfolio && (
-        <div className="mb-4 flex w-full items-start gap-4 md:mb-8">
-          {user.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={user.image}
-              alt={user.name || "User"}
-              className="hidden h-12 w-12 shrink-0 rounded-full md:block"
-            />
-          ) : (
-            <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted md:flex">
-              <span className="text-lg font-medium text-muted-foreground">
-                {user.name?.charAt(0) || "?"}
-              </span>
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <PortfolioMobileMenu
-              title={portfolioTitle}
-              subtitle={worksSubtitle}
-              userId={user.id}
-              filterProps={filterProps}
-            />
-          </div>
+        <div className="mb-5 w-full md:mb-8">
+          <PortfolioMobileMenu
+            title={portfolioTitle}
+            subtitle={worksSubtitle}
+            userId={user.id}
+            userName={user.name}
+            userImage={user.image}
+            filterProps={filterProps}
+          />
         </div>
       )}
 
@@ -344,8 +330,8 @@ export default async function PortfolioPage({
           user={userForGrid}
         />
       ) : (
-        <div className="rounded-lg border border-dashed border-border py-16 text-center">
-          <p className="text-muted-foreground">{t("noPortfolioItems")}</p>
+        <div className="rounded-xl bg-surface-container py-16 text-center shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]">
+          <p className="text-on-surface-variant">{t("noPortfolioItems")}</p>
         </div>
       )}
 

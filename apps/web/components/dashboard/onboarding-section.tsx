@@ -115,7 +115,7 @@ export function OnboardingSection() {
   };
 
   return (
-    <div className="not-first-child overflow-hidden rounded-xl border bg-card text-foreground shadow-sm">
+    <div className="not-first-child overflow-hidden rounded-2xl bg-surface-container p-1 text-foreground shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]">
       <div className="flex justify-end p-4">
         <Button
           type="button"
@@ -123,31 +123,33 @@ export function OnboardingSection() {
           size="icon"
           onClick={handleDismiss}
           disabled={dismissing}
-          className="h-8 w-8 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="h-8 w-8 rounded-md text-on-surface-variant hover:bg-surface-bright/60 hover:text-foreground"
           aria-label={t("dismiss")}
         >
           <X className="h-4 w-4" />
         </Button>
       </div>
 
-      <div className="flex flex-col gap-6 px-5 pb-6 sm:px-6 lg:flex-row">
-        <div className="relative overflow-hidden rounded-lg bg-muted/60 p-5 sm:p-6 lg:w-2/5">
-          <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-primary/5" />
-          <div className="pointer-events-none absolute -bottom-10 right-0 h-28 w-28 rounded-full bg-primary/10" />
+      <div className="flex flex-col gap-6 px-4 pb-5 sm:px-5 sm:pb-6 lg:flex-row">
+        <div className="relative overflow-hidden rounded-xl bg-surface-container-high p-5 sm:p-6 lg:w-2/5">
+          <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-primary/10" />
+          <div className="pointer-events-none absolute -bottom-10 right-0 h-28 w-28 rounded-full bg-primary/15" />
           <div className="relative space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+            <div className="inline-flex items-center gap-2 rounded-full bg-surface-bright/80 px-3 py-1 text-xs font-semibold text-foreground">
               <Sparkles className="h-4 w-4" />
               {t("title")}
             </div>
             <h2 className="text-xl font-semibold leading-snug">
               {t("welcomeTitle")}
             </h2>
-            <p className="text-sm text-muted-foreground">{t("welcomeBody")}</p>
+            <p className="text-sm text-on-surface-variant">
+              {t("welcomeBody")}
+            </p>
           </div>
         </div>
 
         <div className="flex-1 space-y-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <h3 className="text-sm font-semibold tracking-wide text-on-surface-variant uppercase">
             {t("stepsTitle")}
           </h3>
           <ul className="space-y-3">
@@ -158,13 +160,13 @@ export function OnboardingSection() {
                 <li key={item.key}>
                   <Link
                     href={item.href}
-                    className="group flex items-start gap-3 rounded-lg border border-border/60 bg-muted/40 p-3 transition hover:border-primary/40 hover:bg-muted"
+                    className="group flex items-start gap-3 rounded-xl bg-surface-container-high p-3 transition hover:bg-surface-container-highest"
                   >
-                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border group-hover:ring-primary/40">
+                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-low shadow-[0_8px_20px_rgb(0_0_0_/_0.25)]">
                       {completed ? (
                         <CheckCircle2 className="h-5 w-5 text-primary" />
                       ) : (
-                        <span className="text-sm font-semibold text-muted-foreground">
+                        <span className="text-sm font-semibold text-on-surface-variant">
                           {index + 1}
                         </span>
                       )}
@@ -175,14 +177,14 @@ export function OnboardingSection() {
                         <span
                           className={
                             completed
-                              ? "line-through text-muted-foreground"
+                              ? "line-through text-on-surface-variant"
                               : undefined
                           }
                         >
                           {t(`items.${item.key}.label`)}
                         </span>
                       </div>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-sm text-on-surface-variant">
                         {t(`items.${item.key}.cta`)}
                       </span>
                     </div>

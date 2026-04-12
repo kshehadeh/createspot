@@ -111,7 +111,7 @@ export function ExhibitFilters({
   const activeFiltersCount = (initialCurator ? 1 : 0) + (initialStatus ? 1 : 0);
 
   return (
-    <Card className="mb-8 rounded-2xl border-0 shadow-none">
+    <Card className="mb-8 rounded-2xl border-0 bg-surface-container-low shadow-none">
       <CardContent className="px-0 py-6">
         <form onSubmit={handleSearch}>
           <div className="flex flex-col gap-3 md:flex-row md:items-center">

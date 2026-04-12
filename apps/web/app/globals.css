@@ -2,61 +2,85 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 25 95% 96%;
-    --accent-foreground: 25 85% 35%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --prompt: 142 71% 45%;
-    --prompt-foreground: 142 76% 28%;
+    --background: 0 0% 5.5%;
+    --foreground: 0 8% 98%;
+    --card: 180 2% 10%;
+    --card-foreground: 0 8% 98%;
+    --popover: 180 2% 15%;
+    --popover-foreground: 0 8% 98%;
+    --primary: 240 1% 78%;
+    --primary-foreground: 220 1% 25%;
+    --secondary: 0 1% 62%;
+    --secondary-foreground: 0 8% 98%;
+    --muted: 0 0% 8%;
+    --muted-foreground: 60 1% 67%;
+    --accent: 0 0% 17%;
+    --accent-foreground: 0 8% 98%;
+    --destructive: 2 44% 52%;
+    --destructive-foreground: 0 8% 98%;
+    --prompt: 240 1% 78%;
+    --prompt-foreground: 220 1% 25%;
     --filter-active: 38 92% 50%;
     --filter-active-foreground: 38 92% 20%;
-    --filter-active-background: 38 92% 96%;
-    --filter-active-hover: 38 92% 94%;
-    --border: 240 5.9% 80%;
-    --input: 240 5.9% 80%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --filter-active-background: 0 0% 17%;
+    --filter-active-hover: 0 0% 22%;
+    --border: 0 0% 28%;
+    --input: 180 2% 12%;
+    --ring: 0 1% 46%;
+    --radius: 0.75rem;
+    --surface: 0 0% 5.5%;
+    --surface-container-low: 0 0% 7.5%;
+    --surface-container: 180 2% 10%;
+    --surface-container-high: 180 2% 12%;
+    --surface-container-highest: 180 2% 15%;
+    --surface-bright: 0 0% 17%;
+    --surface-lowest: 0 0% 0%;
+    --on-surface-variant: 60 1% 67%;
+    --outline-variant: 0 0% 28%;
+    --error-dim: 2 44% 52%;
+    --primary-container: 180 2% 27%;
+    --glass-surface: 180 2% 15%;
     --navbar-height: calc(4rem + 5px); /* 4rem for navbar height + 5px for border and margin */
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 25 40% 18%;
-    --accent-foreground: 25 90% 75%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --prompt: 142 70% 45%;
-    --prompt-foreground: 0 0% 98%;
+    --background: 0 0% 5.5%;
+    --foreground: 0 8% 98%;
+    --card: 180 2% 10%;
+    --card-foreground: 0 8% 98%;
+    --popover: 180 2% 15%;
+    --popover-foreground: 0 8% 98%;
+    --primary: 240 1% 78%;
+    --primary-foreground: 220 1% 25%;
+    --secondary: 0 1% 62%;
+    --secondary-foreground: 0 8% 98%;
+    --muted: 0 0% 8%;
+    --muted-foreground: 60 1% 67%;
+    --accent: 0 0% 17%;
+    --accent-foreground: 0 8% 98%;
+    --destructive: 2 44% 52%;
+    --destructive-foreground: 0 8% 98%;
+    --prompt: 240 1% 78%;
+    --prompt-foreground: 220 1% 25%;
     --filter-active: 38 92% 60%;
-    --filter-active-foreground: 0 0% 98%;
-    --filter-active-background: 38 92% 8%;
-    --filter-active-hover: 38 92% 12%;
-    --border: 240 3.7% 16%;
-    --input: 240 3.7% 16%;
-    --ring: 240 4.9% 83.9%;
+    --filter-active-foreground: 220 1% 25%;
+    --filter-active-background: 0 0% 17%;
+    --filter-active-hover: 0 0% 22%;
+    --border: 0 0% 28%;
+    --input: 180 2% 12%;
+    --ring: 0 1% 46%;
+    --surface: 0 0% 5.5%;
+    --surface-container-low: 0 0% 7.5%;
+    --surface-container: 180 2% 10%;
+    --surface-container-high: 180 2% 12%;
+    --surface-container-highest: 180 2% 15%;
+    --surface-bright: 0 0% 17%;
+    --surface-lowest: 0 0% 0%;
+    --on-surface-variant: 60 1% 67%;
+    --outline-variant: 0 0% 28%;
+    --error-dim: 2 44% 52%;
+    --primary-container: 180 2% 27%;
+    --glass-surface: 180 2% 15%;
   }
 }
 
@@ -86,18 +110,56 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-  --font-sans: var(--font-geist-sans);
+  --color-surface: hsl(var(--surface));
+  --color-surface-container-low: hsl(var(--surface-container-low));
+  --color-surface-container: hsl(var(--surface-container));
+  --color-surface-container-high: hsl(var(--surface-container-high));
+  --color-surface-container-highest: hsl(var(--surface-container-highest));
+  --color-surface-bright: hsl(var(--surface-bright));
+  --color-surface-lowest: hsl(var(--surface-lowest));
+  --color-on-surface-variant: hsl(var(--on-surface-variant));
+  --color-outline-variant: hsl(var(--outline-variant));
+  --color-error-dim: hsl(var(--error-dim));
+  --color-primary-container: hsl(var(--primary-container));
+  --color-glass-surface: hsl(var(--glass-surface));
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-manrope);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: var(--font-geist-sans), sans-serif;
+  font-family: var(--font-inter), sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-manrope), sans-serif;
+  letter-spacing: -0.015em;
 }
 
 .font-permanent-marker {
   font-family: var(--font-permanent-marker), cursive;
+}
+
+.glass-nav {
+  background: hsl(var(--glass-surface) / 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.shadow-gallery-modal {
+  box-shadow: 0 20px 50px rgb(0 0 0 / 0.5);
+}
+
+.bg-gradient-primary-cta {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--primary-container)) 100%
+  );
 }
 
 @keyframes glow-pulse {
@@ -334,9 +396,9 @@ body {
 .hero-background {
   background: linear-gradient(
     to bottom right,
-    rgb(255 251 235) 0%,
-    rgb(255 241 242) 50%,
-    rgb(245 243 255) 100%
+    hsl(var(--surface-container-low)) 0%,
+    hsl(var(--surface)) 50%,
+    hsl(var(--surface-container)) 100%
   );
 }
 
@@ -344,9 +406,9 @@ body {
   .hero-background {
     background: linear-gradient(
       to bottom right,
-      rgb(120 53 15 / 0.2) 0%,
-      rgb(77 2 24 / 0.2) 50%,
-      rgb(76 29 149 / 0.2) 100%
+      hsl(var(--surface-container-low)) 0%,
+      hsl(var(--surface)) 50%,
+      hsl(var(--surface-container)) 100%
     );
   }
 }
@@ -354,15 +416,15 @@ body {
 .dark .hero-background {
   background: linear-gradient(
     to bottom right,
-    rgb(120 53 15 / 0.2) 0%,
-    rgb(77 2 24 / 0.2) 50%,
-    rgb(76 29 149 / 0.2) 100%
+    hsl(var(--surface-container-low)) 0%,
+    hsl(var(--surface)) 50%,
+    hsl(var(--surface-container)) 100%
   );
 }
 
 /* iOS Safari dark mode support for cards */
 .dark [class*="bg-card"]:not([class*="bg-gradient"]) {
-  background-color: hsl(240 10% 3.9%) !important;
+  background-color: hsl(var(--surface-container)) !important;
 }
 
 /* Contact page card styling with iOS Safari dark mode support */
@@ -371,12 +433,12 @@ body {
 }
 
 .dark .contact-card-blue {
-  background: hsl(240 10% 3.9%) !important;
+  background: hsl(var(--surface-container)) !important;
 }
 
 @media (prefers-color-scheme: dark) {
   .contact-card-blue:not(.light .contact-card-blue) {
-    background: hsl(240 10% 3.9%) !important;
+    background: hsl(var(--surface-container)) !important;
   }
 }
 
@@ -385,12 +447,12 @@ body {
 }
 
 .dark .contact-card-purple {
-  background: hsl(240 10% 3.9%) !important;
+  background: hsl(var(--surface-container)) !important;
 }
 
 @media (prefers-color-scheme: dark) {
   .contact-card-purple:not(.light .contact-card-purple) {
-    background: hsl(240 10% 3.9%) !important;
+    background: hsl(var(--surface-container)) !important;
   }
 }
 
@@ -502,15 +564,12 @@ body {
 .begin-button {
   background: linear-gradient(
     135deg,
-    #8b5cf6 0%,
-    #ec4899 25%,
-    #f97316 50%,
-    #8b5cf6 75%,
-    #ec4899 100%
+    hsl(var(--primary)) 0%,
+    hsl(var(--primary-container)) 100%
   );
-  background-size: 300% 300%;
+  background-size: 160% 160%;
   animation: begin-gradient-shift 6s ease infinite;
-  color: white;
+  color: hsl(var(--primary-foreground));
   font-weight: 500;
   transition: filter 0.2s ease, transform 0.15s ease;
 }

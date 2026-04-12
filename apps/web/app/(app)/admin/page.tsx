@@ -70,11 +70,11 @@ export default async function AdminPage() {
           return (
             <Card
               key={card.id}
-              className="group transition-all hover:shadow-md"
+              className="group bg-surface-container transition-all hover:bg-surface-container-high"
             >
               <CardHeader>
                 <div className="mb-2 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-bright/70">
                     <Icon className="h-5 w-5 text-foreground" />
                   </div>
                   <CardTitle className="text-xl">{card.title}</CardTitle>

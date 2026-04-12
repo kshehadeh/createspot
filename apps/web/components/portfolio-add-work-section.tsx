@@ -42,9 +42,9 @@ export function PortfolioAddWorkSection({
     <div className="mt-10 space-y-6">
       <Button
         type="button"
-        variant="outline"
+        variant="gradient"
         onClick={() => setCreatingPortfolioItem(true)}
-        className="w-full border-2 border-dashed py-8"
+        className="w-full py-8"
       >
         <svg
           className="h-5 w-5"
@@ -67,7 +67,7 @@ export function PortfolioAddWorkSection({
           <h3 className="mb-4 text-sm font-medium text-foreground">
             {t("addPromptSubmissions")}
           </h3>
-          <p className="mb-4 text-xs text-muted-foreground">
+          <p className="mb-4 text-xs text-on-surface-variant">
             {t("addPromptSubmissionsDescription")}
           </p>
           <div className="space-y-2">
@@ -76,10 +76,10 @@ export function PortfolioAddWorkSection({
               return (
                 <div
                   key={submission.id}
-                  className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+                  className="flex items-center gap-3 rounded-xl bg-surface-container p-3 shadow-[0_10px_28px_rgb(0_0_0_/_0.28)]"
                 >
                   {submission.imageUrl ? (
-                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-surface-lowest">
                       <Image
                         src={submission.imageUrl}
                         alt={submission.title || word}
@@ -99,13 +99,13 @@ export function PortfolioAddWorkSection({
                       className="h-10 w-10 shrink-0 rounded-lg"
                     />
                   ) : (
-                    <div className="h-10 w-10 shrink-0 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
+                    <div className="h-10 w-10 shrink-0 rounded-lg bg-surface-lowest" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-foreground">
                       {submission.title || word}
                     </p>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-on-surface-variant">
                       {word}
                     </span>
                   </div>

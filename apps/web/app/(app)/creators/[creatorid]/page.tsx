@@ -5,9 +5,12 @@ import Link from "@/components/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ExpandableBio } from "@/components/expandable-bio";
+import { CreatorHubHeaderLayout } from "@/components/creator-hub-header-layout";
 import { FollowButton } from "@/components/follow-button";
 import { HintPopover } from "@/components/hint-popover";
 import { PageLayout } from "@/components/page-layout";
+import { PageSubtitle } from "@/components/page-title";
+import { PageTitle } from "@/components/page-title";
 import { ProfilePagePortfolioGrid } from "@/components/profile-page-portfolio-grid";
 import { ProfileAnalytics } from "@/components/profile-analytics";
 import { ProfileBadges } from "@/components/profile-badges";
@@ -146,14 +149,14 @@ export default async function ProfilePage({
   const tutorialData = await getTutorialData(session?.user?.id);
 
   return (
-    <PageLayout maxWidth="max-w-5xl">
+    <PageLayout maxWidth="max-w-6xl">
       {/* Track profile view for non-owners (not in public view mode) */}
       {!effectiveIsOwnProfile && <ProfileViewTracker profileUserId={user.id} />}
 
       {!effectiveIsOwnProfile &&
       featuredSubmission &&
       (featuredSubmission.imageUrl || featuredSubmission.text) ? (
-        <div className="mb-8 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-12 bg-muted overflow-hidden min-h-[60vh] flex flex-col">
+        <div className="mb-8 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-12 bg-surface-container-low overflow-hidden min-h-[60vh] flex flex-col">
           {/* Hero Image/Background */}
           <div className="absolute inset-0">
             {featuredSubmission.imageUrl ? (
@@ -173,17 +176,17 @@ export default async function ProfilePage({
                 }}
               />
             ) : featuredSubmission.text ? (
-              <div className="relative h-full w-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+              <div className="relative h-full w-full bg-surface-container overflow-hidden">
                 <div className="absolute inset-0 p-8 md:p-12 lg:p-16 pb-32 overflow-hidden">
                   <div
-                    className="text-4xl font-serif leading-relaxed text-zinc-600 dark:text-zinc-400"
+                    className="text-4xl font-serif leading-relaxed text-on-surface-variant"
                     dangerouslySetInnerHTML={{
                       __html: featuredSubmission.text,
                     }}
                   />
                 </div>
                 {/* Gradient fade at bottom - stays within text area, doesn't overlap profile info */}
-                <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-zinc-100 via-zinc-100/80 to-transparent dark:from-zinc-800 dark:via-zinc-800/80 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-surface-container via-surface-container/80 to-transparent pointer-events-none" />
               </div>
             ) : null}
           </div>
@@ -192,8 +195,9 @@ export default async function ProfilePage({
           <div className="relative mt-auto z-20">
             <div className="bg-background/80 backdrop-blur-sm px-6 py-4 max-w-5xl mx-auto w-full">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
-                <div className="flex items-center gap-4 min-w-0 flex-1">
-                  {(() => {
+                <CreatorHubHeaderLayout
+                  className="min-w-0 flex-1"
+                  avatar={(() => {
                     const displayImage = getUserImageUrl(
                       user.profileImageUrl,
                       user.image,
@@ -209,21 +213,21 @@ export default async function ProfilePage({
                           } | null
                         }
                         name={user.name}
-                        className="h-12 w-12 rounded-full md:h-16 md:w-16 ring-2 ring-background/50 object-cover shrink-0"
+                        className="h-12 w-12 rounded-full ring-2 ring-background/50 object-cover shrink-0"
                       />
                     ) : (
-                      <div className="h-12 w-12 flex items-center justify-center rounded-full bg-muted md:h-16 md:w-16 ring-2 ring-background/50 shrink-0">
-                        <span className="text-xl font-medium text-muted-foreground md:text-2xl">
+                      <div className="h-12 w-12 flex items-center justify-center rounded-full bg-surface-container-high ring-2 ring-background/50 shrink-0">
+                        <span className="text-xl font-medium text-muted-foreground">
                           {user.name?.charAt(0) || "?"}
                         </span>
                       </div>
                     );
                   })()}
-                  <div className="min-w-0 flex-1">
+                >
                     <div className="flex items-start justify-between gap-4">
-                      <h1 className="min-w-0 flex-1 break-words text-2xl font-bold text-foreground sm:text-3xl">
+                      <PageTitle className="min-w-0 flex-1">
                         {user.name || t("anonymous")}
-                      </h1>
+                      </PageTitle>
                       <div className="flex shrink-0 items-center gap-1 pt-0.5">
                         <ShareButton
                           type="profile"
@@ -249,10 +253,10 @@ export default async function ProfilePage({
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <p className="text-sm text-foreground/90">
+                  <PageSubtitle className="mt-0 text-foreground/90">
                         {submissionCount}{" "}
                         {submissionCount !== 1 ? t("works") : t("work")}
-                      </p>
+                  </PageSubtitle>
                       {hasSocialLinks && (
                         <SocialLinks
                           instagram={user.instagram}
@@ -263,8 +267,7 @@ export default async function ProfilePage({
                         />
                       )}
                     </div>
-                  </div>
-                </div>
+                </CreatorHubHeaderLayout>
               </div>
 
               {user.bio && (
@@ -281,8 +284,9 @@ export default async function ProfilePage({
       ) : (
         <div className="mb-8 w-full min-w-0">
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
-            <div className="flex items-center gap-4 min-w-0 flex-1">
-              {(() => {
+            <CreatorHubHeaderLayout
+              className="min-w-0 flex-1"
+              avatar={(() => {
                 const displayImage = getUserImageUrl(
                   user.profileImageUrl,
                   user.image,
@@ -298,21 +302,21 @@ export default async function ProfilePage({
                       } | null
                     }
                     name={user.name}
-                    className="h-12 w-12 rounded-full md:h-16 md:w-16 object-cover shrink-0"
+                    className="h-12 w-12 rounded-full object-cover shrink-0"
                   />
                 ) : (
-                  <div className="h-12 w-12 flex items-center justify-center rounded-full bg-muted md:h-16 md:w-16 shrink-0">
-                    <span className="text-xl font-medium text-muted-foreground md:text-2xl">
+                  <div className="h-12 w-12 flex items-center justify-center rounded-full bg-surface-lowest shrink-0">
+                    <span className="text-xl font-medium text-on-surface-variant">
                       {user.name?.charAt(0) || "?"}
                     </span>
                   </div>
                 );
               })()}
-              <div className="min-w-0 flex-1">
+            >
                 <div className="flex items-start justify-between gap-4">
-                  <h1 className="min-w-0 flex-1 break-words text-2xl font-bold text-foreground sm:text-3xl">
+                  <PageTitle className="min-w-0 flex-1">
                     {user.name || t("anonymous")}
-                  </h1>
+                  </PageTitle>
                   <div className="flex shrink-0 items-center gap-1 pt-0.5">
                     <ShareButton
                       type="profile"
@@ -354,10 +358,10 @@ export default async function ProfilePage({
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <p className="text-sm text-muted-foreground">
+                  <PageSubtitle className="mt-0">
                     {submissionCount}{" "}
                     {submissionCount !== 1 ? t("works") : t("work")}
-                  </p>
+                  </PageSubtitle>
                   {hasSocialLinks && (
                     <SocialLinks
                       instagram={user.instagram}
@@ -368,11 +372,12 @@ export default async function ProfilePage({
                     />
                   )}
                 </div>
-              </div>
-            </div>
+            </CreatorHubHeaderLayout>
           </div>
 
-          {user.bio && <ExpandableBio html={user.bio} className="mt-4" />}
+          {user.bio && (
+            <ExpandableBio html={user.bio} className="mt-4 text-on-surface-variant" />
+          )}
         </div>
       )}
 
@@ -392,7 +397,7 @@ export default async function ProfilePage({
               <h2 className="text-2xl font-semibold text-foreground">
                 {t("portfolio")}
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="mt-1 text-sm text-on-surface-variant">
                 {t("showingTopPortfolioItems", { count: MAX_PORTFOLIO_ITEMS })}
               </p>
             </div>
@@ -440,8 +445,8 @@ export default async function ProfilePage({
       {/* Gallery Section - Main Content Area */}
       <div className="w-full min-w-0">
         {allPortfolioItems.length === 0 && (
-          <div className="rounded-lg border border-dashed border-border py-12 text-center">
-            <p className="text-muted-foreground">
+          <div className="rounded-xl bg-surface-container py-12 text-center shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]">
+            <p className="text-on-surface-variant">
               {effectiveIsOwnProfile ? t("noWorkYet") : t("noWorkToDisplay")}
             </p>
             {effectiveIsOwnProfile && (

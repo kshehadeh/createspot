@@ -31,7 +31,7 @@ export default async function Home() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-[600px] flex-1 py-4">
+    <main className="mx-auto w-full max-w-[600px] flex-1 bg-surface py-4">
       <PublicHomeMobileScrollbar />
       <h1 className="sr-only">{t("title")}</h1>
       <FeedList

@@ -70,7 +70,7 @@ export function RecentViewsSection() {
           </div>
         </div>
       ) : views.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        <p className="text-sm text-on-surface-variant">{t("empty")}</p>
       ) : (
         <div className={dashboardMiniThumbScrollClass}>
           <div className={dashboardMiniThumbGridClass}>
@@ -95,7 +95,7 @@ export function RecentViewsSection() {
                   <HoverCardTrigger asChild>
                     <Link
                       href={submissionUrl}
-                      className="group relative aspect-square overflow-hidden rounded-md bg-muted outline-none"
+                      className="group relative aspect-square overflow-hidden rounded-xl bg-surface-lowest outline-none"
                     >
                       {v.submission.imageUrl ? (
                         <Image
@@ -112,7 +112,7 @@ export function RecentViewsSection() {
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center p-2">
-                          <p className="line-clamp-3 text-center text-xs text-muted-foreground">
+                          <p className="line-clamp-3 text-center text-xs text-on-surface-variant">
                             {displayTitle}
                           </p>
                         </div>
@@ -123,11 +123,11 @@ export function RecentViewsSection() {
                     <p className="font-medium text-foreground">
                       {displayTitle}
                     </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="mt-1 text-sm text-on-surface-variant">
                       {t("hover.by", { name: creatorDisplay })}
                     </p>
                     {visitedLabel ? (
-                      <p className="mt-1 text-sm text-muted-foreground">
+                      <p className="mt-1 text-sm text-on-surface-variant">
                         {t("hover.lastVisited", { datetime: visitedLabel })}
                       </p>
                     ) : null}

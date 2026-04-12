@@ -105,8 +105,8 @@ export default async function CollectionsPage({
               className="h-12 w-12 rounded-full shrink-0"
             />
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted shrink-0">
-              <span className="text-lg font-medium text-muted-foreground">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-lowest shrink-0">
+              <span className="text-lg font-medium text-on-surface-variant">
                 {user.name?.charAt(0) || "?"}
               </span>
             </div>
@@ -154,8 +154,8 @@ export default async function CollectionsPage({
           ))}
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-border py-16 text-center">
-          <p className="text-muted-foreground">
+        <div className="rounded-xl bg-surface-container py-16 text-center shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]">
+          <p className="text-on-surface-variant">
             {isOwner ? t("noCollectionsOwner") : t("noCollections")}
           </p>
           {isOwner && (

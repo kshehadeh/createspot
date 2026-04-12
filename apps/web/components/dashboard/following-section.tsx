@@ -40,7 +40,7 @@ export function FollowingSection() {
   const action = (
     <Link
       href="/inspire/community"
-      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:underline underline-offset-4"
+      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:text-foreground hover:underline underline-offset-4"
     >
       {t("viewCommunity")}
     </Link>
@@ -58,7 +58,7 @@ export function FollowingSection() {
           ))}
         </div>
       ) : follows.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        <p className="text-sm text-on-surface-variant">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {follows.map((f) => {
@@ -69,9 +69,9 @@ export function FollowingSection() {
 
             return (
               <li key={user.id}>
-                <div className="-mx-2 flex items-center gap-3 rounded-md p-2">
+                <div className="-mx-2 flex items-center gap-3 rounded-lg bg-surface-container-high px-3 py-2">
                   <Link href={profileUrl} className="shrink-0">
-                    <div className="relative h-9 w-9 overflow-hidden rounded-full bg-muted">
+                    <div className="relative h-9 w-9 overflow-hidden rounded-full bg-surface-lowest">
                       {avatar ? (
                         <Image
                           src={avatar}
@@ -81,7 +81,7 @@ export function FollowingSection() {
                           sizes="36px"
                         />
                       ) : (
-                        <span className="flex h-full w-full items-center justify-center text-sm font-medium text-muted-foreground">
+                        <span className="flex h-full w-full items-center justify-center text-sm font-medium text-on-surface-variant">
                           {user.name?.charAt(0) ?? "?"}
                         </span>
                       )}
@@ -97,7 +97,7 @@ export function FollowingSection() {
                     {latestWork && (
                       <Link
                         href={`${profileUrl}/s/${latestWork.id}`}
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors truncate block"
+                        className="text-xs text-on-surface-variant transition-colors hover:text-foreground truncate block"
                       >
                         {t("latestWork")}: {latestWork.title ?? "untitled"}
                       </Link>

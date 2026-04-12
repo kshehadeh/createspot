@@ -42,7 +42,7 @@ export function CritiquesSection({ critiquesUrl }: CritiquesSectionProps) {
   const action = (
     <Link
       href={critiquesUrl}
-      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:underline underline-offset-4"
+      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:text-foreground hover:underline underline-offset-4"
     >
       {t("viewAll")}
     </Link>
@@ -57,7 +57,7 @@ export function CritiquesSection({ critiquesUrl }: CritiquesSectionProps) {
           ))}
         </div>
       ) : critiques.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        <p className="text-sm text-on-surface-variant">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {critiques.map((c) => {
@@ -66,7 +66,7 @@ export function CritiquesSection({ critiquesUrl }: CritiquesSectionProps) {
               <li key={c.id}>
                 <Link
                   href={submissionUrl}
-                  className="-mx-2 flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-muted/60"
+                  className="-mx-2 flex items-center gap-3 rounded-lg bg-surface-container-high px-3 py-2 transition-colors hover:bg-surface-container-highest"
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground truncate">
@@ -77,7 +77,7 @@ export function CritiquesSection({ critiquesUrl }: CritiquesSectionProps) {
                           "submission"}
                       </span>
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-on-surface-variant">
                       {new Date(c.createdAt).toLocaleDateString()}
                     </p>
                   </div>

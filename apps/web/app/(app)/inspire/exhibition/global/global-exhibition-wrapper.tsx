@@ -5,6 +5,7 @@ import Link from "@/components/link";
 import Image from "next/image";
 import { ExpandableBio } from "@/components/expandable-bio";
 import { TextThumbnail } from "@/components/text-thumbnail";
+import { InspireTitle } from "@/components/inspire-page-header";
 import {
   Avatar,
   AvatarFallback,
@@ -155,9 +156,7 @@ export function GlobalExhibitionWrapper({
 
             {/* Title and Description - Right Side */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold text-foreground">
-                {exhibitTitle}
-              </h1>
+              <InspireTitle>{exhibitTitle}</InspireTitle>
               {exhibit && (
                 <div className="mt-4 space-y-3">
                   {exhibit.description && (

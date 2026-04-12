@@ -92,7 +92,7 @@ const BaseModalOverlay = React.forwardRef<
     return (
       <VaulDrawer.Overlay
         ref={ref}
-        className={cn("fixed inset-0 z-50 bg-black/80", className)}
+        className={cn("fixed inset-0 z-50 bg-black/70", className)}
         {...props}
       />
     );
@@ -102,7 +102,7 @@ const BaseModalOverlay = React.forwardRef<
     <DialogPrimitive.Overlay
       ref={ref}
       className={cn(
-        "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "fixed inset-0 z-50 bg-black/70 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className,
       )}
       {...props}
@@ -140,7 +140,7 @@ const BaseModalContent = React.forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed left-[50%] top-[50%] z-50 flex flex-col w-full max-w-lg max-h-[85vh] overflow-y-auto translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+          "fixed left-[50%] top-[50%] z-50 flex w-full max-w-lg max-h-[85vh] translate-x-[-50%] translate-y-[-50%] flex-col gap-4 overflow-y-auto rounded-lg border border-outline-variant/20 bg-surface-container p-6 shadow-gallery-modal duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
           className,
         )}
         {...props}
@@ -161,13 +161,13 @@ const BaseModalContent = React.forwardRef<
       <VaulDrawer.Content
         ref={ref}
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-background rounded-t-2xl shadow-2xl outline-none",
+          "fixed bottom-0 left-0 right-0 z-50 flex flex-col rounded-t-2xl border border-outline-variant/20 bg-surface-container shadow-gallery-modal outline-none",
           className,
         )}
         style={{ height: contentHeight } as React.CSSProperties}
       >
         {/* Vaul drag handle – registers with the gesture system for swipe-to-dismiss */}
-        <VaulDrawer.Handle className="mt-4 mb-0 !h-1.5 !w-12 shrink-0 !rounded-full !bg-border" />
+        <VaulDrawer.Handle className="mt-4 mb-0 !h-1.5 !w-12 shrink-0 !rounded-full !bg-surface-bright" />
         {children}
       </VaulDrawer.Content>
     </BaseModalPortal>

@@ -56,6 +56,7 @@ export function DashboardNavigation({
   const t = useTranslations("navigation");
   const exhibitionRoute = getRoute("exhibition");
   const creatorsRoute = getRoute("creators");
+  const creatorsInspirePath = "/inspire/creators";
   const profileRoute = getRoute("profile");
   const dashboardRoute = getRoute("dashboard");
   const portfolioRoute = getRoute("portfolio");
@@ -130,7 +131,7 @@ export function DashboardNavigation({
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link
-              href={creatorsRoute.path}
+              href={creatorsInspirePath}
               prefetch={false}
               className={cn(
                 "flex items-center gap-2",

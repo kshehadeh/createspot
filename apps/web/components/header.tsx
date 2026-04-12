@@ -49,7 +49,6 @@ const HeaderUtilityNav = dynamic(
   },
 );
 import { SubmissionEditModal } from "./submission-edit-modal";
-import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@createspot/ui-primitives/button";
 import { SiDiscord } from "@icons-pack/react-simple-icons";
 import { getRoute } from "@/lib/routes";
@@ -61,7 +60,7 @@ const UserDropdown = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center gap-2 border-l border-border pl-4">
+      <div className="flex items-center gap-2 pl-4">
         <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
       </div>
     ),
@@ -96,37 +95,38 @@ export function Header({ user }: HeaderProps) {
 
   return (
     <>
-      <header className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6 sm:py-4 lg:px-12">
-        <div className="flex items-center">
-          <Link
-            href={getRoute("home").path}
-            className="flex items-center gap-2 text-foreground"
-          >
-            <CreateSpotLogo
-              className="h-6 w-auto"
-              base="currentColor"
-              highlight="rgb(161 161 170)"
-            />
-            <span className="whitespace-nowrap text-xl font-normal font-permanent-marker sm:text-2xl">
-              Create Spot
-            </span>
-          </Link>
-        </div>
-        <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:gap-3">
-            <DashboardNavigation
-              user={user}
-              onCreateModalOpen={() => setIsCreateModalOpen(true)}
-            />
-            <div className="flex items-center gap-1">
-              <HeaderUtilityNav user={user} />
-              <ThemeToggle />
+      <header className="sticky top-0 z-30 px-3 py-3 sm:px-6 sm:py-4 lg:px-12">
+        <div className="glass-nav flex w-full items-center justify-between rounded-2xl border border-outline-variant/30 px-4 py-3 shadow-[0_14px_35px_rgb(0_0_0_/_0.35)] sm:px-5">
+          <div className="flex items-center">
+            <Link
+              href={getRoute("home").path}
+              className="flex items-center gap-2 text-foreground"
+            >
+              <CreateSpotLogo
+                className="h-6 w-auto"
+                base="currentColor"
+                highlight="rgb(161 161 170)"
+              />
+              <span className="whitespace-nowrap text-xl font-normal font-permanent-marker sm:text-2xl">
+                Create Spot
+              </span>
+            </Link>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex md:items-center md:gap-3">
+              <DashboardNavigation
+                user={user}
+                onCreateModalOpen={() => setIsCreateModalOpen(true)}
+              />
+              <div className="flex items-center gap-1 rounded-xl bg-surface-container-high px-1 py-1">
+                <HeaderUtilityNav user={user} />
+              </div>
               <Button
                 asChild
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-foreground"
+                className="rounded-xl text-on-surface-variant hover:bg-surface-bright/60 hover:text-foreground"
                 aria-label={t("joinDiscord")}
                 title={t("joinDiscord")}
               >
@@ -138,40 +138,40 @@ export function Header({ user }: HeaderProps) {
                   <SiDiscord className="h-4 w-4" />
                 </a>
               </Button>
+              {user ? (
+                <UserDropdown
+                  id={user?.id}
+                  name={user?.name}
+                  image={user?.image}
+                  profileImageUrl={user?.profileImageUrl}
+                />
+              ) : (
+                <JumpInDropdown />
+              )}
             </div>
-            {user ? (
-              <UserDropdown
-                id={user?.id}
-                name={user?.name}
-                image={user?.image}
-                profileImageUrl={user?.profileImageUrl}
-              />
-            ) : (
-              <JumpInDropdown />
-            )}
-          </div>
-          {/* Mobile Navigation */}
-          <div className="flex md:hidden items-center gap-2">
-            <Button
-              asChild
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-              aria-label={t("joinDiscord")}
-              title={t("joinDiscord")}
-            >
-              <a
-                href="https://discord.gg/vrDZhCahcp"
-                target="_blank"
-                rel="noreferrer"
+            {/* Mobile Navigation */}
+            <div className="flex md:hidden items-center gap-2">
+              <Button
+                asChild
+                variant="ghost"
+                size="icon"
+                className="rounded-xl text-on-surface-variant hover:bg-surface-bright/60 hover:text-foreground"
+                aria-label={t("joinDiscord")}
+                title={t("joinDiscord")}
               >
-                <SiDiscord className="h-4 w-4" />
-              </a>
-            </Button>
-            <MobileNavigation
-              user={user}
-              onCreateModalOpen={() => setIsCreateModalOpen(true)}
-            />
+                <a
+                  href="https://discord.gg/vrDZhCahcp"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <SiDiscord className="h-4 w-4" />
+                </a>
+              </Button>
+              <MobileNavigation
+                user={user}
+                onCreateModalOpen={() => setIsCreateModalOpen(true)}
+              />
+            </div>
           </div>
         </div>
       </header>

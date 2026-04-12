@@ -55,7 +55,7 @@ export function UserDropdown({
     return (
       <div
         className={cn(
-          "flex items-center gap-2 border-l border-border pl-4 outline-none",
+          "flex items-center gap-2 pl-4 outline-none",
           triggerClassName,
         )}
       >
@@ -69,11 +69,11 @@ export function UserDropdown({
             src={displayImage || undefined}
             alt={name || "User avatar"}
           />
-          <AvatarFallback className="bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+          <AvatarFallback className="bg-surface-bright text-sm font-medium text-foreground">
             {name?.charAt(0).toUpperCase() || "?"}
           </AvatarFallback>
         </Avatar>
-        <ChevronDown className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+        <ChevronDown className="h-4 w-4 text-secondary" />
       </div>
     );
   }
@@ -82,7 +82,7 @@ export function UserDropdown({
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
         className={cn(
-          "flex items-center gap-2 border-l border-border pl-4 outline-none",
+          "flex items-center gap-2 pl-4 outline-none",
           triggerClassName,
         )}
       >
@@ -96,11 +96,11 @@ export function UserDropdown({
             src={displayImage || undefined}
             alt={name || "User avatar"}
           />
-          <AvatarFallback className="bg-zinc-200 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+          <AvatarFallback className="bg-surface-bright text-sm font-medium text-foreground">
             {name?.charAt(0).toUpperCase() || "?"}
           </AvatarFallback>
         </Avatar>
-        <ChevronDown className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+        <ChevronDown className="h-4 w-4 text-secondary" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         {id && (

@@ -9,7 +9,6 @@ import { HelpCircle } from "lucide-react";
 import { CreateSpotLogo } from "./create-spot-logo";
 import { MobileNavigation } from "./mobile-navigation";
 import { SubmissionEditModal } from "./submission-edit-modal";
-import { ThemeToggle } from "./theme-toggle";
 
 const UserDropdown = dynamic(
   () =>
@@ -17,7 +16,7 @@ const UserDropdown = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center gap-2 border-l border-border pl-4">
+      <div className="flex items-center gap-2 pl-4">
         <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
       </div>
     ),
@@ -43,35 +42,61 @@ export function PublicHeader({ user }: PublicHeaderProps) {
 
   return (
     <>
-      <header className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-border px-6 py-4 sm:px-12">
-        <div />
-        <Link href="/" className="flex items-center gap-2 text-foreground">
-          <CreateSpotLogo
-            className="h-6 w-auto"
-            base="currentColor"
-            highlight="rgb(161 161 170)"
-          />
-          <span className="whitespace-nowrap text-2xl font-normal font-permanent-marker">
-            Create Spot
-          </span>
-        </Link>
-        <div className="flex items-center justify-end gap-2 sm:gap-3">
-          {/* Desktop: theme toggle + about + sign-in */}
-          <div className="hidden md:flex items-center gap-3">
-            <ThemeToggle />
-            {user ? (
-              <UserDropdown
-                id={user.id}
-                name={user.name}
-                image={user.image}
-                profileImageUrl={user.profileImageUrl}
-              />
-            ) : (
-              <>
+      <header className="px-3 py-3 sm:px-12 sm:py-4">
+        <div className="glass-nav mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center rounded-2xl border border-outline-variant/30 px-4 py-3 shadow-[0_14px_35px_rgb(0_0_0_/_0.35)] sm:px-5">
+          <div />
+          <Link href="/" className="flex items-center gap-2 text-foreground">
+            <CreateSpotLogo
+              className="h-6 w-auto"
+              base="currentColor"
+              highlight="rgb(161 161 170)"
+            />
+            <span className="whitespace-nowrap text-2xl font-normal font-permanent-marker">
+              Create Spot
+            </span>
+          </Link>
+          <div className="flex items-center justify-end gap-2 sm:gap-3">
+          {/* Desktop: about + sign-in */}
+            <div className="hidden md:flex items-center gap-3">
+              {user ? (
+                <UserDropdown
+                  id={user.id}
+                  name={user.name}
+                  image={user.image}
+                  profileImageUrl={user.profileImageUrl}
+                />
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 rounded-xl"
+                    asChild
+                  >
+                    <Link
+                      href="/about"
+                      title={tNav("overview")}
+                      aria-label={tNav("overview")}
+                    >
+                      <HelpCircle className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Link
+                    href="/welcome"
+                    className="begin-button rounded-xl px-4 py-2 text-sm font-medium text-primary-foreground transition-colors"
+                  >
+                    {tNav("jumpIn")}
+                  </Link>
+                </>
+              )}
+            </div>
+          {/* Mobile: about + hamburger for guests; signed-in users use hamburger only (account is in the drawer) */}
+            <div className="flex md:hidden items-center gap-2">
+              {!user && (
                 <Button
                   variant="outline"
                   size="icon"
-                  className="shrink-0 rounded-full"
+                  className="shrink-0 rounded-xl"
                   asChild
                 >
                   <Link
@@ -82,38 +107,13 @@ export function PublicHeader({ user }: PublicHeaderProps) {
                     <HelpCircle className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Link
-                  href="/welcome"
-                  className="begin-button rounded-full px-4 py-2 text-sm font-medium text-primary-foreground transition-colors"
-                >
-                  {tNav("jumpIn")}
-                </Link>
-              </>
-            )}
-          </div>
-          {/* Mobile: about + hamburger for guests; signed-in users use hamburger only (account is in the drawer) */}
-          <div className="flex md:hidden items-center gap-2">
-            {!user && (
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0 rounded-full"
-                asChild
-              >
-                <Link
-                  href="/about"
-                  title={tNav("overview")}
-                  aria-label={tNav("overview")}
-                >
-                  <HelpCircle className="h-4 w-4" />
-                </Link>
-              </Button>
-            )}
-            <MobileNavigation
-              user={user}
-              onCreateModalOpen={() => setIsCreateModalOpen(true)}
-              showCreateButton={false}
-            />
+              )}
+              <MobileNavigation
+                user={user}
+                onCreateModalOpen={() => setIsCreateModalOpen(true)}
+                showCreateButton={false}
+              />
+            </div>
           </div>
         </div>
       </header>

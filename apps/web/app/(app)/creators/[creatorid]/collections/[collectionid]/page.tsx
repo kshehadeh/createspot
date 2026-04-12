@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { PageLayout } from "@/components/page-layout";
+import { PageTitle } from "@/components/page-title";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
 import { ShareButton } from "@/components/share-button";
 import { Button, buttonVariants } from "@createspot/ui-primitives/button";
@@ -170,8 +171,8 @@ export default async function CollectionViewPage({
               className="h-12 w-12 rounded-full shrink-0"
             />
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted shrink-0">
-              <span className="text-lg font-medium text-muted-foreground">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-lowest shrink-0">
+              <span className="text-lg font-medium text-on-surface-variant">
                 {user.name?.charAt(0) || "?"}
               </span>
             </div>
@@ -180,17 +181,17 @@ export default async function CollectionViewPage({
             <div className="mb-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <h1 className="break-words text-2xl font-bold text-foreground sm:text-3xl">
+                  <PageTitle>
                     <span className="inline-flex min-w-0 items-center gap-2">
                       <span className="truncate">{collection.name}</span>
                       {collection.isPublic ? (
                         <Globe className="h-4 w-4 shrink-0 text-green-500" />
                       ) : (
-                        <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        <Lock className="h-4 w-4 shrink-0 text-on-surface-variant" />
                       )}
                     </span>
-                  </h1>
-                  <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                  </PageTitle>
+                  <p className="mt-2 text-sm text-on-surface-variant sm:text-base">
                     {user.name && (
                       <span>
                         {t("by", { name: user.name })}
@@ -248,7 +249,7 @@ export default async function CollectionViewPage({
 
         {/* Description */}
         {collection.description && (
-          <p className="mt-4 text-muted-foreground">{collection.description}</p>
+          <p className="mt-4 text-on-surface-variant">{collection.description}</p>
         )}
       </div>
 
@@ -265,8 +266,8 @@ export default async function CollectionViewPage({
           }}
         />
       ) : (
-        <div className="rounded-lg border border-dashed border-border py-16 text-center">
-          <p className="text-muted-foreground">{t("emptyCollection")}</p>
+        <div className="rounded-xl bg-surface-container py-16 text-center shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]">
+          <p className="text-on-surface-variant">{t("emptyCollection")}</p>
           {isOwner && (
             <Link
               href={`${getCreatorUrl(user)}/collections/${collection.id}/edit`}

@@ -173,7 +173,7 @@ export default async function AboutPage() {
 
       <PageLayout maxWidth="max-w-6xl" className="space-y-10 py-10 sm:py-16">
         <AboutScrollSection id="purpose">
-          <AboutCard className="border-border/60">
+          <AboutCard className="bg-surface-container">
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-amber-500/15 p-2 text-amber-500 dark:bg-amber-400/15 dark:text-amber-300">
                 <Target className="h-5 w-5" />
@@ -205,7 +205,10 @@ export default async function AboutPage() {
         </AboutScrollSection>
 
         <AboutScrollSection id="features">
-          <AboutCard className="border-border/60" contentClassName="p-6 sm:p-8">
+          <AboutCard
+            className="bg-surface-container"
+            contentClassName="p-6 sm:p-8"
+          >
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-violet-500/15 p-2 text-violet-500 dark:bg-violet-400/15 dark:text-violet-300">
                 <Sparkles className="h-5 w-5" />
@@ -221,9 +224,9 @@ export default async function AboutPage() {
               {features.map((feature) => (
                 <div
                   key={feature.key}
-                  className="rounded-2xl border border-border/70 bg-card/40 p-4"
+                  className="rounded-2xl bg-surface-container-high p-4"
                 >
-                  <div className="mb-3 overflow-hidden rounded-xl border border-border bg-muted/40">
+                  <div className="mb-3 overflow-hidden rounded-xl bg-surface-lowest">
                     <img
                       src={feature.screenshotSrc}
                       alt={`${tFeatures(`features.${feature.key}.title`)} screenshot`}
@@ -258,7 +261,7 @@ export default async function AboutPage() {
         </AboutScrollSection>
 
         <AboutScrollSection id="protecting-your-work">
-          <AboutCard className="border-border/60">
+          <AboutCard className="bg-surface-container">
             <h2 className="mb-4 text-3xl font-permanent-marker text-foreground">
               {tAbout("protectingYourWork.title")}
             </h2>
@@ -291,7 +294,7 @@ export default async function AboutPage() {
         </AboutScrollSection>
 
         <AboutScrollSection id="cta">
-          <AboutCard className="border-border/60 bg-gradient-to-br from-primary/10 via-card to-card">
+          <AboutCard className="bg-gradient-to-br from-primary/10 via-surface-container to-surface-container-high">
             <h2 className="mb-3 text-2xl font-semibold text-foreground">
               Build momentum with every piece you share.
             </h2>

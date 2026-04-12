@@ -494,14 +494,14 @@ function SortablePortfolioItem({
       style={style}
       className={`group overflow-hidden transition-shadow duration-300 ${
         isWip
-          ? "border-2 border-dashed border-muted-foreground/40 rounded-sm"
-          : "border-0 rounded-none"
+          ? "rounded-xl border border-dashed border-outline-variant/30"
+          : "rounded-xl border-0"
       } ${
         isDragging || isSortableDragging ? "ring-2 ring-ring" : ""
       } hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)]`}
     >
       <div
-        className="protected-image-wrapper relative aspect-square cursor-pointer overflow-hidden bg-muted"
+        className="protected-image-wrapper relative aspect-square cursor-pointer overflow-hidden bg-surface-lowest"
         onClick={onClick}
         onContextMenu={handleImageContextMenu}
       >
@@ -535,7 +535,7 @@ function SortablePortfolioItem({
           />
         ) : isWip ? (
           <div className="flex h-full w-full items-center justify-center">
-            <Construction className="h-10 w-10 text-muted-foreground/50" />
+            <Construction className="h-10 w-10 text-on-surface-variant/60" />
           </div>
         ) : null}
 
@@ -595,7 +595,7 @@ function SortablePortfolioItem({
         )}
 
         {/* Overlay information in lower left */}
-        <div className="absolute bottom-0 left-0 max-w-[85%] bg-black/70 p-2.5 pr-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
             {item.title || t("untitled")}
           </h3>
@@ -912,12 +912,12 @@ function PortfolioGridContent({
                   <Card
                     className={`group relative overflow-hidden transition-shadow duration-300 hover:shadow-[0_0_20px_4px_hsl(var(--ring)/0.3)] ${
                       item.isWorkInProgress
-                        ? "border-2 border-dashed border-muted-foreground/40 rounded-sm"
-                        : "border-0 rounded-none"
+                        ? "rounded-xl border border-dashed border-outline-variant/30"
+                        : "rounded-xl border-0"
                     }`}
                   >
                     <div
-                      className="protected-image-wrapper relative aspect-square cursor-pointer overflow-hidden bg-muted"
+                      className="protected-image-wrapper relative aspect-square cursor-pointer overflow-hidden bg-surface-lowest"
                       onClick={() => {
                         if (item.imageUrl) {
                           setSelectedSubmission(item);
@@ -969,7 +969,7 @@ function PortfolioGridContent({
                         />
                       ) : item.isWorkInProgress ? (
                         <div className="flex h-full w-full items-center justify-center">
-                          <Construction className="h-10 w-10 text-muted-foreground/50" />
+                          <Construction className="h-10 w-10 text-on-surface-variant/60" />
                         </div>
                       ) : null}
 
@@ -986,7 +986,7 @@ function PortfolioGridContent({
                       )}
 
                       {/* Overlay information in lower left */}
-                      <div className="absolute bottom-0 left-0 max-w-[85%] bg-black/70 p-2.5 pr-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                         <h3 className="truncate text-sm font-medium text-white drop-shadow-sm">
                           {item.title || t("untitled")}
                         </h3>
@@ -1038,7 +1038,7 @@ function PortfolioGridContent({
       <div>
         {/* Drag/Saving hint when in edit mode */}
         {enableDragReorder && items.length > 1 && (
-          <p className="mb-4 text-xs text-muted-foreground">
+          <p className="mb-4 text-xs text-on-surface-variant">
             {isSaving ? t("savingOrder") : t("dragToReorder")}
           </p>
         )}
@@ -1067,9 +1067,9 @@ function PortfolioGridContent({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="rounded-lg border border-dashed border-border py-12 text-center"
+            className="rounded-xl bg-surface-container py-12 text-center shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]"
           >
-            <p className="text-muted-foreground">
+            <p className="text-on-surface-variant">
               {isOwnProfile ? t("emptyOwnProfile") : t("emptyOtherProfile")}
             </p>
             {isOwnProfile && user && (

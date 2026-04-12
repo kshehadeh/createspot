@@ -173,49 +173,35 @@ export function PortfolioPageBody({
   return (
     <div>
       {isOwnPortfolio && portfolioTitle && filterProps && (
-        <div className="mb-4 flex w-full items-start gap-4 md:mb-8">
-          {user.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={user.image}
-              alt={user.name || "User"}
-              className="hidden h-12 w-12 shrink-0 rounded-full md:block"
-            />
-          ) : (
-            <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted md:flex">
-              <span className="text-lg font-medium text-muted-foreground">
-                {user.name?.charAt(0) || "?"}
-              </span>
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <PortfolioMobileMenu
-              title={portfolioTitle}
-              subtitle={`${items.length} ${
-                items.length !== 1 ? tProfile("works") : tProfile("work")
-              }`}
-              userId={user.id}
-              filterProps={filterProps}
-              showSelectionToggle
-              selectionMode={selectionMode}
-              onSelectionModeToggle={() => {
-                setSelectionMode((m) => !m);
-                setSelectedIds(new Set());
-              }}
-            />
-          </div>
+        <div className="mb-5 w-full md:mb-8">
+          <PortfolioMobileMenu
+            title={portfolioTitle}
+            subtitle={`${items.length} ${
+              items.length !== 1 ? tProfile("works") : tProfile("work")
+            }`}
+            userId={user.id}
+            userName={user.name}
+            userImage={user.image}
+            filterProps={filterProps}
+            showSelectionToggle
+            selectionMode={selectionMode}
+            onSelectionModeToggle={() => {
+              setSelectionMode((m) => !m);
+              setSelectedIds(new Set());
+            }}
+          />
         </div>
       )}
 
       {bulkError && (
-        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+        <div className="mb-4 rounded-lg bg-destructive/15 p-3 text-sm text-destructive">
           {bulkError}
         </div>
       )}
 
       {isOwnPortfolio && selectionMode && visibleIds.length > 0 && (
         <div className="mb-3 flex items-center gap-2">
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-on-surface-variant">
             <Checkbox
               checked={allVisibleSelected}
               onCheckedChange={(c) => handleSelectAllVisible(c === true)}
@@ -227,7 +213,7 @@ export function PortfolioPageBody({
       )}
 
       {isOwnPortfolio && selectionMode && isSomeSelected && (
-        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/30 p-3">
+        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl bg-surface-container p-3 shadow-[0_10px_28px_rgb(0_0_0_/_0.28)]">
           <Button
             type="button"
             variant="outline"
@@ -250,7 +236,9 @@ export function PortfolioPageBody({
       )}
 
       {!sortAllowsReorder && isOwnPortfolio && items.length > 1 && (
-        <p className="mb-3 text-xs text-muted-foreground">{t("reorderHint")}</p>
+        <p className="mb-3 text-xs text-on-surface-variant">
+          {t("reorderHint")}
+        </p>
       )}
 
       <PortfolioGridProfile

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "@/components/link";
 import Image from "next/image";
 import { PageLayout } from "@/components/page-layout";
+import { InspirePageHeader } from "@/components/inspire-page-header";
 import {
   Card,
   CardContent,
@@ -92,13 +93,11 @@ export default async function ExhibitionHomePage() {
   return (
     <PageLayout maxWidth="max-w-6xl">
       <section className="mb-10">
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">
-          Exhibits and the Permanent Collection
-        </h1>
-        <p className="max-w-2xl text-lg text-muted-foreground">
-          Explore permanent collections and curated temporary exhibits from the
-          Create Spot community.
-        </p>
+        <InspirePageHeader
+          className="mb-0"
+          title="Exhibits and the Permanent Collection"
+          subtitle="Explore permanent collections and curated temporary exhibits from the Create Spot community."
+        />
       </section>
 
       {currentExhibits.length > 0 ? (
@@ -114,9 +113,9 @@ export default async function ExhibitionHomePage() {
                   href={`/inspire/exhibition/${exhibit.id}`}
                   className="block min-w-[280px] flex-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
-                  <Card className="group relative h-full overflow-hidden border-border/60 bg-card/70 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-border hover:bg-card hover:shadow-lg">
+                  <Card className="group relative h-full overflow-hidden bg-surface-container transition-all hover:-translate-y-0.5 hover:bg-surface-container-high hover:shadow-gallery-modal">
                     {exhibit.featuredSubmission && (
-                      <div className="relative h-48 w-full overflow-hidden bg-muted">
+                      <div className="relative h-48 w-full overflow-hidden bg-surface-lowest">
                         {exhibit.featuredSubmission.imageUrl ? (
                           <Image
                             src={exhibit.featuredSubmission.imageUrl}
@@ -193,7 +192,7 @@ export default async function ExhibitionHomePage() {
                     aria-label={`Open ${config.name} exhibit`}
                     className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
-                    <Card className="group relative h-full overflow-hidden border-border/60 bg-card/70 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:border-border hover:bg-card hover:shadow-lg">
+                    <Card className="group relative h-full overflow-hidden bg-surface-container transition-all hover:-translate-y-0.5 hover:bg-surface-container-high hover:shadow-gallery-modal">
                       <div
                         className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${decor.gradient}`}
                       />

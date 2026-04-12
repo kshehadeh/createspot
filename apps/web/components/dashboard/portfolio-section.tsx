@@ -80,7 +80,7 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
   const action = (
     <Link
       href={portfolioUrl}
-      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:underline underline-offset-4"
+      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:text-foreground hover:underline underline-offset-4"
     >
       {t("viewAll")}
     </Link>
@@ -110,8 +110,11 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
       ) : submissions.length === 0 ? (
         <>
           <div className="flex flex-col items-center gap-4 py-6 text-center">
-            <p className="text-sm text-muted-foreground">{t("empty")}</p>
-            <Button onClick={() => setIsCreateModalOpen(true)}>
+            <p className="text-sm text-on-surface-variant">{t("empty")}</p>
+            <Button
+              variant="gradient"
+              onClick={() => setIsCreateModalOpen(true)}
+            >
               {t("addSubmission")}
             </Button>
           </div>
@@ -139,10 +142,10 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
                   <HoverCardTrigger asChild>
                     <Link
                       href={submissionViewUrl}
-                      className={`group relative aspect-square overflow-hidden bg-muted outline-none ${
+                      className={`group relative aspect-square overflow-hidden bg-surface-lowest outline-none ${
                         s.isWorkInProgress
-                          ? "rounded-sm border-2 border-dashed border-muted-foreground/40"
-                          : "rounded-md"
+                          ? "rounded-lg border border-dashed border-outline-variant/40"
+                          : "rounded-xl"
                       }`}
                     >
                       {displayImageUrl ? (
@@ -164,7 +167,7 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center p-2">
-                          <p className="line-clamp-3 text-xs text-muted-foreground">
+                          <p className="line-clamp-3 text-xs text-on-surface-variant">
                             {displayTitle}
                           </p>
                         </div>
@@ -180,14 +183,14 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
                     <p className="font-medium text-foreground">
                       {displayTitle}
                     </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="mt-1 text-sm text-on-surface-variant">
                       <span className="font-medium text-foreground/80">
                         {t("hover.visibility")}
                       </span>{" "}
                       {visibility}
                     </p>
                     {addedLabel ? (
-                      <p className="mt-1 text-sm text-muted-foreground">
+                      <p className="mt-1 text-sm text-on-surface-variant">
                         {t("hover.added", { datetime: addedLabel })}
                       </p>
                     ) : null}
@@ -197,8 +200,8 @@ export function PortfolioSection({ portfolioUrl }: PortfolioSectionProps) {
                       </p>
                     ) : null}
                     {s.text?.trim() ? (
-                      <div className="mt-2 border-t border-border pt-2">
-                        <p className="text-xs font-medium text-muted-foreground">
+                      <div className="mt-2 border-t border-outline-variant/30 pt-2">
+                        <p className="text-xs font-medium text-on-surface-variant">
                           {t("hover.description")}
                         </p>
                         <p className="mt-1 line-clamp-4 text-sm text-foreground">

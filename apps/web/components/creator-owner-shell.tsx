@@ -28,9 +28,11 @@ export function CreatorOwnerShell({
   const hideSidebar = isFullWidthSubmissionPath(pathname);
 
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 gap-5">
       {!hideSidebar && <CreatorSidebar creatorUrl={creatorUrl} />}
-      <div className="flex-1 min-w-0 pb-16 md:pb-0">{children}</div>
+      <div className="flex-1 min-w-0 pb-16 md:pb-0 md:pr-6 lg:pr-12">
+        {children}
+      </div>
       <CreatorMobileNav creatorUrl={creatorUrl} />
     </div>
   );

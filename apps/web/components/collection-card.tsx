@@ -39,9 +39,9 @@ export function CollectionCard({ collection }: CollectionCardProps) {
 
   return (
     <Link href={href}>
-      <Card className="group overflow-hidden transition-all hover:shadow-lg">
+      <Card className="group overflow-hidden rounded-xl border-transparent bg-surface-container shadow-[0_14px_35px_rgb(0_0_0_/_0.35)] transition-all hover:bg-surface-container-high hover:shadow-gallery-modal">
         {/* Cover Image */}
-        <div className="relative aspect-square overflow-hidden bg-muted">
+        <div className="relative aspect-square overflow-hidden bg-surface-lowest">
           {coverSubmission?.imageUrl ? (
             <Image
               src={coverSubmission.imageUrl}
@@ -62,7 +62,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <span className="text-4xl text-muted-foreground/30">
+              <span className="text-4xl text-on-surface-variant/40">
                 {collection.name.charAt(0).toUpperCase()}
               </span>
             </div>
@@ -73,7 +73,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
             {collection.isPublic ? (
               <Globe className="h-4 w-4 text-green-500" />
             ) : (
-              <Lock className="h-4 w-4 text-muted-foreground" />
+              <Lock className="h-4 w-4 text-on-surface-variant" />
             )}
           </div>
         </div>
@@ -83,7 +83,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
           <h3 className="truncate font-medium text-foreground">
             {collection.name}
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-on-surface-variant">
             {t("itemCount", { count: collection._count.submissions })}
           </p>
         </CardContent>

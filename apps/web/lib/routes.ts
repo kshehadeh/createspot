@@ -295,7 +295,12 @@ export function getRoute(key: keyof typeof ROUTES): RouteConfig {
  * profiles, portfolios, or submissions under `/creators/[creatorid]/...`.
  */
 export function isCreatorsListingPath(pathname: string): boolean {
-  return pathname === "/creators" || pathname === "/creators/";
+  return (
+    pathname === "/creators" ||
+    pathname === "/creators/" ||
+    pathname === "/inspire/creators" ||
+    pathname === "/inspire/creators/"
+  );
 }
 
 /**

@@ -40,16 +40,23 @@ export function Dashboard({
   const firstName = userName?.split(" ")[0] ?? null;
 
   return (
-    <div className="space-y-5 md:space-y-6">
-      {firstName && (
-        <h1 className="text-2xl font-bold text-foreground text-balance sm:text-3xl">
-          Welcome back, {firstName}
+    <div className="space-y-6 md:space-y-8">
+      <section className="rounded-2xl bg-surface-container-low p-5 shadow-[0_14px_35px_rgb(0_0_0_/_0.35)] sm:p-6">
+        <p className="text-xs font-medium tracking-[0.12em] text-on-surface-variant uppercase">
+          Dashboard
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold text-foreground text-balance sm:text-4xl">
+          {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
         </h1>
-      )}
+        <p className="mt-2 max-w-2xl text-sm text-on-surface-variant sm:text-base">
+          A focused overview of your portfolio momentum, critiques, and
+          community activity.
+        </p>
+      </section>
 
       <OnboardingSection />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="min-w-0">
           <Suspense
             fallback={<SectionSkeleton title={tPortfolioSection("title")} />}
@@ -69,7 +76,7 @@ export function Dashboard({
         <CritiquesSection critiquesUrl={critiquesUrl} />
       </Suspense>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <Suspense fallback={<SectionSkeleton title="People You Follow" />}>
           <FollowingSection />
         </Suspense>

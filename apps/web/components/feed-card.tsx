@@ -172,7 +172,7 @@ function formatRelativeTime(date: Date | string): string {
 
 function TextSlide({ html, title }: { html: string; title?: string | null }) {
   return (
-    <div className="flex h-full w-full flex-col justify-center bg-muted/50 p-6">
+    <div className="flex h-full w-full flex-col justify-center bg-surface-container p-6">
       {title && (
         <h3 className="mb-3 text-lg font-semibold text-foreground line-clamp-2">
           {title}
@@ -214,7 +214,7 @@ function ImageSlide({
   return (
     <div
       className={cn(
-        "relative h-full w-full bg-muted",
+        "relative h-full w-full bg-surface-lowest",
         interactive && "cursor-pointer",
       )}
       {...(interactive ? { ...imageTapHandlers, ...imageTapA11y } : {})}
@@ -303,9 +303,9 @@ export function FeedCard({
       : null;
 
   return (
-    <article className="border-b border-border last:border-b-0">
+    <article className="mb-5 overflow-hidden rounded-xl bg-surface-container-low shadow-[0_14px_35px_rgb(0_0_0_/_0.35)] last:mb-0">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3">
+      <div className="flex items-center gap-3 px-4 py-4">
         <Link href={creatorUrl} className="shrink-0">
           <Avatar className="h-9 w-9">
             <AvatarImage
@@ -342,7 +342,7 @@ export function FeedCard({
 
       {/* Media carousel */}
       {slides.length > 0 && (
-        <div className="group relative aspect-square w-full overflow-hidden bg-muted">
+        <div className="group relative aspect-square w-full overflow-hidden bg-surface-lowest">
           <div ref={emblaRef} className="h-full overflow-hidden">
             <div className="flex h-full">
               {slides.map((slide, index) => (
@@ -368,7 +368,7 @@ export function FeedCard({
                   {slide.type === "reference" && (
                     <div
                       className={cn(
-                        "relative h-full w-full bg-muted",
+                        "relative h-full w-full bg-surface-lowest",
                         onOpenLightbox && "cursor-pointer",
                       )}
                       {...(onOpenLightbox && imageTapA11y
@@ -390,7 +390,7 @@ export function FeedCard({
                   {slide.type === "progression" && (
                     <div
                       className={cn(
-                        "relative h-full w-full bg-muted",
+                        "relative h-full w-full bg-surface-lowest",
                         onOpenLightbox && slide.imageUrl && "cursor-pointer",
                       )}
                       {...(onOpenLightbox && slide.imageUrl && imageTapA11y

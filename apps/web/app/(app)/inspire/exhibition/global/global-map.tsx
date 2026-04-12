@@ -13,7 +13,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import { LOGO_BASE_PATHS, LOGO_HIGHLIGHT_PATHS } from "@/lib/logo-paths";
 import { UserWorkModal } from "@/components/user-work-modal";
@@ -69,7 +68,7 @@ export function GlobalMap({ exhibitId, mapHeight }: GlobalMapProps) {
   const [mounted, setMounted] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { theme } = useTheme();
+  const theme = "dark";
 
   useEffect(() => {
     setMounted(true);
@@ -190,7 +189,7 @@ export function GlobalMap({ exhibitId, mapHeight }: GlobalMapProps) {
     return (
       <div
         style={{ height: mapHeight }}
-        className="w-full rounded-lg border bg-muted animate-pulse"
+        className="w-full rounded-lg bg-surface-container animate-pulse"
       />
     );
   }
@@ -199,7 +198,7 @@ export function GlobalMap({ exhibitId, mapHeight }: GlobalMapProps) {
     return (
       <div
         style={{ height: mapHeight }}
-        className="w-full rounded-lg border bg-muted flex items-center justify-center"
+        className="w-full rounded-lg bg-surface-container flex items-center justify-center"
       >
         <p className="text-muted-foreground">Loading map...</p>
       </div>
@@ -210,7 +209,7 @@ export function GlobalMap({ exhibitId, mapHeight }: GlobalMapProps) {
     return (
       <div
         style={{ height: mapHeight }}
-        className="w-full rounded-lg border bg-muted flex items-center justify-center"
+        className="w-full rounded-lg bg-surface-container flex items-center justify-center"
       >
         <p className="text-destructive">{error}</p>
       </div>
@@ -221,7 +220,7 @@ export function GlobalMap({ exhibitId, mapHeight }: GlobalMapProps) {
     return (
       <div
         style={{ height: mapHeight }}
-        className="w-full rounded-lg border border-dashed border-border bg-card flex items-center justify-center"
+        className="w-full rounded-lg bg-surface-container flex items-center justify-center"
       >
         <p className="text-sm text-muted-foreground">
           No artists with location data yet.

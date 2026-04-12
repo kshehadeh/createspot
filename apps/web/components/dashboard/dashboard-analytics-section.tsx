@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import {
   Bar,
   BarChart,
@@ -64,13 +63,12 @@ function useChartPalette(): {
   grid: string;
   pieFills: string[];
 } {
-  const { resolvedTheme } = useTheme();
   const [palette, setPalette] = useState({
-    primary: "hsl(240 5.9% 10%)",
-    muted: "hsl(240 3.8% 46.1%)",
-    foreground: "hsl(240 10% 3.9%)",
-    border: "hsl(240 5.9% 80%)",
-    grid: "hsl(240 5.9% 90%)",
+    primary: "hsl(240 1% 78%)",
+    muted: "hsl(60 1% 67%)",
+    foreground: "hsl(0 8% 98%)",
+    border: "hsl(0 0% 28%)",
+    grid: "hsl(0 0% 28%)",
     pieFills: [
       "hsl(240 5.9% 10%)",
       "hsl(142 71% 45%)",
@@ -97,7 +95,7 @@ function useChartPalette(): {
         "hsl(330 81% 60%)",
       ],
     });
-  }, [resolvedTheme]);
+  }, []);
 
   return palette;
 }
@@ -191,14 +189,14 @@ export function DashboardAnalyticsSection() {
       <div className="space-y-4">
         <div className={chartsRowClass}>
           <DashboardSection title={t("submissionsOverTime")}>
-            <p className="text-sm text-muted-foreground">{t("loadError")}</p>
+            <p className="text-sm text-on-surface-variant">{t("loadError")}</p>
           </DashboardSection>
           <DashboardSection title={t("categoryDistribution")}>
-            <p className="text-sm text-muted-foreground">{t("loadError")}</p>
+            <p className="text-sm text-on-surface-variant">{t("loadError")}</p>
           </DashboardSection>
         </div>
         <DashboardSection title={t("tagDistribution")}>
-          <p className="text-sm text-muted-foreground">{t("loadError")}</p>
+          <p className="text-sm text-on-surface-variant">{t("loadError")}</p>
         </DashboardSection>
       </div>
     );
@@ -249,11 +247,11 @@ export function DashboardAnalyticsSection() {
                     }
                     const count = Number(payload[0]?.value ?? 0);
                     return (
-                      <div className="rounded-md border border-border bg-popover px-2 py-1.5 text-xs text-popover-foreground shadow-md">
+                      <div className="rounded-md border border-outline-variant/30 bg-popover px-2 py-1.5 text-xs text-popover-foreground shadow-gallery-modal">
                         <p className="font-medium">
                           {formatUtcDayLabel(String(label), locale)}
                         </p>
-                        <p className="text-muted-foreground">
+                        <p className="text-on-surface-variant">
                           {t("submissionsTooltip", { count })}
                         </p>
                       </div>
@@ -273,7 +271,7 @@ export function DashboardAnalyticsSection() {
 
         <DashboardSection title={t("categoryDistribution")}>
           {pieData.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-on-surface-variant">
               {t("emptyCategories")}
             </p>
           ) : (
@@ -317,9 +315,9 @@ export function DashboardAnalyticsSection() {
                       const pct =
                         total > 0 ? Math.round((value / total) * 100) : 0;
                       return (
-                        <div className="rounded-md border border-border bg-popover px-2 py-1.5 text-xs text-popover-foreground shadow-md">
+                        <div className="rounded-md border border-outline-variant/30 bg-popover px-2 py-1.5 text-xs text-popover-foreground shadow-gallery-modal">
                           <p className="font-medium">{name}</p>
-                          <p className="text-muted-foreground">
+                          <p className="text-on-surface-variant">
                             {t("categoryTooltip", {
                               count: value,
                               percent: pct,
@@ -332,7 +330,7 @@ export function DashboardAnalyticsSection() {
                   <Legend
                     wrapperStyle={{ fontSize: 11, color: palette.muted }}
                     formatter={(value) => (
-                      <span className="text-muted-foreground">{value}</span>
+                      <span className="text-on-surface-variant">{value}</span>
                     )}
                   />
                 </PieChart>
@@ -344,11 +342,11 @@ export function DashboardAnalyticsSection() {
 
       <DashboardSection title={t("tagDistribution")}>
         {data.portfolioItemCount === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-on-surface-variant">
             {t("emptyTagsNoPortfolio")}
           </p>
         ) : data.tagDistribution.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-on-surface-variant">
             {t("emptyTagsNoneYet")}
           </p>
         ) : (
@@ -400,9 +398,9 @@ export function DashboardAnalyticsSection() {
                           : 0;
                       const name = String(row?.name ?? "");
                       return (
-                        <div className="rounded-md border border-border bg-popover px-2 py-1.5 text-xs text-popover-foreground shadow-md">
+                        <div className="rounded-md border border-outline-variant/30 bg-popover px-2 py-1.5 text-xs text-popover-foreground shadow-gallery-modal">
                           <p className="font-medium">{name}</p>
-                          <p className="text-muted-foreground">
+                          <p className="text-on-surface-variant">
                             {t("tagTooltip", { count, percent: pct })}
                           </p>
                         </div>
@@ -420,7 +418,7 @@ export function DashboardAnalyticsSection() {
               </ResponsiveContainer>
             </div>
             {data.tagDistributionTruncated ? (
-              <p className="mt-2 text-xs text-muted-foreground">
+              <p className="mt-2 text-xs text-on-surface-variant">
                 {t("tagDistributionTruncatedNote", {
                   limit: data.tagDistributionLimit,
                 })}

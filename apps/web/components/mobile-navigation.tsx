@@ -33,7 +33,6 @@ import { cn, getCreatorUrl } from "@/lib/utils";
 import { ExhibitRequestModal } from "./contact/exhibit-request-form";
 import { SupportFormModal } from "./contact/support-form-modal";
 import { SubmissionEditModal } from "./submission-edit-modal";
-import { ThemeToggle } from "./theme-toggle";
 
 // Icon for Help link
 function HelpIcon({ className }: { className?: string }) {
@@ -84,6 +83,7 @@ export function MobileNavigation({
   const pathname = usePathname();
   const t = useTranslations("navigation");
   const tProfile = useTranslations("profile");
+  const creatorsInspirePath = "/inspire/creators";
 
   // State for expandable sections
   const [inspireExpanded, setInspireExpanded] = useState(false);
@@ -139,6 +139,7 @@ export function MobileNavigation({
     setInspireExpanded(
       pathname === exhibitionRoute.path ||
         pathname === creatorsRoute.path ||
+        pathname === creatorsInspirePath ||
         pathname === getRoute("community").path ||
         pathname === favoritesRoute.path,
     );
@@ -187,7 +188,7 @@ export function MobileNavigation({
       {user && showCreateButton && (
         <button
           onClick={handleCreateClick}
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground transition-colors hover:bg-surface-bright/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
           aria-label={t("create")}
         >
           <span className="text-xl font-medium">+</span>
@@ -196,7 +197,7 @@ export function MobileNavigation({
       {/* Mobile Hamburger Button */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="flex flex-col gap-1.5 rounded-lg p-2 text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+        className="flex flex-col gap-1.5 rounded-xl p-2 text-foreground transition-colors hover:bg-surface-bright/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
         aria-label={t("toggleMenu")}
         aria-expanded={isMenuOpen}
       >
@@ -228,19 +229,20 @@ export function MobileNavigation({
       {/* Mobile Slide-in Menu */}
       <div
         ref={menuRef}
-        className={`fixed right-0 top-0 z-50 h-full w-full max-w-80 transform border-l border-border bg-background transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed right-0 top-0 z-50 h-full w-full max-w-80 transform bg-surface-container transition-transform duration-300 ease-in-out md:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex h-full flex-col">
           {/* Menu Header */}
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <div className="border-b border-outline-variant/25 bg-surface-container-high px-6 py-4">
+            <div className="flex items-center justify-between">
             <span className="text-xl font-medium text-foreground font-permanent-marker">
               Create Spot
             </span>
             <button
               onClick={() => setIsMenuOpen(false)}
-              className="p-2 text-muted-foreground hover:text-foreground"
+              className="rounded-xl p-2 text-on-surface-variant hover:bg-surface-bright/60 hover:text-foreground"
               aria-label={t("closeMenu")}
             >
               <svg
@@ -257,10 +259,11 @@ export function MobileNavigation({
                 />
               </svg>
             </button>
+            </div>
           </div>
 
           {/* Menu Content */}
-          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-6">
+          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-5">
             {/* Inspire Section */}
             <MobileSection
               title={t("inspire")}
@@ -275,7 +278,7 @@ export function MobileNavigation({
                 onClose={() => setIsMenuOpen(false)}
               />
               <MobileNavItem
-                href={getRoute("creators").path}
+                href={creatorsInspirePath}
                 icon={Users}
                 label={t("creators")}
                 onClose={() => setIsMenuOpen(false)}
@@ -310,7 +313,7 @@ export function MobileNavigation({
                   label={t("create")}
                   onClick={handleCreateClick}
                 />
-                <div className="mt-0.5 border-t border-border" />
+                <div className="mt-1 h-px bg-surface-bright/40" />
                 <MobileNavItem
                   href={getRoute("dashboard").path}
                   icon={LayoutDashboard}
@@ -424,7 +427,7 @@ export function MobileNavigation({
                 label={t("updates")}
                 onClose={() => setIsMenuOpen(false)}
               />
-              <div className="my-2 h-px bg-border" aria-hidden />
+              <div className="my-2 h-px bg-surface-bright/40" aria-hidden />
               <MobileNavActionItem
                 icon={LayoutGrid}
                 label={t("requestExhibit")}
@@ -434,7 +437,7 @@ export function MobileNavigation({
                   setIsMenuOpen(false);
                 }}
               />
-              <div className="my-2 h-px bg-border" aria-hidden />
+              <div className="my-2 h-px bg-surface-bright/40" aria-hidden />
               <MobileNavActionItem
                 icon={Bug}
                 label={t("submitBug")}
@@ -452,18 +455,10 @@ export function MobileNavigation({
               />
             </MobileSection>
 
-            {/* Theme switcher - above user section */}
-            <div className="flex items-center justify-between border-t border-border pt-4 px-4 mb-2">
-              <span className="text-sm font-medium text-foreground">
-                {tProfile("theme")}
-              </span>
-              <ThemeToggle />
-            </div>
-
             {/* User Section */}
             {user ? (
               <>
-                <div className="mb-2 mt-auto border-t border-border pt-4">
+                <div className="mb-2 mt-auto pt-4">
                   <MobileSection
                     title={user.name || t("userAvatar")}
                     expanded={userExpanded}
@@ -504,7 +499,7 @@ export function MobileNavigation({
                 </div>
               </>
             ) : (
-              <div className="mt-auto border-t border-border pt-4 px-4">
+              <div className="mt-auto pt-4 px-4">
                 <Button
                   onClick={handleSignIn}
                   variant="default"
@@ -552,19 +547,19 @@ function MobileSection({
   children: ReactNode;
 }) {
   return (
-    <div className="mb-2">
+    <div className="mb-2 rounded-xl bg-surface-container-high/60 p-1">
       <button
         onClick={onToggle}
-        className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-surface-bright/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <div className="flex items-center gap-2">
-          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          {Icon && <Icon className="h-4 w-4 text-on-surface-variant" />}
           <span>{title}</span>
         </div>
         {expanded ? (
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          <ChevronDown className="h-4 w-4 text-on-surface-variant" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <ChevronRight className="h-4 w-4 text-on-surface-variant" />
         )}
       </button>
       {expanded && <div className="mt-1 space-y-0.5">{children}</div>}
@@ -605,8 +600,8 @@ function MobileNavItem({
         rel="noreferrer"
         onClick={onClose}
         className={cn(
-          "flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors",
-          "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+          "flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors",
+          "text-on-surface-variant hover:bg-surface-bright/50 hover:text-foreground",
         )}
       >
         <Icon className="h-5 w-5" />
@@ -620,10 +615,10 @@ function MobileNavItem({
       href={href}
       onClick={onClose}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors",
+        "flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors",
         isActive
-          ? "bg-accent text-accent-foreground font-medium"
-          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+          ? "bg-surface-bright/70 text-foreground font-medium"
+          : "text-on-surface-variant hover:bg-surface-bright/50 hover:text-foreground",
       )}
     >
       <Icon className="h-5 w-5" />
@@ -647,7 +642,7 @@ function MobileNavActionItem({
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm text-on-surface-variant transition-colors hover:bg-surface-bright/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Icon className="h-5 w-5 shrink-0" />
       <span className={cn(labelClassName)}>{label}</span>

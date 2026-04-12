@@ -21,11 +21,9 @@ async function GlobalHintsWithData({ userId }: { userId: string | undefined }) {
 
 async function AppLayoutContent({
   children,
-  breadcrumb,
   session,
 }: {
   children: React.ReactNode;
-  breadcrumb?: React.ReactNode;
   session: Session | null;
 }) {
   const [locale, messages] = await Promise.all([getLocale(), getMessages()]);
@@ -35,9 +33,6 @@ async function AppLayoutContent({
       <HtmlLangSetter locale={locale} />
       <div className="flex min-h-screen flex-col bg-background">
         <Header user={session?.user} />
-        {breadcrumb != null ? (
-          <Suspense fallback={null}>{breadcrumb}</Suspense>
-        ) : null}
         {children}
         <AppVersionFooter />
       </div>
@@ -53,10 +48,8 @@ async function AppLayoutContent({
 
 export default async function AppLayout({
   children,
-  breadcrumb,
 }: {
   children: React.ReactNode;
-  breadcrumb?: React.ReactNode;
 }) {
   const session = await auth();
   return (
@@ -64,9 +57,7 @@ export default async function AppLayout({
       <Suspense
         fallback={<div className="flex min-h-screen flex-col bg-background" />}
       >
-        <AppLayoutContent session={session} breadcrumb={breadcrumb}>
-          {children}
-        </AppLayoutContent>
+        <AppLayoutContent session={session}>{children}</AppLayoutContent>
       </Suspense>
     </SessionProvider>
   );

@@ -49,7 +49,7 @@ interface FeedListProps {
 
 function FeedSkeleton() {
   return (
-    <div className="border-b border-border">
+    <div className="mb-5 overflow-hidden rounded-xl bg-surface-container-low shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3">
         <Skeleton className="h-9 w-9 rounded-full" />
