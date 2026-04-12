@@ -592,3 +592,40 @@ h3 {
   display: none;
 }
 
+/* Dashboard — editorial dark panels (see dashboard page) */
+.dashboard-editorial-page {
+  background: #0d0d0d;
+}
+
+.dashboard-editorial-muted {
+  color: hsl(0 0% 55%);
+}
+
+.dashboard-editorial-link {
+  color: hsl(0 0% 55%);
+  transition: color 0.15s ease;
+}
+
+.dashboard-editorial-link:hover {
+  color: hsl(0 0% 96%);
+}
+
+.dashboard-editorial-hscroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(0 0% 92%) hsl(0 0% 18%);
+}
+
+.dashboard-editorial-hscroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.dashboard-editorial-hscroll::-webkit-scrollbar-track {
+  background: hsl(0 0% 18%);
+  border-radius: 999px;
+}
+
+.dashboard-editorial-hscroll::-webkit-scrollbar-thumb {
+  background: hsl(0 0% 92%);
+  border-radius: 999px;
+}
+

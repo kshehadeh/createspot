@@ -40,14 +40,14 @@ export function FollowingSection() {
   const action = (
     <Link
       href="/inspire/community"
-      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:text-foreground hover:underline underline-offset-4"
+      className="dashboard-editorial-link inline-flex items-center px-1 py-0.5 text-[10px] font-semibold tracking-[0.14em] uppercase"
     >
       {t("viewCommunity")}
     </Link>
   );
 
   return (
-    <DashboardSection title={t("title")} action={action}>
+    <DashboardSection title={t("title")} action={action} editorial>
       {loading ? (
         <div className="flex flex-col gap-3">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -69,7 +69,7 @@ export function FollowingSection() {
 
             return (
               <li key={user.id}>
-                <div className="-mx-2 flex items-center gap-3 rounded-lg bg-surface-container-high px-3 py-2">
+                <div className="-mx-2 flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.03] px-3 py-2">
                   <Link href={profileUrl} className="shrink-0">
                     <div className="relative h-9 w-9 overflow-hidden rounded-full bg-surface-lowest">
                       {avatar ? (

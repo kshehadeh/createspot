@@ -1791,9 +1791,19 @@
   },
   "dashboard": {
     "title": "Panel",
+    "welcome": {
+      "eyebrow": "Panel",
+      "greeting": "Bienvenido de nuevo, {name}",
+      "greetingAnonymous": "Bienvenido de nuevo",
+      "subtitle": "Un resumen claro del ritmo de tu portafolio, las críticas y la actividad de la comunidad.",
+      "momentumUp": "{percent}% más envíos nuevos que en los 30 días anteriores.",
+      "momentumDown": "{percent}% menos envíos nuevos que en los 30 días anteriores.",
+      "momentumNew": "Estás añadiendo trabajo nuevo en este periodo: el impulso va en aumento.",
+      "momentumSame": "El mismo ritmo de envíos que en los 30 días anteriores."
+    },
     "portfolio": {
       "title": "Añadidos recientemente",
-      "viewAll": "Ver Portafolio Completo",
+      "viewAll": "Ver archivo completo",
       "empty": "Aún no has agregado elementos a tu portafolio.",
       "addSubmission": "Agregar un envío",
       "wipBadge": "WIP",
@@ -1812,6 +1822,14 @@
       "viewSubmission": "Ver envío"
     },
     "analytics": {
+      "submissionsActivityTitle": "Actividad de envíos",
+      "submissionsActivitySubtitle": "Rendimiento de los últimos 30 días",
+      "stackedLegendPortfolio": "En el portafolio",
+      "stackedLegendOther": "Otros",
+      "stackedTooltipPortfolio": "{count, plural, one {# en el portafolio} other {# en el portafolio}}",
+      "stackedTooltipOther": "{count, plural, one {# otro} other {# otros}}",
+      "totalPortfolioItems": "Total de piezas",
+      "tagArchiveTitle": "Etiquetas del archivo",
       "submissionsOverTime": "Envíos (últimos 30 días)",
       "submissionsTooltip": "{count, plural, one {# envío} other {# envíos}}",
       "submissionsAria": "Gráfico de barras de tus envíos nuevos por día en los últimos 30 días",

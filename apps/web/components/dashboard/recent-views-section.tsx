@@ -34,7 +34,14 @@ interface RecentViewItem {
   };
 }
 
-export function RecentViewsSection() {
+interface RecentViewsSectionProps {
+  /** Tighter grid for editorial dashboard sidebar */
+  variant?: "default" | "dense";
+}
+
+export function RecentViewsSection({
+  variant = "default",
+}: RecentViewsSectionProps) {
   const t = useTranslations("dashboard.recentViews");
   const locale = useLocale();
   const [views, setViews] = useState<RecentViewItem[]>([]);
@@ -59,12 +66,24 @@ export function RecentViewsSection() {
     });
   };
 
+  const dense = variant === "dense";
+  const gridClass = dense
+    ? "grid grid-cols-5 gap-1.5"
+    : dashboardMiniThumbGridClass;
+  const scrollClass = dense
+    ? "max-h-[280px] min-h-0 overflow-y-auto overflow-x-hidden"
+    : dashboardMiniThumbScrollClass;
+  const thumbRounded = dense ? "rounded-md" : "rounded-xl";
+  const imageSizes = dense
+    ? "(max-width: 640px) 18vw, 80px"
+    : dashboardMiniThumbImageSizes;
+
   return (
-    <DashboardSection title={t("title")}>
+    <DashboardSection title={t("title")} editorial={dense}>
       {loading ? (
-        <div className={dashboardMiniThumbScrollClass}>
-          <div className={dashboardMiniThumbGridClass}>
-            {Array.from({ length: 12 }).map((_, i) => (
+        <div className={scrollClass}>
+          <div className={gridClass}>
+            {Array.from({ length: 10 }).map((_, i) => (
               <Skeleton key={i} className="aspect-square w-full rounded-md" />
             ))}
           </div>
@@ -72,8 +91,8 @@ export function RecentViewsSection() {
       ) : views.length === 0 ? (
         <p className="text-sm text-on-surface-variant">{t("empty")}</p>
       ) : (
-        <div className={dashboardMiniThumbScrollClass}>
-          <div className={dashboardMiniThumbGridClass}>
+        <div className={scrollClass}>
+          <div className={gridClass}>
             {views.map((v) => {
               const submissionUrl = `${getCreatorUrl(v.submission.user)}/s/${v.submission.id}`;
               const displayTitle =
@@ -95,7 +114,7 @@ export function RecentViewsSection() {
                   <HoverCardTrigger asChild>
                     <Link
                       href={submissionUrl}
-                      className="group relative aspect-square overflow-hidden rounded-xl bg-surface-lowest outline-none"
+                      className={`group relative aspect-square overflow-hidden bg-surface-lowest outline-none ${thumbRounded}`}
                     >
                       {v.submission.imageUrl ? (
                         <Image
@@ -103,7 +122,7 @@ export function RecentViewsSection() {
                           alt={displayTitle}
                           fill
                           className="object-cover transition-transform duration-200 group-hover:scale-105"
-                          sizes={dashboardMiniThumbImageSizes}
+                          sizes={imageSizes}
                           style={{
                             objectPosition: getObjectPositionStyle(
                               v.submission.imageFocalPoint,

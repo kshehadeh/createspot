@@ -35,14 +35,14 @@ export function BadgesSection({ profileUrl }: BadgesSectionProps) {
   const action = (
     <Link
       href={profileUrl}
-      className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-medium text-primary hover:text-foreground hover:underline underline-offset-4"
+      className="dashboard-editorial-link inline-flex items-center px-1 py-0.5 text-[10px] font-semibold tracking-[0.14em] uppercase"
     >
       {t("viewProfile")}
     </Link>
   );
 
   return (
-    <DashboardSection title={t("title")} action={action}>
+    <DashboardSection title={t("title")} action={action} editorial>
       {loading ? (
         <div className="flex flex-wrap gap-3">
           {Array.from({ length: 3 }).map((_, i) => (

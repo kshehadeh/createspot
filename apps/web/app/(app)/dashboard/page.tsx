@@ -25,13 +25,15 @@ export default async function DashboardPage() {
   const critiquesUrl = `${creatorUrl}/critiques`;
 
   return (
-    <PageLayout maxWidth="max-w-6xl">
-      <Dashboard
-        portfolioUrl={portfolioUrl}
-        critiquesUrl={critiquesUrl}
-        profileUrl={creatorUrl}
-        userName={session.user.name ?? null}
-      />
-    </PageLayout>
+    <div className="dashboard-editorial-page min-h-screen">
+      <PageLayout maxWidth="max-w-7xl" className="bg-transparent py-8 md:py-12">
+        <Dashboard
+          portfolioUrl={portfolioUrl}
+          critiquesUrl={critiquesUrl}
+          profileUrl={creatorUrl}
+          userName={session.user.name ?? null}
+        />
+      </PageLayout>
+    </div>
   );
 }

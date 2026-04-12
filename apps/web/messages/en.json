@@ -1791,9 +1791,19 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "welcome": {
+      "eyebrow": "Dashboard",
+      "greeting": "Welcome back, {name}",
+      "greetingAnonymous": "Welcome back",
+      "subtitle": "A focused overview of your portfolio momentum, critiques, and community activity.",
+      "momentumUp": "{percent}% more new submissions than the prior 30 days.",
+      "momentumDown": "{percent}% fewer new submissions than the prior 30 days.",
+      "momentumNew": "You're adding new work this period — momentum is building.",
+      "momentumSame": "Same submission pace as the prior 30 days."
+    },
     "portfolio": {
       "title": "Recently Added",
-      "viewAll": "View Full Portfolio",
+      "viewAll": "View all archive",
       "empty": "You haven't added any portfolio items yet.",
       "addSubmission": "Add a submission",
       "wipBadge": "WIP",
@@ -1812,6 +1822,14 @@
       "viewSubmission": "View submission"
     },
     "analytics": {
+      "submissionsActivityTitle": "Submissions activity",
+      "submissionsActivitySubtitle": "Last 30 days performance",
+      "stackedLegendPortfolio": "On portfolio",
+      "stackedLegendOther": "Other",
+      "stackedTooltipPortfolio": "{count, plural, one {# on portfolio} other {# on portfolio}}",
+      "stackedTooltipOther": "{count, plural, one {# other} other {# other}}",
+      "totalPortfolioItems": "Total items",
+      "tagArchiveTitle": "Archive tags",
       "submissionsOverTime": "Submissions (last 30 days)",
       "submissionsTooltip": "{count, plural, one {# submission} other {# submissions}}",
       "submissionsAria": "Bar chart of your new submissions per day over the last 30 days",

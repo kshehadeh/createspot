@@ -31,41 +31,70 @@ export async function GET() {
   const userId = session.user.id;
   const todayUtc = startOfUtcDay(new Date());
   const windowStart = addUtcDays(todayUtc, -(WINDOW_DAYS - 1));
+  const previousWindowStart = addUtcDays(windowStart, -WINDOW_DAYS);
 
-  const [recentSubmissions, portfolioRows] = await Promise.all([
-    prisma.submission.findMany({
-      where: {
-        userId,
-        createdAt: { gte: windowStart },
-      },
-      select: { createdAt: true },
-    }),
-    prisma.submission.findMany({
-      where: { userId, isPortfolio: true },
-      select: { category: true, tags: true },
-    }),
-  ]);
+  const [recentSubmissions, portfolioRows, previousWindowCount] =
+    await Promise.all([
+      prisma.submission.findMany({
+        where: {
+          userId,
+          createdAt: { gte: windowStart },
+        },
+        select: { createdAt: true, isPortfolio: true },
+      }),
+      prisma.submission.findMany({
+        where: { userId, isPortfolio: true },
+        select: { category: true, tags: true },
+      }),
+      prisma.submission.count({
+        where: {
+          userId,
+          createdAt: {
+            gte: previousWindowStart,
+            lt: windowStart,
+          },
+        },
+      }),
+    ]);
 
   const dayKeys: string[] = [];
   for (let i = 0; i < WINDOW_DAYS; i++) {
     dayKeys.push(utcDayKey(addUtcDays(windowStart, i)));
   }
 
-  const countByDay = new Map<string, number>();
+  const portfolioByDay = new Map<string, number>();
+  const otherByDay = new Map<string, number>();
   for (const key of dayKeys) {
-    countByDay.set(key, 0);
+    portfolioByDay.set(key, 0);
+    otherByDay.set(key, 0);
   }
   for (const row of recentSubmissions) {
     const key = utcDayKey(row.createdAt);
-    if (countByDay.has(key)) {
-      countByDay.set(key, (countByDay.get(key) ?? 0) + 1);
+    if (!portfolioByDay.has(key)) {
+      continue;
+    }
+    if (row.isPortfolio) {
+      portfolioByDay.set(key, (portfolioByDay.get(key) ?? 0) + 1);
+    } else {
+      otherByDay.set(key, (otherByDay.get(key) ?? 0) + 1);
     }
   }
 
   const submissionsByDay = dayKeys.map((dateKey) => ({
     dateKey,
-    count: countByDay.get(dateKey) ?? 0,
+    portfolioCount: portfolioByDay.get(dateKey) ?? 0,
+    otherCount: otherByDay.get(dateKey) ?? 0,
   }));
+
+  const currentWindowCount = recentSubmissions.length;
+  let momentumPercent: number | null = null;
+  if (previousWindowCount > 0) {
+    momentumPercent = Math.round(
+      ((currentWindowCount - previousWindowCount) / previousWindowCount) * 100,
+    );
+  } else if (currentWindowCount > 0) {
+    momentumPercent = null;
+  }
 
   const categoryCount = new Map<string, number>();
   for (const row of portfolioRows) {
@@ -106,5 +135,8 @@ export async function GET() {
     tagDistributionTruncated,
     tagDistributionLimit: TAG_DISTRIBUTION_LIMIT,
     portfolioItemCount,
+    momentumPercent,
+    previousWindowSubmissionCount: previousWindowCount,
+    currentWindowSubmissionCount: currentWindowCount,
   });
 }
