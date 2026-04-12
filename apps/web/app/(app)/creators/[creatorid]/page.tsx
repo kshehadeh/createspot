@@ -224,49 +224,49 @@ export default async function ProfilePage({
                     );
                   })()}
                 >
-                    <div className="flex items-start justify-between gap-4">
-                      <PageTitle className="min-w-0 flex-1">
-                        {user.name || t("anonymous")}
-                      </PageTitle>
-                      <div className="flex shrink-0 items-center gap-1 pt-0.5">
-                        <ShareButton
-                          type="profile"
-                          userId={user.id}
-                          slug={user.slug}
-                          className={cn(
-                            buttonVariants({
-                              variant: "outline",
-                              size: "icon",
-                            }),
-                            "shrink-0",
-                          )}
-                        />
-                        {isLoggedIn && !effectiveIsOwnProfile && (
-                          <FollowButton
-                            targetUserId={user.id}
-                            initialIsFollowing={isFollowingCreator}
-                            variant="outline"
-                            size="icon"
-                            className="h-10 w-10 shrink-0 [&_span]:hidden"
-                          />
+                  <div className="flex items-start justify-between gap-4">
+                    <PageTitle className="min-w-0 flex-1">
+                      {user.name || t("anonymous")}
+                    </PageTitle>
+                    <div className="flex shrink-0 items-center gap-1 pt-0.5">
+                      <ShareButton
+                        type="profile"
+                        userId={user.id}
+                        slug={user.slug}
+                        className={cn(
+                          buttonVariants({
+                            variant: "outline",
+                            size: "icon",
+                          }),
+                          "shrink-0",
                         )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                  <PageSubtitle className="mt-0 text-foreground/90">
-                        {submissionCount}{" "}
-                        {submissionCount !== 1 ? t("works") : t("work")}
-                  </PageSubtitle>
-                      {hasSocialLinks && (
-                        <SocialLinks
-                          instagram={user.instagram}
-                          twitter={user.twitter}
-                          linkedin={user.linkedin}
-                          website={user.website}
-                          variant="minimal"
+                      />
+                      {isLoggedIn && !effectiveIsOwnProfile && (
+                        <FollowButton
+                          targetUserId={user.id}
+                          initialIsFollowing={isFollowingCreator}
+                          variant="outline"
+                          size="icon"
+                          className="h-10 w-10 shrink-0 [&_span]:hidden"
                         />
                       )}
                     </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <PageSubtitle className="mt-0 text-foreground/90">
+                      {submissionCount}{" "}
+                      {submissionCount !== 1 ? t("works") : t("work")}
+                    </PageSubtitle>
+                    {hasSocialLinks && (
+                      <SocialLinks
+                        instagram={user.instagram}
+                        twitter={user.twitter}
+                        linkedin={user.linkedin}
+                        website={user.website}
+                        variant="minimal"
+                      />
+                    )}
+                  </div>
                 </CreatorHubHeaderLayout>
               </div>
 
@@ -313,70 +313,73 @@ export default async function ProfilePage({
                 );
               })()}
             >
-                <div className="flex items-start justify-between gap-4">
-                  <PageTitle className="min-w-0 flex-1">
-                    {user.name || t("anonymous")}
-                  </PageTitle>
-                  <div className="flex shrink-0 items-center gap-1 pt-0.5">
-                    <ShareButton
-                      type="profile"
-                      userId={user.id}
-                      slug={user.slug}
-                      className={cn(
-                        buttonVariants({
-                          variant: "outline",
-                          size: "icon",
-                        }),
-                        "shrink-0",
-                      )}
-                    />
-                    {isOwnProfile && !isPublicView && (
-                      <Button
-                        asChild
-                        variant="outline"
-                        size="icon"
-                        className="h-10 w-10 shrink-0"
+              <div className="flex items-start justify-between gap-4">
+                <PageTitle className="min-w-0 flex-1">
+                  {user.name || t("anonymous")}
+                </PageTitle>
+                <div className="flex shrink-0 items-center gap-1 pt-0.5">
+                  <ShareButton
+                    type="profile"
+                    userId={user.id}
+                    slug={user.slug}
+                    className={cn(
+                      buttonVariants({
+                        variant: "outline",
+                        size: "icon",
+                      }),
+                      "shrink-0",
+                    )}
+                  />
+                  {isOwnProfile && !isPublicView && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="icon"
+                      className="h-10 w-10 shrink-0"
+                    >
+                      <Link
+                        href={`${getCreatorUrl(user)}/edit`}
+                        aria-label={t("editProfile")}
+                        title={t("editProfile")}
                       >
-                        <Link
-                          href={`${getCreatorUrl(user)}/edit`}
-                          aria-label={t("editProfile")}
-                          title={t("editProfile")}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    )}
-                    {isLoggedIn && !effectiveIsOwnProfile && (
-                      <FollowButton
-                        targetUserId={user.id}
-                        initialIsFollowing={isFollowingCreator}
-                        variant="outline"
-                        size="icon"
-                        className="h-10 w-10 shrink-0 [&_span]:hidden"
-                      />
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <PageSubtitle className="mt-0">
-                    {submissionCount}{" "}
-                    {submissionCount !== 1 ? t("works") : t("work")}
-                  </PageSubtitle>
-                  {hasSocialLinks && (
-                    <SocialLinks
-                      instagram={user.instagram}
-                      twitter={user.twitter}
-                      linkedin={user.linkedin}
-                      website={user.website}
-                      variant="minimal"
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
+                  {isLoggedIn && !effectiveIsOwnProfile && (
+                    <FollowButton
+                      targetUserId={user.id}
+                      initialIsFollowing={isFollowingCreator}
+                      variant="outline"
+                      size="icon"
+                      className="h-10 w-10 shrink-0 [&_span]:hidden"
                     />
                   )}
                 </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <PageSubtitle className="mt-0">
+                  {submissionCount}{" "}
+                  {submissionCount !== 1 ? t("works") : t("work")}
+                </PageSubtitle>
+                {hasSocialLinks && (
+                  <SocialLinks
+                    instagram={user.instagram}
+                    twitter={user.twitter}
+                    linkedin={user.linkedin}
+                    website={user.website}
+                    variant="minimal"
+                  />
+                )}
+              </div>
             </CreatorHubHeaderLayout>
           </div>
 
           {user.bio && (
-            <ExpandableBio html={user.bio} className="mt-4 text-on-surface-variant" />
+            <ExpandableBio
+              html={user.bio}
+              className="mt-4 text-on-surface-variant"
+            />
           )}
         </div>
       )}

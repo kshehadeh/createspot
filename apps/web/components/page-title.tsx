@@ -26,7 +26,12 @@ export function PageTitle({ children, className }: PageTitleProps) {
 
 export function PageSubtitle({ children, className }: PageSubtitleProps) {
   return (
-    <p className={cn("mt-2 text-sm text-on-surface-variant sm:text-base", className)}>
+    <p
+      className={cn(
+        "mt-2 text-sm text-on-surface-variant sm:text-base",
+        className,
+      )}
+    >
       {children}
     </p>
   );

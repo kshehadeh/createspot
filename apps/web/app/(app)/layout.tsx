@@ -6,6 +6,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DeferredAnalytics } from "@/components/deferred-analytics";
 import { GlobalHints } from "@/components/global-hints";
+import { AppLayoutClient } from "@/components/app-layout-client";
 import { AppVersionFooter } from "@/components/app-version-footer";
 import { Header } from "@/components/header";
 import { HtmlLangSetter } from "@/components/html-lang-setter";
@@ -32,9 +33,11 @@ async function AppLayoutContent({
     <NextIntlClientProvider locale={locale} messages={messages}>
       <HtmlLangSetter locale={locale} />
       <div className="flex min-h-screen flex-col bg-background">
-        <Header user={session?.user} />
-        {children}
-        <AppVersionFooter />
+        <AppLayoutClient user={session?.user}>
+          <Header user={session?.user} />
+          <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+          <AppVersionFooter />
+        </AppLayoutClient>
       </div>
       <Suspense fallback={null}>
         <GlobalHintsWithData userId={session?.user?.id} />

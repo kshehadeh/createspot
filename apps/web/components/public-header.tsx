@@ -56,7 +56,7 @@ export function PublicHeader({ user }: PublicHeaderProps) {
             </span>
           </Link>
           <div className="flex items-center justify-end gap-2 sm:gap-3">
-          {/* Desktop: about + sign-in */}
+            {/* Desktop: about + sign-in */}
             <div className="hidden md:flex items-center gap-3">
               {user ? (
                 <UserDropdown
@@ -90,7 +90,7 @@ export function PublicHeader({ user }: PublicHeaderProps) {
                 </>
               )}
             </div>
-          {/* Mobile: about + hamburger for guests; signed-in users use hamburger only (account is in the drawer) */}
+            {/* Mobile: about + hamburger for guests; signed-in users use hamburger only (account is in the drawer) */}
             <div className="flex md:hidden items-center gap-2">
               {!user && (
                 <Button

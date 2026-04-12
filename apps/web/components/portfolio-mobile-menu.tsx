@@ -70,48 +70,48 @@ export function PortfolioMobileMenu({
           )
         }
       >
-          <div className="flex items-start gap-2">
-            <PageTitle className="min-w-0 flex-1">{title}</PageTitle>
-            <div className="flex shrink-0 items-center gap-1 pt-0.5">
-              <ShareButton
-                type="portfolio"
-                userId={userId}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "icon" }),
-                  "shrink-0",
-                )}
-              />
-              {showSelectionToggle && onSelectionModeToggle && (
-                <Button
-                  type="button"
-                  variant={selectionMode ? "secondary" : "outline"}
-                  size="icon"
-                  className="h-10 w-10 shrink-0"
-                  aria-label={
-                    selectionMode ? t("exitSelectionMode") : t("selectionMode")
-                  }
-                  aria-pressed={selectionMode}
-                  onClick={onSelectionModeToggle}
-                >
-                  <SquareMousePointer className="h-4 w-4" />
-                </Button>
+        <div className="flex items-start gap-2">
+          <PageTitle className="min-w-0 flex-1">{title}</PageTitle>
+          <div className="flex shrink-0 items-center gap-1 pt-0.5">
+            <ShareButton
+              type="portfolio"
+              userId={userId}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "icon" }),
+                "shrink-0",
               )}
+            />
+            {showSelectionToggle && onSelectionModeToggle && (
               <Button
                 type="button"
-                variant="outline"
+                variant={selectionMode ? "secondary" : "outline"}
                 size="icon"
                 className="h-10 w-10 shrink-0"
-                aria-expanded={filtersOpen}
-                aria-label={t("openPortfolioFilters")}
-                onClick={() => setFiltersOpen((o) => !o)}
+                aria-label={
+                  selectionMode ? t("exitSelectionMode") : t("selectionMode")
+                }
+                aria-pressed={selectionMode}
+                onClick={onSelectionModeToggle}
               >
-                <ListFilter className="h-4 w-4" />
+                <SquareMousePointer className="h-4 w-4" />
               </Button>
-            </div>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 shrink-0"
+              aria-expanded={filtersOpen}
+              aria-label={t("openPortfolioFilters")}
+              onClick={() => setFiltersOpen((o) => !o)}
+            >
+              <ListFilter className="h-4 w-4" />
+            </Button>
           </div>
-          {subtitle ? (
-            <PageSubtitle className="mt-0">{subtitle}</PageSubtitle>
-          ) : null}
+        </div>
+        {subtitle ? (
+          <PageSubtitle className="mt-0">{subtitle}</PageSubtitle>
+        ) : null}
       </CreatorHubHeaderLayout>
 
       {filtersOpen && (

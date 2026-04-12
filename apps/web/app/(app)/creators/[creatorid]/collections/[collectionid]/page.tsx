@@ -249,7 +249,9 @@ export default async function CollectionViewPage({
 
         {/* Description */}
         {collection.description && (
-          <p className="mt-4 text-on-surface-variant">{collection.description}</p>
+          <p className="mt-4 text-on-surface-variant">
+            {collection.description}
+          </p>
         )}
       </div>
 
