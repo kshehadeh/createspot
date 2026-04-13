@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   getCreateSectionExpandedForPath,
+  getDefaultSidebarNavMode,
   getInspireSectionExpandedForPath,
   isPathActive,
 } from "./sidebar-section-expand";
@@ -53,6 +54,30 @@ describe("getCreateSectionExpandedForPath", () => {
 
   test("inspire routes do not expand Create", () => {
     expect(getCreateSectionExpandedForPath("/inspire", user)).toBe(false);
+  });
+});
+
+describe("getDefaultSidebarNavMode", () => {
+  const user = { id: "user-1", slug: null as string | null };
+
+  test("inspire when not signed in", () => {
+    expect(getDefaultSidebarNavMode("/dashboard", null)).toBe("inspire");
+    expect(getDefaultSidebarNavMode("/", null)).toBe("inspire");
+  });
+
+  test("create when signed in on dashboard or creator hub", () => {
+    expect(getDefaultSidebarNavMode("/dashboard", user)).toBe("create");
+    expect(getDefaultSidebarNavMode("/creators/user-1", user)).toBe("create");
+    expect(
+      getDefaultSidebarNavMode("/creators/user-1/portfolio", user),
+    ).toBe("create");
+  });
+
+  test("inspire when signed in on feed and inspire routes", () => {
+    expect(getDefaultSidebarNavMode("/", user)).toBe("inspire");
+    expect(getDefaultSidebarNavMode("/inspire/exhibition", user)).toBe(
+      "inspire",
+    );
   });
 });
 

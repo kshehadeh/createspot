@@ -35,6 +35,19 @@ export function getCreateSectionExpandedForPath(
   return pathname.startsWith(dashboardPath) || pathname.startsWith(creatorBase);
 }
 
+export type SidebarNavMode = "create" | "inspire";
+
+/**
+ * Default Create vs Inspire tab for the sidebar/drawer from the current route.
+ * Create wins when the user is signed in and the path is under dashboard or their creator hub.
+ */
+export function getDefaultSidebarNavMode(
+  pathname: string,
+  user: SidebarExpandUser | null | undefined,
+): SidebarNavMode {
+  return getCreateSectionExpandedForPath(pathname, user) ? "create" : "inspire";
+}
+
 /** True when `pathname` is exactly `base` or a nested route under it. */
 export function isPathActive(base: string, pathname: string): boolean {
   return pathname === base || pathname.startsWith(`${base}/`);

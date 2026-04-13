@@ -592,6 +592,30 @@ h3 {
   display: none;
 }
 
+/* Command palette: no persistent scrollbar; thumb appears only while scrolling */
+.command-palette-list {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.command-palette-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.command-palette-list.command-palette-list--scrolling {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.45) transparent;
+}
+.command-palette-list.command-palette-list--scrolling::-webkit-scrollbar {
+  width: 8px;
+}
+.command-palette-list.command-palette-list--scrolling::-webkit-scrollbar-track {
+  background: transparent;
+}
+.command-palette-list.command-palette-list--scrolling::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background-color: hsl(var(--muted-foreground) / 0.4);
+}
+
 /* Dashboard — editorial dark panels (see dashboard page) */
 .dashboard-editorial-page {
   background: #0d0d0d;

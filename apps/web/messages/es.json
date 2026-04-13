@@ -242,7 +242,11 @@
     "manageUsers": "Gestionar Usuarios",
     "managePrompts": "Gestionar Indicaciones",
     "manageExhibits": "Gestionar Exposiciones",
-    "manageNotifications": "Gestionar Notificaciones"
+    "manageNotifications": "Gestionar Notificaciones",
+    "searchEverything": "Buscar en todo",
+    "searchEverythingEmpty": "Sin coincidencias.",
+    "searchEverythingShortcut": "⌘K / Ctrl+K",
+    "sidebarModeLabel": "Navegación Crear o Inspirar"
   },
   "creatorNav": {
     "profile": "Perfil",

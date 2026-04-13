@@ -1,11 +1,8 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
 import {
   Brain,
   Briefcase,
-  ChevronDown,
-  ChevronRight,
   FolderOpen,
   Heart,
   Info,
@@ -15,6 +12,7 @@ import {
   Palette,
   Plus,
   Rss,
+  Search,
   Sparkles,
   User,
   Users,
@@ -22,12 +20,13 @@ import {
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "@/components/link";
+import { useOptionalAppChrome } from "@/components/app-chrome-context";
 import { buildRoutePath, getRoute, isCreatorsListingPath } from "@/lib/routes";
 import {
-  getCreateSectionExpandedForPath,
-  getInspireSectionExpandedForPath,
+  getDefaultSidebarNavMode,
+  type SidebarNavMode,
 } from "@/lib/sidebar-section-expand";
 import { cn, getCreatorUrl } from "@/lib/utils";
 import { Button } from "@createspot/ui-primitives/button";
@@ -53,16 +52,17 @@ export function MobileNavigation({
   onCreateModalOpen,
   showCreateButton = true,
 }: MobileNavigationProps) {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [navMode, setNavMode] = useState<SidebarNavMode>(() =>
+    getDefaultSidebarNavMode(pathname, user),
+  );
   const menuRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
   const t = useTranslations("navigation");
   const tProfile = useTranslations("profile");
   const creatorsInspirePath = "/inspire/creators";
-
-  const [inspireExpanded, setInspireExpanded] = useState(false);
-  const [myHubExpanded, setMyHubExpanded] = useState(false);
+  const chrome = useOptionalAppChrome();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -93,14 +93,24 @@ export function MobileNavigation({
   }, [pathname]);
 
   useEffect(() => {
-    setInspireExpanded(getInspireSectionExpandedForPath(pathname));
-    setMyHubExpanded(getCreateSectionExpandedForPath(pathname, user));
+    setNavMode(getDefaultSidebarNavMode(pathname, user));
   }, [pathname, user?.id, user?.slug]);
 
   const handleCreateClick = () => {
-    onCreateModalOpen?.();
-    setIsCreateModalOpen(true);
+    if (chrome) {
+      chrome.setCreateSubmissionOpen(true);
+    } else {
+      onCreateModalOpen?.();
+      setIsCreateModalOpen(true);
+    }
     setIsMenuOpen(false);
+  };
+
+  const openCommandPalette = () => {
+    if (chrome) {
+      setIsMenuOpen(false);
+      chrome.setCommandOpen(true);
+    }
   };
 
   const handleLogout = () => {
@@ -111,6 +121,18 @@ export function MobileNavigation({
   const feedRoute = getRoute("feed");
   const adminRoute = getRoute("admin");
   const aboutRoute = getRoute("about");
+  const dashboardRoute = getRoute("dashboard");
+  const exhibitionRoute = getRoute("exhibition");
+  const communityRoute = getRoute("community");
+  const favoritesRoute = getRoute("favorites");
+
+  const segmentClass = (active: boolean) =>
+    cn(
+      "flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      active
+        ? "bg-surface-container-high text-foreground shadow-[0_8px_20px_rgb(0_0_0_/_0.2)]"
+        : "text-on-surface-variant hover:bg-surface-bright/40 hover:text-foreground",
+    );
 
   return (
     <>
@@ -188,26 +210,63 @@ export function MobileNavigation({
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col">
-            <nav className="flex-1 overflow-y-auto px-4 py-5">
-              {user && (
-                <MobileSection
-                  title={t("myHub")}
-                  expanded={myHubExpanded}
-                  onToggle={() => setMyHubExpanded(!myHubExpanded)}
-                  icon={Palette}
-                >
+            <nav className="flex-1 overflow-y-auto px-4 py-4">
+              <div className="mb-4 space-y-3">
+                {user && (
+                  <div
+                    role="tablist"
+                    aria-label={t("sidebarModeLabel")}
+                    className="flex rounded-2xl border border-outline-variant/25 bg-surface-container-high/80 p-1"
+                  >
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={navMode === "create"}
+                      className={segmentClass(navMode === "create")}
+                      onClick={() => setNavMode("create")}
+                    >
+                      <Palette className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{t("myHub")}</span>
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={navMode === "inspire"}
+                      className={segmentClass(navMode === "inspire")}
+                      onClick={() => setNavMode("inspire")}
+                    >
+                      <Brain className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{t("inspire")}</span>
+                    </button>
+                  </div>
+                )}
+                {chrome ? (
+                  <button
+                    type="button"
+                    onClick={openCommandPalette}
+                    aria-haspopup="dialog"
+                    className="flex w-full items-center gap-3 rounded-full border border-outline-variant/25 bg-surface-container-high/90 px-4 py-3 text-left text-sm text-on-surface-variant transition-colors hover:bg-surface-bright/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    title={`${t("searchEverything")} (${t("searchEverythingShortcut")})`}
+                  >
+                    <Search className="h-4 w-4 shrink-0 opacity-70" />
+                    <span className="truncate">{t("searchEverything")}</span>
+                  </button>
+                ) : null}
+              </div>
+
+              {user && navMode === "create" ? (
+                <div className="space-y-0.5">
                   <MobileNavActionItem
                     icon={Plus}
                     label={t("create")}
                     onClick={handleCreateClick}
                   />
-                  <div className="mt-1 h-px bg-surface-bright/40" />
                   <MobileNavItem
-                    href={getRoute("dashboard").path}
+                    href={dashboardRoute.path}
                     icon={LayoutDashboard}
                     label={t("dashboard")}
                     onClose={() => setIsMenuOpen(false)}
-                    isActive={pathname.startsWith(getRoute("dashboard").path)}
+                    isActive={pathname.startsWith(dashboardRoute.path)}
                   />
                   {user.id &&
                     (() => {
@@ -251,50 +310,45 @@ export function MobileNavigation({
                         </>
                       );
                     })()}
-                </MobileSection>
-              )}
-
-              <MobileSection
-                title={t("inspire")}
-                expanded={inspireExpanded}
-                onToggle={() => setInspireExpanded(!inspireExpanded)}
-                icon={Brain}
-              >
-                <MobileNavItem
-                  href={feedRoute.path}
-                  icon={Rss}
-                  label={t("feed")}
-                  onClose={() => setIsMenuOpen(false)}
-                  isActive={pathname === "/" || pathname === ""}
-                />
-                <MobileNavItem
-                  href={getRoute("exhibition").path}
-                  icon={LayoutGrid}
-                  label={t("exhibits")}
-                  onClose={() => setIsMenuOpen(false)}
-                />
-                <MobileNavItem
-                  href={creatorsInspirePath}
-                  icon={Users}
-                  label={t("creators")}
-                  onClose={() => setIsMenuOpen(false)}
-                  isActive={isCreatorsListingPath(pathname)}
-                />
-                <MobileNavItem
-                  href={getRoute("community").path}
-                  icon={Users}
-                  label={t("community")}
-                  onClose={() => setIsMenuOpen(false)}
-                />
-                {user && (
+                </div>
+              ) : (
+                <div className="space-y-0.5">
                   <MobileNavItem
-                    href={getRoute("favorites").path}
-                    icon={Heart}
-                    label={t("favorites")}
+                    href={feedRoute.path}
+                    icon={Rss}
+                    label={t("feed")}
+                    onClose={() => setIsMenuOpen(false)}
+                    isActive={pathname === "/" || pathname === ""}
+                  />
+                  <MobileNavItem
+                    href={exhibitionRoute.path}
+                    icon={LayoutGrid}
+                    label={t("exhibits")}
                     onClose={() => setIsMenuOpen(false)}
                   />
-                )}
-              </MobileSection>
+                  <MobileNavItem
+                    href={creatorsInspirePath}
+                    icon={Users}
+                    label={t("creators")}
+                    onClose={() => setIsMenuOpen(false)}
+                    isActive={isCreatorsListingPath(pathname)}
+                  />
+                  <MobileNavItem
+                    href={communityRoute.path}
+                    icon={Users}
+                    label={t("community")}
+                    onClose={() => setIsMenuOpen(false)}
+                  />
+                  {user && (
+                    <MobileNavItem
+                      href={favoritesRoute.path}
+                      icon={Heart}
+                      label={t("favorites")}
+                      onClose={() => setIsMenuOpen(false)}
+                    />
+                  )}
+                </div>
+              )}
             </nav>
 
             <div className="shrink-0 space-y-2 border-t border-outline-variant/25 px-4 py-4">
@@ -344,7 +398,7 @@ export function MobileNavigation({
           </div>
         </div>
       </div>
-      {user && (
+      {user && !chrome && (
         <SubmissionEditModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
@@ -352,41 +406,6 @@ export function MobileNavigation({
         />
       )}
     </>
-  );
-}
-
-function MobileSection({
-  title,
-  expanded,
-  onToggle,
-  icon: Icon,
-  children,
-}: {
-  title: string;
-  expanded: boolean;
-  onToggle: () => void;
-  icon?: LucideIcon;
-  children: ReactNode;
-}) {
-  return (
-    <div className="mb-2 rounded-xl bg-surface-container-high/60 p-1">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-surface-bright/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <div className="flex items-center gap-2">
-          {Icon && <Icon className="h-4 w-4 text-on-surface-variant" />}
-          <span>{title}</span>
-        </div>
-        {expanded ? (
-          <ChevronDown className="h-4 w-4 text-on-surface-variant" />
-        ) : (
-          <ChevronRight className="h-4 w-4 text-on-surface-variant" />
-        )}
-      </button>
-      {expanded && <div className="mt-1 space-y-0.5">{children}</div>}
-    </div>
   );
 }
 

@@ -1,16 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "@/components/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import type { LucideIcon } from "lucide-react";
 import {
   Brain,
   Briefcase,
   ChevronDown,
-  ChevronRight,
   FolderOpen,
   Heart,
   Info,
@@ -21,6 +19,7 @@ import {
   PanelRightClose,
   Plus,
   Rss,
+  Search,
   Sparkles,
   User,
   Users,
@@ -38,15 +37,14 @@ import {
 } from "@createspot/ui-primitives/avatar";
 import { Button } from "@createspot/ui-primitives/button";
 import { CreateSpotLogo } from "@/components/create-spot-logo";
-import { SubmissionEditModal } from "@/components/submission-edit-modal";
 import { useAppChrome } from "@/components/app-chrome-context";
 import { cn, getCreatorUrl } from "@/lib/utils";
 import { buildRoutePath, getRoute, isCreatorsListingPath } from "@/lib/routes";
 import { isFullWidthSubmissionPath } from "@/lib/app-chrome-paths";
 import {
-  getCreateSectionExpandedForPath,
-  getInspireSectionExpandedForPath,
+  getDefaultSidebarNavMode,
   isPathActive,
+  type SidebarNavMode,
 } from "@/lib/sidebar-section-expand";
 import { getUserImageUrl } from "@/lib/user-image";
 
@@ -67,13 +65,14 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
   const tNav = useTranslations("navigation");
   const tCreator = useTranslations("creatorNav");
-  const { sidebarCollapsed, toggleSidebarCollapsed } = useAppChrome();
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [createExpanded, setCreateExpanded] = useState(() =>
-    getCreateSectionExpandedForPath(pathname, user),
-  );
-  const [inspireExpanded, setInspireExpanded] = useState(() =>
-    getInspireSectionExpandedForPath(pathname),
+  const {
+    sidebarCollapsed,
+    toggleSidebarCollapsed,
+    setCommandOpen,
+    setCreateSubmissionOpen,
+  } = useAppChrome();
+  const [navMode, setNavMode] = useState<SidebarNavMode>(() =>
+    getDefaultSidebarNavMode(pathname, user),
   );
 
   const hideChrome = isFullWidthSubmissionPath(pathname);
@@ -109,20 +108,30 @@ export function AppSidebar({ user }: AppSidebarProps) {
   );
 
   useEffect(() => {
-    setInspireExpanded(getInspireSectionExpandedForPath(pathname));
-    setCreateExpanded(getCreateSectionExpandedForPath(pathname, user));
+    setNavMode(getDefaultSidebarNavMode(pathname, user));
   }, [pathname, user?.id, user?.slug]);
 
   if (hideChrome) {
     return null;
   }
 
+  const segmentBtn = (active: boolean) =>
+    cn(
+      "flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      sidebarCollapsed && "min-h-9 min-w-0 px-0",
+      active
+        ? "bg-surface-container-high text-foreground shadow-[0_8px_20px_rgb(0_0_0_/_0.2)]"
+        : "text-on-surface-variant hover:bg-surface-bright/40 hover:text-foreground",
+    );
+
+  const openCommand = () => setCommandOpen(true);
+
   const renderCreateLinks = () => (
     <ul className="space-y-2">
       <li>
         <button
           type="button"
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={() => setCreateSubmissionOpen(true)}
           className={linkClass(false)}
           title={tNav("create")}
         >
@@ -263,6 +272,63 @@ export function AppSidebar({ user }: AppSidebarProps) {
     </ul>
   );
 
+  const navToolbar = (
+    <div className="mb-1 space-y-2.5">
+      {user && (
+        <div
+          role="tablist"
+          aria-label={tNav("sidebarModeLabel")}
+          className="flex rounded-2xl border border-outline-variant/25 bg-surface-container-high/80 p-1"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={navMode === "create"}
+            className={segmentBtn(navMode === "create")}
+            onClick={() => setNavMode("create")}
+            title={tNav("myHub")}
+          >
+            <Palette className="h-4 w-4 shrink-0" />
+            {!sidebarCollapsed && (
+              <span className="truncate">{tNav("myHub")}</span>
+            )}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={navMode === "inspire"}
+            className={segmentBtn(navMode === "inspire")}
+            onClick={() => setNavMode("inspire")}
+            title={tNav("inspire")}
+          >
+            <Brain className="h-4 w-4 shrink-0" />
+            {!sidebarCollapsed && (
+              <span className="truncate">{tNav("inspire")}</span>
+            )}
+          </button>
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={openCommand}
+        aria-haspopup="dialog"
+        className={cn(
+          "flex w-full items-center gap-2 rounded-full border border-outline-variant/25 bg-surface-container-high/90 py-2.5 text-left text-sm text-on-surface-variant transition-colors hover:bg-surface-bright/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          sidebarCollapsed ? "justify-center px-0" : "px-3",
+        )}
+        title={`${tNav("searchEverything")} (${tNav("searchEverythingShortcut")})`}
+      >
+        <Search className="h-4 w-4 shrink-0 opacity-70" />
+        {!sidebarCollapsed && (
+          <span className="truncate">{tNav("searchEverything")}</span>
+        )}
+      </button>
+    </div>
+  );
+
+  const mainLinks =
+    user && navMode === "create" ? renderCreateLinks() : renderInspireLinks();
+
   return (
     <>
       <aside
@@ -302,33 +368,8 @@ export function AppSidebar({ user }: AppSidebarProps) {
             </div>
 
             <nav className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-3">
-              {sidebarCollapsed ? (
-                <div className="space-y-5">
-                  {user && renderCreateLinks()}
-                  {renderInspireLinks()}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {user && (
-                    <SidebarSection
-                      title={tNav("myHub")}
-                      icon={Palette}
-                      expanded={createExpanded}
-                      onToggle={() => setCreateExpanded((v) => !v)}
-                    >
-                      {renderCreateLinks()}
-                    </SidebarSection>
-                  )}
-                  <SidebarSection
-                    title={tNav("inspire")}
-                    icon={Brain}
-                    expanded={inspireExpanded}
-                    onToggle={() => setInspireExpanded((v) => !v)}
-                  >
-                    {renderInspireLinks()}
-                  </SidebarSection>
-                </div>
-              )}
+              {navToolbar}
+              {mainLinks}
             </nav>
 
             {/* Pinned bottom: Admin, About, user */}
@@ -416,51 +457,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
           </div>
         </div>
       </aside>
-
-      {user && (
-        <SubmissionEditModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          mode="create"
-        />
-      )}
     </>
-  );
-}
-
-function SidebarSection({
-  title,
-  icon: Icon,
-  expanded,
-  onToggle,
-  children,
-}: {
-  title: string;
-  icon: LucideIcon;
-  expanded: boolean;
-  onToggle: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <div className="rounded-xl bg-surface-container-high/60 p-1">
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={expanded}
-        className="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-surface-bright/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <div className="flex min-w-0 items-center gap-2">
-          <Icon className="h-4 w-4 shrink-0 text-on-surface-variant" />
-          <span className="truncate">{title}</span>
-        </div>
-        {expanded ? (
-          <ChevronDown className="h-4 w-4 shrink-0 text-on-surface-variant" />
-        ) : (
-          <ChevronRight className="h-4 w-4 shrink-0 text-on-surface-variant" />
-        )}
-      </button>
-      {expanded && <div className="mt-1 px-0.5">{children}</div>}
-    </div>
   );
 }
 
