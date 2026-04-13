@@ -13,7 +13,6 @@ import {
   Plus,
   Rss,
   User,
-  Users,
 } from "lucide-react";
 import {
   Command,
@@ -114,10 +113,14 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
 
   const dashboardRoute = getRoute("dashboard");
   const exhibitionRoute = getRoute("exhibition");
+  const creatorsRoute = getRoute("creators");
   const communityRoute = getRoute("community");
+  const CreatorsCmdIcon = creatorsRoute.icon;
+  const CommunityCmdIcon = communityRoute.icon;
   const favoritesRoute = getRoute("favorites");
   const feedRoute = getRoute("feed");
   const adminRoute = getRoute("admin");
+  const AdministrationCmdIcon = adminRoute.icon;
   const aboutRoute = getRoute("about");
 
   const creatorBase =
@@ -233,7 +236,9 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
                 value={`${tNav("creators")} creators`}
                 onSelect={() => go(CREATORS_INSPIRE_PATH)}
               >
-                <Users className={COMMAND_ICON_CLASS} />
+                {CreatorsCmdIcon && (
+                  <CreatorsCmdIcon className={COMMAND_ICON_CLASS} />
+                )}
                 {tNav("creators")}
               </CommandItem>
               <CommandItem
@@ -241,7 +246,9 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
                 value={`${tNav("community")} community`}
                 onSelect={() => go(communityRoute.path)}
               >
-                <Users className={COMMAND_ICON_CLASS} />
+                {CommunityCmdIcon && (
+                  <CommunityCmdIcon className={COMMAND_ICON_CLASS} />
+                )}
                 {tNav("community")}
               </CommandItem>
               {user?.id != null && (
@@ -255,14 +262,14 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
                 </CommandItem>
               )}
             </CommandGroup>
-            {user?.isAdmin === true && (
+            {user?.isAdmin === true && AdministrationCmdIcon && (
               <CommandGroup heading={tNav("administration")} className="mt-3">
                 <CommandItem
                   className={COMMAND_ITEM_CLASS}
                   value={`${tNav("administration")} admin`}
                   onSelect={() => go(adminRoute.path)}
                 >
-                  <LayoutDashboard className={COMMAND_ICON_CLASS} />
+                  <AdministrationCmdIcon className={COMMAND_ICON_CLASS} />
                   {tNav("administration")}
                 </CommandItem>
               </CommandGroup>

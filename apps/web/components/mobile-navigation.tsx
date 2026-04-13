@@ -15,7 +15,6 @@ import {
   Search,
   Sparkles,
   User,
-  Users,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -120,10 +119,14 @@ export function MobileNavigation({
 
   const feedRoute = getRoute("feed");
   const adminRoute = getRoute("admin");
+  const administrationIcon = adminRoute.icon;
   const aboutRoute = getRoute("about");
   const dashboardRoute = getRoute("dashboard");
   const exhibitionRoute = getRoute("exhibition");
+  const creatorsRoute = getRoute("creators");
   const communityRoute = getRoute("community");
+  const creatorsInspireIcon = creatorsRoute.icon;
+  const communityInspireIcon = communityRoute.icon;
   const favoritesRoute = getRoute("favorites");
 
   const segmentClass = (active: boolean) =>
@@ -138,6 +141,7 @@ export function MobileNavigation({
     <>
       {user && showCreateButton && (
         <button
+          type="button"
           onClick={handleCreateClick}
           className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground transition-colors hover:bg-surface-bright/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
           aria-label={t("create")}
@@ -146,6 +150,7 @@ export function MobileNavigation({
         </button>
       )}
       <button
+        type="button"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="flex flex-col gap-1.5 rounded-xl p-2 text-foreground transition-colors hover:bg-surface-bright/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
         aria-label={t("toggleMenu")}
@@ -328,14 +333,14 @@ export function MobileNavigation({
                   />
                   <MobileNavItem
                     href={creatorsInspirePath}
-                    icon={Users}
+                    icon={creatorsInspireIcon!}
                     label={t("creators")}
                     onClose={() => setIsMenuOpen(false)}
                     isActive={isCreatorsListingPath(pathname)}
                   />
                   <MobileNavItem
                     href={communityRoute.path}
-                    icon={Users}
+                    icon={communityInspireIcon!}
                     label={t("community")}
                     onClose={() => setIsMenuOpen(false)}
                   />
@@ -355,7 +360,7 @@ export function MobileNavigation({
               {user?.isAdmin && (
                 <MobileNavItem
                   href={adminRoute.path}
-                  icon={LayoutDashboard}
+                  icon={administrationIcon!}
                   label={t("administration")}
                   onClose={() => setIsMenuOpen(false)}
                   isActive={pathname.startsWith(adminRoute.path)}

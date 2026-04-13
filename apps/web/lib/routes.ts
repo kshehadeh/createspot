@@ -3,10 +3,11 @@ import type { getTranslations } from "next-intl/server";
 import {
   Lock,
   Heart,
+  HeartHandshake,
   User,
+  UserSearch,
   Briefcase,
   LogOut,
-  Users,
   LayoutGrid,
   Sparkles,
   Info,
@@ -197,12 +198,12 @@ const ROUTES: Record<string, RouteConfig> = {
   creators: {
     path: "/creators",
     label: "navigation.creators",
-    icon: Users,
+    icon: UserSearch,
   },
   community: {
     path: "/inspire/community",
     label: "navigation.community",
-    icon: Users,
+    icon: HeartHandshake,
     parentPath: "/inspire",
   },
   favorites: {

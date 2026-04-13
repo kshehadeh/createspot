@@ -22,7 +22,6 @@ import {
   Search,
   Sparkles,
   User,
-  Users,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -78,11 +77,15 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const hideChrome = isFullWidthSubmissionPath(pathname);
 
   const exhibitionRoute = getRoute("exhibition");
+  const creatorsRoute = getRoute("creators");
   const communityRoute = getRoute("community");
+  const CreatorsInspireIcon = creatorsRoute.icon;
+  const CommunityInspireIcon = communityRoute.icon;
   const favoritesRoute = getRoute("favorites");
   const dashboardRoute = getRoute("dashboard");
   const feedRoute = getRoute("feed");
   const adminRoute = getRoute("admin");
+  const AdministrationIcon = adminRoute.icon;
   const aboutRoute = getRoute("about");
   const creatorsInspirePath = "/inspire/creators";
 
@@ -237,7 +240,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
           className={linkClass(isCreatorsListingPath(pathname))}
           title={tNav("creators")}
         >
-          <Users className="h-4 w-4 shrink-0" />
+          {CreatorsInspireIcon && (
+            <CreatorsInspireIcon className="h-4 w-4 shrink-0" />
+          )}
           {!sidebarCollapsed && (
             <span className="truncate">{tNav("creators")}</span>
           )}
@@ -249,7 +254,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
           className={linkClass(isPathActive(communityRoute.path, pathname))}
           title={tNav("community")}
         >
-          <Users className="h-4 w-4 shrink-0" />
+          {CommunityInspireIcon && (
+            <CommunityInspireIcon className="h-4 w-4 shrink-0" />
+          )}
           {!sidebarCollapsed && (
             <span className="truncate">{tNav("community")}</span>
           )}
@@ -374,13 +381,13 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
             {/* Pinned bottom: Admin, About, user */}
             <div className="shrink-0 space-y-2 border-t border-outline-variant/25 p-3">
-              {user?.isAdmin && (
+              {user?.isAdmin && AdministrationIcon && (
                 <Link
                   href={adminRoute.path}
                   className={linkClass(pathname.startsWith(adminRoute.path))}
                   title={tNav("administration")}
                 >
-                  <LayoutDashboard className="h-4 w-4 shrink-0" />
+                  <AdministrationIcon className="h-4 w-4 shrink-0" />
                   {!sidebarCollapsed && (
                     <span className="truncate">{tNav("administration")}</span>
                   )}

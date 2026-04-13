@@ -68,9 +68,9 @@ describe("getDefaultSidebarNavMode", () => {
   test("create when signed in on dashboard or creator hub", () => {
     expect(getDefaultSidebarNavMode("/dashboard", user)).toBe("create");
     expect(getDefaultSidebarNavMode("/creators/user-1", user)).toBe("create");
-    expect(
-      getDefaultSidebarNavMode("/creators/user-1/portfolio", user),
-    ).toBe("create");
+    expect(getDefaultSidebarNavMode("/creators/user-1/portfolio", user)).toBe(
+      "create",
+    );
   });
 
   test("inspire when signed in on feed and inspire routes", () => {
