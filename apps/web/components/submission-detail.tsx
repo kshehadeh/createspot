@@ -4,9 +4,10 @@ import Image from "next/image";
 import { Pencil } from "lucide-react";
 import Link from "@/components/link";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
 import { CritiqueButton } from "@/components/critique-button";
+import { CreatorHubHeaderLayout } from "@/components/creator-hub-header-layout";
 import { ExpandableText } from "@/components/expandable-text";
 import { FavoriteButton } from "@/components/favorite-button";
 import { FavoritesProvider } from "@/components/favorites-provider";
@@ -14,6 +15,8 @@ import { HintPopover } from "@/components/hint-popover";
 import { ProgressionStrip } from "@/components/progression-strip";
 import { ShareButton } from "@/components/share-button";
 import { SocialLinks } from "@/components/social-links";
+import { PageLayout } from "@/components/page-layout";
+import { PageSubtitle, PageTitle } from "@/components/page-title";
 import { SubmissionImage } from "@/components/submission-image";
 import { SubmissionLightbox } from "@/components/submission-lightbox";
 import { SubmissionMobileMenu } from "@/components/submission-mobile-menu";
@@ -91,6 +94,25 @@ export function SubmissionDetail({
 
   // Local state for submission data that can be updated after editing
   const [submission] = useState(initialSubmission);
+
+  const creatorAvatar = useMemo(
+    () =>
+      submission.user.image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={submission.user.image}
+          alt=""
+          className="h-12 w-12 shrink-0 rounded-full object-cover"
+        />
+      ) : (
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-lowest">
+          <span className="text-lg font-medium text-on-surface-variant">
+            {submission.user.name?.charAt(0) || "?"}
+          </span>
+        </div>
+      ),
+    [submission.user.image, submission.user.name],
+  );
 
   // Defer Radix UI (Tabs, DropdownMenu) until after mount to avoid hydration mismatch:
   // Radix generates stable useId()s per tree position; server/client can differ and cause ID mismatch.
@@ -208,41 +230,43 @@ export function SubmissionDetail({
         isLoggedIn={isLoggedIn}
         initialSubmissionIds={[submission.id]}
       >
-        <div className="min-h-screen bg-background">
-          <Card className="rounded-none border-x-0 border-t-0">
-            <div className="mx-auto max-w-7xl px-6 py-4">
-              <div className="md:hidden flex flex-col gap-2">
-                <span className="text-xl font-bold text-foreground">
+        <PageLayout maxWidth="max-w-6xl">
+          <div className="mb-8 w-full min-w-0">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
+              <CreatorHubHeaderLayout
+                className="min-w-0 flex-1"
+                avatar={creatorAvatar}
+              >
+                <PageTitle>
                   {submission.title || tExhibition("untitled")}
-                </span>
-                <Link
-                  href={getCreatorUrl(submission.user)}
-                  className="text-sm text-muted-foreground"
-                >
-                  {submission.user.name || tProfile("anonymous")}
-                </Link>
-              </div>
-              <div className="hidden md:block">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex flex-col gap-1">
-                    <h1 className="text-xl font-bold text-foreground sm:text-2xl">
-                      {submission.title || tExhibition("untitled")}
-                    </h1>
+                </PageTitle>
+                <div className="flex flex-wrap items-center gap-3">
+                  <PageSubtitle className="mt-0">
                     <Link
                       href={getCreatorUrl(submission.user)}
-                      className="text-sm text-muted-foreground"
+                      className="transition-colors hover:text-foreground"
                     >
                       {submission.user.name || tProfile("anonymous")}
                     </Link>
-                  </div>
+                  </PageSubtitle>
+                  {(submission.user.instagram ||
+                    submission.user.twitter ||
+                    submission.user.linkedin ||
+                    submission.user.website) && (
+                    <SocialLinks
+                      instagram={submission.user.instagram}
+                      twitter={submission.user.twitter}
+                      linkedin={submission.user.linkedin}
+                      website={submission.user.website}
+                      variant="minimal"
+                    />
+                  )}
                 </div>
-              </div>
+              </CreatorHubHeaderLayout>
             </div>
-          </Card>
-          <main className="mx-auto max-w-7xl px-6 py-6">
-            <div className="mb-12 min-h-[40vh]" aria-hidden />
-          </main>
-        </div>
+          </div>
+          <div className="mb-12 min-h-[40vh]" aria-hidden />
+        </PageLayout>
       </FavoritesProvider>
     );
   }
@@ -252,79 +276,18 @@ export function SubmissionDetail({
       isLoggedIn={isLoggedIn}
       initialSubmissionIds={[submission.id]}
     >
-      <div className="min-h-screen bg-background">
-        {/* Header with title, user, and actions */}
-        <Card className="rounded-none border-x-0 border-t-0">
-          <div className="mx-auto max-w-7xl px-6 py-4">
-            {/* Mobile: title dropdown + creator line */}
-            <div className="md:hidden flex flex-col gap-0.5">
-              <SubmissionMobileMenu
-                submission={{
-                  id: submission.id,
-                  title: submission.title,
-                  shareStatus: submission.shareStatus,
-                  critiquesEnabled: submission.critiquesEnabled,
-                  _count: submission._count,
-                  user: submission.user,
-                }}
-                isOwner={isOwner}
-                isLoggedIn={isLoggedIn}
-                currentUserId={currentUserId}
-                hasImage={hasImage}
-                hasProgressionsGif={hasProgressionsGif}
-              />
-              <div className="flex items-center gap-2">
-                <Link
-                  href={getCreatorUrl(submission.user)}
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {submission.user.name || tProfile("anonymous")}
-                </Link>
-                {(submission.user.instagram ||
-                  submission.user.twitter ||
-                  submission.user.linkedin ||
-                  submission.user.website) && (
-                  <SocialLinks
-                    instagram={submission.user.instagram}
-                    twitter={submission.user.twitter}
-                    linkedin={submission.user.linkedin}
-                    website={submission.user.website}
-                    variant="minimal"
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Desktop: title left; outline icon toolbar right (matches collection view) */}
-            <div className="hidden md:block">
+      <PageLayout maxWidth="max-w-6xl">
+        <div className="mb-8 w-full min-w-0">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
+            <CreatorHubHeaderLayout
+              className="min-w-0 flex-1"
+              avatar={creatorAvatar}
+            >
               <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-xl font-bold leading-[1.3] text-foreground sm:text-2xl break-words">
-                    {submission.title || tExhibition("untitled")}
-                  </h1>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <Link
-                      href={getCreatorUrl(submission.user)}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {submission.user.name || tProfile("anonymous")}
-                    </Link>
-                    {(submission.user.instagram ||
-                      submission.user.twitter ||
-                      submission.user.linkedin ||
-                      submission.user.website) && (
-                      <SocialLinks
-                        instagram={submission.user.instagram}
-                        twitter={submission.user.twitter}
-                        linkedin={submission.user.linkedin}
-                        website={submission.user.website}
-                        variant="minimal"
-                      />
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1 pt-0.5">
+                <PageTitle className="min-w-0 flex-1">
+                  {submission.title || tExhibition("untitled")}
+                </PageTitle>
+                <div className="hidden shrink-0 flex-wrap items-center justify-end gap-1 pt-0.5 md:flex">
                   <ShareButton
                     type="submission"
                     submissionId={submission.id}
@@ -392,13 +355,63 @@ export function SubmissionDetail({
                   )}
                 </div>
               </div>
-            </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <PageSubtitle className="mt-0">
+                  <Link
+                    href={getCreatorUrl(submission.user)}
+                    className="transition-colors hover:text-foreground"
+                  >
+                    {submission.user.name || tProfile("anonymous")}
+                  </Link>
+                </PageSubtitle>
+                {(submission.user.instagram ||
+                  submission.user.twitter ||
+                  submission.user.linkedin ||
+                  submission.user.website) && (
+                  <SocialLinks
+                    instagram={submission.user.instagram}
+                    twitter={submission.user.twitter}
+                    linkedin={submission.user.linkedin}
+                    website={submission.user.website}
+                    variant="minimal"
+                  />
+                )}
+              </div>
+              {isLoggedIn &&
+                submission.critiquesEnabled &&
+                (isOwner || submission.shareStatus === "PUBLIC") && (
+                  <div className="mt-3 flex flex-wrap md:hidden">
+                    <CritiqueButton
+                      submissionId={submission.id}
+                      critiquesEnabled={submission.critiquesEnabled}
+                      isOwner={isOwner}
+                      currentUserId={currentUserId}
+                      submissionTitle={submission.title}
+                      user={submission.user}
+                    />
+                  </div>
+                )}
+            </CreatorHubHeaderLayout>
           </div>
-        </Card>
+        </div>
 
-        {/* WIP banner */}
+        <SubmissionMobileMenu
+          submission={{
+            id: submission.id,
+            title: submission.title,
+            shareStatus: submission.shareStatus,
+            critiquesEnabled: submission.critiquesEnabled,
+            _count: submission._count,
+            user: submission.user,
+          }}
+          isOwner={isOwner}
+          isLoggedIn={isLoggedIn}
+          hasImage={hasImage}
+          hasProgressionsGif={hasProgressionsGif}
+        />
+
         {isWip && (
-          <div className="mx-auto max-w-7xl px-6 pt-4">
+          <div className="mb-6 w-full">
             <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
               <svg
                 className="h-4 w-4 shrink-0"
@@ -418,8 +431,7 @@ export function SubmissionDetail({
           </div>
         )}
 
-        {/* Main content */}
-        <main className="mx-auto max-w-7xl px-6 py-6">
+        <div className="w-full min-w-0">
           {tabKeys.length === 0 ? null : tabKeys.length === 1 ? (
             <div className="mb-12">
               {tabKeys[0] === "image" && renderImagePanel()}
@@ -446,8 +458,8 @@ export function SubmissionDetail({
               ))}
             </Tabs>
           )}
-        </main>
-      </div>
+        </div>
+      </PageLayout>
 
       {hasImage && (
         <SubmissionLightbox
