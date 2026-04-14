@@ -245,6 +245,13 @@
     "manageNotifications": "Manage Notifications",
     "searchEverything": "Search everything",
     "searchEverythingEmpty": "No matches.",
+    "commandPaletteStatus": "Status",
+    "commandPaletteLoading": "Searching…",
+    "commandPaletteSubmissions": "Submissions",
+    "commandPaletteCreators": "Creators",
+    "commandPaletteUntitled": "Untitled",
+    "commandPaletteUnnamed": "Unnamed",
+    "commandPaletteCreatorCount": "{count, plural, one {# submission} other {# submissions}}",
     "searchEverythingShortcut": "⌘K / Ctrl+K",
     "sidebarModeLabel": "Create or Inspire navigation"
   },

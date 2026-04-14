@@ -245,6 +245,13 @@
     "manageNotifications": "Gestionar Notificaciones",
     "searchEverything": "Buscar en todo",
     "searchEverythingEmpty": "Sin coincidencias.",
+    "commandPaletteStatus": "Estado",
+    "commandPaletteLoading": "Buscando…",
+    "commandPaletteSubmissions": "Publicaciones",
+    "commandPaletteCreators": "Creadores",
+    "commandPaletteUntitled": "Sin título",
+    "commandPaletteUnnamed": "Sin nombre",
+    "commandPaletteCreatorCount": "{count, plural, one {# publicación} other {# publicaciones}}",
     "searchEverythingShortcut": "⌘K / Ctrl+K",
     "sidebarModeLabel": "Navegación Crear o Inspirar"
   },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -50,6 +50,31 @@ interface GlobalCommandMenuProps {
 }
 
 const SCROLLBAR_IDLE_MS = 700;
+const SEARCH_DEBOUNCE_MS = 200;
+const SEARCH_MIN_CHARS = 2;
+
+interface CommandPaletteSubmissionResult {
+  id: string;
+  title: string | null;
+  imageUrl: string | null;
+  shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
+  user: {
+    id: string;
+    slug: string | null;
+    name: string | null;
+  };
+}
+
+interface CommandPaletteCreatorResult {
+  id: string;
+  slug: string | null;
+  name: string | null;
+  profileImageUrl: string | null;
+  image: string | null;
+  _count: {
+    submissions: number;
+  };
+}
 
 export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
   const router = useRouter();
@@ -57,8 +82,16 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
   const tCreator = useTranslations("creatorNav");
   const { commandOpen, setCommandOpen, setCreateSubmissionOpen } =
     useAppChrome();
+  const [query, setQuery] = useState("");
+  const [submissions, setSubmissions] = useState<
+    CommandPaletteSubmissionResult[]
+  >([]);
+  const [creators, setCreators] = useState<CommandPaletteCreatorResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [listScrolling, setListScrolling] = useState(false);
   const scrollIdleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inFlightAbortRef = useRef<AbortController | null>(null);
 
   const handleCommandListScroll = useCallback(() => {
     setListScrolling(true);
@@ -74,6 +107,10 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
   useEffect(() => {
     if (!commandOpen) {
       setListScrolling(false);
+      setQuery("");
+      setSubmissions([]);
+      setCreators([]);
+      setIsSearching(false);
       if (scrollIdleTimerRef.current != null) {
         clearTimeout(scrollIdleTimerRef.current);
         scrollIdleTimerRef.current = null;
@@ -86,9 +123,75 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
       if (scrollIdleTimerRef.current != null) {
         clearTimeout(scrollIdleTimerRef.current);
       }
+      if (searchTimerRef.current != null) {
+        clearTimeout(searchTimerRef.current);
+      }
+      if (inFlightAbortRef.current != null) {
+        inFlightAbortRef.current.abort();
+      }
     },
     [],
   );
+
+  const normalizedQuery = useMemo(() => query.trim(), [query]);
+
+  useEffect(() => {
+    if (!commandOpen) return;
+
+    if (searchTimerRef.current != null) {
+      clearTimeout(searchTimerRef.current);
+      searchTimerRef.current = null;
+    }
+    if (inFlightAbortRef.current != null) {
+      inFlightAbortRef.current.abort();
+      inFlightAbortRef.current = null;
+    }
+
+    if (normalizedQuery.length < SEARCH_MIN_CHARS) {
+      setSubmissions([]);
+      setCreators([]);
+      setIsSearching(false);
+      return;
+    }
+
+    searchTimerRef.current = setTimeout(() => {
+      const abortController = new AbortController();
+      inFlightAbortRef.current = abortController;
+      setIsSearching(true);
+
+      const params = new URLSearchParams({ q: normalizedQuery });
+
+      Promise.all([
+        fetch(`/api/command-palette/submissions?${params.toString()}`, {
+          signal: abortController.signal,
+        })
+          .then(async (r) => (r.ok ? r.json() : null))
+          .then(
+            (data) =>
+              (data?.submissions ?? []) as CommandPaletteSubmissionResult[],
+          )
+          .catch(() => [] as CommandPaletteSubmissionResult[]),
+        fetch(`/api/command-palette/creators?${params.toString()}`, {
+          signal: abortController.signal,
+        })
+          .then(async (r) => (r.ok ? r.json() : null))
+          .then(
+            (data) => (data?.creators ?? []) as CommandPaletteCreatorResult[],
+          )
+          .catch(() => [] as CommandPaletteCreatorResult[]),
+      ])
+        .then(([nextSubmissions, nextCreators]) => {
+          setSubmissions(nextSubmissions);
+          setCreators(nextCreators);
+        })
+        .finally(() => {
+          if (!abortController.signal.aborted) {
+            setIsSearching(false);
+            inFlightAbortRef.current = null;
+          }
+        });
+    }, SEARCH_DEBOUNCE_MS);
+  }, [commandOpen, normalizedQuery]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -154,7 +257,11 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
           loop
         >
           <div className="border-b border-outline-variant/40 pb-3">
-            <CommandInput placeholder={tNav("searchEverything")} />
+            <CommandInput
+              placeholder={tNav("searchEverything")}
+              value={query}
+              onValueChange={setQuery}
+            />
           </div>
           <CommandList
             className={cn(
@@ -166,6 +273,81 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
             <CommandEmpty className="py-8 text-center text-sm text-muted-foreground">
               {tNav("searchEverythingEmpty")}
             </CommandEmpty>
+            {isSearching && (
+              <CommandGroup heading={tNav("commandPaletteStatus")}>
+                <CommandItem
+                  className={COMMAND_ITEM_CLASS}
+                  value={tNav("commandPaletteLoading")}
+                  disabled
+                >
+                  {tNav("commandPaletteLoading")}
+                </CommandItem>
+              </CommandGroup>
+            )}
+            {!isSearching && submissions.length > 0 && (
+              <CommandGroup
+                heading={tNav("commandPaletteSubmissions")}
+                className="mt-3"
+              >
+                {submissions.map((submission) => {
+                  const creatorHref = getCreatorUrl({
+                    id: submission.user.id,
+                    slug: submission.user.slug,
+                  });
+                  const title =
+                    submission.title?.trim() || tNav("commandPaletteUntitled");
+
+                  return (
+                    <CommandItem
+                      key={submission.id}
+                      className={COMMAND_ITEM_CLASS}
+                      value={`${title} ${submission.user.name ?? ""}`.trim()}
+                      onSelect={() => go(`${creatorHref}/s/${submission.id}`)}
+                    >
+                      <LayoutGrid className={COMMAND_ICON_CLASS} />
+                      {title}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            )}
+            {!isSearching && creators.length > 0 && (
+              <CommandGroup
+                heading={tNav("commandPaletteCreators")}
+                className="mt-3"
+              >
+                {creators.map((creator) => {
+                  const name =
+                    creator.name?.trim() || tNav("commandPaletteUnnamed");
+                  const countLabel = tNav("commandPaletteCreatorCount", {
+                    count: creator._count.submissions,
+                  });
+
+                  return (
+                    <CommandItem
+                      key={creator.id}
+                      className={COMMAND_ITEM_CLASS}
+                      value={`${name} ${countLabel}`.trim()}
+                      onSelect={() =>
+                        go(
+                          getCreatorUrl({ id: creator.id, slug: creator.slug }),
+                        )
+                      }
+                    >
+                      {CreatorsCmdIcon && (
+                        <CreatorsCmdIcon className={COMMAND_ICON_CLASS} />
+                      )}
+                      <span className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                        <span className="truncate">{name}</span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {countLabel}
+                        </span>
+                      </span>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            )}
             {user?.id != null && (
               <CommandGroup heading={tNav("myHub")}>
                 <CommandItem
