@@ -29,6 +29,12 @@ interface SubmissionEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialData?: SubmissionData;
+  initialDraft?: {
+    id: string;
+    title?: string | null;
+    imageUrl?: string | null;
+    category?: string | null;
+  };
   onSuccess?: (data?: SubmissionData) => void;
   mode?: "create" | "edit" | "add-to-portfolio";
 }
@@ -37,6 +43,7 @@ export function SubmissionEditModal({
   isOpen,
   onClose,
   initialData,
+  initialDraft,
   onSuccess,
   mode = "edit",
 }: SubmissionEditModalProps) {
@@ -76,6 +83,7 @@ export function SubmissionEditModal({
               <SubmissionCreateWizard
                 onSuccess={handleSuccess}
                 onCancel={onClose}
+                initialDraft={initialDraft}
               />
             ) : (
               <PortfolioItemForm

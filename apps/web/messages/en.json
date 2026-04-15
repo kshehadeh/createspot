@@ -265,6 +265,8 @@
   "feed": {
     "title": "Feed",
     "description": "Browse recent creative submissions from the community",
+    "home": "Home",
+    "following": "Following",
     "submissionAlt": "Creative submission",
     "referenceAlt": "Reference image",
     "reference": "Reference",
@@ -278,6 +280,7 @@
     "critiques": "Critiques",
     "favorites": "{count, plural, one {# like} other {# likes}}",
     "empty": "No submissions yet. Check back soon!",
+    "followingEmpty": "Nothing here yet. Follow creators to see their work in your feed.",
     "end": "You've reached the end of the feed.",
     "newPost": "New Post",
     "dashboard": "Dashboard",
@@ -302,6 +305,10 @@
     "emptyBlocked": "You haven't blocked anyone.",
     "loadMore": "Load more",
     "anonymous": "Anonymous"
+  },
+  "feedComposer": {
+    "prompt": "What have you created lately?",
+    "newPost": "New Post"
   },
   "exhibition": {
     "loadMoreError": "Failed to load more work",

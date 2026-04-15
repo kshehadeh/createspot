@@ -38,6 +38,72 @@ export interface FeedResult {
   nextCursor: string | null;
 }
 
+export async function getFollowingFeedSubmissionsCursor({
+  cursor,
+  take = FEED_PAGE_SIZE,
+  currentUserId,
+}: {
+  cursor?: string;
+  take?: number;
+  currentUserId: string;
+}): Promise<FeedResult> {
+  const limit = Math.max(1, Math.min(take, 50));
+
+  const [follows, blocked, blockedBy] = await Promise.all([
+    prisma.follow.findMany({
+      where: { followerId: currentUserId },
+      select: { followingId: true },
+    }),
+    prisma.block.findMany({
+      where: { blockerId: currentUserId },
+      select: { blockedId: true },
+    }),
+    prisma.block.findMany({
+      where: { blockedId: currentUserId },
+      select: { blockerId: true },
+    }),
+  ]);
+
+  const excludedIds = new Set<string>([
+    ...blocked.map((block) => block.blockedId),
+    ...blockedBy.map((block) => block.blockerId),
+  ]);
+
+  const followingIds = follows
+    .map((follow) => follow.followingId)
+    .filter((id) => !excludedIds.has(id));
+
+  if (followingIds.length === 0) {
+    return { submissions: [], hasMore: false, nextCursor: null };
+  }
+
+  const items = await prisma.submission.findMany({
+    where: {
+      shareStatus: "PUBLIC" as const,
+      isPortfolio: true,
+      userId: { in: followingIds },
+      OR: [{ imageUrl: { not: null } }, { text: { not: null } }],
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    include: submissionInclude,
+  });
+
+  let submissions = items as unknown as FeedSubmission[];
+  const hasMore = submissions.length > limit;
+  if (hasMore) {
+    submissions = submissions.slice(0, limit);
+  }
+
+  const nextCursor =
+    hasMore && submissions.length > 0
+      ? submissions[submissions.length - 1].id
+      : null;
+
+  return { submissions, hasMore, nextCursor };
+}
+
 export async function getFeedSubmissions({
   cursor,
   take = FEED_PAGE_SIZE,

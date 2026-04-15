@@ -45,6 +45,7 @@ interface FeedListProps {
   isLoggedIn: boolean;
   currentUserId?: string | null;
   showActionBar?: boolean;
+  feedType?: "home" | "following";
 }
 
 function FeedSkeleton() {
@@ -81,6 +82,7 @@ function FeedListContent({
   isLoggedIn,
   currentUserId,
   showActionBar = false,
+  feedType = "home",
 }: FeedListProps) {
   const t = useTranslations("feed");
   const tNav = useTranslations("navigation");
@@ -110,11 +112,14 @@ function FeedListContent({
 
   const loadMore = useCallback(async () => {
     if (isLoading || !hasMore || !nextCursor) return;
+    if (feedType === "following" && !isLoggedIn) return;
 
     setIsLoading(true);
     try {
       const params = new URLSearchParams({ cursor: nextCursor, take: "20" });
-      const response = await fetch(`/api/feed?${params.toString()}`);
+      const endpoint =
+        feedType === "following" ? "/api/feed/following" : "/api/feed";
+      const response = await fetch(`${endpoint}?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to load feed");
 
       const data = await response.json();
@@ -126,7 +131,7 @@ function FeedListContent({
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, hasMore, nextCursor]);
+  }, [isLoading, hasMore, nextCursor, feedType]);
 
   useEffect(() => {
     if (!hasMore) return;
@@ -202,10 +207,12 @@ function FeedListContent({
   );
 
   if (submissions.length === 0) {
+    const emptyCopy =
+      feedType === "following" ? t("followingEmpty") : t("empty");
     return (
       <>
         <div className="flex flex-col items-center justify-center py-20 text-center px-6">
-          <p className="text-muted-foreground">{t("empty")}</p>
+          <p className="text-muted-foreground">{emptyCopy}</p>
         </div>
         {fab}
         {guestActionBar}
@@ -309,6 +316,7 @@ export function FeedList({
   isLoggedIn,
   currentUserId,
   showActionBar = false,
+  feedType = "home",
 }: FeedListProps) {
   const submissionIds = initialSubmissions.map((s) => s.id);
 
@@ -324,6 +332,7 @@ export function FeedList({
         isLoggedIn={isLoggedIn}
         currentUserId={currentUserId}
         showActionBar={showActionBar}
+        feedType={feedType}
       />
     </FavoritesProvider>
   );

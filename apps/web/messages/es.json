@@ -265,6 +265,8 @@
   "feed": {
     "title": "Feed",
     "description": "Explora publicaciones creativas recientes de la comunidad",
+    "home": "Inicio",
+    "following": "Siguiendo",
     "submissionAlt": "Publicación creativa",
     "referenceAlt": "Imagen de referencia",
     "reference": "Referencia",
@@ -278,6 +280,7 @@
     "critiques": "Críticas",
     "favorites": "{count, plural, one {# me gusta} other {# me gusta}}",
     "empty": "Aún no hay publicaciones. ¡Vuelve pronto!",
+    "followingEmpty": "Aún no hay nada aquí. Sigue a creadores para ver su trabajo en tu feed.",
     "end": "Has llegado al final del feed.",
     "newPost": "Nueva Publicación",
     "dashboard": "Panel",
@@ -302,6 +305,10 @@
     "emptyBlocked": "No has bloqueado a nadie.",
     "loadMore": "Cargar más",
     "anonymous": "Anónimo"
+  },
+  "feedComposer": {
+    "prompt": "¿Qué has creado últimamente?",
+    "newPost": "Nueva Publicación"
   },
   "exhibition": {
     "loadMoreError": "Error al cargar más trabajos",

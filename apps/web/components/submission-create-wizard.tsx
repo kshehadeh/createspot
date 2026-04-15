@@ -65,6 +65,12 @@ interface SubmissionData {
 interface SubmissionCreateWizardProps {
   onSuccess?: (data?: SubmissionData) => void;
   onCancel?: () => void;
+  initialDraft?: {
+    id: string;
+    title?: string | null;
+    imageUrl?: string | null;
+    category?: string | null;
+  };
 }
 
 type WizardStep = 1 | 2 | 3 | 4;
@@ -72,6 +78,7 @@ type WizardStep = 1 | 2 | 3 | 4;
 export function SubmissionCreateWizard({
   onSuccess,
   onCancel,
+  initialDraft,
 }: SubmissionCreateWizardProps) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -124,6 +131,17 @@ export function SubmissionCreateWizard({
   const [showRemoveReferenceConfirm, setShowRemoveReferenceConfirm] =
     useState(false);
   const [isFocalPointModalOpen, setIsFocalPointModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!initialDraft) return;
+    setDraftId(initialDraft.id);
+    setTitle(initialDraft.title ?? "");
+    setImageUrl(initialDraft.imageUrl ?? "");
+    setCategory(initialDraft.category ?? "");
+    setStep(2);
+    setImageChangedAfterDraft(false);
+    setFocalPointChangedAfterDraft(false);
+  }, [initialDraft]);
 
   const showFormError = useCallback((message: string, flash: FieldFlash) => {
     toast.error(message);
