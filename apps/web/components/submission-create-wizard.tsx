@@ -566,6 +566,17 @@ export function SubmissionCreateWizard({
               flashRingClass("step1Content"),
             )}
           >
+            <div className="space-y-2">
+              <Label htmlFor="title">{t("title")}</Label>
+              <Input
+                id="title"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={t("titlePlaceholder")}
+              />
+            </div>
+
             <div
               ref={submissionImageStep1Ref}
               className={cn("space-y-2", flashRingClass("submissionImage"))}
@@ -890,17 +901,6 @@ export function SubmissionCreateWizard({
             <p className="text-sm text-muted-foreground">
               {tWizard("steps.step4.description")}
             </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="title">{t("title")}</Label>
-            <Input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("titlePlaceholder")}
-            />
           </div>
 
           <div
