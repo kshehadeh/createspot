@@ -8,6 +8,7 @@ import { geocodeLocation } from "@/lib/geocoding";
 import { processUploadedImage } from "@/app/(app)/workflows/process-uploaded-image";
 import { normalizeUrl, isValidUrl, isValidSlugFormat } from "@/lib/utils";
 import { isValidLocale } from "@/i18n/config";
+import { getR2KeyFromPublicUrl } from "@/lib/r2-url";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -19,12 +20,8 @@ const s3Client = new S3Client({
 });
 
 async function deleteImageFromR2(imageUrl: string): Promise<void> {
-  const publicUrl = process.env.R2_PUBLIC_URL;
-  if (!publicUrl || !imageUrl.startsWith(publicUrl)) return;
-
-  // Extract key, supporting both old format ({userId}/{uuid}.{ext})
-  // and new format (submissions/{userId}/{uuid}.{ext} or profiles/{userId}/{uuid}.{ext})
-  const key = imageUrl.replace(`${publicUrl}/`, "");
+  const key = getR2KeyFromPublicUrl(imageUrl, process.env.R2_PUBLIC_URL);
+  if (!key) return;
   try {
     await s3Client.send(
       new DeleteObjectCommand({

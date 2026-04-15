@@ -11,15 +11,17 @@ async function fetchImageFromR2(publicUrl: string): Promise<Buffer> {
   "use step";
 
   const { S3Client, GetObjectCommand } = await import("@aws-sdk/client-s3");
+  const { getR2KeyFromPublicUrl, normalizeR2PublicUrl } = await import(
+    "@/lib/r2-url"
+  );
 
-  const baseUrl = process.env.R2_PUBLIC_URL;
+  const baseUrl = normalizeR2PublicUrl(process.env.R2_PUBLIC_URL);
   const bucket = process.env.R2_BUCKET_NAME;
   if (!baseUrl || !bucket)
     throw new Error("R2_PUBLIC_URL or R2_BUCKET_NAME not set");
 
-  if (!publicUrl.startsWith(baseUrl))
-    throw new Error("Invalid publicUrl: not an R2 URL");
-  const key = publicUrl.replace(`${baseUrl}/`, "");
+  const key = getR2KeyFromPublicUrl(publicUrl, baseUrl);
+  if (!key) throw new Error("Invalid publicUrl: not an R2 URL");
 
   const s3Client = new S3Client({
     region: "auto",
@@ -96,28 +98,34 @@ async function processAndUploadToR2(
   publicUrl: string,
   type: "submission" | "profile",
   userId: string,
-): Promise<{ newPublicUrl: string; format: string }> {
+): Promise<{
+  newPublicUrl: string;
+  newKey: string;
+  oldKey: string;
+  format: string;
+}> {
   "use step";
 
-  const { S3Client, PutObjectCommand, DeleteObjectCommand } = await import(
-    "@aws-sdk/client-s3"
-  );
+  const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
   const crypto = await import("crypto");
   const { processImageForStorage } = await import("@/lib/upload-process");
+  const { getR2KeyFromPublicUrl, joinR2PublicUrl, normalizeR2PublicUrl } =
+    await import("@/lib/r2-url");
 
-  const baseUrl = process.env.R2_PUBLIC_URL;
+  const baseUrl = normalizeR2PublicUrl(process.env.R2_PUBLIC_URL);
   const bucket = process.env.R2_BUCKET_NAME;
   if (!baseUrl || !bucket)
     throw new Error("R2_PUBLIC_URL or R2_BUCKET_NAME not set");
 
   const result = await processImageForStorage(buffer);
 
-  if (!publicUrl.startsWith(baseUrl)) throw new Error("Invalid publicUrl");
-  const oldKey = publicUrl.replace(`${baseUrl}/`, "");
+  const oldKey = getR2KeyFromPublicUrl(publicUrl, baseUrl);
+  if (!oldKey) throw new Error("Invalid publicUrl");
 
   const folder = type === "profile" ? "profiles" : "submissions";
   const newKey = `${folder}/${userId}/${crypto.randomUUID()}.${result.extension}`;
-  const newPublicUrl = `${baseUrl}/${newKey}`;
+  const newPublicUrl = joinR2PublicUrl(baseUrl, newKey);
+  if (!newPublicUrl) throw new Error("R2_PUBLIC_URL not set");
 
   const s3Client = new S3Client({
     region: "auto",
@@ -137,41 +145,62 @@ async function processAndUploadToR2(
     }),
   );
 
-  await s3Client.send(new DeleteObjectCommand({ Bucket: bucket, Key: oldKey }));
-
-  return { newPublicUrl, format: result.extension };
+  return { newPublicUrl, newKey, oldKey, format: result.extension };
 }
 
 async function updateDatabase(
   type: "submission" | "profile",
   userId: string,
   submissionId: string | undefined,
+  originalPublicUrl: string,
   newPublicUrl: string,
   metadata: { watermarked: boolean; compressed: boolean; format: string },
-): Promise<void> {
+): Promise<{ swapped: boolean }> {
   "use step";
 
   const { prisma } = await import("@/lib/prisma");
   const now = new Date();
 
   if (type === "submission" && submissionId) {
-    await prisma.submission.update({
-      where: { id: submissionId },
+    const result = await prisma.submission.updateMany({
+      where: { id: submissionId, imageUrl: originalPublicUrl },
       data: {
         imageUrl: newPublicUrl,
         imageProcessingMetadata: metadata as object,
         imageProcessedAt: now,
       },
     });
-    return;
+    return { swapped: result.count > 0 };
   }
 
   if (type === "profile") {
-    await prisma.user.update({
-      where: { id: userId },
+    const result = await prisma.user.updateMany({
+      where: { id: userId, profileImageUrl: originalPublicUrl },
       data: { profileImageUrl: newPublicUrl },
     });
+    return { swapped: result.count > 0 };
   }
+
+  return { swapped: false };
+}
+
+async function deleteObjectFromR2(key: string): Promise<void> {
+  "use step";
+
+  const { S3Client, DeleteObjectCommand } = await import("@aws-sdk/client-s3");
+  const bucket = process.env.R2_BUCKET_NAME;
+  if (!bucket) throw new Error("R2_BUCKET_NAME not set");
+
+  const s3Client = new S3Client({
+    region: "auto",
+    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  });
+
+  await s3Client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 }
 
 export async function processUploadedImage(
@@ -180,10 +209,17 @@ export async function processUploadedImage(
   const { publicUrl, type, userId, submissionId } = input;
 
   try {
+    console.info("[process-uploaded-image] start", {
+      type,
+      userId,
+      submissionId,
+      publicUrl,
+    });
+
     const buffer = await fetchImageFromR2(publicUrl);
     const { buffer: afterWatermark, watermarked } =
       await applyWatermarkIfNeeded(buffer, publicUrl, type, userId);
-    const { newPublicUrl, format } = await processAndUploadToR2(
+    const { newPublicUrl, format, newKey, oldKey } = await processAndUploadToR2(
       afterWatermark,
       publicUrl,
       type,
@@ -194,7 +230,58 @@ export async function processUploadedImage(
       compressed: true,
       format,
     };
-    await updateDatabase(type, userId, submissionId, newPublicUrl, metadata);
+
+    const { swapped } = await updateDatabase(
+      type,
+      userId,
+      submissionId,
+      publicUrl,
+      newPublicUrl,
+      metadata,
+    );
+
+    if (swapped) {
+      try {
+        await deleteObjectFromR2(oldKey);
+      } catch (error) {
+        console.error("[process-uploaded-image] failed to delete old object", {
+          type,
+          userId,
+          submissionId,
+          oldKey,
+          error,
+        });
+      }
+      console.info("[process-uploaded-image] swapped", {
+        type,
+        userId,
+        submissionId,
+        newPublicUrl,
+        format,
+        watermarked,
+      });
+      return { success: true };
+    }
+
+    // The submission/profile moved on (newer image), so clean up the processed object we just created.
+    try {
+      await deleteObjectFromR2(newKey);
+    } catch (error) {
+      console.error("[process-uploaded-image] failed to cleanup stale output", {
+        type,
+        userId,
+        submissionId,
+        newKey,
+        error,
+      });
+    }
+
+    console.info("[process-uploaded-image] stale job skipped", {
+      type,
+      userId,
+      submissionId,
+      publicUrl,
+    });
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

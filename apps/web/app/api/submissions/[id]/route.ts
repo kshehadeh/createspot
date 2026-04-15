@@ -4,6 +4,7 @@ import { after, NextRequest, NextResponse } from "next/server";
 import { processUploadedImage } from "@/app/(app)/workflows/process-uploaded-image";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getR2KeyFromPublicUrl } from "@/lib/r2-url";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -15,10 +16,8 @@ const s3Client = new S3Client({
 });
 
 async function deleteImageFromR2(imageUrl: string): Promise<void> {
-  const publicUrl = process.env.R2_PUBLIC_URL;
-  if (!publicUrl || !imageUrl.startsWith(publicUrl)) return;
-
-  const key = imageUrl.replace(`${publicUrl}/`, "");
+  const key = getR2KeyFromPublicUrl(imageUrl, process.env.R2_PUBLIC_URL);
+  if (!key) return;
   try {
     await s3Client.send(
       new DeleteObjectCommand({
