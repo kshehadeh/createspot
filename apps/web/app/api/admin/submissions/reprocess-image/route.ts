@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const metadata = submission.imageProcessingMetadata as
-    | { compressed?: boolean }
-    | null;
+  const metadata = submission.imageProcessingMetadata as {
+    compressed?: boolean;
+  } | null;
   const needsProcessing =
     metadata?.compressed !== true || !isLikelyProcessed(submission.imageUrl);
 
@@ -88,4 +88,3 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ ok: true });
 }
-

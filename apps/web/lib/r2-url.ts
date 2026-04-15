@@ -1,4 +1,6 @@
-export function normalizeR2PublicUrl(r2PublicUrl: string | undefined): string | null {
+export function normalizeR2PublicUrl(
+  r2PublicUrl: string | undefined,
+): string | null {
   if (!r2PublicUrl) return null;
   const trimmed = r2PublicUrl.trim();
   if (!trimmed) return null;
@@ -25,4 +27,3 @@ export function joinR2PublicUrl(
   const trimmedKey = key.startsWith("/") ? key.slice(1) : key;
   return `${base}/${trimmedKey}`;
 }
-
