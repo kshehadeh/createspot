@@ -26,8 +26,9 @@ export function FavoriteButton({
     await actions.toggleFavorite(submissionId);
   };
 
-  const iconSize = size === "sm" ? "h-4 w-4" : "h-5 w-5";
-  const buttonSize = size === "sm" ? "h-7 w-7" : "h-8 w-8";
+  const iconSize = size === "sm" ? "h-5 w-5" : "h-6 w-6";
+  // Keep a larger tap target (especially for mobile).
+  const buttonSize = size === "sm" ? "h-10 w-10" : "h-11 w-11";
   const useCustomStyle = className.length > 0;
   const buttonClassName = useCustomStyle
     ? className
@@ -53,15 +54,25 @@ export function FavoriteButton({
       whileTap={{ scale: 0.9 }}
       className={buttonClassName}
       aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+      aria-pressed={favorited}
     >
       <motion.svg
+        key={favorited ? "favorited" : "unfavorited"}
         className={`${iconSize} ${iconColorClass}`}
         fill={favorited ? "currentColor" : "none"}
         viewBox="0 0 24 24"
         stroke="currentColor"
         strokeWidth={2}
-        animate={favorited ? { scale: [1, 1.2, 1] } : {}}
-        transition={{ duration: 0.3 }}
+        animate={
+          favorited
+            ? { scale: [1, 1.65, 0.95, 1] }
+            : { scale: [1, 0.75, 1.05, 1] }
+        }
+        transition={{
+          duration: 0.42,
+          times: [0, 0.35, 0.7, 1],
+          ease: ["easeOut", "easeInOut", "easeOut"],
+        }}
       >
         <path
           strokeLinecap="round"
