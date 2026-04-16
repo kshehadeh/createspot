@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
@@ -8,6 +7,7 @@ import {
   getFollowingFeedSubmissionsCursor,
   getFavoritesFeedSubmissionsCursor,
 } from "@/lib/feed";
+import { FeedTabs } from "@/components/feed-tabs";
 import { FeedList } from "@/components/feed-list";
 import { PublicHomeMobileScrollbar } from "@/components/public-home-mobile-scrollbar";
 import { QuickSubmissionComposer } from "@/components/quick-submission-composer";
@@ -41,7 +41,7 @@ export default async function Home({
   const tabParam = resolvedSearchParams.tab;
   const tab = Array.isArray(tabParam) ? tabParam[0] : tabParam;
 
-  if (tab === "favorites" && !session?.user?.id) {
+  if ((tab === "following" || tab === "favorites") && !session?.user?.id) {
     redirect("/welcome");
   }
 
@@ -75,52 +75,7 @@ export default async function Home({
         </div>
       )}
       <div className="mb-4 px-4">
-        <nav
-          aria-label={t("title")}
-          className="flex items-center justify-between border-b border-border"
-        >
-          <div className="flex gap-6">
-            <Link
-              href="/"
-              aria-current={feedType === "home" ? "page" : undefined}
-              className={[
-                "pb-3 text-sm font-medium transition-colors",
-                feedType === "home"
-                  ? "text-foreground border-b-2 border-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              ].join(" ")}
-            >
-              {t("home")}
-            </Link>
-            <Link
-              href="/?tab=following"
-              aria-current={feedType === "following" ? "page" : undefined}
-              className={[
-                "pb-3 text-sm font-medium transition-colors",
-                feedType === "following"
-                  ? "text-foreground border-b-2 border-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              ].join(" ")}
-            >
-              {t("following")}
-            </Link>
-            {session?.user?.id && (
-              <Link
-                href="/?tab=favorites"
-                aria-current={feedType === "favorites" ? "page" : undefined}
-                className={[
-                  "pb-3 text-sm font-medium transition-colors",
-                  feedType === "favorites"
-                    ? "text-foreground border-b-2 border-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                ].join(" ")}
-              >
-                {t("favoritesTab")}
-              </Link>
-            )}
-          </div>
-          <div aria-hidden className="pb-3" />
-        </nav>
+        <FeedTabs active={feedType} isLoggedIn={!!session?.user?.id} />
       </div>
       <FeedList
         key={feedType}
