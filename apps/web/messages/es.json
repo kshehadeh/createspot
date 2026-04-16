@@ -295,8 +295,6 @@
   "community": {
     "title": "Comunidad",
     "subtitle": "Personas que sigues y personas que te siguen",
-    "followingFeedEmpty": "Aún no hay publicaciones recientes de las personas que sigues.",
-    "tabRecents": "Recientes",
     "tabFollowers": "Seguidores",
     "tabFollowing": "Siguiendo",
     "tabBlocked": "Bloqueados",
@@ -889,7 +887,7 @@
     "progressionsDidYouKnowTitle": "¿Sabías?",
     "progressionsDidYouKnowDescription": "Las progresiones te permiten mostrar el proceso detrás de una pieza—bocetos, borradores o pasos intermedios. Al editar una publicación, usa \"Agregar Progresión\" para añadir imágenes o texto de cada paso. Los visitantes los ven como una tira clicable debajo de tu trabajo final.",
     "communityDidYouKnowTitle": "¿Sabías?",
-    "communityDidYouKnowDescription": "Tu feed de Comunidad muestra el trabajo reciente de las personas que sigues. Usa las pestañas para ver Recientes de tu feed o para gestionar Seguidores, Siguiendo y Usuarios bloqueados desde tu perfil."
+    "communityDidYouKnowDescription": "Tu feed principal muestra el trabajo reciente de las personas que sigues. Usa las pestañas de Comunidad para gestionar Seguidores, Siguiendo y Usuarios bloqueados desde tu perfil."
   },
   "about": {
     "title": "Acerca de | Create Spot",

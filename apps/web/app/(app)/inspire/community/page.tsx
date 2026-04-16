@@ -4,8 +4,6 @@ import { auth } from "@/lib/auth";
 import { PageLayout } from "@/components/page-layout";
 import { InspirePageHeader } from "@/components/inspire-page-header";
 import { CommunityTabs } from "@/app/(app)/inspire/community/community-tabs";
-import { getFollowingFeedSubmissions } from "@/lib/community";
-import { EXHIBITION_PAGE_SIZE } from "@/lib/exhibition-constants";
 
 export default async function CommunityPage() {
   const session = await auth();
@@ -15,15 +13,11 @@ export default async function CommunityPage() {
   }
 
   const t = await getTranslations("community");
-  const { submissions, hasMore } = await getFollowingFeedSubmissions({
-    userId: session.user.id,
-    take: EXHIBITION_PAGE_SIZE,
-  });
 
   return (
     <PageLayout>
       <InspirePageHeader title={t("title")} subtitle={t("subtitle")} />
-      <CommunityTabs recentSubmissions={submissions} recentHasMore={hasMore} />
+      <CommunityTabs />
     </PageLayout>
   );
 }

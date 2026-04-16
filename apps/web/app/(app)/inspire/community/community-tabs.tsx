@@ -13,12 +13,8 @@ import {
 import { getUserImageUrl } from "@/lib/user-image";
 import { getCreatorUrl } from "@/lib/utils";
 import { UserMinus, UserX, UserCheck } from "lucide-react";
-import {
-  ExhibitionGrid,
-  type ExhibitionSubmission,
-} from "@/app/(app)/inspire/exhibition/exhibition-grid";
 
-type TabType = "recents" | "followers" | "following" | "blocked";
+type TabType = "followers" | "following" | "blocked";
 
 interface CommunityUser {
   id: string;
@@ -29,12 +25,7 @@ interface CommunityUser {
   isBlocked?: boolean;
 }
 
-interface CommunityTabsProps {
-  recentSubmissions: ExhibitionSubmission[];
-  recentHasMore: boolean;
-}
-
-function useCommunityList(type: Exclude<TabType, "recents">) {
+function useCommunityList(type: TabType) {
   const [items, setItems] = useState<CommunityUser[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -89,33 +80,6 @@ function useCommunityList(type: Exclude<TabType, "recents">) {
     removeUser,
     setUserBlocked,
   };
-}
-
-function RecentsTab({
-  submissions,
-  hasMore,
-}: {
-  submissions: ExhibitionSubmission[];
-  hasMore: boolean;
-}) {
-  const t = useTranslations("community");
-
-  if (submissions.length === 0) {
-    return (
-      <div className="rounded-lg bg-surface-container py-12 text-center">
-        <p className="text-muted-foreground">{t("followingFeedEmpty")}</p>
-      </div>
-    );
-  }
-
-  return (
-    <ExhibitionGrid
-      submissions={submissions}
-      isLoggedIn={true}
-      initialHasMore={hasMore}
-      loadMoreEndpoint="/api/community/following"
-    />
-  );
 }
 
 function FollowingTab() {
@@ -381,21 +345,12 @@ function FollowersTab() {
   );
 }
 
-export function CommunityTabs({
-  recentSubmissions,
-  recentHasMore,
-}: CommunityTabsProps) {
+export function CommunityTabs() {
   const t = useTranslations("community");
 
   return (
-    <Tabs defaultValue="recents" className="w-full">
+    <Tabs defaultValue="followers" className="w-full">
       <TabsList className="mb-6 h-auto w-full justify-start rounded-none border-b border-border bg-transparent p-0">
-        <TabsTrigger
-          value="recents"
-          className="rounded-b-none rounded-t-md border-b-2 border-transparent bg-transparent px-4 py-2 text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
-        >
-          {t("tabRecents")}
-        </TabsTrigger>
         <TabsTrigger
           value="followers"
           className="rounded-b-none rounded-t-md border-b-2 border-transparent bg-transparent px-4 py-2 text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
@@ -415,9 +370,6 @@ export function CommunityTabs({
           {t("tabBlocked")}
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="recents" className="mt-0">
-        <RecentsTab submissions={recentSubmissions} hasMore={recentHasMore} />
-      </TabsContent>
       <TabsContent value="followers" className="mt-0">
         <FollowersTab />
       </TabsContent>

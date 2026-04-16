@@ -295,8 +295,6 @@
   "community": {
     "title": "Community",
     "subtitle": "People you follow and people who follow you",
-    "followingFeedEmpty": "No recent submissions from people you follow yet.",
-    "tabRecents": "Recents",
     "tabFollowers": "Followers",
     "tabFollowing": "Following",
     "tabBlocked": "Blocked",
@@ -889,7 +887,7 @@
     "progressionsDidYouKnowTitle": "Did You Know?",
     "progressionsDidYouKnowDescription": "Progressions let you show the journey behind a piece—early sketches, drafts, or in-between steps. When editing a submission, use \"Add Progression\" to add images or text for each step. Viewers see them as a clickable strip below your final work.",
     "communityDidYouKnowTitle": "Did You Know?",
-    "communityDidYouKnowDescription": "Your Community feed shows recent work from people you follow. Use the tabs to see Recents from your feed, or to manage Followers, Following, and Blocked users from your profile."
+    "communityDidYouKnowDescription": "Your main feed shows recent work from people you follow. Use the Community tabs to manage Followers, Following, and Blocked users from your profile."
   },
   "about": {
     "title": "About | Create Spot",
