@@ -82,7 +82,7 @@ export function OnboardingSection() {
     {
       key: "collection" as const,
       completed: status.hasCollection,
-      href: "/inspire/favorites",
+      href: "/?tab=favorites",
       icon: FolderHeart,
     },
   ];

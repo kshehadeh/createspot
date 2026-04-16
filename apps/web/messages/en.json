@@ -267,6 +267,7 @@
     "description": "Browse recent creative submissions from the community",
     "home": "Home",
     "following": "Following",
+    "favoritesTab": "Favorites",
     "submissionAlt": "Creative submission",
     "referenceAlt": "Reference image",
     "reference": "Reference",

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import {
   getFeedSubmissions,
   getFollowingFeedSubmissionsCursor,
+  getFavoritesFeedSubmissionsCursor,
 } from "@/lib/feed";
 import { FeedList } from "@/components/feed-list";
 import { PublicHomeMobileScrollbar } from "@/components/public-home-mobile-scrollbar";
@@ -38,17 +40,30 @@ export default async function Home({
   const resolvedSearchParams = (await searchParams) ?? {};
   const tabParam = resolvedSearchParams.tab;
   const tab = Array.isArray(tabParam) ? tabParam[0] : tabParam;
-  const feedType: "home" | "following" =
-    tab === "following" ? "following" : "home";
+
+  if (tab === "favorites" && !session?.user?.id) {
+    redirect("/welcome");
+  }
+
+  const feedType: "home" | "following" | "favorites" =
+    tab === "following"
+      ? "following"
+      : tab === "favorites"
+        ? "favorites"
+        : "home";
 
   const { submissions, hasMore, nextCursor } =
-    feedType === "following" && session?.user?.id
-      ? await getFollowingFeedSubmissionsCursor({
-          currentUserId: session.user.id,
+    feedType === "favorites" && session?.user?.id
+      ? await getFavoritesFeedSubmissionsCursor({
+          userId: session.user.id,
         })
-      : await getFeedSubmissions({
-          currentUserId: session?.user?.id,
-        });
+      : feedType === "following" && session?.user?.id
+        ? await getFollowingFeedSubmissionsCursor({
+            currentUserId: session.user.id,
+          })
+        : await getFeedSubmissions({
+            currentUserId: session?.user?.id,
+          });
 
   return (
     <main className="mx-auto w-full max-w-[600px] flex-1 bg-surface py-4">
@@ -89,6 +104,20 @@ export default async function Home({
             >
               {t("following")}
             </Link>
+            {session?.user?.id && (
+              <Link
+                href="/?tab=favorites"
+                aria-current={feedType === "favorites" ? "page" : undefined}
+                className={[
+                  "pb-3 text-sm font-medium transition-colors",
+                  feedType === "favorites"
+                    ? "text-foreground border-b-2 border-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                ].join(" ")}
+              >
+                {t("favoritesTab")}
+              </Link>
+            )}
           </div>
           <div aria-hidden className="pb-3" />
         </nav>

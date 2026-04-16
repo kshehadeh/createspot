@@ -10,7 +10,6 @@ import {
   Briefcase,
   ChevronDown,
   FolderOpen,
-  Heart,
   Info,
   LayoutDashboard,
   LayoutGrid,
@@ -81,7 +80,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const communityRoute = getRoute("community");
   const CreatorsInspireIcon = creatorsRoute.icon;
   const CommunityInspireIcon = communityRoute.icon;
-  const favoritesRoute = getRoute("favorites");
   const dashboardRoute = getRoute("dashboard");
   const feedRoute = getRoute("feed");
   const adminRoute = getRoute("admin");
@@ -262,20 +260,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
           )}
         </Link>
       </li>
-      {user && (
-        <li>
-          <Link
-            href={favoritesRoute.path}
-            className={linkClass(isPathActive(favoritesRoute.path, pathname))}
-            title={tNav("favorites")}
-          >
-            <Heart className="h-4 w-4 shrink-0" />
-            {!sidebarCollapsed && (
-              <span className="truncate">{tNav("favorites")}</span>
-            )}
-          </Link>
-        </li>
-      )}
     </ul>
   );
 

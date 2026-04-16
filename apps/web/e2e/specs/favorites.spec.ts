@@ -1,9 +1,11 @@
 import { test, expect } from "../fixtures/test.fixture";
 
 test.describe("Favorites", () => {
-  test("can view favorites page", async ({ page }) => {
-    await page.goto("/inspire/favorites");
-    await expect(page).toHaveURL("/inspire/favorites");
+  test("redirects unauthenticated users from favorites tab to welcome", async ({
+    page,
+  }) => {
+    await page.goto("/?tab=favorites");
+    await expect(page).toHaveURL(/\/welcome/);
   });
 
   test("can favorite and unfavorite a submission", async ({

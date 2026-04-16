@@ -2,6 +2,31 @@ import { prisma } from "@/lib/prisma";
 
 const FEED_PAGE_SIZE = 20;
 
+const submissionInclude = {
+  user: {
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      profileImageUrl: true,
+      slug: true,
+    },
+  },
+  progressions: {
+    orderBy: { order: "asc" as const },
+    select: {
+      id: true,
+      imageUrl: true,
+      text: true,
+      comment: true,
+      order: true,
+    },
+  },
+  _count: {
+    select: { favorites: true },
+  },
+} as const;
+
 export interface FeedSubmission {
   id: string;
   title: string | null;
@@ -100,6 +125,57 @@ export async function getFollowingFeedSubmissionsCursor({
     hasMore && submissions.length > 0
       ? submissions[submissions.length - 1].id
       : null;
+
+  return { submissions, hasMore, nextCursor };
+}
+
+/** Favorites tab: submissions the user saved, newest favorites first. */
+export async function getFavoritesFeedSubmissionsCursor({
+  cursor,
+  take = FEED_PAGE_SIZE,
+  userId,
+}: {
+  cursor?: string;
+  take?: number;
+  userId: string;
+}): Promise<FeedResult> {
+  const limit = Math.max(1, Math.min(take, 50));
+
+  const submissionVisibleToUser = {
+    OR: [
+      { shareStatus: "PUBLIC" as const },
+      { shareStatus: "PROFILE" as const },
+      { userId },
+    ],
+  };
+
+  const items = await prisma.favorite.findMany({
+    where: {
+      userId,
+      submission: submissionVisibleToUser,
+    },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    include: {
+      submission: {
+        include: submissionInclude,
+      },
+    },
+  });
+
+  let rows = items;
+  const hasMore = rows.length > limit;
+  if (hasMore) {
+    rows = rows.slice(0, limit);
+  }
+
+  const submissions = rows.map(
+    (f) => f.submission,
+  ) as unknown as FeedSubmission[];
+
+  const nextCursor =
+    hasMore && rows.length > 0 ? rows[rows.length - 1].id : null;
 
   return { submissions, hasMore, nextCursor };
 }
@@ -206,28 +282,3 @@ function interleave<T>(a: T[], b: T[], limit: number): T[] {
 
   return result;
 }
-
-const submissionInclude = {
-  user: {
-    select: {
-      id: true,
-      name: true,
-      image: true,
-      profileImageUrl: true,
-      slug: true,
-    },
-  },
-  progressions: {
-    orderBy: { order: "asc" as const },
-    select: {
-      id: true,
-      imageUrl: true,
-      text: true,
-      comment: true,
-      order: true,
-    },
-  },
-  _count: {
-    select: { favorites: true },
-  },
-} as const;

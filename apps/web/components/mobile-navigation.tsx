@@ -4,7 +4,6 @@ import {
   Brain,
   Briefcase,
   FolderOpen,
-  Heart,
   Info,
   LayoutDashboard,
   LayoutGrid,
@@ -127,8 +126,6 @@ export function MobileNavigation({
   const communityRoute = getRoute("community");
   const creatorsInspireIcon = creatorsRoute.icon;
   const communityInspireIcon = communityRoute.icon;
-  const favoritesRoute = getRoute("favorites");
-
   const segmentClass = (active: boolean) =>
     cn(
       "flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -344,14 +341,6 @@ export function MobileNavigation({
                     label={t("community")}
                     onClose={() => setIsMenuOpen(false)}
                   />
-                  {user && (
-                    <MobileNavItem
-                      href={favoritesRoute.path}
-                      icon={Heart}
-                      label={t("favorites")}
-                      onClose={() => setIsMenuOpen(false)}
-                    />
-                  )}
                 </div>
               )}
             </nav>

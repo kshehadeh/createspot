@@ -45,7 +45,7 @@ interface FeedListProps {
   isLoggedIn: boolean;
   currentUserId?: string | null;
   showActionBar?: boolean;
-  feedType?: "home" | "following";
+  feedType?: "home" | "following" | "favorites";
 }
 
 function FeedSkeleton() {
@@ -86,6 +86,7 @@ function FeedListContent({
 }: FeedListProps) {
   const t = useTranslations("feed");
   const tNav = useTranslations("navigation");
+  const tFavoritesPage = useTranslations("favorites");
   const router = useRouter();
   const [submissions, setSubmissions] = useState(initialSubmissions);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -112,13 +113,19 @@ function FeedListContent({
 
   const loadMore = useCallback(async () => {
     if (isLoading || !hasMore || !nextCursor) return;
-    if (feedType === "following" && !isLoggedIn) return;
+    if ((feedType === "following" || feedType === "favorites") && !isLoggedIn) {
+      return;
+    }
 
     setIsLoading(true);
     try {
       const params = new URLSearchParams({ cursor: nextCursor, take: "20" });
       const endpoint =
-        feedType === "following" ? "/api/feed/following" : "/api/feed";
+        feedType === "following"
+          ? "/api/feed/following"
+          : feedType === "favorites"
+            ? "/api/feed/favorites"
+            : "/api/feed";
       const response = await fetch(`${endpoint}?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to load feed");
 
@@ -131,7 +138,7 @@ function FeedListContent({
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, hasMore, nextCursor, feedType]);
+  }, [isLoading, hasMore, nextCursor, feedType, isLoggedIn]);
 
   useEffect(() => {
     if (!hasMore) return;
@@ -208,11 +215,26 @@ function FeedListContent({
 
   if (submissions.length === 0) {
     const emptyCopy =
-      feedType === "following" ? t("followingEmpty") : t("empty");
+      feedType === "following"
+        ? t("followingEmpty")
+        : feedType === "favorites"
+          ? tFavoritesPage("empty")
+          : t("empty");
     return (
       <>
-        <div className="flex flex-col items-center justify-center py-20 text-center px-6">
+        <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
           <p className="text-muted-foreground">{emptyCopy}</p>
+          {feedType === "favorites" && (
+            <Button
+              asChild
+              size="lg"
+              className="mt-6 h-12 rounded-full px-8 text-sm font-medium"
+            >
+              <Link href="/inspire/exhibition">
+                {tFavoritesPage("exploreExhibits")}
+              </Link>
+            </Button>
+          )}
         </div>
         {fab}
         {guestActionBar}

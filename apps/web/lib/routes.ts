@@ -207,10 +207,9 @@ const ROUTES: Record<string, RouteConfig> = {
     parentPath: "/inspire",
   },
   favorites: {
-    path: "/inspire/favorites",
+    path: "/?tab=favorites",
     label: "navigation.favorites",
     icon: Heart,
-    parentPath: "/inspire",
   },
   about: {
     path: "/about",
