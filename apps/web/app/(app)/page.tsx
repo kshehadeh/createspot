@@ -123,6 +123,7 @@ export default async function Home({
         </nav>
       </div>
       <FeedList
+        key={feedType}
         initialSubmissions={submissions}
         initialHasMore={hasMore}
         initialNextCursor={nextCursor}

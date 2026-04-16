@@ -45,8 +45,17 @@ export function FavoritesProvider({
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
 
+  const submissionIdsKey = initialSubmissionIds.join(",");
+
   useEffect(() => {
-    if (!isLoggedIn || initialSubmissionIds.length === 0) return;
+    if (!isLoggedIn) {
+      setFavoriteIds(new Set());
+      return;
+    }
+    if (initialSubmissionIds.length === 0) {
+      setFavoriteIds(new Set());
+      return;
+    }
 
     const fetchFavorites = async () => {
       try {
@@ -63,7 +72,7 @@ export function FavoritesProvider({
     };
 
     fetchFavorites();
-  }, [isLoggedIn, initialSubmissionIds]);
+  }, [isLoggedIn, submissionIdsKey]);
 
   const toggleFavorite = useCallback(
     async (submissionId: string) => {
