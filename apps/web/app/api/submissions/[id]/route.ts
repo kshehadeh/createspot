@@ -57,6 +57,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         _count: {
           select: {
             favorites: true,
+            comments: { where: { deletedAt: null } },
           },
         },
       },
@@ -123,6 +124,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     critiquesEnabled,
     referenceImageUrl,
     isWorkInProgress,
+    commentsEnabled,
   } = body;
 
   // Validate focal point if provided
@@ -183,6 +185,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   if (category !== undefined) updateData.category = category;
   if (critiquesEnabled !== undefined)
     updateData.critiquesEnabled = critiquesEnabled;
+  if (commentsEnabled !== undefined)
+    updateData.commentsEnabled = commentsEnabled;
   if (referenceImageUrl !== undefined)
     updateData.referenceImageUrl = referenceImageUrl;
   if (isWorkInProgress !== undefined)
