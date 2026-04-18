@@ -35,7 +35,9 @@ async function AppLayoutContent({
       <div className="flex min-h-screen flex-col bg-background">
         <AppLayoutClient user={session?.user}>
           <Header user={session?.user} />
-          <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+          <div className="flex min-h-0 flex-1 flex-col pt-[max(0.5rem,env(safe-area-inset-top,0px))] pe-[max(3.5rem,env(safe-area-inset-right,0px))] md:pt-0 md:pe-0">
+            {children}
+          </div>
           <AppVersionFooter />
         </AppLayoutClient>
       </div>

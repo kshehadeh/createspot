@@ -66,7 +66,7 @@ export default async function Home({
           });
 
   return (
-    <main className="mx-auto w-full max-w-[600px] flex-1 bg-surface py-4">
+    <main className="mx-auto w-full max-w-[600px] flex-1 bg-surface pb-4 pt-2 md:py-4">
       <PublicHomeMobileScrollbar />
       <h1 className="sr-only">{t("title")}</h1>
       {session?.user?.id && (
