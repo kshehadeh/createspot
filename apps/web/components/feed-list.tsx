@@ -20,6 +20,14 @@ const SubmissionLightbox = dynamic(
   { ssr: false },
 );
 
+const CommentViewerModal = dynamic(
+  () =>
+    import("@/components/comment-viewer-modal").then(
+      (mod) => mod.CommentViewerModal,
+    ),
+  { ssr: false },
+);
+
 function mapFeedSubmissionForLightbox(submission: FeedCardSubmission) {
   return {
     id: submission.id,
@@ -28,6 +36,7 @@ function mapFeedSubmissionForLightbox(submission: FeedCardSubmission) {
     text: submission.text,
     shareStatus: "PUBLIC" as const,
     critiquesEnabled: submission.critiquesEnabled,
+    commentsEnabled: submission.commentsEnabled,
     user: {
       id: submission.user.id,
       name: submission.user.name,
@@ -96,10 +105,17 @@ function FeedListContent({
   const [lightboxSubmissionId, setLightboxSubmissionId] = useState<
     string | null
   >(null);
+  const [commentsSubmissionId, setCommentsSubmissionId] = useState<
+    string | null
+  >(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const handleOpenLightbox = useCallback((id: string) => {
     setLightboxSubmissionId(id);
+  }, []);
+
+  const handleOpenComments = useCallback((id: string) => {
+    setCommentsSubmissionId(id);
   }, []);
 
   useEffect(() => {
@@ -110,6 +126,15 @@ function FeedListContent({
       setLightboxSubmissionId(null);
     }
   }, [submissions, lightboxSubmissionId]);
+
+  useEffect(() => {
+    if (
+      commentsSubmissionId &&
+      !submissions.some((s) => s.id === commentsSubmissionId)
+    ) {
+      setCommentsSubmissionId(null);
+    }
+  }, [submissions, commentsSubmissionId]);
 
   const loadMore = useCallback(async () => {
     if (isLoading || !hasMore || !nextCursor) return;
@@ -261,6 +286,7 @@ function FeedListContent({
             currentUserId={currentUserId}
             priority={index < 3}
             onOpenLightbox={handleOpenLightbox}
+            onOpenComments={handleOpenComments}
           />
         ))}
         {isLoading && (
@@ -304,6 +330,10 @@ function FeedListContent({
               onClose={() => setLightboxSubmissionId(null)}
               isOpen
               currentUserId={currentUserId}
+              onOpenComments={(id) => {
+                setLightboxSubmissionId(null);
+                setCommentsSubmissionId(id);
+              }}
               navigation={{
                 onGoToPrevious: () => {
                   if (hasPrevious) {
@@ -323,6 +353,40 @@ function FeedListContent({
                 prevImageUrl: hasPrevious
                   ? (submissions[currentIndex - 1]?.imageUrl ?? null)
                   : null,
+              }}
+            />
+          );
+        })()}
+      {commentsSubmissionId &&
+        (() => {
+          const selected = submissions.find(
+            (s) => s.id === commentsSubmissionId,
+          );
+          if (!selected) return null;
+          return (
+            <CommentViewerModal
+              submission={{
+                id: selected.id,
+                title: selected.title,
+                imageUrl: selected.imageUrl,
+                user: selected.user,
+                _count: selected._count,
+              }}
+              open
+              onOpenChange={(open) => {
+                if (!open) setCommentsSubmissionId(null);
+              }}
+              onCommentCountChange={(submissionId, newCount) => {
+                setSubmissions((prev) =>
+                  prev.map((s) =>
+                    s.id === submissionId
+                      ? {
+                          ...s,
+                          _count: { ...s._count, comments: newCount },
+                        }
+                      : s,
+                  ),
+                );
               }}
             />
           );

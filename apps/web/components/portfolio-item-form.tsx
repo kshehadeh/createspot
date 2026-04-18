@@ -66,6 +66,7 @@ interface SubmissionData {
   category: string | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled?: boolean;
+  commentsEnabled?: boolean;
   isWorkInProgress?: boolean;
   progressions?: Array<{
     id: string;
@@ -95,6 +96,7 @@ export function PortfolioItemForm({
   const { data: session } = useSession();
   const t = useTranslations("modals.portfolioItemForm");
   const tCritique = useTranslations("critique");
+  const tComments = useTranslations("comments");
   const tCommon = useTranslations("common");
   const tCategories = useTranslations("categories");
   const tUpload = useTranslations("upload");
@@ -125,6 +127,9 @@ export function PortfolioItemForm({
   const [isImageEditorOpen, setIsImageEditorOpen] = useState(false);
   const [critiquesEnabled, setCritiquesEnabled] = useState(
     initialData?.critiquesEnabled ?? false,
+  );
+  const [commentsEnabled, setCommentsEnabled] = useState(
+    initialData?.commentsEnabled ?? true,
   );
   const [isWorkInProgress, setIsWorkInProgress] = useState(
     initialData?.isWorkInProgress ?? false,
@@ -358,6 +363,7 @@ export function PortfolioItemForm({
             category: category || null,
             shareStatus,
             critiquesEnabled,
+            commentsEnabled,
             isWorkInProgress,
           }),
         });
@@ -380,6 +386,7 @@ export function PortfolioItemForm({
             category: category || null,
             shareStatus,
             critiquesEnabled,
+            commentsEnabled,
             isWorkInProgress,
             referenceImageUrl: referenceImageUrl || null,
             ...(setIsPortfolio ? { isPortfolio: true } : {}),
@@ -1015,6 +1022,29 @@ export function PortfolioItemForm({
         {shareStatus === "PRIVATE" && (
           <p className="mt-1.5 text-xs text-muted-foreground">
             {tCritique("critiquesDisabledWhenPrivate")}
+          </p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="commentsEnabled">
+              {tComments("enableComments")}
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              {tComments("enableCommentsDescription")}
+            </p>
+          </div>
+          <Switch
+            id="commentsEnabled"
+            checked={commentsEnabled}
+            onCheckedChange={setCommentsEnabled}
+            disabled={shareStatus === "PRIVATE"}
+          />
+        </div>
+        {shareStatus === "PRIVATE" && (
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {tComments("commentsDisabledWhenPrivate")}
           </p>
         )}
       </div>

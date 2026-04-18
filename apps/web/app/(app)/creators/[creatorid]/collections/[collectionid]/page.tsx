@@ -93,7 +93,10 @@ export default async function CollectionViewPage({
             submission: {
               include: {
                 _count: {
-                  select: { favorites: true },
+                  select: {
+                    favorites: true,
+                    comments: { where: { deletedAt: null } },
+                  },
                 },
                 progressions: {
                   orderBy: { order: "desc" as const },

@@ -111,6 +111,7 @@ export function ExhibitContentManager({
     category: submission.category,
     _count: {
       favorites: 0,
+      comments: 0,
     },
     user: submission.user,
   }));

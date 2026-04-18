@@ -43,6 +43,7 @@ export interface ExhibitionSubmission {
   createdAt: string | Date;
   shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled: boolean;
+  commentsEnabled: boolean;
   user: {
     id: string;
     name: string | null;
@@ -370,6 +371,7 @@ function GridContent({
                 ...selectedSubmission,
                 shareStatus: selectedSubmission.shareStatus ?? "PUBLIC",
                 critiquesEnabled: selectedSubmission.critiquesEnabled ?? false,
+                commentsEnabled: selectedSubmission.commentsEnabled ?? true,
               }}
               onClose={() => setSelectedSubmission(null)}
               isOpen={!!selectedSubmission}

@@ -76,6 +76,7 @@ export default async function PathExhibitPage({
       title: submission.title,
       shareStatus: submission.shareStatus,
       critiquesEnabled: submission.critiquesEnabled,
+      commentsEnabled: submission.commentsEnabled,
       user: submission.user,
     };
   });

@@ -26,6 +26,7 @@ interface PortfolioItem {
   category: string | null;
   _count: {
     favorites: number;
+    comments: number;
   };
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
 }

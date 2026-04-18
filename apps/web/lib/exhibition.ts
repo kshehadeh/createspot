@@ -87,7 +87,7 @@ const submissionInclude = {
     select: { id: true, name: true, image: true },
   },
   _count: {
-    select: { favorites: true },
+    select: { favorites: true, comments: { where: { deletedAt: null } } },
   },
 } satisfies Prisma.SubmissionInclude;
 

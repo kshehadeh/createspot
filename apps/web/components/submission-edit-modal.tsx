@@ -23,6 +23,7 @@ interface SubmissionData {
   category: string | null;
   shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled?: boolean;
+  commentsEnabled?: boolean;
 }
 
 interface SubmissionEditModalProps {

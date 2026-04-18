@@ -72,7 +72,10 @@ async function getProfileData({
         orderBy: [{ portfolioOrder: "asc" }, { createdAt: "desc" }],
         include: {
           _count: {
-            select: { favorites: true },
+            select: {
+              favorites: true,
+              comments: { where: { deletedAt: null } },
+            },
           },
           progressions: {
             orderBy: { order: "desc" },

@@ -158,4 +158,3 @@ export function FeedTabs({ active, isLoggedIn }: FeedTabsProps) {
     </nav>
   );
 }
-

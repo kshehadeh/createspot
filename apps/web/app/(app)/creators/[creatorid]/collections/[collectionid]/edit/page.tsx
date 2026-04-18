@@ -49,7 +49,10 @@ export default async function CollectionEditPage({
           submission: {
             include: {
               _count: {
-                select: { favorites: true },
+                select: {
+                  favorites: true,
+                  comments: { where: { deletedAt: null } },
+                },
               },
             },
           },

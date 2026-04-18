@@ -13,6 +13,8 @@ import {
 export interface FavoritesState {
   favoriteIds: Set<string>;
   isLoading: boolean;
+  /** False until the initial `/api/favorites?submissionIds=…` fetch settles (or skipped when logged out / no ids). */
+  favoritesQueryResolved: boolean;
 }
 
 export interface FavoritesActions {
@@ -44,34 +46,50 @@ export function FavoritesProvider({
 }: FavoritesProviderProps) {
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
+  const [favoritesQueryResolved, setFavoritesQueryResolved] = useState(
+    () => !isLoggedIn || initialSubmissionIds.length === 0,
+  );
 
   const submissionIdsKey = initialSubmissionIds.join(",");
 
   useEffect(() => {
     if (!isLoggedIn) {
       setFavoriteIds(new Set());
+      setFavoritesQueryResolved(true);
       return;
     }
     if (initialSubmissionIds.length === 0) {
       setFavoriteIds(new Set());
+      setFavoritesQueryResolved(true);
       return;
     }
+
+    setFavoritesQueryResolved(false);
+    let cancelled = false;
 
     const fetchFavorites = async () => {
       try {
         const response = await fetch(
           `/api/favorites?submissionIds=${initialSubmissionIds.join(",")}`,
         );
+        if (cancelled) return;
         if (response.ok) {
           const data = await response.json();
           setFavoriteIds(new Set(data.favoriteIds));
         }
       } catch {
         // Silently fail
+      } finally {
+        if (!cancelled) {
+          setFavoritesQueryResolved(true);
+        }
       }
     };
 
     fetchFavorites();
+    return () => {
+      cancelled = true;
+    };
   }, [isLoggedIn, submissionIdsKey]);
 
   const toggleFavorite = useCallback(
@@ -137,7 +155,7 @@ export function FavoritesProvider({
   );
 
   const value: FavoritesContextValue = {
-    state: { favoriteIds, isLoading },
+    state: { favoriteIds, isLoading, favoritesQueryResolved },
     actions: { toggleFavorite },
     meta: { isFavorited },
   };

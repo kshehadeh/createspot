@@ -279,6 +279,8 @@
     "openLightbox": "Abrir publicación",
     "viewSubmission": "Ver",
     "critiques": "Críticas",
+    "comments": "Comentarios",
+    "commentsCount": "{count, plural, one {# comentario} other {# comentarios}}",
     "favorites": "{count, plural, one {# me gusta} other {# me gusta}}",
     "empty": "Aún no hay publicaciones. ¡Vuelve pronto!",
     "followingEmpty": "Aún no hay nada aquí. Sigue a creadores para ver su trabajo en tu feed.",
@@ -322,7 +324,8 @@
     "nextSubmission": "Siguiente",
     "shareSubmission": "Compartir publicación",
     "addToFavorites": "Añadir a favoritos",
-    "removeFromFavorites": "Quitar de favoritos"
+    "removeFromFavorites": "Quitar de favoritos",
+    "comments": "Comentarios"
   },
   "submission": {
     "label": "Publicación",
@@ -1497,6 +1500,33 @@
     "selectionInstruction": "Selecciona parte de la imagen o texto para añadir una crítica",
     "previewLoadFailed": "Error al cargar la vista previa"
   },
+  "comments": {
+    "title": "Comentarios",
+    "placeholder": "Añade un comentario...",
+    "replyPlaceholder": "Responde a este comentario...",
+    "send": "Enviar",
+    "reply": "Responder",
+    "replyingTo": "Respondiendo a {name}",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "deleting": "Eliminando...",
+    "deleted": "[eliminado]",
+    "commentDeleted": "[Comentario Eliminado]",
+    "deleteConfirmTitle": "Eliminar Comentario",
+    "deleteConfirmMessage": "¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer.",
+    "deleteConfirmMessageWithReplies": "Este comentario tiene {count, plural, one {# respuesta} other {# respuestas}}. El comentario se marcará como eliminado pero las respuestas seguirán visibles. ¿Estás seguro?",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "nReplies": "{count, plural, one {# respuesta} other {# respuestas}}",
+    "noComments": "Aún no hay comentarios. ¡Sé el primero en compartir tus pensamientos!",
+    "commentsDisabled": "Los comentarios están deshabilitados para esta publicación",
+    "loadMore": "Cargar más",
+    "anonymous": "Anónimo",
+    "untitled": "Sin título",
+    "enableComments": "Habilitar comentarios",
+    "enableCommentsDescription": "Permitir que otros comenten en este trabajo",
+    "commentsDisabledWhenPrivate": "Los comentarios no son visibles para otros usuarios porque la publicación está marcada como privada."
+  },
   "email": {
     "favoriteNotification": {
       "title": "¡Tu trabajo fue adorado!",
@@ -1537,6 +1567,17 @@
       "viewWorkButton": "Ver Publicación",
       "visitProfile": "Visitar el perfil de {critiquerName}",
       "previewText": "Recibiste una nueva crítica",
+      "yourWork": "tu trabajo",
+      "someone": "Alguien"
+    },
+    "commentNotification": {
+      "subject": "{commenterName} comentó en {titleDisplay}",
+      "title": "Nuevo Comentario",
+      "message": "{commenterName} comentó en {titleDisplay}",
+      "description": "Ve el comentario y únete a la conversación en tu página de publicación.",
+      "viewWorkButton": "Ver Publicación",
+      "visitProfile": "Visitar el perfil de {commenterName}",
+      "previewText": "Recibiste un nuevo comentario",
       "yourWork": "tu trabajo",
       "someone": "Alguien"
     },

@@ -78,6 +78,7 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
         _count: {
           select: {
             favorites: true,
+            comments: { where: { deletedAt: null } },
           },
         },
       },
@@ -90,6 +91,7 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
         text: submission.text,
         shareStatus: submission.shareStatus,
         critiquesEnabled: submission.critiquesEnabled,
+        commentsEnabled: submission.commentsEnabled,
         user: submission.user,
         _count: submission._count,
       };

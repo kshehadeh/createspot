@@ -15,6 +15,7 @@ interface FeaturedSubmissionProps {
     text: string | null;
     shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
     critiquesEnabled: boolean;
+    commentsEnabled: boolean;
     user: {
       id: string;
       name: string | null;
@@ -23,6 +24,7 @@ interface FeaturedSubmissionProps {
     };
     _count: {
       favorites: number;
+      comments: number;
     };
   };
 }
@@ -119,6 +121,7 @@ export function FeaturedSubmission({ submission }: FeaturedSubmissionProps) {
             text: submission.text,
             shareStatus: submission.shareStatus,
             critiquesEnabled: submission.critiquesEnabled,
+            commentsEnabled: submission.commentsEnabled,
             user: submission.user,
             _count: submission._count,
           }}

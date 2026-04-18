@@ -23,7 +23,7 @@ const submissionInclude = {
     },
   },
   _count: {
-    select: { favorites: true },
+    select: { favorites: true, comments: { where: { deletedAt: null } } },
   },
 } as const;
 
@@ -37,6 +37,7 @@ export interface FeedSubmission {
   category: string | null;
   tags: string[];
   critiquesEnabled: boolean;
+  commentsEnabled: boolean;
   createdAt: Date;
   user: {
     id: string;
@@ -54,6 +55,7 @@ export interface FeedSubmission {
   }[];
   _count: {
     favorites: number;
+    comments: number;
   };
 }
 

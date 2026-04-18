@@ -12,6 +12,7 @@ export interface ConstellationItem {
   title: string | null;
   shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled: boolean;
+  commentsEnabled: boolean;
   user?: {
     id: string;
     name: string | null;
@@ -554,6 +555,7 @@ export function ConstellationPath({
                 text: selectedItem.text,
                 shareStatus: selectedItem.shareStatus ?? "PUBLIC",
                 critiquesEnabled: selectedItem.critiquesEnabled ?? false,
+                commentsEnabled: selectedItem.commentsEnabled ?? true,
                 user: selectedItem.user,
                 _count: undefined,
               }}

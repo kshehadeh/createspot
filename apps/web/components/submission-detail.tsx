@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Pencil } from "lucide-react";
+import { MessageCircle, Pencil } from "lucide-react";
 import Link from "@/components/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { CollectionDownloadDropdown } from "@/components/collection-download-dropdown";
+import { CommentViewerModal } from "@/components/comment-viewer-modal";
 import { CritiqueButton } from "@/components/critique-button";
 import { CreatorHubHeaderLayout } from "@/components/creator-hub-header-layout";
 import { ExpandableText } from "@/components/expandable-text";
@@ -29,6 +30,12 @@ import {
   VisuallyHidden,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { usePageHints } from "@/lib/hooks/use-page-hints";
 import { useTrackSubmissionView } from "@/lib/hooks/use-track-submission-view";
 import { cn, getCreatorUrl } from "@/lib/utils";
@@ -52,12 +59,14 @@ interface SubmissionDetailProps {
     tags: string[];
     shareStatus?: "PRIVATE" | "PROFILE" | "PUBLIC";
     critiquesEnabled?: boolean;
+    commentsEnabled?: boolean;
     isWorkInProgress?: boolean;
     referenceImageUrl?: string | null;
     user: {
       id: string;
       name: string | null;
       image: string | null;
+      profileImageUrl?: string | null;
       bio: string | null;
       slug?: string | null;
       instagram: string | null;
@@ -67,6 +76,7 @@ interface SubmissionDetailProps {
     };
     _count: {
       favorites: number;
+      comments: number;
     };
     progressions?: ProgressionData[];
   };
@@ -84,12 +94,17 @@ export function SubmissionDetail({
   tutorialData,
 }: SubmissionDetailProps) {
   const tExhibition = useTranslations("exhibition");
+  const tFeed = useTranslations("feed");
   const tSubmission = useTranslations("submission");
   const tProfile = useTranslations("profile");
   const tReference = useTranslations("reference");
   const tProgression = useTranslations("progression");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isReferenceLightboxOpen, setIsReferenceLightboxOpen] = useState(false);
+  const [commentsModalOpen, setCommentsModalOpen] = useState(false);
+  const [commentCount, setCommentCount] = useState(
+    initialSubmission._count.comments,
+  );
   const [mounted, setMounted] = useState(false);
 
   // Local state for submission data that can be updated after editing
@@ -140,6 +155,7 @@ export function SubmissionDetail({
     (submission.progressions?.filter((p) => p.imageUrl).length ?? 0) >= 2;
 
   const isWip = submission.isWorkInProgress;
+  const showComments = submission.commentsEnabled ?? true;
 
   type SubmissionTabKey = "image" | "text" | "journey" | "reference";
   const tabKeys: SubmissionTabKey[] = (
@@ -337,21 +353,53 @@ export function SubmissionDetail({
                         toolbarIcon
                       />
                     )}
+                  {showComments && (
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className={cn(
+                              "h-10 w-10 shrink-0",
+                              commentCount > 0 && "gap-0.5",
+                            )}
+                            onClick={() => setCommentsModalOpen(true)}
+                            aria-label={tFeed("commentsCount", {
+                              count: commentCount,
+                            })}
+                          >
+                            <MessageCircle
+                              className={cn(
+                                "shrink-0 text-muted-foreground",
+                                commentCount > 0
+                                  ? "h-3.5 w-3.5"
+                                  : "h-4 w-4",
+                              )}
+                            />
+                            {commentCount > 0 && (
+                              <span className="text-[11px] tabular-nums leading-none text-muted-foreground">
+                                {commentCount}
+                              </span>
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{tExhibition("comments")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                   {isLoggedIn && (
-                    <div className="flex items-center gap-1">
-                      <FavoriteButton
-                        submissionId={submission.id}
-                        className={cn(
-                          buttonVariants({ variant: "outline", size: "icon" }),
-                          "h-10 w-10 shrink-0",
-                        )}
-                      />
-                      {submission._count.favorites > 0 && (
-                        <span className="text-sm tabular-nums text-muted-foreground">
-                          {submission._count.favorites}
-                        </span>
+                    <FavoriteButton
+                      submissionId={submission.id}
+                      count={submission._count.favorites}
+                      className={cn(
+                        buttonVariants({ variant: "outline", size: "icon" }),
+                        "h-10 shrink-0",
                       )}
-                    </div>
+                    />
                   )}
                 </div>
               </div>
@@ -401,13 +449,15 @@ export function SubmissionDetail({
             title: submission.title,
             shareStatus: submission.shareStatus,
             critiquesEnabled: submission.critiquesEnabled,
-            _count: submission._count,
+            _count: { ...submission._count, comments: commentCount },
             user: submission.user,
           }}
           isOwner={isOwner}
           isLoggedIn={isLoggedIn}
           hasImage={hasImage}
           hasProgressionsGif={hasProgressionsGif}
+          showComments={showComments}
+          onOpenComments={() => setCommentsModalOpen(true)}
         />
 
         {isWip && (
@@ -470,13 +520,39 @@ export function SubmissionDetail({
             text: submission.text,
             shareStatus: submission.shareStatus ?? "PUBLIC",
             critiquesEnabled: submission.critiquesEnabled ?? false,
+            commentsEnabled: submission.commentsEnabled ?? true,
             user: submission.user,
-            _count: submission._count,
+            _count: { ...submission._count, comments: commentCount },
           }}
           onClose={() => setIsLightboxOpen(false)}
           isOpen={isLightboxOpen}
           hideGoToSubmission={true}
           currentUserId={currentUserId}
+          onOpenComments={() => {
+            setIsLightboxOpen(false);
+            setCommentsModalOpen(true);
+          }}
+        />
+      )}
+
+      {showComments && (
+        <CommentViewerModal
+          submission={{
+            id: submission.id,
+            title: submission.title,
+            imageUrl: submission.imageUrl,
+            user: {
+              id: submission.user.id,
+              name: submission.user.name,
+              image: submission.user.image,
+              profileImageUrl: submission.user.profileImageUrl ?? null,
+              slug: submission.user.slug ?? null,
+            },
+            _count: { comments: commentCount },
+          }}
+          open={commentsModalOpen}
+          onOpenChange={setCommentsModalOpen}
+          onCommentCountChange={(_id, newCount) => setCommentCount(newCount)}
         />
       )}
 

@@ -23,6 +23,7 @@ async function getSubmission(id: string) {
       tags: true,
       shareStatus: true,
       critiquesEnabled: true,
+      commentsEnabled: true,
       isWorkInProgress: true,
       referenceImageUrl: true,
       userId: true,
@@ -31,6 +32,7 @@ async function getSubmission(id: string) {
           id: true,
           name: true,
           image: true,
+          profileImageUrl: true,
           bio: true,
           slug: true,
           instagram: true,
@@ -42,6 +44,7 @@ async function getSubmission(id: string) {
       _count: {
         select: {
           favorites: true,
+          comments: { where: { deletedAt: null } },
         },
       },
       progressions: {

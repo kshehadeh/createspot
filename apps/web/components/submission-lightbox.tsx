@@ -1,6 +1,13 @@
 "use client";
 
-import { Edit, Eye, FileText, MessageSquare, X } from "lucide-react";
+import {
+  Edit,
+  Eye,
+  FileText,
+  MessageCircle,
+  MessageSquare,
+  X,
+} from "lucide-react";
 import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -32,6 +39,7 @@ interface LightboxSubmission {
   text: string | null;
   shareStatus: "PRIVATE" | "PROFILE" | "PUBLIC";
   critiquesEnabled: boolean;
+  commentsEnabled: boolean;
   user?: {
     id: string;
     name: string | null;
@@ -40,6 +48,7 @@ interface LightboxSubmission {
   };
   _count?: {
     favorites: number;
+    comments: number;
   };
 }
 
@@ -103,6 +112,8 @@ interface SubmissionLightboxProps {
   options?: SubmissionLightboxOptions;
   /** When provided, enables prev/next submission navigation (e.g. from a gallery). Prefer this over flat navigation props. */
   navigation?: SubmissionLightboxNavigation;
+  /** When provided, clicking the comment icon opens the comment viewer modal. */
+  onOpenComments?: (submissionId: string) => void;
   /** @deprecated Use options.hideGoToSubmission */
   hideGoToSubmission?: boolean;
   /** @deprecated Use options.protectionEnabled */
@@ -124,6 +135,7 @@ export function SubmissionLightbox({
   currentUserId: propCurrentUserId,
   options,
   navigation,
+  onOpenComments,
   hideGoToSubmission: hideGoToSubmissionProp,
   protectionEnabled: protectionEnabledProp,
   onGoToPrevious: onGoToPreviousProp,
@@ -178,6 +190,7 @@ export function SubmissionLightbox({
   const showShare = !isPrivate;
   const showCritique =
     !isPrivate && submission.critiquesEnabled && !!currentUserId;
+  const showComments = !isPrivate && submission.commentsEnabled;
 
   // Get creator ID for route building
   const getCreatorId = useCallback((): string | null => {
@@ -432,6 +445,34 @@ export function SubmissionLightbox({
             );
           })()}
 
+        {/* Comments button */}
+        {showComments && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="overlayDark"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                  onOpenComments?.(submission.id);
+                }}
+                aria-label={`Comments (${submission._count?.comments ?? 0})`}
+              >
+                <MessageCircle className="h-4 w-4" />
+                {(submission._count?.comments ?? 0) > 0 && (
+                  <span className="ml-0.5 text-xs font-medium text-white">
+                    {submission._count?.comments}
+                  </span>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t("comments")}</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
+
         {/* Share button */}
         {showShare && (
           <Tooltip>
@@ -481,14 +522,17 @@ export function SubmissionLightbox({
       hasImage,
       isOwner,
       showCritique,
+      showComments,
       showShare,
       submission.id,
+      submission._count,
       submissionUserId,
       submissionUserSlug,
       getSubmissionUrl,
       getCreatorId,
       handleEditClick,
       onClose,
+      onOpenComments,
       closeTooltipOpen,
       router,
       t,

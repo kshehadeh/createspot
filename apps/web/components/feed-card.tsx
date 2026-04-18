@@ -22,6 +22,7 @@ import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";
 import { cn, getCreatorUrl } from "@/lib/utils";
+import { MessageCircle } from "lucide-react";
 
 const TAP_MAX_PX = 12;
 
@@ -69,6 +70,7 @@ export interface FeedCardSubmission {
   category: string | null;
   tags: string[];
   critiquesEnabled: boolean;
+  commentsEnabled: boolean;
   createdAt: Date | string;
   user: {
     id: string;
@@ -80,6 +82,7 @@ export interface FeedCardSubmission {
   progressions: Progression[];
   _count: {
     favorites: number;
+    comments: number;
   };
 }
 
@@ -90,6 +93,8 @@ interface FeedCardProps {
   priority?: boolean;
   /** When set, tapping an image slide opens the submission lightbox (short tap; drags the carousel). */
   onOpenLightbox?: (submissionId: string) => void;
+  /** When set, clicking the comment icon opens the comment viewer modal. */
+  onOpenComments?: (submissionId: string) => void;
 }
 
 type Slide =
@@ -238,6 +243,7 @@ export function FeedCard({
   currentUserId: _currentUserId,
   priority = false,
   onOpenLightbox,
+  onOpenComments,
 }: FeedCardProps) {
   const t = useTranslations("feed");
   const tCategories = useTranslations("categories");
@@ -477,6 +483,22 @@ export function FeedCard({
             className="flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-foreground transition-colors hover:bg-muted hover:text-foreground"
           />
         )}
+        {submission.commentsEnabled && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full text-foreground hover:bg-muted hover:text-foreground"
+            onClick={() => onOpenComments?.(submission.id)}
+            aria-label={t("comments", { count: submission._count.comments })}
+          >
+            <MessageCircle className="h-5 w-5" />
+            {submission._count.comments > 0 && (
+              <span className="ml-0.5 text-xs font-medium">
+                {submission._count.comments}
+              </span>
+            )}
+          </Button>
+        )}
         <ShareButton
           type="submission"
           submissionId={submission.id}
@@ -517,11 +539,20 @@ export function FeedCard({
         </Link>
       </div>
 
-      {/* Favorite count + caption */}
+      {/* Favorite count + comment count + caption */}
       <div className="px-4 pb-4">
-        {submission._count.favorites > 0 && (
+        {(submission._count.favorites > 0 ||
+          submission._count.comments > 0) && (
           <p className="mb-1 text-sm font-semibold text-foreground">
-            {t("favorites", { count: submission._count.favorites })}
+            {submission._count.favorites > 0 && (
+              <>
+                {t("favorites", { count: submission._count.favorites })}
+                {submission._count.comments > 0 && " · "}
+              </>
+            )}
+            {submission._count.comments > 0 && (
+              <>{t("commentsCount", { count: submission._count.comments })}</>
+            )}
           </p>
         )}
         {submission.title && (
