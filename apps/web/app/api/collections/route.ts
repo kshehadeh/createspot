@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+const VALID_COLLECTION_VIEW_TYPES = ["gallery", "sketchbook"] as const;
+type CollectionViewType = (typeof VALID_COLLECTION_VIEW_TYPES)[number];
+
 export async function GET(request: NextRequest) {
   const session = await auth();
 
@@ -83,11 +86,23 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, description, isPublic } = body;
+  const { name, description, isPublic, defaultViewType } = body;
 
   if (!name || typeof name !== "string" || name.trim().length === 0) {
     return NextResponse.json(
       { error: "Collection name is required" },
+      { status: 400 },
+    );
+  }
+
+  const resolvedDefaultViewType =
+    typeof defaultViewType === "string" ? defaultViewType : "gallery";
+  const isValidViewType = (value: string): value is CollectionViewType =>
+    VALID_COLLECTION_VIEW_TYPES.includes(value as CollectionViewType);
+
+  if (!isValidViewType(resolvedDefaultViewType)) {
+    return NextResponse.json(
+      { error: `Invalid view type: ${resolvedDefaultViewType}` },
       { status: 400 },
     );
   }
@@ -98,6 +113,7 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       description: description?.trim() || null,
       isPublic: isPublic ?? false,
+      defaultViewType: resolvedDefaultViewType,
     },
     include: {
       _count: {

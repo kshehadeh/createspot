@@ -205,6 +205,8 @@
     "more": "More",
     "terms": "Terms of Service",
     "create": "Submit",
+    "createSingle": "Create submission",
+    "createMany": "Submit many",
     "signIn": "Sign in",
     "jumpIn": "Begin",
     "signInWithGoogle": "Sign in with Google",
@@ -223,6 +225,7 @@
     "permanentCollection": "Permanent Collection",
     "grid": "Grid",
     "constellation": "Path",
+    "sketchbook": "Sketchbook",
     "map": "Map",
     "play": "Play",
     "thisWeek": "This Week",
@@ -309,7 +312,8 @@
   },
   "feedComposer": {
     "prompt": "What have you created lately?",
-    "newPost": "New Post"
+    "newPost": "New Post",
+    "newPostMany": "Submit Many"
   },
   "exhibition": {
     "loadMoreError": "Failed to load more work",
@@ -617,6 +621,7 @@
       "allowedViewTypesDescription": "Select which view types users can use to view this exhibit",
       "grid": "Grid",
       "constellation": "Path",
+      "sketchbook": "Sketchbook",
       "map": "Map",
       "featuredSubmission": "Featured Submission",
       "featuredSubmissionDescription": "Select a submission to feature for this exhibit",
@@ -1337,6 +1342,8 @@
       "addToPortfolioDescription": "Edit your submission details and add it to your portfolio.",
       "createTitle": "Add Portfolio Item",
       "createDescription": "Create a new portfolio item by adding an image or text, along with details about your work.",
+      "bulkCreateTitle": "Submit Many",
+      "bulkCreateDescription": "Upload several images at once and set details for each submission.",
       "editTitle": "Edit Submission",
       "editDescription": "Update your submission details below."
     },
@@ -1365,6 +1372,59 @@
           "description": "Add title, category, visibility, and critique options. Image, text, tags, reference, and work-in-progress were set in earlier steps."
         }
       }
+    },
+    "bulkSubmissionWizard": {
+      "stepCounter": "Step {current} of {total}",
+      "submit": "Submit {count}",
+      "submitting": "Submitting...",
+      "sharedSettings": "Shared settings",
+      "success": {
+        "created": "Submissions created successfully",
+        "viewPortfolio": "View your portfolio"
+      },
+      "errors": {
+        "waitForUploads": "Please wait for all uploads to complete.",
+        "addAtLeastOneImage": "Please add at least one image to continue.",
+        "submitRow": "Failed to create submission.",
+        "uploadMissing": "Image upload failed. Please remove this row and upload again."
+      },
+      "upload": {
+        "dropFiles": "Drop images here",
+        "clickToSelect": "or click to select files",
+        "filesAdded": "{count, plural, one {# file} other {# files}} added",
+        "readyCount": "{count} ready",
+        "removeFile": "Remove {name}",
+        "uploading": "Uploading..."
+      },
+      "steps": {
+        "upload": {
+          "title": "Upload images",
+          "description": "Drag and drop or select multiple images to upload. Each image becomes a separate submission."
+        },
+        "review": {
+          "title": "Review details",
+          "description": "Edit titles, descriptions, tags, categories, and visibility for each image."
+        },
+        "results": {
+          "title": "Results",
+          "description": "Review which submissions were created successfully and retry any failures."
+        }
+      },
+      "table": {
+        "image": "Image",
+        "removeRow": "Remove row"
+      },
+      "results": {
+        "success": "{count, plural, one {# created} other {# created}}",
+        "error": "{count, plural, one {# failed} other {# failed}}",
+        "status": "Status",
+        "errorMessage": "Error",
+        "failed": "Failed",
+        "pending": "Pending"
+      },
+      "retry": "Retry failed",
+      "retrying": "Retrying...",
+      "addMore": "Submit more"
     },
     "confirm": {
       "defaultDelete": "Delete",
@@ -1644,6 +1704,11 @@
     "collectionNamePlaceholder": "e.g., Nature Photography",
     "description": "Description",
     "descriptionPlaceholder": "Describe your collection...",
+    "defaultViewType": "Default View",
+    "defaultViewTypeDescription": "Pick the default layout when someone opens this collection.",
+    "selectViewType": "Select a view",
+    "grid": "Grid",
+    "sketchbook": "Sketchbook",
     "makePublic": "Public",
     "makePublicDescription": "Anyone can view this collection",
     "create": "Create",
@@ -1683,7 +1748,10 @@
     "downloadSocialPack": "Download as social pack",
     "downloading": "Downloading...",
     "downloadingPDF": "Generating PDF...",
-    "downloadingZIP": "Generating ZIP..."
+    "downloadingZIP": "Generating ZIP...",
+    "openSubmission": "Open submission",
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
   },
   "contact": {
     "title": "Get in Touch",

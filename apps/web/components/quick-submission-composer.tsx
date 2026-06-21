@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Plus } from "lucide-react";
+import { Images, Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@createspot/ui-primitives/button";
 import { SubmissionEditModal } from "@/components/submission-edit-modal";
@@ -9,6 +9,7 @@ import { SubmissionEditModal } from "@/components/submission-edit-modal";
 export function QuickSubmissionComposer() {
   const t = useTranslations("feedComposer");
   const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [isBulkWizardOpen, setIsBulkWizardOpen] = useState(false);
 
   return (
     <>
@@ -18,22 +19,39 @@ export function QuickSubmissionComposer() {
             {t("prompt")}
           </span>
         </p>
-        <Button
-          type="button"
-          variant="secondary"
-          size="icon"
-          onClick={() => setIsWizardOpen(true)}
-          aria-label={t("newPost")}
-          title={t("newPost")}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1.5">
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            onClick={() => setIsBulkWizardOpen(true)}
+            aria-label={t("newPostMany")}
+            title={t("newPostMany")}
+          >
+            <Images className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            onClick={() => setIsWizardOpen(true)}
+            aria-label={t("newPost")}
+            title={t("newPost")}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <SubmissionEditModal
         isOpen={isWizardOpen}
         onClose={() => setIsWizardOpen(false)}
         mode="create"
+      />
+      <SubmissionEditModal
+        isOpen={isBulkWizardOpen}
+        onClose={() => setIsBulkWizardOpen(false)}
+        mode="bulk-create"
       />
     </>
   );

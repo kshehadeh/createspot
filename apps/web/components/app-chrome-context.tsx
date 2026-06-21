@@ -22,6 +22,8 @@ interface AppChromeContextValue {
   setCommandOpen: Dispatch<SetStateAction<boolean>>;
   createSubmissionOpen: boolean;
   setCreateSubmissionOpen: Dispatch<SetStateAction<boolean>>;
+  createBulkSubmissionOpen: boolean;
+  setCreateBulkSubmissionOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const AppChromeContext = createContext<AppChromeContextValue | null>(null);
@@ -31,6 +33,8 @@ export function AppChromeProvider({ children }: { children: ReactNode }) {
   const [sidebarHydrated, setSidebarHydrated] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [createSubmissionOpen, setCreateSubmissionOpen] = useState(false);
+  const [createBulkSubmissionOpen, setCreateBulkSubmissionOpen] =
+    useState(false);
 
   useEffect(() => {
     try {
@@ -69,6 +73,8 @@ export function AppChromeProvider({ children }: { children: ReactNode }) {
       setCommandOpen,
       createSubmissionOpen,
       setCreateSubmissionOpen,
+      createBulkSubmissionOpen,
+      setCreateBulkSubmissionOpen,
     }),
     [
       sidebarCollapsed,
@@ -76,6 +82,7 @@ export function AppChromeProvider({ children }: { children: ReactNode }) {
       toggleSidebarCollapsed,
       commandOpen,
       createSubmissionOpen,
+      createBulkSubmissionOpen,
     ],
   );
 

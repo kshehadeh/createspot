@@ -1,9 +1,13 @@
 import type { LucideIcon } from "lucide-react";
-import { Map, Signpost, Table } from "lucide-react";
+import { BookOpen, Map, Signpost, Table } from "lucide-react";
 
 export const EXHIBITION_PAGE_SIZE = 12;
 
-export type ExhibitionType = "gallery" | "constellation" | "global";
+export type ExhibitionType =
+  | "gallery"
+  | "constellation"
+  | "global"
+  | "sketchbook";
 
 export interface ExhibitionConfig {
   name: string;
@@ -21,6 +25,11 @@ export const EXHIBITION_CONFIGS: Record<ExhibitionType, ExhibitionConfig> = {
     name: "Path",
     path: "/inspire/exhibition/gallery/path",
     icon: Signpost,
+  },
+  sketchbook: {
+    name: "Sketchbook",
+    path: "/inspire/exhibition/gallery/sketchbook",
+    icon: BookOpen,
   },
   global: {
     name: "Map",

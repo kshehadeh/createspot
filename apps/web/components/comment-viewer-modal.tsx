@@ -69,7 +69,12 @@ export function CommentViewerModal({
     if (commentCount !== submission._count.comments) {
       onCommentCountChange?.(submission.id, commentCount);
     }
-  }, [commentCount, submission.id, submission._count.comments, onCommentCountChange]);
+  }, [
+    commentCount,
+    submission.id,
+    submission._count.comments,
+    onCommentCountChange,
+  ]);
 
   const creatorUrl = getCreatorUrl(submission.user);
   const userInitials = submission.user.name

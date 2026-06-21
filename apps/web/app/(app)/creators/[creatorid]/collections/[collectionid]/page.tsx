@@ -7,6 +7,7 @@ import { CollectionDownloadDropdown } from "@/components/collection-download-dro
 import { PageLayout } from "@/components/page-layout";
 import { PageTitle } from "@/components/page-title";
 import { PortfolioGridProfile } from "@/components/portfolio-grid";
+import { SketchbookView } from "@/components/sketchbook/sketchbook-view";
 import { ShareButton } from "@/components/share-button";
 import { Button, buttonVariants } from "@createspot/ui-primitives/button";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,7 @@ import { getCreatorUrl } from "@/lib/utils";
 
 interface CollectionViewPageProps {
   params: Promise<{ creatorid: string; collectionid: string }>;
+  searchParams: Promise<{ view?: string | string[] }>;
 }
 
 export async function generateMetadata({
@@ -71,8 +73,10 @@ export async function generateMetadata({
 
 export default async function CollectionViewPage({
   params,
+  searchParams,
 }: CollectionViewPageProps) {
   const { creatorid, collectionid } = await params;
+  const paramsSearch = await searchParams;
   const [session, t, collection, creator] = await Promise.all([
     auth(),
     getTranslations("collections"),
@@ -136,6 +140,16 @@ export default async function CollectionViewPage({
 
   const user = collection.user;
   const isLoggedIn = !!session?.user;
+  const defaultViewType =
+    collection.defaultViewType === "sketchbook" ? "sketchbook" : "gallery";
+  const requestedView = Array.isArray(paramsSearch.view)
+    ? paramsSearch.view[0]
+    : paramsSearch.view;
+  const activeView =
+    requestedView === "gallery" || requestedView === "sketchbook"
+      ? requestedView
+      : defaultViewType;
+  const activeCollectionPath = `${getCreatorUrl(user)}/collections/${collection.id}`;
 
   // Transform submissions for PortfolioGrid
   const portfolioItems = collection.submissions.map((cs) => {
@@ -160,6 +174,15 @@ export default async function CollectionViewPage({
       latestProgressionText: latest?.text ?? null,
     };
   });
+  const sketchbookItems = portfolioItems.map((item) => ({
+    id: item.id,
+    title: item.title,
+    imageUrl: item.imageUrl,
+    imageFocalPoint: item.imageFocalPoint,
+    text: item.text,
+    authorName: user.name,
+    href: `${getCreatorUrl(user)}/s/${item.id}`,
+  }));
 
   return (
     <PageLayout maxWidth="max-w-6xl">
@@ -208,6 +231,28 @@ export default async function CollectionViewPage({
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1 pt-0.5">
+                  <div className="flex items-center rounded-md border border-border p-0.5">
+                    <Button
+                      asChild
+                      variant={activeView === "gallery" ? "default" : "ghost"}
+                      size="sm"
+                      className="h-8"
+                    >
+                      <Link href={activeCollectionPath}>{t("grid")}</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant={
+                        activeView === "sketchbook" ? "default" : "ghost"
+                      }
+                      size="sm"
+                      className="h-8"
+                    >
+                      <Link href={`${activeCollectionPath}?view=sketchbook`}>
+                        {t("sketchbook")}
+                      </Link>
+                    </Button>
+                  </div>
                   {collection.isPublic && (
                     <ShareButton
                       type="collection"
@@ -260,16 +305,26 @@ export default async function CollectionViewPage({
 
       {/* Collection Items Grid */}
       {portfolioItems.length > 0 ? (
-        <PortfolioGridProfile
-          items={portfolioItems}
-          isLoggedIn={isLoggedIn}
-          isOwnProfile={isOwner}
-          user={{
-            id: user.id,
-            name: user.name,
-            image: user.image,
-          }}
-        />
+        activeView === "sketchbook" ? (
+          <SketchbookView
+            items={sketchbookItems}
+            emptyStateLabel={t("emptyCollection")}
+            openLabel={t("openSubmission")}
+            previousLabel={t("previousPage")}
+            nextLabel={t("nextPage")}
+          />
+        ) : (
+          <PortfolioGridProfile
+            items={portfolioItems}
+            isLoggedIn={isLoggedIn}
+            isOwnProfile={isOwner}
+            user={{
+              id: user.id,
+              name: user.name,
+              image: user.image,
+            }}
+          />
+        )
       ) : (
         <div className="rounded-xl bg-surface-container py-16 text-center shadow-[0_14px_35px_rgb(0_0_0_/_0.35)]">
           <p className="text-on-surface-variant">{t("emptyCollection")}</p>

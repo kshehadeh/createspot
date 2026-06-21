@@ -24,14 +24,26 @@ interface AppLayoutClientProps {
 }
 
 function AppChromeModals({ user }: { user?: AppSidebarUser | null }) {
-  const { createSubmissionOpen, setCreateSubmissionOpen } = useAppChrome();
+  const {
+    createSubmissionOpen,
+    setCreateSubmissionOpen,
+    createBulkSubmissionOpen,
+    setCreateBulkSubmissionOpen,
+  } = useAppChrome();
   if (!user) return null;
   return (
-    <SubmissionEditModal
-      isOpen={createSubmissionOpen}
-      onClose={() => setCreateSubmissionOpen(false)}
-      mode="create"
-    />
+    <>
+      <SubmissionEditModal
+        isOpen={createSubmissionOpen}
+        onClose={() => setCreateSubmissionOpen(false)}
+        mode="create"
+      />
+      <SubmissionEditModal
+        isOpen={createBulkSubmissionOpen}
+        onClose={() => setCreateBulkSubmissionOpen(false)}
+        mode="bulk-create"
+      />
+    </>
   );
 }
 

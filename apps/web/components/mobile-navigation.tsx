@@ -4,6 +4,7 @@ import {
   Brain,
   Briefcase,
   FolderOpen,
+  Images,
   Info,
   LayoutDashboard,
   LayoutGrid,
@@ -28,6 +29,12 @@ import {
 } from "@/lib/sidebar-section-expand";
 import { cn, getCreatorUrl } from "@/lib/utils";
 import { Button } from "@createspot/ui-primitives/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@createspot/ui-primitives/dropdown-menu";
 import { SubmissionEditModal } from "./submission-edit-modal";
 
 interface MobileNavigationUser {
@@ -53,6 +60,7 @@ export function MobileNavigation({
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isBulkCreateModalOpen, setIsBulkCreateModalOpen] = useState(false);
   const [navMode, setNavMode] = useState<SidebarNavMode>(() =>
     getDefaultSidebarNavMode(pathname, user),
   );
@@ -104,6 +112,15 @@ export function MobileNavigation({
     setIsMenuOpen(false);
   };
 
+  const handleBulkCreateClick = () => {
+    if (chrome) {
+      chrome.setCreateBulkSubmissionOpen(true);
+    } else {
+      setIsBulkCreateModalOpen(true);
+    }
+    setIsMenuOpen(false);
+  };
+
   const openCommandPalette = () => {
     if (chrome) {
       setIsMenuOpen(false);
@@ -137,14 +154,27 @@ export function MobileNavigation({
   return (
     <>
       {user && showCreateButton && (
-        <button
-          type="button"
-          onClick={handleCreateClick}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground transition-colors hover:bg-surface-bright/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
-          aria-label={t("create")}
-        >
-          <span className="text-xl font-medium">+</span>
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground transition-colors hover:bg-surface-bright/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+              aria-label={t("create")}
+            >
+              <span className="text-xl font-medium">+</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={handleCreateClick}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("createSingle")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleBulkCreateClick}>
+              <Images className="mr-2 h-4 w-4" />
+              {t("createMany")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
       <button
         type="button"
@@ -260,8 +290,13 @@ export function MobileNavigation({
                 <div className="space-y-0.5">
                   <MobileNavActionItem
                     icon={Plus}
-                    label={t("create")}
+                    label={t("createSingle")}
                     onClick={handleCreateClick}
+                  />
+                  <MobileNavActionItem
+                    icon={Images}
+                    label={t("createMany")}
+                    onClick={handleBulkCreateClick}
                   />
                   <MobileNavItem
                     href={dashboardRoute.path}
@@ -393,11 +428,18 @@ export function MobileNavigation({
         </div>
       </div>
       {user && !chrome && (
-        <SubmissionEditModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          mode="create"
-        />
+        <>
+          <SubmissionEditModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            mode="create"
+          />
+          <SubmissionEditModal
+            isOpen={isBulkCreateModalOpen}
+            onClose={() => setIsBulkCreateModalOpen(false)}
+            mode="bulk-create"
+          />
+        </>
       )}
     </>
   );

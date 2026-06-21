@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const validViewTypes = ["gallery", "constellation"];
+  const validViewTypes = ["gallery", "constellation", "sketchbook"];
   const invalidTypes = allowedViewTypes.filter(
     (type: string) => !validViewTypes.includes(type),
   );

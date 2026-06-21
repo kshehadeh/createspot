@@ -16,6 +16,13 @@ import { Button } from "@createspot/ui-primitives/button";
 import { Input } from "@createspot/ui-primitives/input";
 import { Label } from "@createspot/ui-primitives/label";
 import { Textarea } from "@createspot/ui-primitives/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@createspot/ui-primitives/select";
 import { Switch } from "@/components/ui/switch";
 
 interface CollectionCreateButtonProps {
@@ -37,6 +44,7 @@ export function CollectionCreateButton({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(false);
+  const [defaultViewType, setDefaultViewType] = useState("gallery");
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = async () => {
@@ -51,6 +59,7 @@ export function CollectionCreateButton({
           name: name.trim(),
           description: description.trim() || null,
           isPublic,
+          defaultViewType,
         }),
       });
 
@@ -72,6 +81,7 @@ export function CollectionCreateButton({
     setName("");
     setDescription("");
     setIsPublic(false);
+    setDefaultViewType("gallery");
   };
 
   return (
@@ -120,6 +130,22 @@ export function CollectionCreateButton({
                 placeholder={t("descriptionPlaceholder")}
                 rows={3}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="defaultViewType">{t("defaultViewType")}</Label>
+              <Select
+                value={defaultViewType}
+                onValueChange={setDefaultViewType}
+              >
+                <SelectTrigger id="defaultViewType">
+                  <SelectValue placeholder={t("selectViewType")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="gallery">{t("grid")}</SelectItem>
+                  <SelectItem value="sketchbook">{t("sketchbook")}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center justify-between">

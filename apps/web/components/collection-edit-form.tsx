@@ -12,6 +12,13 @@ import { Button } from "@createspot/ui-primitives/button";
 import { Input } from "@createspot/ui-primitives/input";
 import { Label } from "@createspot/ui-primitives/label";
 import { Textarea } from "@createspot/ui-primitives/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@createspot/ui-primitives/select";
 import { Switch } from "@/components/ui/switch";
 
 interface PortfolioItem {
@@ -37,6 +44,7 @@ interface CollectionEditFormProps {
     name: string;
     description: string | null;
     isPublic: boolean;
+    defaultViewType: "gallery" | "sketchbook";
     userId: string;
   };
   items: PortfolioItem[];
@@ -55,6 +63,9 @@ export function CollectionEditForm({
   const [name, setName] = useState(collection.name);
   const [description, setDescription] = useState(collection.description || "");
   const [isPublic, setIsPublic] = useState(collection.isPublic);
+  const [defaultViewType, setDefaultViewType] = useState<
+    "gallery" | "sketchbook"
+  >(collection.defaultViewType);
   const [items, setItems] = useState(initialItems);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -71,6 +82,7 @@ export function CollectionEditForm({
           name: name.trim(),
           description: description.trim() || null,
           isPublic,
+          defaultViewType,
         }),
       });
 
@@ -254,6 +266,28 @@ export function CollectionEditForm({
                 setHasChanges(true);
               }}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="defaultViewType">{t("defaultViewType")}</Label>
+            <Select
+              value={defaultViewType}
+              onValueChange={(value: "gallery" | "sketchbook") => {
+                setDefaultViewType(value);
+                setHasChanges(true);
+              }}
+            >
+              <SelectTrigger id="defaultViewType">
+                <SelectValue placeholder={t("selectViewType")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gallery">{t("grid")}</SelectItem>
+                <SelectItem value="sketchbook">{t("sketchbook")}</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {t("defaultViewTypeDescription")}
+            </p>
           </div>
 
           <div className="flex justify-end">

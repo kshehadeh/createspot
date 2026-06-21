@@ -373,9 +373,7 @@ export function SubmissionDetail({
                             <MessageCircle
                               className={cn(
                                 "shrink-0 text-muted-foreground",
-                                commentCount > 0
-                                  ? "h-3.5 w-3.5"
-                                  : "h-4 w-4",
+                                commentCount > 0 ? "h-3.5 w-3.5" : "h-4 w-4",
                               )}
                             />
                             {commentCount > 0 && (

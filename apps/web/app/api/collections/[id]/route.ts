@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+const VALID_COLLECTION_VIEW_TYPES = ["gallery", "sketchbook"] as const;
+type CollectionViewType = (typeof VALID_COLLECTION_VIEW_TYPES)[number];
+
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
@@ -82,12 +85,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 
   const body = await request.json();
-  const { name, description, isPublic } = body;
+  const { name, description, isPublic, defaultViewType } = body;
 
   const updateData: {
     name?: string;
     description?: string | null;
     isPublic?: boolean;
+    defaultViewType?: CollectionViewType;
   } = {};
 
   if (name !== undefined) {
@@ -106,6 +110,27 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   if (isPublic !== undefined) {
     updateData.isPublic = Boolean(isPublic);
+  }
+
+  if (defaultViewType !== undefined) {
+    if (typeof defaultViewType !== "string") {
+      return NextResponse.json(
+        { error: "Collection view type must be a string" },
+        { status: 400 },
+      );
+    }
+
+    const isValidViewType = (value: string): value is CollectionViewType =>
+      VALID_COLLECTION_VIEW_TYPES.includes(value as CollectionViewType);
+
+    if (!isValidViewType(defaultViewType)) {
+      return NextResponse.json(
+        { error: `Invalid view type: ${defaultViewType}` },
+        { status: 400 },
+      );
+    }
+
+    updateData.defaultViewType = defaultViewType;
   }
 
   const updatedCollection = await prisma.collection.update({

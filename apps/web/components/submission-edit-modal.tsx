@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 import {
   FullScreenModal,
   FullScreenModalContent,
@@ -10,6 +11,7 @@ import {
   FullScreenModalDescription,
   FullScreenModalBody,
 } from "@/components/ui/full-screen-modal";
+import { BulkSubmissionCreateWizard } from "@/components/bulk-submission-create-wizard";
 import { PortfolioItemForm } from "@/components/portfolio-item-form";
 import { SubmissionCreateWizard } from "@/components/submission-create-wizard";
 
@@ -37,7 +39,7 @@ interface SubmissionEditModalProps {
     category?: string | null;
   };
   onSuccess?: (data?: SubmissionData) => void;
-  mode?: "create" | "edit" | "add-to-portfolio";
+  mode?: "create" | "bulk-create" | "edit" | "add-to-portfolio";
 }
 
 export function SubmissionEditModal({
@@ -58,12 +60,14 @@ export function SubmissionEditModal({
   };
 
   const getTitle = () => {
+    if (mode === "bulk-create") return t("bulkCreateTitle");
     if (mode === "add-to-portfolio") return t("addToPortfolioTitle");
     if (mode === "create") return t("createTitle");
     return t("editTitle");
   };
 
   const getDescription = () => {
+    if (mode === "bulk-create") return t("bulkCreateDescription");
     if (mode === "add-to-portfolio") return t("addToPortfolioDescription");
     if (mode === "create") return t("createDescription");
     return t("editDescription");
@@ -79,14 +83,26 @@ export function SubmissionEditModal({
           </FullScreenModalDescription>
         </FullScreenModalHeader>
         <FullScreenModalBody>
-          <div className="mx-auto w-full max-w-3xl">
-            {mode === "create" ? (
+          <div
+            className={cn(
+              "mx-auto w-full",
+              mode === "bulk-create" ? "max-w-6xl" : "max-w-3xl",
+            )}
+          >
+            {mode === "create" && (
               <SubmissionCreateWizard
                 onSuccess={handleSuccess}
                 onCancel={onClose}
                 initialDraft={initialDraft}
               />
-            ) : (
+            )}
+            {mode === "bulk-create" && (
+              <BulkSubmissionCreateWizard
+                onSuccess={() => handleSuccess()}
+                onCancel={onClose}
+              />
+            )}
+            {mode !== "create" && mode !== "bulk-create" && (
               <PortfolioItemForm
                 mode="edit"
                 initialData={initialData}

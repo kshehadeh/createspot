@@ -37,6 +37,8 @@ const EXHIBIT_DESCRIPTIONS: Record<ExhibitionType, string> = {
     "Browse public work from the Create Spot community. Filter by category or tag, or search by keyword to find your next source of inspiration.",
   constellation:
     "Explore the community gallery in an interactive 3D constellation. Discover creative work from the Create Spot community.",
+  sketchbook:
+    "Flip through creative submissions in a realistic sketchbook with tactile page turns.",
   global:
     "Explore artists from around the world on an interactive map. Discover creative work from the Create Spot community across the globe.",
 };
@@ -68,6 +70,15 @@ const EXHIBIT_DECOR: Record<
     icon: "text-violet-700 dark:text-violet-300",
     badge:
       "bg-violet-500/10 ring-violet-500/20 dark:bg-violet-400/10 dark:ring-violet-300/20",
+  },
+  sketchbook: {
+    gradient:
+      "from-orange-500/12 via-amber-500/10 to-yellow-500/10 dark:from-orange-400/10 dark:via-amber-400/10 dark:to-yellow-400/10",
+    orb1: "bg-gradient-to-br from-orange-500/35 to-amber-500/25 dark:from-orange-400/25 dark:to-amber-400/20",
+    orb2: "bg-gradient-to-br from-yellow-500/25 to-rose-500/15 dark:from-yellow-400/20 dark:to-rose-400/10",
+    icon: "text-orange-700 dark:text-orange-300",
+    badge:
+      "bg-orange-500/10 ring-orange-500/20 dark:bg-orange-400/10 dark:ring-orange-300/20",
   },
   global: {
     gradient:

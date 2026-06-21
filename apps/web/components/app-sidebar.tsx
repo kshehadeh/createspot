@@ -10,6 +10,7 @@ import {
   Briefcase,
   ChevronDown,
   FolderOpen,
+  Images,
   Info,
   LayoutDashboard,
   LayoutGrid,
@@ -68,6 +69,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
     toggleSidebarCollapsed,
     setCommandOpen,
     setCreateSubmissionOpen,
+    setCreateBulkSubmissionOpen,
   } = useAppChrome();
   const [navMode, setNavMode] = useState<SidebarNavMode>(() =>
     getDefaultSidebarNavMode(pathname, user),
@@ -130,17 +132,39 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const renderCreateLinks = () => (
     <ul className="space-y-2">
       <li>
-        <button
-          type="button"
-          onClick={() => setCreateSubmissionOpen(true)}
-          className={linkClass(false)}
-          title={tNav("create")}
-        >
-          <Plus className="h-4 w-4 shrink-0" />
-          {!sidebarCollapsed && (
-            <span className="truncate">{tNav("create")}</span>
-          )}
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className={cn(
+                linkClass(false),
+                "w-full justify-between",
+                sidebarCollapsed && "justify-center",
+              )}
+              title={tNav("create")}
+            >
+              <span className="flex items-center gap-3">
+                <Plus className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && (
+                  <span className="truncate">{tNav("create")}</span>
+                )}
+              </span>
+              {!sidebarCollapsed && (
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" align="start" className="w-56">
+            <DropdownMenuItem onClick={() => setCreateSubmissionOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              {tNav("createSingle")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setCreateBulkSubmissionOpen(true)}>
+              <Images className="mr-2 h-4 w-4" />
+              {tNav("createMany")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </li>
       <li>
         <Link

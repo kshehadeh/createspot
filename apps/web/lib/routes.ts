@@ -93,6 +93,12 @@ const ROUTES: Record<string, RouteConfig> = {
     parentPath: "/inspire/exhibition/permanent",
     icon: EXHIBITION_CONFIGS.constellation.icon,
   },
+  exhibitionSketchbook: {
+    path: "/inspire/exhibition/gallery/sketchbook",
+    label: "navigation.sketchbook",
+    parentPath: "/inspire/exhibition/permanent",
+    icon: EXHIBITION_CONFIGS.sketchbook.icon,
+  },
   exhibitionGlobal: {
     path: "/inspire/exhibition/global",
     label: "navigation.map",

@@ -111,6 +111,10 @@ export default async function CollectionEditPage({
           name: collection.name,
           description: collection.description,
           isPublic: collection.isPublic,
+          defaultViewType:
+            collection.defaultViewType === "sketchbook"
+              ? "sketchbook"
+              : "gallery",
           userId: collection.userId,
         }}
         items={items}

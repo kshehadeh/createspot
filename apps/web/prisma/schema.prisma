@@ -332,6 +332,7 @@ model Collection {
   name        String
   description String?  @db.Text
   isPublic    Boolean  @default(false)
+  defaultViewType String @default("gallery") // "gallery" | "sketchbook"
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

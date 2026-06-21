@@ -44,6 +44,11 @@ export function ExhibitViewSelector({
       path: EXHIBITION_CONFIGS.constellation.path,
     },
     {
+      type: "sketchbook",
+      label: EXHIBITION_CONFIGS.sketchbook.name,
+      path: EXHIBITION_CONFIGS.sketchbook.path,
+    },
+    {
       type: "global",
       label: EXHIBITION_CONFIGS.global.name,
       path: EXHIBITION_CONFIGS.global.path,
@@ -76,7 +81,8 @@ export function ExhibitViewSelector({
     // For gallery (grid) and constellation (path) views, use route parameter
     if (
       path === EXHIBITION_CONFIGS.gallery.path ||
-      path === EXHIBITION_CONFIGS.constellation.path
+      path === EXHIBITION_CONFIGS.constellation.path ||
+      path === EXHIBITION_CONFIGS.sketchbook.path
     ) {
       const basePath = exhibitId ? `${path}/${exhibitId}` : path;
       const queryString = params.toString();

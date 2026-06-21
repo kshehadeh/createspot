@@ -7,6 +7,7 @@ import {
   Briefcase,
   FolderOpen,
   Heart,
+  Images,
   Info,
   LayoutDashboard,
   LayoutGrid,
@@ -80,8 +81,12 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
   const router = useRouter();
   const tNav = useTranslations("navigation");
   const tCreator = useTranslations("creatorNav");
-  const { commandOpen, setCommandOpen, setCreateSubmissionOpen } =
-    useAppChrome();
+  const {
+    commandOpen,
+    setCommandOpen,
+    setCreateSubmissionOpen,
+    setCreateBulkSubmissionOpen,
+  } = useAppChrome();
   const [query, setQuery] = useState("");
   const [submissions, setSubmissions] = useState<
     CommandPaletteSubmissionResult[]
@@ -239,6 +244,11 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
     if (user?.id) setCreateSubmissionOpen(true);
   };
 
+  const openBulkSubmit = () => {
+    setCommandOpen(false);
+    if (user?.id) setCreateBulkSubmissionOpen(true);
+  };
+
   return (
     <Dialog open={commandOpen} onOpenChange={setCommandOpen}>
       <DialogContent
@@ -357,6 +367,14 @@ export function GlobalCommandMenu({ user }: GlobalCommandMenuProps) {
                 >
                   <Plus className={COMMAND_ICON_CLASS} />
                   {tNav("create")}
+                </CommandItem>
+                <CommandItem
+                  className={COMMAND_ITEM_CLASS}
+                  value={`${tNav("createMany")} submit many`}
+                  onSelect={openBulkSubmit}
+                >
+                  <Images className={COMMAND_ICON_CLASS} />
+                  {tNav("createMany")}
                 </CommandItem>
                 <CommandItem
                   className={COMMAND_ITEM_CLASS}

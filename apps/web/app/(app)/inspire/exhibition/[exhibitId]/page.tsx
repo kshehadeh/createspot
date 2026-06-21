@@ -115,6 +115,14 @@ export default async function ExhibitPage({ params }: ExhibitPageProps) {
       description:
         "Explore submissions along an interactive path through the exhibit.",
     },
+    {
+      value: "sketchbook" as const,
+      label: EXHIBITION_CONFIGS.sketchbook.name,
+      path: `/inspire/exhibition/gallery/sketchbook/${exhibitId}`,
+      enabled: exhibit.allowedViewTypes.includes("sketchbook"),
+      description:
+        "Flip through exhibit work as a tactile book with realistic page turns.",
+    },
     // Map/global view is not available for temporary exhibits
   ].filter((vt) => vt.enabled);
 

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "@/components/link";
-import { HelpCircle, LayoutDashboard, LogIn, Plus } from "lucide-react";
+import { HelpCircle, Images, LayoutDashboard, LogIn, Plus } from "lucide-react";
 import { FeedCard, type FeedCardSubmission } from "@/components/feed-card";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { Button } from "@createspot/ui-primitives/button";
@@ -102,6 +102,7 @@ function FeedListContent({
   const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isBulkCreateModalOpen, setIsBulkCreateModalOpen] = useState(false);
   const [lightboxSubmissionId, setLightboxSubmissionId] = useState<
     string | null
   >(null);
@@ -198,6 +199,15 @@ function FeedListContent({
         <Plus className="h-5 w-5" />
       </Button>
       <Button
+        type="button"
+        variant="fabMuted"
+        onClick={() => setIsBulkCreateModalOpen(true)}
+        title={t("newPostMany")}
+        aria-label={t("newPostMany")}
+      >
+        <Images className="h-5 w-5" />
+      </Button>
+      <Button
         variant="fabMuted"
         asChild
         title={t("dashboard")}
@@ -264,12 +274,20 @@ function FeedListContent({
         {fab}
         {guestActionBar}
         {isLoggedIn && (
-          <SubmissionEditModal
-            isOpen={isCreateModalOpen}
-            onClose={() => setIsCreateModalOpen(false)}
-            mode="create"
-            onSuccess={() => router.refresh()}
-          />
+          <>
+            <SubmissionEditModal
+              isOpen={isCreateModalOpen}
+              onClose={() => setIsCreateModalOpen(false)}
+              mode="create"
+              onSuccess={() => router.refresh()}
+            />
+            <SubmissionEditModal
+              isOpen={isBulkCreateModalOpen}
+              onClose={() => setIsBulkCreateModalOpen(false)}
+              mode="bulk-create"
+              onSuccess={() => router.refresh()}
+            />
+          </>
         )}
       </>
     );
@@ -305,12 +323,20 @@ function FeedListContent({
       {fab}
       {guestActionBar}
       {isLoggedIn && (
-        <SubmissionEditModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          mode="create"
-          onSuccess={() => router.refresh()}
-        />
+        <>
+          <SubmissionEditModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            mode="create"
+            onSuccess={() => router.refresh()}
+          />
+          <SubmissionEditModal
+            isOpen={isBulkCreateModalOpen}
+            onClose={() => setIsBulkCreateModalOpen(false)}
+            mode="bulk-create"
+            onSuccess={() => router.refresh()}
+          />
+        </>
       )}
       {lightboxSubmissionId &&
         (() => {

@@ -378,6 +378,7 @@ export function ExhibitFormSimple({
           {[
             { value: "gallery", label: t("grid") },
             { value: "constellation", label: t("constellation") },
+            { value: "sketchbook", label: t("sketchbook") },
           ].map((viewType) => (
             <div key={viewType.value} className="flex items-center gap-2">
               <input

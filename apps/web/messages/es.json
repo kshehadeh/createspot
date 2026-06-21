@@ -205,6 +205,8 @@
     "more": "Más",
     "terms": "Términos de Servicio",
     "create": "Enviar",
+    "createSingle": "Crear publicación",
+    "createMany": "Enviar varias",
     "signIn": "Iniciar sesión",
     "jumpIn": "Comenzar",
     "signInWithGoogle": "Iniciar sesión con Google",
@@ -223,6 +225,7 @@
     "permanentCollection": "Colección Permanente",
     "grid": "Cuadrícula",
     "constellation": "Constelación",
+    "sketchbook": "Cuaderno",
     "map": "Mapa",
     "play": "Jugar",
     "thisWeek": "Esta Semana",
@@ -309,7 +312,8 @@
   },
   "feedComposer": {
     "prompt": "¿Qué has creado últimamente?",
-    "newPost": "Nueva Publicación"
+    "newPost": "Nueva Publicación",
+    "newPostMany": "Enviar Varias"
   },
   "exhibition": {
     "loadMoreError": "Error al cargar más trabajos",
@@ -617,6 +621,7 @@
       "allowedViewTypesDescription": "Selecciona qué tipos de vista pueden usar los usuarios para ver esta exposición",
       "grid": "Cuadrícula",
       "constellation": "Constelación (3D)",
+      "sketchbook": "Cuaderno",
       "map": "Mapa",
       "featuredSubmission": "Publicación Destacada",
       "featuredSubmissionDescription": "Selecciona una publicación para destacar en esta exposición",
@@ -1337,6 +1342,8 @@
       "addToPortfolioDescription": "Edita los detalles de tu publicación y añádela a tu portafolio.",
       "createTitle": "Añadir Elemento al Portafolio",
       "createDescription": "Crea un nuevo elemento del portafolio añadiendo una imagen o texto, junto con detalles sobre tu trabajo.",
+      "bulkCreateTitle": "Enviar Varias",
+      "bulkCreateDescription": "Sube varias imágenes a la vez y configura los detalles de cada publicación.",
       "editTitle": "Editar Publicación",
       "editDescription": "Actualiza los detalles de tu publicación a continuación."
     },
@@ -1365,6 +1372,59 @@
           "description": "Añade título, categoría, visibilidad y opciones de críticas. Imagen, texto, etiquetas, referencia y trabajo en progreso se definieron en pasos anteriores."
         }
       }
+    },
+    "bulkSubmissionWizard": {
+      "stepCounter": "Paso {current} de {total}",
+      "submit": "Enviar {count}",
+      "submitting": "Enviando...",
+      "sharedSettings": "Configuración compartida",
+      "success": {
+        "created": "Publicaciones creadas correctamente",
+        "viewPortfolio": "Ver tu portafolio"
+      },
+      "errors": {
+        "waitForUploads": "Espera a que todas las subidas terminen.",
+        "addAtLeastOneImage": "Añade al menos una imagen para continuar.",
+        "submitRow": "No se pudo crear la publicación.",
+        "uploadMissing": "Error al subir la imagen. Elimina esta fila y súbela de nuevo."
+      },
+      "upload": {
+        "dropFiles": "Arrastra imágenes aquí",
+        "clickToSelect": "o haz clic para seleccionar archivos",
+        "filesAdded": "{count, plural, one {# archivo} other {# archivos}} añadidos",
+        "readyCount": "{count} listas",
+        "removeFile": "Eliminar {name}",
+        "uploading": "Subiendo..."
+      },
+      "steps": {
+        "upload": {
+          "title": "Subir imágenes",
+          "description": "Arrastra y suelta o selecciona varias imágenes para subir. Cada imagen se convierte en una publicación separada."
+        },
+        "review": {
+          "title": "Revisar detalles",
+          "description": "Edita títulos, descripciones, etiquetas, categorías y visibilidad para cada imagen."
+        },
+        "results": {
+          "title": "Resultados",
+          "description": "Revisa qué publicaciones se crearon correctamente y reintenta los fallos."
+        }
+      },
+      "table": {
+        "image": "Imagen",
+        "removeRow": "Eliminar fila"
+      },
+      "results": {
+        "success": "{count, plural, one {# creada} other {# creadas}}",
+        "error": "{count, plural, one {# fallida} other {# fallidas}}",
+        "status": "Estado",
+        "errorMessage": "Error",
+        "failed": "Fallida",
+        "pending": "Pendiente"
+      },
+      "retry": "Reintentar fallidas",
+      "retrying": "Reintentando...",
+      "addMore": "Enviar más"
     },
     "confirm": {
       "defaultDelete": "Eliminar",
@@ -1644,6 +1704,11 @@
     "collectionNamePlaceholder": "ej., Fotografía de Naturaleza",
     "description": "Descripción",
     "descriptionPlaceholder": "Describe tu colección...",
+    "defaultViewType": "Vista predeterminada",
+    "defaultViewTypeDescription": "Elige la vista inicial al abrir esta colección.",
+    "selectViewType": "Selecciona una vista",
+    "grid": "Cuadrícula",
+    "sketchbook": "Cuaderno",
     "makePublic": "Pública",
     "makePublicDescription": "Cualquiera puede ver esta colección",
     "create": "Crear",
@@ -1683,7 +1748,10 @@
     "downloadSocialPack": "Descargar como pack social",
     "downloading": "Descargando...",
     "downloadingPDF": "Generando PDF...",
-    "downloadingZIP": "Generando ZIP..."
+    "downloadingZIP": "Generando ZIP...",
+    "openSubmission": "Abrir publicación",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente"
   },
   "contact": {
     "title": "Ponte en Contacto",

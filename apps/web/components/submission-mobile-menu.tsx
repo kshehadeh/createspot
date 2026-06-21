@@ -92,9 +92,7 @@ export function SubmissionMobileMenu({
           aria-label={tFeed("commentsCount", {
             count: submission._count.comments,
           })}
-          className={cn(
-            submission._count.comments > 0 && "!gap-0.5 px-0",
-          )}
+          className={cn(submission._count.comments > 0 && "!gap-0.5 px-0")}
         >
           <MessageCircle
             className={cn(
