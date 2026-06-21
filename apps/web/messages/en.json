@@ -1412,7 +1412,9 @@
       },
       "table": {
         "image": "Image",
-        "removeRow": "Remove row"
+        "removeRow": "Remove row",
+        "lockColumn": "Lock {column}",
+        "unlockColumn": "Unlock {column}"
       },
       "results": {
         "success": "{count, plural, one {# created} other {# created}}",

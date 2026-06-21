@@ -6,7 +6,15 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { CheckCircle2, ImagePlus, Trash2, Upload, XCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  ImagePlus,
+  Lock,
+  Trash2,
+  Unlock,
+  Upload,
+  XCircle,
+} from "lucide-react";
 import { Button } from "@createspot/ui-primitives/button";
 import { Input } from "@createspot/ui-primitives/input";
 import { Label } from "@createspot/ui-primitives/label";
@@ -51,6 +59,8 @@ interface BulkSubmissionRow {
   submitError?: string;
 }
 
+type LockedColumn = "title" | "text" | "tags" | "category" | "shareStatus";
+
 interface BulkSubmissionCreateWizardProps {
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -81,6 +91,7 @@ export function BulkSubmissionCreateWizard({
   const [globalIsWorkInProgress, setGlobalIsWorkInProgress] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [lockedColumns, setLockedColumns] = useState<LockedColumn[]>([]);
   const [tagInputs, setTagInputs] = useState<Record<string, RowTagInputState>>(
     {},
   );
@@ -197,6 +208,52 @@ export function BulkSubmissionCreateWizard({
     [],
   );
 
+  const isColumnLocked = useCallback(
+    (column: LockedColumn) => lockedColumns.includes(column),
+    [lockedColumns],
+  );
+
+  const toggleColumnLock = useCallback((column: LockedColumn) => {
+    setLockedColumns((prev) =>
+      prev.includes(column)
+        ? prev.filter((c) => c !== column)
+        : [...prev, column],
+    );
+  }, []);
+
+  const updateColumnValue = useCallback(
+    <K extends LockedColumn>(
+      column: K,
+      rowId: string,
+      value: BulkSubmissionRow[K],
+    ) => {
+      if (isColumnLocked(column)) {
+        setRows((prev) => prev.map((row) => ({ ...row, [column]: value })));
+      } else {
+        updateRow(rowId, { [column]: value });
+      }
+    },
+    [isColumnLocked, updateRow],
+  );
+
+  const updateColumnTags = useCallback(
+    (rowId: string, updater: (tags: string[]) => string[]) => {
+      if (isColumnLocked("tags")) {
+        setRows((prev) => {
+          const nextTags = updater(prev[0]?.tags ?? []);
+          return prev.map((row) => ({ ...row, tags: nextTags }));
+        });
+      } else {
+        setRows((prev) =>
+          prev.map((row) =>
+            row.id === rowId ? { ...row, tags: updater(row.tags) } : row,
+          ),
+        );
+      }
+    },
+    [isColumnLocked],
+  );
+
   const removeRow = useCallback((rowId: string) => {
     setRows((prev) => prev.filter((row) => row.id !== rowId));
   }, []);
@@ -236,31 +293,32 @@ export function BulkSubmissionCreateWizard({
       e.preventDefault();
       const inputValue = tagInputs[rowId]?.value?.trim() || "";
       if (!inputValue) return;
-      setRows((prev) =>
-        prev.map((row) =>
-          row.id === rowId && !row.tags.includes(inputValue)
-            ? { ...row, tags: [...row.tags, inputValue] }
-            : row,
-        ),
+      updateColumnTags(rowId, (tags) =>
+        tags.includes(inputValue) ? tags : [...tags, inputValue],
       );
-      setTagInputs((prev) => ({ ...prev, [rowId]: { value: "" } }));
+      if (isColumnLocked("tags")) {
+        setTagInputs(
+          Object.fromEntries(
+            rows.map((row) => [row.id, { value: "" }]),
+          ) as Record<string, RowTagInputState>,
+        );
+      } else {
+        setTagInputs((prev) => ({ ...prev, [rowId]: { value: "" } }));
+      }
     },
-    [tagInputs],
+    [tagInputs, updateColumnTags, isColumnLocked, rows],
   );
 
   const handleTagInputChange = useCallback((rowId: string, value: string) => {
     setTagInputs((prev) => ({ ...prev, [rowId]: { value } }));
   }, []);
 
-  const removeTag = useCallback((rowId: string, tag: string) => {
-    setRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId
-          ? { ...row, tags: row.tags.filter((t) => t !== tag) }
-          : row,
-      ),
-    );
-  }, []);
+  const removeTag = useCallback(
+    (rowId: string, tag: string) => {
+      updateColumnTags(rowId, (tags) => tags.filter((t) => t !== tag));
+    },
+    [updateColumnTags],
+  );
 
   const handleContinueToReview = useCallback(() => {
     if (pendingOrUploadingCount > 0) {
@@ -560,6 +618,38 @@ export function BulkSubmissionCreateWizard({
     </div>
   );
 
+  const renderColumnHeader = (column: LockedColumn, label: string) => {
+    const locked = isColumnLocked(column);
+    return (
+      <div className="flex items-center justify-between gap-2">
+        <span>{label}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 shrink-0"
+          onClick={() => toggleColumnLock(column)}
+          aria-label={
+            locked
+              ? t("table.unlockColumn", { column: label })
+              : t("table.lockColumn", { column: label })
+          }
+          title={
+            locked
+              ? t("table.unlockColumn", { column: label })
+              : t("table.lockColumn", { column: label })
+          }
+        >
+          {locked ? (
+            <Lock className="h-3.5 w-3.5 text-primary" />
+          ) : (
+            <Unlock className="h-3.5 w-3.5 text-muted-foreground" />
+          )}
+        </Button>
+      </div>
+    );
+  };
+
   const renderTagsCell = (row: BulkSubmissionRow) => {
     const inputValue = tagInputs[row.id]?.value ?? "";
     return (
@@ -646,11 +736,21 @@ export function BulkSubmissionCreateWizard({
             <TableHeader className="sticky top-0 z-10 bg-background">
               <TableRow>
                 <TableHead className="w-16">{t("table.image")}</TableHead>
-                <TableHead>{tPortfolio("title")}</TableHead>
-                <TableHead>{tPortfolio("textDescription")}</TableHead>
-                <TableHead>{tPortfolio("tags")}</TableHead>
-                <TableHead>{tPortfolio("category")}</TableHead>
-                <TableHead>{tPortfolio("visibility")}</TableHead>
+                <TableHead>
+                  {renderColumnHeader("title", tPortfolio("title"))}
+                </TableHead>
+                <TableHead>
+                  {renderColumnHeader("text", tPortfolio("textDescription"))}
+                </TableHead>
+                <TableHead>
+                  {renderColumnHeader("tags", tPortfolio("tags"))}
+                </TableHead>
+                <TableHead>
+                  {renderColumnHeader("category", tPortfolio("category"))}
+                </TableHead>
+                <TableHead>
+                  {renderColumnHeader("shareStatus", tPortfolio("visibility"))}
+                </TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -679,7 +779,7 @@ export function BulkSubmissionCreateWizard({
                       type="text"
                       value={row.title}
                       onChange={(e) =>
-                        updateRow(row.id, { title: e.target.value })
+                        updateColumnValue("title", row.id, e.target.value)
                       }
                       placeholder={tPortfolio("titlePlaceholder")}
                       className="min-w-[140px]"
@@ -689,7 +789,7 @@ export function BulkSubmissionCreateWizard({
                     <Textarea
                       value={row.text}
                       onChange={(e) =>
-                        updateRow(row.id, { text: e.target.value })
+                        updateColumnValue("text", row.id, e.target.value)
                       }
                       placeholder={tPortfolio("textPlaceholder")}
                       rows={2}
@@ -701,9 +801,11 @@ export function BulkSubmissionCreateWizard({
                     <Select
                       value={row.category || "__none__"}
                       onValueChange={(value) =>
-                        updateRow(row.id, {
-                          category: value === "__none__" ? "" : value,
-                        })
+                        updateColumnValue(
+                          "category",
+                          row.id,
+                          value === "__none__" ? "" : value,
+                        )
                       }
                     >
                       <SelectTrigger className="min-w-[140px]">
@@ -735,9 +837,11 @@ export function BulkSubmissionCreateWizard({
                     <Select
                       value={row.shareStatus}
                       onValueChange={(value) =>
-                        updateRow(row.id, {
-                          shareStatus: value as ShareStatus,
-                        })
+                        updateColumnValue(
+                          "shareStatus",
+                          row.id,
+                          value as ShareStatus,
+                        )
                       }
                     >
                       <SelectTrigger className="min-w-[140px]">
