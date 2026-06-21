@@ -12,7 +12,7 @@ import Link from "@/components/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import {
   BaseLightbox,
@@ -192,12 +192,16 @@ export function SubmissionLightbox({
     !isPrivate && submission.critiquesEnabled && !!currentUserId;
   const showComments = !isPrivate && submission.commentsEnabled;
 
-  // Get creator ID for route building
+  // Get creator ID for route building. Prefer slug over id, and prefer prop data
+  // over fetched data, but use any available identifier so buttons never go nowhere.
   const getCreatorId = useCallback((): string | null => {
-    if (submission.user?.id) {
-      return submission.user.slug || submission.user.id;
-    }
-    return submissionUserSlug || submissionUserId;
+    return (
+      submission.user?.slug ||
+      submission.user?.id ||
+      submissionUserSlug ||
+      submissionUserId ||
+      null
+    );
   }, [submission.user, submissionUserSlug, submissionUserId]);
 
   // Build submission URL using routes
@@ -232,6 +236,18 @@ export function SubmissionLightbox({
 
   // Track view when lightbox opens
   useTrackSubmissionView(submission.id, isOwner, isOpen);
+
+  // Pre-compute stable destination URLs so the edit/view buttons never navigate to
+  // a null/undefined creator ID and so we can disable them while data is missing.
+  const viewUrl = useMemo(() => getSubmissionUrl(), [getSubmissionUrl]);
+  const editUrl = useMemo(() => {
+    const creatorId = getCreatorId();
+    if (!creatorId || !submission.id) return null;
+    return buildRoutePath("submissionEdit", {
+      creatorid: creatorId,
+      submissionid: submission.id,
+    });
+  }, [getCreatorId, submission.id]);
 
   // Navigate to edit page
   const handleEditClick = useCallback(() => {
@@ -356,38 +372,32 @@ export function SubmissionLightbox({
         )}
 
         {/* View */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="overlayDark"
-              size="icon"
-              asChild
-              aria-label="View submission"
-            >
-              <Link
-                href={getSubmissionUrl() || "#"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const url = getSubmissionUrl();
-                  if (!url && submissionUserId && submission.id) {
-                    e.preventDefault();
-                    router.push(
-                      buildRoutePath("submission", {
-                        creatorid: submissionUserId,
-                        submissionid: submission.id,
-                      }),
-                    );
-                  }
-                }}
+        {!_hideGoToSubmission && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="overlayDark"
+                size="icon"
+                asChild
+                disabled={!viewUrl}
+                aria-label="View submission"
               >
-                <Eye className="h-4 w-4" />
-              </Link>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>View full submission page</p>
-          </TooltipContent>
-        </Tooltip>
+                <Link
+                  href={viewUrl || "#"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!viewUrl) e.preventDefault();
+                  }}
+                >
+                  <Eye className="h-4 w-4" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>View full submission page</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
         {/* Edit button - shown if user owns the submission */}
         {isOwner && (
@@ -396,6 +406,7 @@ export function SubmissionLightbox({
               <Button
                 variant="overlayDark"
                 size="icon"
+                disabled={!editUrl}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleEditClick();
@@ -520,6 +531,7 @@ export function SubmissionLightbox({
     [
       hasText,
       hasImage,
+      _hideGoToSubmission,
       isOwner,
       showCritique,
       showComments,
@@ -528,13 +540,12 @@ export function SubmissionLightbox({
       submission._count,
       submissionUserId,
       submissionUserSlug,
-      getSubmissionUrl,
-      getCreatorId,
+      viewUrl,
+      editUrl,
       handleEditClick,
       onClose,
       onOpenComments,
       closeTooltipOpen,
-      router,
       t,
     ],
   );
