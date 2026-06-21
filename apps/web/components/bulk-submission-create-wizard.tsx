@@ -892,7 +892,9 @@ export function BulkSubmissionCreateWizard({
           onClick={handleSubmit}
           disabled={isSubmitting || readyRows.length === 0}
         >
-          {isSubmitting ? t("submitting") : t("submit")}
+          {isSubmitting
+            ? t("submitting")
+            : t("submit", { count: readyRows.length })}
         </Button>
       </div>
     </div>
